@@ -1,16 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>
+            http://hupili.github.io/backup-hplonline/blog/2010/01/20/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%EF%BC%88C%2CC%2B%2B%2Cstdarg.h%2C%E5%85%A8%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E5%AE%9E%E7%8E%B0%29/
+        </loc>
+        <lastmod>2013-05-04T16:14:27+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://hupili.github.io/backup-hplonline/blog/2013/05/04/test/</loc>
         <lastmod>2013-05-04T14:31:02+08:00</lastmod>
     </url>
     <url>
         <loc>http://hupili.github.io/backup-hplonline/blog/archives/</loc>
-        <lastmod>2013-05-04T14:31:02+08:00</lastmod>
+        <lastmod>2013-05-04T16:14:27+08:00</lastmod>
     </url>
     <url>
         <loc>http://hupili.github.io/backup-hplonline/</loc>
-        <lastmod>2013-05-04T14:31:02+08:00</lastmod>
+        <lastmod>2013-05-04T16:14:27+08:00</lastmod>
     </url>
     <url>
         <loc>http://hupili.github.io/backup-hplonline/robots.txt</loc>

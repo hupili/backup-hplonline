@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[hplonline]]></title>
-  <link href="http://hupili.github.io/backup-hplonline/atom.xml" rel="self"/>
+  <title><![CDATA[Category: tech | hplonline]]></title>
+  <link href="http://hupili.github.io/backup-hplonline/blog/categories/tech/atom.xml" rel="self"/>
   <link href="http://hupili.github.io/backup-hplonline/"/>
   <updated>2013-05-04T16:15:23+08:00</updated>
   <id>http://hupili.github.io/backup-hplonline/</id>
@@ -12,17 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Test]]></title>
-    <link href="http://hupili.github.io/backup-hplonline/blog/2013/05/04/test/"/>
-    <updated>2013-05-04T14:23:00+08:00</updated>
-    <id>http://hupili.github.io/backup-hplonline/blog/2013/05/04/test</id>
-    <content type="html"><![CDATA[<p>A test post?</p>
-
-<p>HU Pili</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[可变参数（C,C++,stdarg.h,全可变参数实现)]]></title>
@@ -49,12 +38,12 @@ IDE根据后缀来决定调用哪种编译器。</p>
 <p>#include &lt;stdio.h&gt;</p>
 
 
-<p>void print(int n , &#8230;){<br/>
+<p>void print(int n , ...){<br/>
      int i ;<br/>
      int *p = &amp;n ;<br/>
      p ++ ;<br/>
      for ( i = 0 ; i &lt; n ; i ++ ){<br/>
-         printf(&#8220;%d\n&#8221; , *p) ;<br/>
+         printf("%d\n" , *p) ;<br/>
          p ++ ;<br/>
      }<br/>
 }</p>
@@ -72,7 +61,7 @@ IDE根据后缀来决定调用哪种编译器。</p>
 <p><font color="#0000ff">二。C++支持的写法：</font></p>
 
 
-<p>void print(&#8230;)<br/>
+<p>void print(...)<br/>
 这样所有参数都是可有可无的了，<br/>
 可以通过编译，<br/>
 至于怎么索引参数后面再说。</p>
@@ -89,7 +78,7 @@ IDE根据后缀来决定调用哪种编译器。</p>
      int *p = &amp;n ;<br/>
      p ++ ;<br/>
      for ( i = 0 ; i &lt; n ; i ++ ){<br/>
-         printf(&#8220;%d\n&#8221; , *p) ;<br/>
+         printf("%d\n" , *p) ;<br/>
          p ++ ;<br/>
      }<br/>
 }</p>
@@ -111,7 +100,7 @@ C是允许函数没有定义就使用的，<br/>
 
 <p>不过上面那段程序编译后，<br/>
 编译器会给出警告：<br/>
- warning C4020: &#8216;print&#8217; : too many actual parameters</p>
+ warning C4020: 'print' : too many actual parameters</p>
 
 
 <p>而实际上，C可以把所有东西都省掉：<br/>
@@ -127,12 +116,12 @@ void print()<br/>
 #include &lt;stdarg.h&gt;</p>
 
 
-<p>void print(int n , &#8230;){<br/>
+<p>void print(int n , ...){<br/>
      va_list l ;<br/>
      va_start(l , n) ;<br/>
-     while ( n &#8211; ){<br/>
+     while ( n -- ){<br/>
          int num = va_arg(l , int) ;<br/>
-         printf(&#8220;%d\n&#8221; , num) ;<br/>
+         printf("%d\n" , num) ;<br/>
      }<br/>
      va_end(l) ;<br/>
 }</p>
@@ -146,11 +135,11 @@ void print()<br/>
 
 <p><font color="#ff9900">va_list是参数列表定义。<br/>
 va_start（参数列表，最后一个固定参数）<br/>
-&#8211;在开始的时候调用<br/>
+--在开始的时候调用<br/>
 va_arg（参数列表，类型）<br/>
-&#8211;将参数列表移动向下一个参数位置，并返回“类型”所指定的参数<br/>
+--将参数列表移动向下一个参数位置，并返回“类型”所指定的参数<br/>
 va_end（参数列表）<br/>
-&#8211;在结束的时候调用</font></p>
+--在结束的时候调用</font></p>
 
 
 <p>其中，varargs.h里面也有几个名字相同的宏。<br/>
@@ -263,7 +252,7 @@ int add(){<br/>
 
 
 <p>int main(){<br/>
-     printf(&#8220;%d&#8221; , add(7 , 2 , 1 , 3 , 4 , 0)) ;<br/>
+     printf("%d" , add(7 , 2 , 1 , 3 , 4 , 0)) ;<br/>
      return 0 ;<br/>
 }</p>
 
@@ -272,17 +261,17 @@ int add(){<br/>
 只要知道了VC编译出来的函数怎么布局内存，<br/>
 自然就能想到该怎么办。<br/>
 栈中的结构一般来说是<br/>
-[ebp + ???h]&#8211;参数n<br/>
-[ebp + ???h]&#8211;参数n-1<br/>
-[ebp + ???h]&#8211;。。。<br/>
-[ebp + 008h]&#8211;参数0<br/>
-[ebp + 004h]&#8211;返回地址<br/>
-[ebp + 000h]&#8211;ebp<br/>
-[ebp - 004h]&#8211;局部变量0<br/>
-[ebp - 008h]&#8211;局部变量1<br/>
-[ebp + ???h]&#8211;。。。<br/>
-[ebp + ???h]&#8211;局部变量n<br/>
-[ebp + ???h]&#8211;保护寄存器</p>
+[ebp + ???h]--参数n<br/>
+[ebp + ???h]--参数n-1<br/>
+[ebp + ???h]--。。。<br/>
+[ebp + 008h]--参数0<br/>
+[ebp + 004h]--返回地址<br/>
+[ebp + 000h]--ebp<br/>
+[ebp - 004h]--局部变量0<br/>
+[ebp - 008h]--局部变量1<br/>
+[ebp + ???h]--。。。<br/>
+[ebp + ???h]--局部变量n<br/>
+[ebp + ???h]--保护寄存器</p>
 
 
 <p>（有时候好像还会保存一个框架下界的指针，<br/>
@@ -341,7 +330,7 @@ int add(){<br/>
 语句可以依次执行，并且最后一个表示为整个逗号表达式的返回值。<br/>
 当va_arg(ap,t)单独成一句话的时候，<br/>
 用分号和逗号分割倒是问题不大。<br/>
-但是可能出现 if ( va_arg(ap , t) ){&#8230;}<br/>
+但是可能出现 if ( va_arg(ap , t) ){...}<br/>
 如果是分号的话，就会把客户端的语句给切开，<br/>
 最后导致编译错误。</p>
 

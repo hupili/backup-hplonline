@@ -105,6 +105,360 @@
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/01/20/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%EF%BC%88C%2CC%2B%2B%2Cstdarg.h%2C%E5%85%A8%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E5%AE%9E%E7%8E%B0%29/">可变参数（C,C++,stdarg.h,全可变参数实现)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-20T14:09:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.1.20</p>
+
+
+<p>今天看到湖哥在校内上讨论技术问题。<br/>
+隐约对三个点有点印象，于是又细看了一遍。<br/>
+简单记几个例子，以后翻来瞟一下就知道啥意思了。</p>
+
+
+<p>以下都是VC6的结论。<br/>
+C表示后缀以.c存储代码，<br/>
+C++表示后缀以.cpp存储代码。<br/>
+IDE根据后缀来决定调用哪种编译器。</p>
+
+
+<p><br/><font color="#0000ff">一。C和C++里的可变参数：</font></p>
+
+
+<p>#include &lt;stdio.h&gt;</p>
+
+
+<p>void print(int n , &#8230;){<br/>
+     int i ;<br/>
+     int *p = &amp;n ;<br/>
+     p ++ ;<br/>
+     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+         printf(&#8220;%d\n&#8221; , *p) ;<br/>
+         p ++ ;<br/>
+     }<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     print(3 , 1 , 2 , 3) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>这里至少有一个参数，<br/><font color="#ff0000">主要是从这个参数，可以推知后面参数的地址。</font></p>
+
+
+<p><font color="#0000ff">二。C++支持的写法：</font></p>
+
+
+<p>void print(&#8230;)<br/>
+这样所有参数都是可有可无的了，<br/>
+可以通过编译，<br/>
+至于怎么索引参数后面再说。</p>
+
+
+<p>C直接三个点的话，不让编译。</p>
+
+
+<p><font color="#0000ff">三。C支持的写法：</font></p>
+
+
+<p>void print(int n){<br/>
+     int i ;<br/>
+     int *p = &amp;n ;<br/>
+     p ++ ;<br/>
+     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+         printf(&#8220;%d\n&#8221; , *p) ;<br/>
+         p ++ ;<br/>
+     }<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     print(3 , 1 , 2 , 3) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>和前面相比，就是把后面三个点给去掉了。<br/>
+C是允许函数没有定义就使用的，<br/>
+他会假装是个返回int的函数。<br/>
+而调用方式和现有定义不一致的时候，<br/>
+也是会通过的，比如下面这样都行：<br/>
+     print((float)(3) , 1 , 2 , 3) ;</p>
+
+
+<p>不过上面那段程序编译后，<br/>
+编译器会给出警告：<br/>
+ warning C4020: &#8216;print&#8217; : too many actual parameters</p>
+
+
+<p>而实际上，C可以把所有东西都省掉：<br/>
+void print()<br/>
+至于这样该怎么获得参数，也放在后面说。</p>
+
+
+<p><font color="#0000ff">四。使用&lt;stdarg.h&gt;来标准化可变参数的操作：</font></p>
+
+
+<p>#include &lt;stdio.h&gt;<br/>
+//#include &lt;varargs.h&gt;<br/>
+#include &lt;stdarg.h&gt;</p>
+
+
+<p>void print(int n , &#8230;){<br/>
+     va_list l ;<br/>
+     va_start(l , n) ;<br/>
+     while ( n &#8211; ){<br/>
+         int num = va_arg(l , int) ;<br/>
+         printf(&#8220;%d\n&#8221; , num) ;<br/>
+     }<br/>
+     va_end(l) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     print(5 , 1 , 2 , 3 , 4 , 5) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p><font color="#ff9900">va_list是参数列表定义。<br/>
+va_start（参数列表，最后一个固定参数）<br/>
+&#8211;在开始的时候调用<br/>
+va_arg（参数列表，类型）<br/>
+&#8211;将参数列表移动向下一个参数位置，并返回“类型”所指定的参数<br/>
+va_end（参数列表）<br/>
+&#8211;在结束的时候调用</font></p>
+
+
+<p>其中，varargs.h里面也有几个名字相同的宏。<br/>
+不过他的va_start没第二个参数，感觉很奇怪，<br/>
+暂时没有时间深入研究，以后再看。</p>
+
+
+<p><font color="#0000ff">五。stdarg中宏的定义：</font></p>
+
+
+<p>这个头文件中有若干条件编译，<br/>
+跟我平台上对应的是：</p>
+
+
+<p>#define _INTSIZEOF(n)    ( (sizeof(n) + sizeof(int) - 1) &amp; ~(sizeof(int) - 1) )<br/>
+#define va_start(ap,v)  ( ap = (va_list)&amp;v + _INTSIZEOF(v) )<br/>
+#define va_arg(ap,t)     ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )<br/>
+#define va_end(ap)       ( ap = (va_list)0 )</p>
+
+
+<p>_INTSIZEOF这个宏用来取得某个类型按照int对齐后的尺寸。<br/>
+由于在各个平台上int的定义有所不同，<br/>
+另外一般对栈的push和pop操作都是以CPU字长为单位的，<br/>
+所以需要这样一个宏，来取得该类型实际所占的空间。<br/>
+仔细体会一下他是怎么办到的，其实很有意思。</p>
+
+
+<p>n按照m向上取整的一般写法为：<br/><font color="#ff0000">(n+m-1) / m * n</font> <br/>
+而当m是二的方冪的时候，可以直接把低位清零而得到，<br/>
+就形成了这个宏的写法。其实这样是等效的：<br/>
+-sizeof(int)<br/>
+“-”在补码中的定义本身就是取反加1.</p>
+
+
+<p>va_start(ap,v)  ( ap = (va_list)&amp;v + _INTSIZEOF(v) )<br/>
+v是最后一个固定参数，<br/>
+那么将参数列表指针ap赋为他的下一个位置即可。</p>
+
+
+<p>va_arg(ap,t)     ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )<br/>
+这个比较普通，把指针向后移了再返回来取这个出类型为t的一个参数。</p>
+
+
+<p>我一开始有个问题就是，<br/>
+为什么不一开始就让表指针指向参数前一个单元，<br/>
+每次取参数的时候，先移动指针，再返回那个位置上的值。<br/>
+类似于这样：<br/>
+*(t*)(ap += ???)</p>
+
+
+<p>这里的毛病就在于，<br/>
+移动指针需要知道前一个元素的类型，<br/>
+这样才能确定需要动多少；<br/>
+而返回参数需要知道当前元素的类型。<br/>
+于是一个可能的宏会这样定义：<br/>
+va_arg(ap , prev_t , cur_t)</p>
+
+
+<p>这样写起来显然不是很爽。<br/>
+程序员需要记忆前一个和当前元素的类型。<br/>
+后面将实现消耗一定存储空间，<br/>
+让电脑来记忆的写法。</p>
+
+
+<p><font color="#0000ff">六。全可变参数的写法（C内联汇编)：</font></p>
+
+
+<p>上面的stdarg给出的解决方案，<br/>
+从几个宏就可以明显地看出，<br/>
+必须得有至少一个固定参数，<br/>
+否则va_start就没法调用。</p>
+
+
+<p>又如，我想实现这样的功能，<br/>
+把传进去的参数都累加起来，<br/>
+参数以0表示结束。<br/>
+（类似C字符串的思想）<br/>
+因为当数很多的时候，<br/>
+我不想去数我要加多少个数。<br/>
+或者当加数个数改变的时候，<br/>
+我直接插到中间就行了，<br/>
+只要保证最后一个0。</p>
+
+
+<p>这两点都刺激我们寻找一种全可变参数的写法。<br/>
+在前面的例子中，已经手动遍历过参数列表了，<br/>
+但这里的问题在于如何得到第一个参数的位置：</p>
+
+
+<p>#include &lt;stdio.h&gt;<br/>
+int add(){<br/>
+     int sum = 0 ;</p>
+
+
+<p>     int *p ;<br/>
+     __asm{<br/>
+         lea eax , [ebp + 08h] ;<br/>
+         mov p , eax ;<br/>
+     }</p>
+
+
+<p>     while ( *p ){<br/>
+         sum += *p ;<br/>
+         p ++ ;<br/>
+     }</p>
+
+
+<p>     return sum ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     printf(&#8220;%d&#8221; , add(7 , 2 , 1 , 3 , 4 , 0)) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>这段代码显然不是各种环境通用的。<br/>
+只要知道了VC编译出来的函数怎么布局内存，<br/>
+自然就能想到该怎么办。<br/>
+栈中的结构一般来说是<br/>
+[ebp + ???h]&#8211;参数n<br/>
+[ebp + ???h]&#8211;参数n-1<br/>
+[ebp + ???h]&#8211;。。。<br/>
+[ebp + 008h]&#8211;参数0<br/>
+[ebp + 004h]&#8211;返回地址<br/>
+[ebp + 000h]&#8211;ebp<br/>
+[ebp - 004h]&#8211;局部变量0<br/>
+[ebp - 008h]&#8211;局部变量1<br/>
+[ebp + ???h]&#8211;。。。<br/>
+[ebp + ???h]&#8211;局部变量n<br/>
+[ebp + ???h]&#8211;保护寄存器</p>
+
+
+<p>（有时候好像还会保存一个框架下界的指针，<br/>
+与保存的ebp对应，便于退出函数时进行检查。<br/>
+这时候的参数0位置是[ebp + 0ch]，<br/>
+具体情况看就行了。）</p>
+
+
+<p><font color="#0000ff">七。全可变参数（纯C)：</font></p>
+
+
+<p>有了上面对栈结构的认识之后，<br/>
+不用内联汇编，也可以找到这个地址。<br/>
+只是这个时候需要借助至少一个局部变量进行界定。</p>
+
+
+<p>int add(){<br/>
+     int sum = 0 ;<br/>
+     <br/>
+     int *p ;<br/>
+     p = &amp;sum + 3 ;</p>
+
+
+<p>     while ( *p ){<br/>
+         sum += *p ;<br/>
+         p ++ ;<br/>
+     }</p>
+
+
+<p>     return sum ;<br/>
+}</p>
+
+
+<p><font color="#0000ff">八。stdarg宏的变换写法：</font></p>
+
+
+<p>int __prev_length ;<br/>
+#define _INTSIZEOF(n)    ( (sizeof(n) + sizeof(int) - 1) &amp; ~(sizeof(int) - 1) )<br/>
+#define va_start(ap,v)  ( ap = (va_list)&amp;v + _INTSIZEOF(v) ) , __prev_length = 0 <br/>
+#define va_arg(ap,t)     ((ap += __prev_length) , __prev_length = _INTSIZEOF(t) , *(t *)ap)<br/>
+#define va_cur(ap,t)     (*(t *)ap)<br/>
+#define va_end(ap)       ( ap = (va_list)0 )</p>
+
+
+<p>首先开一个变量记录上一个参数的尺寸。<br/>
+在初始化的时候给这个参数置零。<br/>
+每次取参数可以先移动，<br/>
+再保存当前变量的尺寸，<br/>
+最后再返回当前参数。</p>
+
+
+<p>以前有很长段时间觉得逗号表达式没什么用。<br/>
+因为一般用逗号表达式的地方，<br/>
+直接用分号都可以拆开成好几个表达式。<br/>
+但是在这种类似的单行宏里面就有用了，<br/>
+语句可以依次执行，并且最后一个表示为整个逗号表达式的返回值。<br/>
+当va_arg(ap,t)单独成一句话的时候，<br/>
+用分号和逗号分割倒是问题不大。<br/>
+但是可能出现 if ( va_arg(ap , t) ){&#8230;}<br/>
+如果是分号的话，就会把客户端的语句给切开，<br/>
+最后导致编译错误。</p>
+
+
+<p><br/></p>
+
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
     <a href="/backup-hplonline/blog/archives">Blog Archives</a>
@@ -119,6 +473,10 @@
     
       <li class="post">
         <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2010/01/20/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%EF%BC%88C%2CC%2B%2B%2Cstdarg.h%2C%E5%85%A8%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E5%AE%9E%E7%8E%B0%29/">可变参数（C,C++,stdarg.h,全可变参数实现)</a>
       </li>
     
   </ul>
