@@ -1,0 +1,2404 @@
+<!--STATUS OK-->
+
+
+<html><head><meta http-equiv=content-type content="text/html; charset=utf-8">
+<title>C++中带括号的new。。（placement new）_霹雳在线_百度空间      </title>
+
+<style type="text/css">
+    .error{color:#FF0000;font-size:12px}
+    .shareUser,.shareLastEditor{line-height:20px;color:#666666;text-align:left}
+    .shareLastEditor{margin:5px 0 8px;}
+</style>
+
+<script type="text/javascript">
+    var g_pageTimerStart=new Date().getTime();
+</script>
+
+<script type="text/javascript" src="/ui/scripts/global.js"></script>
+<script type="text/javascript" src="/static/common/scripts/libs.js"></script>
+<script type="text/javascript" src="http://img.baidu.com/js/tangram-1.1.0.js"></script>
+
+
+<script type="text/javascript">
+var Session = {
+    isLogin: ! true,
+    isHost: "",
+    userName: "hplonline",   
+    userPortrait:'e60768706c6f6e6c696e65b500',
+    spaceURL: "/hplonline",
+    spBasicURL:"hplonline",
+    spBasicURLEnc:"hplonline",
+    visitorName:    "",
+    visitorPortrait:'00000000',
+    isActive: '',   
+    visitorURL: "/index.html",        // 
+    pageURL: "http://hi.baidu.com/hplonline/blog/item/0a3fa76e45727fd780cb4ac9%2Ehtml",    
+    refer: "",
+    spToken: '', 
+    spFriendDomain: 'http://frd.baidu.com',
+    spSpaceDomain: 'http://hi.baidu.com',
+    spPortraitDomain: '',
+    spSpaceStaticDomain: 'http://hi.baidu.com' 
+
+    ,isDrag:  false  
+    ,isProfile:  false   
+    ,isPortraitVerify:!true
+    };
+</script>
+
+</head>
+
+<body>
+
+<center>
+
+<script type="text/javascript">
+/*<![CDATA[*/
+if(top.location != self.location){
+	top.location = self.location;
+}
+var myref = encodeURIComponent("http://hi.baidu.com/hplonline/blog/item/0a3fa76e45727fd780cb4ac9%2Ehtml");
+/*]]>*/
+</script>
+<link rel="stylesheet" type="text/css" href="/ui/css/mods.css" />
+
+<link rel="stylesheet" type="text/css" href="http://hitn.bdimg.com/hplonline/css/item/963c2d7f982f070828388a8e.css" />
+
+<link rel="stylesheet" type="text/css" href="/space.css?v=20111116" />
+
+<div class="userbar">
+    <div id="nav">
+        <a class="logo" href="http://hi.baidu.com/index.htm">
+			<img src="http://img.baidu.com/hi/logo/logo_93_30.gif" border="0" alt="百度空间" />
+		</a>
+
+
+
+        <div class="manage no-login">
+            <form action="https://passport.baidu.com/?login" method="post">
+                用户名:<input type="text" name="username" />&nbsp;&nbsp; 
+                密码:<input type="password" name="password" /> 
+                <input type="hidden" name="mem_pass" value="on" />
+                <input type="submit" value="" style="width:0; height:0;" />
+                <a href="#" class="loginlink" onclick="this.parentNode.submit(); return false;">登录</a>  
+            </form> 
+            <a href="/reg/new" class="reglink">注册</a>
+        </div>
+
+    </div>
+</div>
+
+<script type='text/javascript' src='http://hi.bdimg.com/static/base/js/conf/base.js?v=20111121151724'></script>
+ <link rel='stylesheet' type='text/css' href='http://hi.bdimg.com/static/base/css/base.css?v=20111121151724'/>
+
+
+		
+
+
+
+<div id="main" align="left">
+
+<!--[if IE]>
+<script>
+var objmain = document.getElementById("main");
+function updatesize(){ var bodyw = window.document.body.offsetWidth; if(bodyw <= 790) objmain.style.width="772px"; else if(bodyw >= 1016) objmain.style.width="996px"; else objmain.style.width="100%"; }
+updatesize(); window.onresize = updatesize;
+</script>
+<![endif]-->
+
+	<div id="header">
+
+	<div class="lc"><div class="rc"></div></div>
+<div class="tit"><a href="/hplonline/home" class="titlink" title="hplonline的空间 http://hi.baidu.com/hplonline">霹雳在线</a></div>
+<div class="desc">保持沉默，用行动获得尊重</div>
+<div id="tabline">&nbsp;</div>
+
+	<div id="tab"><a href="/hplonline/home">主页</a><a href="/hplonline/blog" class="on">博客</a><a href="/hplonline/album">相册</a><span>|</span><a href="/hplonline/profile">个人档案</a>
+
+	<span>|</span><a href="/hplonline/friends">好友</a>
+
+
+<span>|</span><a href="http://tieba.baidu.com/i/sys/jump?un=hplonline&fr=spacebar" onclick="BdUtil.ns_trackerLink('m_20110330_spacebar','')" target="_blank">i贴吧</a>
+
+
+	</div>
+
+</div>
+
+
+
+<div class="stage">
+
+<div class="stagepad">
+
+<div style="width:100%">
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="modth">
+
+	<tr><td class="modtl" width="7">&nbsp;</td>
+
+	<td class="modtc" nowrap><div class="modhead"><span class="modtit">查看文章</span></div></td>
+
+	<td class="modtc" nowrap align="right"></td>
+
+	<td class="modtr" width="7">&nbsp;</td>
+
+	</tr></table>
+
+
+
+<div id="m_blog" class="modbox" style="overflow-x:hidden;">
+
+<div class="tit">
+
+C++中带括号的new。。（placement new）</div>
+
+<div class="date">2010-06-16  20:35</div>
+
+
+
+
+<table style="table-layout:fixed;width:100%"><tr><td><div id="blog_text" class="cnt" >(hplonline)2010.6.16<br>
+<br>
+<font color="#0000ff">》》起因</font><br>
+<br>
+之前有同学做个在线笔试，碰到了这个题：<br>
+<br>
+#include &lt;iostream&gt;<br>
+using std::cout;<br>
+using namespace std ;<br>
+<br>
+class P<br>
+{<br>
+public:<br>
+virtual void print()<br>
+{<br>
+cout &lt;&lt; &quot;P&quot;;<br>
+}<br>
+};<br>
+<br>
+class Q: public P<br>
+{<br>
+public:<br>
+virtual void print()<br>
+{<br>
+cout &lt;&lt; &quot;Q&quot;;<br>
+}<br>
+};<br>
+<br>
+int main()<br>
+{<br>
+P * p = new P;<br>
+Q * q = static_cast &lt;Q *&gt; (p);<br>
+q-&gt;print();<br>
+delete p;<br>
+cout &lt;&lt; endl;<br>
+<br>
+q = new Q;<br>
+p = q;<br>
+q-&gt;print();<br>
+p-&gt;print();<br>
+cout &lt;&lt; endl;<br>
+<br>
+<font color="#ff0000">p = new (q) P;</font><br>
+q-&gt;print();<br>
+p-&gt;print();<br>
+cout &lt;&lt; endl;<br>
+<font color="#ff0000">p-&gt;~P();</font><br>
+delete q;<br>
+<br>
+return 0;<br>
+}<br>
+<br>
+题目当然是让你判断会出什么结果。<br>
+<br>
+对于前两个，应该说比较好搞定。<br>
+第一个，static_cast，<br>
+在这里和平时用的强制类型转换是一样的。<br>
+当存在多重继承的时候，会有一些猫腻，<br>
+详情见笔记：<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/a8f8c2fc9100a4f5fd037fa4.html">C++类型转换(static_cast,reinterpret_cast)</a><br>
+第二个，就是一般的虚函数的问题，<br>
+创建的对象是什么那就调用谁的函数。<br>
+<br>
+比较诡异的是第三个，<br>
+new(q)P这种用法还真是第一次见到。<br>
+（深刻表示土鳖。。以前就是没看到过。。<br>
+并且这个东西没法构造关键词在网上搜。。）<br>
+<font color="#0000ff"><br>
+》》new的几种常用写法</font><br>
+<br>
+new XXX<br>
+这种必须要配合delete 来使用。<br>
+<br>
+new XXX[]<br>
+这种必须要配合delete[]来使用。<br>
+<br>
+另外可以用括号来初始化创建的对象，<br>
+括号的位置相当于是构造函数的位置。<br>
+比如：new int(3) ;<br>
+<br>
+今天遇到的这种形式为：<br>
+new(??) XXX<br>
+<br>
+<font color="#0000ff">》》目标代码查看</font><br>
+<br>
+实验环境：VC6+debug，OD<br>
+<br>
+其中，main函数的汇编代码如下：<br>
+<br>
+（有些注释是后面手动加的，<br>
+关键位置标红显示）<br>
+<br>
+004011A0 &gt; &gt; \55&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; ebp<br>
+004011A1&#160;&#160; .&#160; 8BEC&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ebp, esp<br>
+004011A3&#160;&#160; .&#160; 6A FF&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; -1<br>
+004011A5&#160;&#160; .&#160; 68 07FE4100&#160;&#160; push&#160;&#160;&#160; 0041FE07&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; SE handler installation<br>
+004011AA&#160;&#160; .&#160; 64:A1 0000000&gt;mov&#160;&#160;&#160;&#160; eax, dword ptr fs:[0]<br>
+004011B0&#160;&#160; .&#160; 50&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; eax<br>
+004011B1&#160;&#160; .&#160; 64:8925 00000&gt;mov&#160;&#160;&#160;&#160; dword ptr fs:[0], esp<br>
+004011B8&#160;&#160; .&#160; 83EC 74&#160;&#160;&#160;&#160;&#160;&#160; sub&#160;&#160;&#160;&#160; esp, 74<br>
+004011BB&#160;&#160; .&#160; 53&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; ebx<br>
+004011BC&#160;&#160; .&#160; 56&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; esi<br>
+004011BD&#160;&#160; .&#160; 57&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; edi<br>
+004011BE&#160;&#160; .&#160; 8D7D 80&#160;&#160;&#160;&#160;&#160;&#160; lea&#160;&#160;&#160;&#160; edi, dword ptr [ebp-80]<br>
+004011C1&#160;&#160; .&#160; B9 1D000000&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, 1D<br>
+004011C6&#160;&#160; .&#160; B8 CCCCCCCC&#160;&#160; mov&#160;&#160;&#160;&#160; eax, CCCCCCCC<br>
+004011CB&#160;&#160; .&#160; F3:AB&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; rep&#160;&#160;&#160;&#160; stos dword ptr es:[edi]<br>
+<br>
+到这里为止，都是一些进入函数的初始化过程。<br>
+<br>
+004011CD&#160;&#160; .&#160; 6A 04&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; 4<br>
+<font color="#ff0000">004011CF&#160;&#160; .&#160; E8 CC810000&#160;&#160; call&#160;&#160;&#160; operator new</font><br>
+004011D4&#160;&#160; .&#160; 83C4 04&#160;&#160;&#160;&#160;&#160;&#160; add&#160;&#160;&#160;&#160; esp, 4<br>
+<br>
+第一个operator new的调用，申请一片空间<br>
+<br>
+004011D7&#160;&#160; .&#160; 8945 E4&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-1C], eax<br>
+004011DA&#160;&#160; .&#160; C745 FC 00000&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-4], 0<br>
+004011E1&#160;&#160; .&#160; 837D E4 00&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; dword ptr [ebp-1C], 0<br>
+004011E5&#160;&#160; .&#160; 74 0D&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; je&#160;&#160;&#160;&#160;&#160; short 004011F4<br>
+004011E7&#160;&#160; .&#160; 8B4D E4&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-1C]<br>
+<font color="#ff0000">004011EA&#160;&#160; .&#160; E8 BBFEFFFF&#160;&#160; call&#160;&#160;&#160; 004010AA&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; P::P</font><br>
+004011EF&#160;&#160; .&#160; 8945 C8&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-38], eax<br>
+<br>
+调用的是P的构造函数，构造函数返回类的引用（指针）。<br>
+<br>
+004011F2&#160;&#160; .&#160; EB 07&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; jmp&#160;&#160;&#160;&#160; short 004011FB<br>
+004011F4&#160;&#160; &gt;&#160; C745 C8 00000&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-38], 0<br>
+004011FB&#160;&#160; &gt;&#160; 8B45 C8&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; eax, dword ptr [ebp-38]<br>
+004011FE&#160;&#160; .&#160; 8945 E8&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-18], eax<br>
+00401201&#160;&#160; .&#160; C745 FC FFFFF&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-4], -1<br>
+00401208&#160;&#160; .&#160; 8B4D E8&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-18]<br>
+0040120B&#160;&#160; .&#160; 894D F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-10], ecx<br>
+0040120E&#160;&#160; .&#160; 8B55 F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; edx, dword ptr [ebp-10]<br>
+00401211&#160;&#160; .&#160; 8955 EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-14], edx<br>
+<br>
+然后是一些赋值，主要是static_cast那一团的东西。<br>
+<br>
+00401214&#160;&#160; .&#160; 8B45 EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160;<font color="#ff0000"> eax, dword ptr [ebp-14]</font><br>
+00401217&#160;&#160; .&#160; 8B10&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; <font color="#ff0000">edx, dword ptr [eax]</font><br>
+00401219&#160;&#160; .&#160; 8BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; esi, esp<br>
+0040121B&#160;&#160; .&#160; 8B4D EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-14]<br>
+0040121E&#160;&#160; .&#160; FF12&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<font color="#ff0000"> call&#160;&#160;&#160; dword ptr [edx]</font><br>
+<br>
+这里就是print函数的调用，代码为虚函数调用的标准长相。<br>
+关于虚函数其他方面的研究，见：<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/1bacf81f75e4026af724e485.html">虚函数的底层机制</a><br>
+<font color="#ff0000">（其中关于点调用和箭头调用的不同之处，值得注意）</font><br>
+<br>
+00401220&#160;&#160; .&#160; 3BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; esi, esp<br>
+00401222&#160;&#160; .&#160; E8 69860000&#160;&#160; call&#160;&#160;&#160; _chkesp<br>
+00401227&#160;&#160; .&#160; 8B45 F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; eax, dword ptr [ebp-10]<br>
+0040122A&#160;&#160; .&#160; 8945 E0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-20], eax<br>
+0040122D&#160;&#160; .&#160; 8B4D E0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-20]<br>
+00401230&#160;&#160; .&#160; 51&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; ecx<br>
+00401231&#160;&#160; .&#160; E8 AA3F0000&#160;&#160; call&#160;&#160;&#160; operator delete<br>
+00401236&#160;&#160; .&#160; 83C4 04&#160;&#160;&#160;&#160;&#160;&#160; add&#160;&#160;&#160;&#160; esp, 4<br>
+00401239&#160;&#160; .&#160; 68 32104000&#160;&#160; push&#160;&#160;&#160; 00401032&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; std::endl<br>
+0040123E&#160;&#160; .&#160; B9 28954300&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, offset std::cout&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; ASCII &quot;4 C&quot;<br>
+00401243&#160;&#160; .&#160; E8 3AFEFFFF&#160;&#160; call&#160;&#160;&#160; 00401082&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; cout::operator&lt;&lt;<br>
+00401248&#160;&#160; .&#160; 6A 04&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; 4<br>
+<br>
+第一节的代码完。<br>
+<br>
+0040124A&#160;&#160; .&#160; E8 51810000&#160;&#160; call&#160;&#160;&#160; operator new<br>
+0040124F&#160;&#160; .&#160; 83C4 04&#160;&#160;&#160;&#160;&#160;&#160; add&#160;&#160;&#160;&#160; esp, 4<br>
+00401252&#160;&#160; .&#160; 8945 D8&#160;&#160;&#160;&#160;&#160;&#160; <font color="#ff0000">mov&#160;&#160;&#160;&#160; dword ptr [ebp-28], eax</font><br>
+00401255&#160;&#160; .&#160; C745 FC 01000&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-4], 1<br>
+0040125C&#160;&#160; .&#160; 837D D8 00&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; dword ptr [ebp-28], 0<br>
+00401260&#160;&#160; .&#160; 74 0D&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; je&#160;&#160;&#160;&#160;&#160; short 0040126F<br>
+00401262&#160;&#160; .&#160; 8B4D D8&#160;&#160;&#160;&#160;&#160;&#160; <font color="#ff0000">mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-28]</font><br>
+00401265&#160;&#160; .&#160; E8 B9FDFFFF&#160;&#160; call&#160;&#160;&#160; 00401023<br>
+0040126A&#160;&#160; .&#160; 8945 C4&#160;&#160;&#160;&#160;&#160;&#160; <font color="#ff0000">mov&#160;&#160;&#160;&#160; dword ptr [ebp-3C], eax</font><br>
+0040126D&#160;&#160; .&#160; EB 07&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; jmp&#160;&#160;&#160;&#160; short 00401276<br>
+0040126F&#160;&#160; &gt;&#160; C745 C4 00000&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-3C], 0<br>
+00401276&#160;&#160; &gt;&#160; 8B55 C4&#160;&#160;&#160;&#160;&#160;&#160;<font color="#ff0000"> mov&#160;&#160;&#160;&#160; edx, dword ptr [ebp-3C]</font><br>
+00401279&#160;&#160; .&#160; 8955 DC&#160;&#160;&#160;&#160;&#160;&#160; <font color="#ff0000">mov&#160;&#160;&#160;&#160; dword ptr [ebp-24], edx</font><br>
+0040127C&#160;&#160; .&#160; C745 FC FFFFF&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-4], -1<br>
+00401283&#160;&#160; .&#160; 8B45 DC&#160;&#160;&#160;&#160;&#160;&#160;<font color="#ff0000"> mov&#160;&#160;&#160;&#160; eax, dword ptr [ebp-24]</font><br>
+00401286&#160;&#160; .&#160; 8945 EC&#160;&#160;&#160;&#160;&#160;&#160; <font color="#ff0000">mov&#160;&#160;&#160;&#160; dword ptr [ebp-14], eax</font><br>
+00401289&#160;&#160; .&#160; 8B4D EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-14]<br>
+0040128C&#160;&#160; .&#160; 894D F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-10], ecx<br>
+0040128F&#160;&#160; .&#160; 8B55 EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; edx, dword ptr [ebp-14]<br>
+00401292&#160;&#160; .&#160; 8B02&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; eax, dword ptr [edx]<br>
+00401294&#160;&#160; .&#160; 8BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; esi, esp<br>
+00401296&#160;&#160; .&#160; 8B4D EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-14]<br>
+00401299&#160;&#160; .&#160; FF10&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; call&#160;&#160;&#160; dword ptr [eax]<br>
+0040129B&#160;&#160; .&#160; 3BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; esi, esp<br>
+0040129D&#160;&#160; .&#160; E8 EE850000&#160;&#160; call&#160;&#160;&#160; _chkesp<br>
+004012A2&#160;&#160; .&#160; 8B4D F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-10]<br>
+004012A5&#160;&#160; .&#160; 8B11&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; edx, dword ptr [ecx]<br>
+004012A7&#160;&#160; .&#160; 8BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; esi, esp<br>
+004012A9&#160;&#160; .&#160; 8B4D F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-10]<br>
+004012AC&#160;&#160; .&#160; FF12&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; call&#160;&#160;&#160; dword ptr [edx]<br>
+004012AE&#160;&#160; .&#160; 3BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; esi, esp<br>
+004012B0&#160;&#160; .&#160; E8 DB850000&#160;&#160; call&#160;&#160;&#160; _chkesp<br>
+004012B5&#160;&#160; .&#160; 68 32104000&#160;&#160; push&#160;&#160;&#160; 00401032<br>
+004012BA&#160;&#160; .&#160; B9 28954300&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, offset std::cout&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; ASCII &quot;4 C&quot;<br>
+004012BF&#160;&#160; .&#160; E8 BEFDFFFF&#160;&#160; call&#160;&#160;&#160; 00401082<br>
+<br>
+第二节到此完，本节没有什么新的东西。<br>
+中间一系列赋值，不知道VC为什么编得如此复杂。<br>
+不过通过标红的几句，知道<font color="#ff0000">：<br>
+dword ptr [ebp-14]</font>中存的就是new Q后返回的地址。<br>
+通过上下文，知道这个[ebp-14]实际上就是q变量。<br>
+这个很重要，因为下面要用到了。<br>
+<br>
+004012C4&#160;&#160; .&#160; 8B45 EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; eax, dword ptr [ebp-14]<br>
+004012C7&#160;&#160; .&#160; 50&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <font color="#ff0000">push&#160;&#160;&#160; eax&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; eax=00360FF0</font><br>
+004012C8&#160;&#160; .&#160; 6A 04&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; 4<br>
+004012CA&#160;&#160; .&#160; E8 40FDFFFF&#160;&#160; call&#160;&#160;&#160; 0040100F&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; operator new<br>
+<br>
+0040100F 这个位置的函数也叫operator new，<br>
+但它和我们之前看到的operator new不是同一个东西，<br>
+传进去了两个参数，一个是地址值，一个是申请的空间大小。<br>
+<br>
+004012CF&#160;&#160; .&#160; 83C4 08&#160;&#160;&#160;&#160;&#160;&#160;<font color="#ff0000"> add&#160;&#160;&#160;&#160; esp, 8&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; eax=00360FF0</font><br>
+<br>
+从这个operator new的返回值可以看到，得到的地址和之前p的值一样。<br>
+<br>
+004012D2&#160;&#160; .&#160; 8945 D0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-30], eax<br>
+004012D5&#160;&#160; .&#160; C745 FC 02000&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-4], 2<br>
+004012DC&#160;&#160; .&#160; 837D D0 00&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; dword ptr [ebp-30], 0<br>
+004012E0&#160;&#160; .&#160; 74 0D&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; je&#160;&#160;&#160;&#160;&#160; short 004012EF<br>
+004012E2&#160;&#160; .&#160; 8B4D D0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-30]<br>
+004012E5&#160;&#160; .&#160; E8 C0FDFFFF&#160;&#160;<font color="#ff0000"> call&#160;&#160;&#160; 004010AA&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; P::P</font><br>
+<br>
+并且紧接着就会调用P的构造函数。<br>
+<br>
+004012EA&#160;&#160; .&#160; 8945 C0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-40], eax<br>
+004012ED&#160;&#160; .&#160; EB 07&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; jmp&#160;&#160;&#160;&#160; short 004012F6<br>
+004012EF&#160;&#160; &gt;&#160; C745 C0 00000&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-40], 0<br>
+004012F6&#160;&#160; &gt;&#160; 8B4D C0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-40]<br>
+004012F9&#160;&#160; .&#160; 894D D4&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-2C], ecx<br>
+004012FC&#160;&#160; .&#160; C745 FC FFFFF&gt;mov&#160;&#160;&#160;&#160; dword ptr [ebp-4], -1<br>
+00401303&#160;&#160; .&#160; 8B55 D4&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; edx, dword ptr [ebp-2C]<br>
+00401306&#160;&#160; .&#160; 8955 F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-10], edx<br>
+00401309&#160;&#160; .&#160; 8B45 EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; eax, dword ptr [ebp-14]<br>
+0040130C&#160;&#160; .&#160; 8B10&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; edx, dword ptr [eax]<br>
+0040130E&#160;&#160; .&#160; 8BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; esi, esp<br>
+00401310&#160;&#160; .&#160; 8B4D EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-14]<br>
+00401313&#160;&#160; .&#160; FF12&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; call&#160;&#160;&#160; dword ptr [edx]<br>
+00401315&#160;&#160; .&#160; 3BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; esi, esp<br>
+00401317&#160;&#160; .&#160; E8 74850000&#160;&#160; call&#160;&#160;&#160; _chkesp<br>
+0040131C&#160;&#160; .&#160; 8B45 F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; eax, dword ptr [ebp-10]<br>
+0040131F&#160;&#160; .&#160; 8B10&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; edx, dword ptr [eax]<br>
+00401321&#160;&#160; .&#160; 8BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; esi, esp<br>
+00401323&#160;&#160; .&#160; 8B4D F0&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-10]<br>
+00401326&#160;&#160; .&#160; FF12&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; call&#160;&#160;&#160; dword ptr [edx]<br>
+00401328&#160;&#160; .&#160; 3BF4&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; esi, esp<br>
+0040132A&#160;&#160; .&#160; E8 61850000&#160;&#160; call&#160;&#160;&#160; _chkesp<br>
+<br>
+中间这截也是虚函数的调用，同上。<br>
+<br>
+0040132F&#160;&#160; .&#160; 68 32104000&#160;&#160; push&#160;&#160;&#160; 00401032&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; ---cout&lt;&lt;endl<br>
+00401334&#160;&#160; .&#160; B9 28954300&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, offset std::cout&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; ASCII &quot;4 C&quot;<br>
+00401339&#160;&#160; .&#160; E8 44FDFFFF&#160;&#160; call&#160;&#160;&#160; 00401082<br>
+<br>
+这截是cout&lt;&lt;endl<br>
+<br>
+0040133E&#160;&#160; .&#160; 8B45 EC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; eax, dword ptr [ebp-14]&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ;&#160; ---delete q<br>
+00401341&#160;&#160; .&#160; 8945 CC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; dword ptr [ebp-34], eax<br>
+00401344&#160;&#160; .&#160; 8B4D CC&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-34]<br>
+00401347&#160;&#160; .&#160; 51&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; push&#160;&#160;&#160; ecx<br>
+00401348&#160;&#160; .&#160; E8 933E0000&#160;&#160; call&#160;&#160;&#160; operator delete<br>
+<br>
+这截是delete q。<br>
+<br>
+可以看到，之前源码中的<font color="#ff0000">p-&gt;~P();</font>并没有生成任何目标代码。<br>
+<br>
+0040134D&#160;&#160; .&#160; 83C4 04&#160;&#160;&#160;&#160;&#160;&#160; add&#160;&#160;&#160;&#160; esp, 4<br>
+00401350&#160;&#160; .&#160; 33C0&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; xor&#160;&#160;&#160;&#160; eax, eax<br>
+00401352&#160;&#160; .&#160; 8B4D F4&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; ecx, dword ptr [ebp-C]<br>
+00401355&#160;&#160; .&#160; 64:890D 00000&gt;mov&#160;&#160;&#160;&#160; dword ptr fs:[0], ecx<br>
+0040135C&#160;&#160; .&#160; 5F&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; pop&#160;&#160;&#160;&#160; edi<br>
+0040135D&#160;&#160; .&#160; 5E&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; pop&#160;&#160;&#160;&#160; esi<br>
+0040135E&#160;&#160; .&#160; 5B&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; pop&#160;&#160;&#160;&#160; ebx<br>
+0040135F&#160;&#160; .&#160; 81C4 80000000 add&#160;&#160;&#160;&#160; esp, 80<br>
+00401365&#160;&#160; .&#160; 3BEC&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; cmp&#160;&#160;&#160;&#160; ebp, esp<br>
+00401367&#160;&#160; .&#160; E8 24850000&#160;&#160; call&#160;&#160;&#160; _chkesp<br>
+0040136C&#160;&#160; .&#160; 8BE5&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; mov&#160;&#160;&#160;&#160; esp, ebp<br>
+0040136E&#160;&#160; .&#160; 5D&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; pop&#160;&#160;&#160;&#160; ebp<br>
+0040136F&#160;&#160; .&#160; C3&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; retn<br>
+<br>
+最后是一些扫尾的工作。<br>
+<br>
+<font color="#0000ff">》》观察目标代码的结论</font><br>
+<br>
+从目标代码来看，p=new(q)P做了以下事情：<br>
+<font color="#ff0000">1。直接让p的值等于q<br>
+2。以p这个地址为this指针，调用了P的构造函数。</font><br>
+<br>
+如果觉得看汇编太麻烦，可以用C++写个更简洁点的实验：<br>
+<br>
+#include &lt;iostream&gt;<br>
+using namespace std;<br>
+<br>
+class cls1{<br>
+public:<br>
+int i ;<br>
+cls1(){<br>
+i = 1 ;<br>
+}<br>
+void print(){<br>
+cout&lt;&lt;i&lt;&lt;endl ;<br>
+}<br>
+} ;<br>
+<br>
+class cls2{<br>
+public:<br>
+int i1 , i2 ;<br>
+cls2(){<br>
+i1 = 2 ; <br>
+i2 = 2 ;<br>
+}<br>
+void print(){<br>
+cout&lt;&lt;i1&lt;&lt;','&lt;&lt;i2&lt;&lt;endl ;<br>
+}<br>
+} ;<br>
+<br>
+int main(){<br>
+int *p ;<br>
+cls1 *p1 = new cls1 ;<br>
+p1-&gt;print() ;<br>
+cls2 *p2 = new(p1) cls2 ;<br>
+p2-&gt;print() ;<br>
+p1-&gt;print() ;<br>
+return 0 ;<br>
+}<br>
+<br>
+输出：<br>
+<br>
+1<br>
+2,2<br>
+2<br>
+<br>
+这个实验也可以证实两个指针的值相同，<br>
+并且后者的构造函数已经被调用了。<br>
+<br>
+<font color="#0000ff">》》空间分配的问题</font><br>
+<br>
+这里，我们又遇到了另一个很矛盾的问题：<br>
+<font color="#ff0000">new(??) XX是进行简单的指针赋值呢，还是重新分配空间？</font><br>
+<br>
+如果不重新分配空间的话，<br>
+新类和旧类所占空间不一定是相同的，<br>
+这样，有的数据成员可能就已经存到了无效区域。<br>
+<br>
+还好，<font color="#ff0000">new出来的东西会有一个cookie，<br>
+在指针前面某地，是存储得有空间大小的。</font><br>
+根据这个，我们可以设计实验来观察。<br>
+<br>
+实验：<br>
+<br>
+int main(){<br>
+int *p1 , *p2 ;<br>
+p1 = new int[12] ;<br>
+printf(&quot;%d\n&quot; , p1[-4]) ;<br>
+<br>
+p2 = new(p1) int[13] ;<br>
+printf(&quot;%d\n&quot; , p2[-4]) ;<br>
+<br>
+p2 = new int[13] ;<br>
+printf(&quot;%d\n&quot; , p2[-4]) ;<br>
+return 0 ;<br>
+}<br>
+<br>
+输出：<br>
+<br>
+48<br>
+<font color="#ff0000">48<br>
+52</font><br>
+<br>
+可以看到new(p1) int[13] ;出来的cookie，<br>
+标注空间大小为48，和原来一样。<br>
+new int[13] ;出来的coockie，<br>
+则是和新申请的一样，52。<br>
+<br>
+这说明new(??)XX的形式并没有重新分配空间。<br>
+在上面这个实验中，使用的是基础类型int，<br>
+这种类型具有trivial的dtor和ctor，<br>
+实验中，delete p1或者p2都是正常的。<br>
+<br>
+但下面的实验将展示出它的一个副作用：<br>
+<br>
+#include &lt;iostream&gt;<br>
+using namespace std;<br>
+<br>
+class cls1{<br>
+public:<br>
+int i ;<br>
+cls1(){<br>
+i = 1 ;<br>
+}<br>
+void print(){<br>
+cout&lt;&lt;i&lt;&lt;endl ;<br>
+}<br>
+} ;<br>
+<br>
+class cls2{<br>
+public:<br>
+int i1 , i2 ;<br>
+cls2(){<br>
+i1 = 2 ; <br>
+i2 = 2 ;<br>
+}<br>
+void print(){<br>
+cout&lt;&lt;i1&lt;&lt;','&lt;&lt;i2&lt;&lt;endl ;<br>
+}<br>
+} ;<br>
+<br>
+int main(){<br>
+int *p ;<br>
+cls1 *p1 = new cls1 ;<br>
+p = (int*)p1 ;<br>
+cout&lt;&lt;p[0]&lt;&lt;','&lt;&lt;p[1]&lt;&lt;endl ;<br>
+cls2 *p2 = new(p1) cls2 ;<br>
+p = (int*)p2 ;<br>
+cout&lt;&lt;p[0]&lt;&lt;','&lt;&lt;p[1]&lt;&lt;endl ;<br>
+<font color="#ff0000"><br>
+//delete p1 ;<br>
+//delete p2 ;<br>
+//both will fail here!!</font><br>
+<br>
+return 0 ;<br>
+}<br>
+<br>
+在以上语句执行后，<br>
+不管delete哪个指针，<br>
+最后都会出现错误！<br>
+<br>
+这是由于cls2 *p2 = new(p1) cls2 ;没有重新分配空间，<br>
+也就是p2指向的地方只有一个int的位置，<br>
+但是cls2的构造函数很明显地向两个地方写入了数据，<br>
+后者已经在有效空间范围外了。<br>
+<br>
+<font color="#0000ff">》》总结</font><br>
+<br>
+由于没有重新分配空间，<br>
+所以new(??)XXX这样的用法是非常危险的。<br>
+当新对象所占空间小于原分配空间的时候，不会出问题。<br>
+但当新对象所占空间比之大的时候，可能造成对非法区域的改写。<br>
+<br>
+那是不是就要完全放弃这种写法呢？？<br>
+<br>
+显然不是！<br>
+<font color="#ff0000">第一，就像上面分析的，如果能保证新对象的空间更小，则无所谓。</font><br>
+C的哲学不是让我们放弃一切危险的动作，<br>
+而是让我们深入了解每个动作，让危险可控。<br>
+<br>
+<font color="#ff0000">第二，这给我们手动调用构造函数提供了一个方法！</font><br>
+其实这个问题也困扰了我很久，如今却无心插柳地发现了玄机。<br>
+从OD中对目标代码的分析，和几个实验，<br>
+可以看到，这个写法仅仅是在原指针位置调用了一下新对象的构造函数。<br>
+<br>
+我们知道，一般情况下，我们是无法手动调用构造函数的，<br>
+ctor都是在new或者栈变量初始化的时候，由编译器调用的。<br>
+而现在，我们可以通过这种写法来调用ctor，如下：<br>
+<br>
+int main(){<br>
+cls1 *p = new cls1() ;<br>
+p-&gt;print() ;<br>
+p-&gt;i = 2 ;<br>
+p-&gt;print() ;<br>
+<font color="#ff0000">p = new(p) cls1() ;</font><br>
+p-&gt;print() ;<br>
+return 0 ;<br>
+}<br>
+<br>
+输出：<br>
+<br>
+1<br>
+2<br>
+1<br>
+<br>
+其实。。。调用构造函数还是可以这么写的：<br>
+<font color="#ff0000">p-&gt;cls1::cls1() ;</font><br>
+<br>
+在VC6里面是过了，但应该是不标准的用法。<br>
+<br>
+又查了些东西，知道了本篇一直讨论的形式原来叫：<font color="#ff0000">placement new</font><br>
+<br>
+感觉这个东西就是和手动析构联合起来用的：<br>
+先手动调用一个对象的dtor，然后使用placement new调用ctor。<br>
+如果不是同一类对象，使用placement new有潜在的空间分配问题。<br>
+或者是程序员能从某处拿到非new方法（比如malloc分配的空间），<br>
+于是使用placement new来初始化这段空间。<br></div></td></tr></table>
+
+<br>
+
+<div class="opt" id="blogOpt">
+
+<a href="/hplonline/blog/category/c%26%2347%3Bc%2B%2B" title="查看该分类中所有文章">类别：c&#47;c++</a>
+
+| <a  href="#" onclick="addToShare(); return false;" target="_blank"><img src="http://img.baidu.com/hi/apps/share/share_btn.gif" border="0" align="absbottom"  /></a>
+
+
+
+
+	
+
+	| <a title="将此文章添加到百度搜藏" href="http://cang.baidu.com/do/add" onClick="return addToFavor();" target="_blank">添加到搜藏</a>
+
+	
+    | <a title="将此文章分享到i贴吧" href="#" onclick="addToiTieba(); return false;"  target="_blank">分享到i贴吧</a>
+
+	| 浏览(<span id="result"></span>)
+
+	| <a href="#send">评论</a>&nbsp;(<span id="blogCmtCount">0</span>)
+
+
+
+<script language="javascript">
+
+/*<![CDATA[*/
+
+var pre = [true,'【各种教唆】UESTC好不好？', '【各种教唆】UESTC好不好？','/hplonline/blog/item/902133db2b9c7f6bd1164e3c.html'];
+
+var post = [true,'C++中placement new在VC6中的实现','C++中placement new在VC6中的实...', '/hplonline/blog/item/96aee1f811036102d8f9fd22.html'];
+
+if(pre[0] || post[0]){
+
+	document.write('<div style="height:5px;line-height:5px;">&nbsp;</div><div id="in_nav">');
+
+	if(pre[0]){
+
+		document.write('上一篇：<a href="' + pre[3] + '" title="' + pre[1] + '">' +  pre[2] + '</a>&nbsp;&nbsp;&nbsp;&nbsp;');
+
+	}
+
+	if(post[0]){
+
+		document.write('下一篇：<a href="' + post[3] + '" title="' + post[1] + '">' +  post[2] + '</a>');
+
+	}
+
+	document.write('</div>');
+
+}
+
+/*]]>*/
+
+</script>
+
+
+
+</div>
+
+
+
+<div class="line">&nbsp;</div>
+
+
+
+
+
+
+
+    
+<style type="text/css">
+
+/*<![CDATA[*/
+
+#in_related_doc a { text-decoration:none; }
+
+/*]]>*/
+
+</style>
+
+<div id="in_related_tmp"></div>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="in_reader">
+    <div class="tit">最近读者：</div>
+
+</div>
+
+
+
+
+
+<div class="line">&nbsp;</div>
+
+
+
+
+
+
+
+
+
+
+<div id="in_comment">
+
+    <a name="comment"></a>
+
+    <div class="tit">网友评论：</div>
+
+    <span id="userCommentList"></span>    
+
+    <div id="page"></div>
+
+</div>
+
+<form action='/hplonline/commit' id='blogCmtSubmitForm'  name='blogCmtSubmitForm' method='post'>
+    <input type='hidden' name='bdstoken' value=''>
+    <input type='hidden'  name='ct' value='8'>
+    <input type='hidden'  name='cm' value='2'>
+    <input type='hidden'  name='spBlogID' value='0a3fa76e45727fd780cb4ac9'>
+    <input type='hidden'  name='spBlogCmtID' value=''>
+    <input type='hidden'  name='spRefURL' value=''>
+</form>
+
+
+
+
+
+
+<div id="in_send">
+
+<a name="send"></a>
+
+<form name="form1" id="popFormSubmit" action="/hplonline/commit" method="post" onSubmit="return checkcmtform()">
+
+<input type="hidden" name="bdstoken" value="">
+
+<input type="hidden" name="ct" value="8">
+
+<input type="hidden" name="cm" value="1">
+
+<input type="hidden" name="spBlogID" value="0a3fa76e45727fd780cb4ac9">
+
+<input type="hidden" name="spRefURL" id="spRefURL" />
+
+<script>
+
+    document.getElementById("spRefURL").value = window.location.href;
+
+</script>
+
+<div class="tit">发表评论：</div>
+
+<table width="620" border="0" cellspacing="5" cellpadding="0">
+
+
+
+
+
+<tr id="2_err" style="display:none">
+
+<td>&nbsp;</td>
+
+<td><div class="error" id="2_err_con"></div></td>
+
+</tr>
+
+
+
+<tr>
+
+<td valign="top" class="f14" id="reTitle">内　容：</td>
+
+<td>
+	<textarea name="spBlogCmtText" id="spBlogCmtText" style="width:520px;height:155px"  tabindex="3" onFocus="hidErr(3);" onclick="BdUtil.relogin(); return false;" ></textarea>
+</td>
+
+</tr>
+
+<tr id="3_err" style="display:none">
+
+<td>&nbsp;</td>
+
+<td><div class="error" id="3_err_con"></div></td>
+
+</tr>
+
+
+
+
+<tr>
+
+<td valign="top"class="f14">&nbsp;</td>
+
+<td valign="top" class="f14"><input id="btn_ok" name="btn_ok" type="submit" autocomplete="off" onclick="BdUtil.relogin(); return false;" value="发表评论" tabindex=5>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="cancleReLink" onClick="canclereply(); return false;" style="display:none; font-size:12px;color:#666;">取消回复</a></td>
+
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+
+
+
+
+
+
+
+
+<br>
+
+</div>
+
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" height="8">
+
+<tr><td class="modbl" width="7">&nbsp;</td>
+
+<td class="modbc">&nbsp;</td>
+
+<td class="modbr" width="7">&nbsp;</td>
+
+</tr></table>
+
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<div class="clearfix"></div>
+<div style="text-align:center;margin:30px auto 0px;padding-bottom:15px;font-family:Arial,simsun;font-size:12px;">
+	<div style="margin:0 auto 6px;">
+		<a href="http://help.baidu.com/question?prod_en=space" target="_blank" style="color:#00C;text-decoration: underline;">帮助中心</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://tieba.baidu.com/f?kw=%B0%D9%B6%C8%BF%D5%BC%E4&fr=wwwt" target="_blank" style="color:#00C;text-decoration: underline;">空间客服</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://tousu.baidu.com/hi/add" target="_blank" style="color:#00C;text-decoration: underline;">投诉中心</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://www.baidu.com/search/hi_contract.html" target="_blank" style="color:#00C;text-decoration: underline;">空间协议</a>
+	</div>
+	<div style="color:#7A77C8;">&copy;2011&nbsp;Baidu</div>
+</div>
+
+
+</center>
+
+<ul id="blogCmtContentList" style="display:none;">
+
+ <li id="blogCmtContent_1">其实就是operator new的一个overload</li>
+
+</ul>
+
+<!--inc_getmsgnum.html-->
+
+<iframe id="submitiframe" name="submitiframe" src="/st/blank.html" style="display:none;"></iframe>
+<script src="http://hi.bdimg.com/static/base/js/conf/comment.js?v=111" type="text/javascript"></script>
+
+<script type="text/javascript" src="/ui/scripts/blog/detailpage.js?v=1.1"></script>
+			
+
+
+<script type="text/javascript">
+/*<![CDATA[*/
+
+var SP = SP || {};
+if(!SP.mycard){
+    SP.mycard = new (function(){
+        var me = this;
+        var _cancleAction = Session.isDrag;  
+        var _list = [];
+        var _sourceLoaded = false;    
+        me.bind = function (_id){
+            if(_cancleAction){  //abort
+                return;
+            }
+            if(!_sourceLoaded){
+                _list.push(_id);
+            } else {
+                baidu.space.mycard.bind(_id);
+            }
+        }
+        me.init = function (_config){
+            _cancleAction = !!_config.cancle;
+        }
+        me.onSourceLoaded = function (){
+            _sourceLoaded = true;
+            baidu.space.mycard.init({portrait: Session.visitorPortrait});
+            for(var i=0,len=_list.length; i<len; i++){
+                baidu.space.mycard.bind(_list[i]);
+            }
+        }
+    })();
+    baidu.dom.ready(function(){
+        BdAjax.loadCSS('/ui/css/ucard/ucard.css?v=020507100.css');
+        BdAjax.loadJS('/ui/scripts/ucard/ucard.js?v=020507100.js');
+    });
+}
+SP.mycard.bind('m_blog');  
+/*]]>*/
+</script>
+
+<script type="text/javascript">
+    //*****there is some function。
+    function checkMail(s)
+
+    {
+
+        var pattern=/\w+@\w+\.[a-z]+/;
+
+        if(pattern.test(s))
+
+        {
+
+           return true;
+
+        }
+
+        else
+
+       {
+
+          return false;
+
+       }
+
+    }
+
+
+
+
+
+    function checkeandu(eanduid)
+
+    {
+
+        var eanduvalue=baidu.G(eanduid).value;
+
+        var len=baidu.string.getByteLength(eanduvalue);
+
+        if(len>128)
+
+        {
+
+            showErr(2,"您输入的网址或邮箱太长，请保持在128字节以内。");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+             return true;
+
+        }
+
+
+
+    }
+
+
+
+
+
+    function checkname(strid)
+
+    {
+
+        var ele=baidu.G(strid);
+
+        var len=baidu.string.getByteLength(ele.value);
+
+        if(len>49)
+
+        {
+
+            showErr(1,"您输入的姓名太长，请保持在49字节以内。");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+            if(len==0)
+
+            {
+
+                baidu.G(strid).value="匿名网友";
+
+            }
+
+             return true;
+
+        }
+
+
+
+    }
+
+
+
+    function checktext(textid)
+
+    {
+
+            var tempStr='';
+
+            var isLightFont=false;
+
+            if(editor&&textid=="spBlogCmtText"){
+
+                tempStr=editor.getHtml();
+                
+                /*
+                //火星文处理，能不碰它就别碰它
+                tempStr=tempStr.replace(/<span style="filter:glow\(color=#([0-9a-z]{3,6}),strength=2\);height:0px;color:#([0-9a-z]{3,6})">/ig,'');
+
+                tempStr=tempStr.replace(/<\/span>/ig,'');
+                */
+
+                baidu.G("spBlogCmtText").value=tempStr;
+
+                isLightFont=!(tempStr==editor.getHtml());
+
+            }
+
+
+            var str=baidu.string.trim(baidu.G(textid).value);
+            baidu.G(textid).value=str;
+
+            
+
+            len=str.length;
+
+            if(len==0 || ((/^[\s,　]+$/gi).test(str)) )
+
+            {
+
+                showErr(3,"您必须输入评论内容，请检查。");
+
+                return false;
+
+            }
+
+            else
+
+            {
+
+                    var maxLength=isLightFont?916:1000;
+
+                    if(len > maxLength)
+
+                    {
+
+                        showErr(3,"您输入的评论内容太长，请保持在500字以内。");
+
+                        return false;
+
+                    }
+
+                    if(editor&&textid=="spBlogCmtText"){
+
+                        baidu.G("spBlogCmtText").value=editor.getHtml();
+
+                        baidu.G(textid).value=str;
+
+                    }
+
+
+
+                return true;
+
+            }
+
+    }
+
+
+
+    function showErr(index,str)
+
+    {
+
+        baidu.G(index+"_err").style.display="";
+
+        baidu.G(index+"_err_con").innerHTML=str;
+
+    }
+
+    function hidErr(index)
+
+    {
+
+        baidu.G(index+"_err").style.display="none";
+
+        baidu.G(index+"_err_con").innerHTML="";
+
+    }
+
+
+
+    function alertPop(tit,con)
+
+    {
+
+        var pop=new Popup({ contentType:4,isReloadOnClose:false,width:340,height:80});
+
+        pop.setContent("title",tit);
+
+        pop.setContent("alertCon",con);
+
+        pop.build();
+
+        pop.show();
+
+    }
+
+
+
+    function cmtfull()
+
+    {
+
+        var cnum=1;
+
+        if(cnum>=50000)
+
+        {
+
+            alertPop("发表评论","单篇日志评论数最多为50000条.");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+            return true;
+
+        }
+
+    }
+
+
+	function showCmtSuccess(){
+		ShareBlog.showCmtShareResult(0);
+	}
+
+
+    function checkcmtform()
+
+    {
+
+        if(checkname("spBlogCmtor")&&checkeandu("spBlogCmtURL")&&checktext("spBlogCmtText")&&cmtfull())
+
+        {
+            if(baidu.g("shareBlog").checked && !ShareBlog.isHostReply){
+                baidu.g("shareBlogEchoback").value = "shareblog"; 
+                ShareBlog.submit(Session.spToken);
+            }else{
+                baidu.g("shareBlogEchoback").value = "";
+            }
+            location.hash = "lastcmt";
+            submitForm();
+
+            return true;
+
+        }
+
+        else
+
+        {
+
+            return false;
+
+        }
+
+    }
+
+
+
+    var g_pop=null;
+
+    function submitForm()
+
+    {
+
+        g_pop=new Popup({ contentType:1,isReloadOnClose:false,width:340,height:80});
+
+        g_pop.setContent("title","添加评论");
+
+        g_pop.setContent("contentUrl","");
+
+        g_pop.setContent("someDisabledBtn","btn_ok");
+
+        g_pop.build();
+
+        G("popFormSubmit").target=g_pop.iframeIdName;
+
+        g_pop.show();
+
+    }
+
+
+
+    function g_close_pop()
+
+    {
+
+        g_pop.close();
+
+    }
+
+
+
+    function formatonlinpic()
+
+    {
+
+        var picobj=document.getElementsByName("onlinepic");
+
+        var picnum=picobj.length;
+
+
+
+        for(var i=0;i<picnum;i++)
+
+        {
+
+            if(picobj[i].width>200)
+
+            {
+
+                picobj[i].width=200;
+
+            }
+
+            if(picobj[i].height>200)
+
+            {
+
+                picobj[i].height=200;
+
+            }
+
+        }
+
+        try{baidu.G("btn_ok").disabled = "";}catch(e){}
+
+    }
+
+
+
+    function addToFavor(){
+
+        var blogTitle='C++中带括号的new。。（placement new）'.replace(/&#39;/g,'\'');
+
+        window.open('http://cang.baidu.com/do/add?it='+encodeURIComponent(blogTitle+'_百度空间')+'&iu='+encodeURIComponent(location.href)+'&fr=sp#nw=1','_s','scrollbars=no,width=600,height=450,right=75,top=20,status=no,resizable=yes');
+
+        return false;
+
+    }
+
+    function addToiTieba(){
+        var blogTitle='C++中带括号的new。。（placement new）'.replace(/&#39;/g,'\'');
+        window.open('http://tieba.baidu.com/i/sys/share?link='+encodeURIComponent('http://hi.baidu.com/hplonline/blog/item/0a3fa76e45727fd780cb4ac9.html')+'&type=text&title='+encodeURIComponent(blogTitle)+'&content=');
+    }
+
+    function addToShare(){
+        window.open('http://apps.hi.baidu.com/share/?url='+encodeURIComponent('http://hi.baidu.com/hplonline/blog/item/0a3fa76e45727fd780cb4ac9.html'));
+    }
+
+
+    /* some functions for cmt-reply */
+    var g_cmtorInfo = [];
+    function goCmtReply(cmtPorID){
+        //如果是主人的话，回复别人的评论，是不需要显示分享的
+        
+
+        cmtreply(g_cmtorInfo[cmtPorID],cmtPorID);
+    }
+    function cmtreply(cmtName,cmtPorID)
+
+    {
+
+        cmtName=cmtName.replace(/<|>/g,"");
+
+        window.location.hash="#send";
+
+        var cmtForm=document.form1;
+
+        cmtForm.cm.value="3";
+
+        if(!cmtForm.spReferTarget)
+
+        {
+
+            var ipt=document.createElement("input");
+
+            ipt.type="hidden";
+
+            ipt.name="spReferTarget";
+
+            ipt.value=cmtPorID;
+
+            cmtForm.appendChild(ipt);
+
+        }else cmtForm.spReferTarget.value=cmtPorID;
+
+
+
+
+
+         //G("reTitle").innerHTML="回复"+cmtName+"：";
+
+         G("cancleReLink").style.display="";
+
+         cmtForm.btn_ok.value="回复评论";
+
+
+
+
+
+         try{
+
+            editor.window.focus();
+
+            editor.window.document.body.innerHTML="回复"+cmtName+"：";
+
+
+
+            var w = editor.window;
+
+            if(w.getSelection){
+
+                var d = w.document;
+
+                var s = w.getSelection();
+
+                var r = d.createRange();
+
+                r.setStartAfter(d.body.firstChild);
+
+                r.setEndAfter(d.body.lastChild);
+
+                s.removeAllRanges();
+
+                s.addRange(r);
+
+            }
+
+        }catch(e){
+
+                try{
+
+                    cmtForm.getElementsByTagName("textarea")[0].focus();
+
+                    cmtForm.getElementsByTagName("textarea")[0].value="回复"+cmtName+"：";
+
+                }catch(e){}
+
+        }
+
+    }
+
+
+
+    function canclereply()
+
+    {
+        //主人可以分享自己的文章
+        ShareBlog.cancelReply();
+
+        var cmtForm=document.form1;
+
+        cmtForm.cm.value="1";
+
+        try{cmtForm.removeChild(cmtForm.spReferTarget);}catch(e){}
+
+        /*
+
+        try{
+
+                var cmt=cmtForm.getElementsByTagName("textarea")[0]
+
+                cmt.value="";
+
+                cmt.focus();
+
+        }catch(e){}
+
+        */
+
+
+
+        try{
+
+                var ed=editor.window.document.body;
+
+                ed.innerHTML="";
+
+                editor.window.focus();
+
+            }catch(e){
+
+                var cmt=cmtForm.getElementsByTagName("textarea")[0];
+
+                cmt.value="";
+
+                cmt.focus();
+
+        }
+
+
+
+        G("cancleReLink").style.display="none";
+
+        cmtForm.btn_ok.value="发表评论";
+
+    }
+
+
+
+    function gotoreply()
+
+    {//to checking whether reply cmt
+
+        if( window.location.hash.indexOf("&re=1")<0) return;
+
+        var cmtID=window.location.hash.split("&")[0].replace("#","");
+
+        var cmtlinks=document.getElementsByTagName("a");
+
+        for(var i=0,n=cmtlinks.length;i<n;i++)
+
+        {
+
+            if(cmtlinks[i].name==cmtID){ var rename=cmtlinks[i].getAttribute("rename");  repid=cmtlinks[i].getAttribute("repid"); break;}
+
+        }
+
+        if(typeof(rename)!="undefined"){
+
+            cmtreply(rename, repid);
+
+        }
+
+    }
+
+    
+    
+    function f_focus(){
+        getVcode();
+    }
+    function getVcode(){
+        var url="http://hi.baidu.com/sys/file/getvcode?echoback=getVcodeDone&t="+(new Date().getTime());
+        BdAjax.loadJS(url)
+    }
+
+    function getVcodeDone(vcode){
+        document.form1.spVcode.value=vcode;
+        var imgsrc="http://hiup.baidu.com/cgi-bin/genimg?"+vcode;
+        G('verifypic').src=imgsrc;
+        G('yanzheng').style.display="block";
+    }
+    function newverifypic(){
+        getVcode();
+        return false;
+    }
+
+    function blogdel(str)
+
+    {
+
+        var pop=new Popup({ contentType:3,isReloadOnClose:false,width:340,height:80});
+
+        pop.setContent("title","删除文章");
+
+        pop.setContent("confirmCon","您确定要彻底删除这篇文章及其所有评论吗？");
+
+        pop.setContent("callBack",delCallback);
+
+        pop.setContent("parameter",{fid:str,popup:pop});
+
+        pop.build();
+
+        pop.show();
+
+        return false;
+
+    }
+
+    
+    function delCallback(para)
+
+    {
+        if(!para["popup"])return;
+
+        var o_pop=para["popup"];
+
+        o_pop.config.contentType=1;
+
+        o_pop.setContent("contentUrl","");
+
+        o_pop.reBuild();
+
+        G(para["fid"]).target=o_pop.iframeIdName;
+        eval("document.draft"+para["fid"]).submit();
+
+        eval("document."+para["fid"]).submit();
+
+    }
+
+
+
+    var _Space = _Space || {};
+    
+    /********这里的东西，是用来生成评论列表的**********/
+   _Space.commentOperate = (function(){
+      /*blog评论的浏览*/
+    var total_page = 0,
+        cmtNumPerPage = 50,
+        nowPage = 0,
+	    count = 1,
+	    comment = new Space.Pubs.Comment(Session.spSpaceDomain+"/cmt/spcmt/");
+    //分页的组件
+   var pager = (function () {
+	var pageNum = '#p#';
+	var MAX = 10;
+    function getPageBar(allPn, nowPn, tplstr) {
+        var Max = 10;
+		allPn = Number(allPn);
+		nowPn = Number(nowPn) + 1; 
+		if (allPn <= 1) {
+			return " &nbsp;";
+		}
+        var _html = [];
+        var startPn = Math.max(1, nowPn - Math.floor(MAX / 2));
+		var endPn = Math.min(allPn, startPn + MAX - 1);
+		startPn = Math.max(1, endPn - MAX + 1);
+        if (nowPn > 1) {
+			_html.push('<a', tplstr.replace('#p#', 0), '>[首页]</a> ');
+			_html.push('<a', tplstr.replace('#p#', (nowPn - 1 - 1)), '>[上一页]</a> ');
+		}
+        for (var i = startPn; i <= endPn; i++) {
+			if (i == nowPn) {
+				_html.push('<span>', i, '</span> ');
+			} else {
+				_html.push('<a', tplstr.replace('#p#', i - 1), '>[', i, ']</a> '); 
+			}
+		}
+		if (nowPn < allPn) {
+			_html.push('<a', tplstr.replace('#p#', nowPn), '>[下一页]</a> ');
+			_html.push('<a', tplstr.replace('#p#', (allPn - 1)), '>[尾页]</a> ');
+		}
+       return _html.join('');
+	}
+	return {
+		render: getPageBar
+	}
+})();
+
+//获取评论数据后，callback，在页面上展现
+var viewCallBack = function(data){
+    var response = data;
+    if(response.err_no == 0){
+    if (response.body.data && response.body.total_count) {
+        var all_page = Math.ceil(response.body.total_count / cmtNumPerPage);
+        total_page = all_page - 1;
+        if("#lastcmt" == location.hash){
+            location.hash = ""+total_page;
+            view(total_page);
+            
+            return;
+        }
+        var output = [];
+        baidu.each(response.body.data, function (list) {
+            output.push(generateHtml(list));
+
+        });
+        count = 1;
+        baidu.G('userCommentList').innerHTML = output.join('');
+        baidu.G('blogCmtCount').innerHTML = response.body.total_count;
+        
+        baidu.G('page').innerHTML = pager.render(all_page, nowPage, ' href="#"  onclick="_Space.commentOperate.view(#p#);return false;"');
+        filterCmtContent('userCommentList');//在非ie浏览器对闪光字做处理
+        SP.mycard.bind('m_blog'); 
+       //锚点会让链接的颜色发生变化，用js来实现锚点功能
+        var scrollObj = baidu.g("in_comment"); 
+        if(scrollObj){
+		 scrollObj.scrollIntoView();
+	    }    
+	
+     }
+ }
+};
+ 
+    var generateHtml = function(data) {
+	var generateOprate = function(type,id,portraitId,cmtname,isHost, isAnnony, canReply, isMobile) {
+		var data = [];
+		if (isMobile) {
+			data.push('  <a href="http://hi.baidu.com/hi/cms/article/help_phone/index.html" target="_blank" style="text-decoration:none;">来自手机<img src="http://img.baidu.com/hi/img/mobile.gif" align="absmiddle" border="0"/></a>');
+		}
+		if (canReply && isCmtAllow) {
+			if (isAnnony) {
+				data.push(' | <a href="#" onclick="BdUtil.relogin();return false;">回复</a>');
+			} else {
+				data.push(' | <a href="#" onclick="goCmtReply(\'' + portraitId + '\');return false;">回复</a>');
+			}
+		}
+       if (isHost) {              
+			data.push(' | <a href="#" onclick="_Space.commentOperate.deleteCmt(\'' + id + '\');return false;">删除</a>');
+			var cName = type==1?cmtname:'';
+			data.push(' | <a href="#" onclick="userSpam.tipBlogCmt(this,\'' + cName + '\',\'' + id + '\',\'' + blogId + '\'); return false;">举报</a>');
+			
+	
+		}
+		return data.join("");
+	};
+    var generateUser = function(type, id, cmtname, cmturl, portraitId) {
+		if ("1" == type) {
+			return "<a  href='{1}' target='_blank' class='ucard' pid='{2}'><img border='0' src='http://tx.bdimg.com/sys/portraitn/item/{2}.jpg'><br />{3}</a>".format(id, cmturl, portraitId, cmtname);
+		} else {
+			if (cmtname == "" || cmtname == "匿名网友") {
+				if (cmturl == "") {
+					return "<a>匿名网友</a>";
+				} else {
+
+					return "<a href='{1}' target='_blank' class='ucard' pid='{0}'>{2}</a>".format(portraitId, cmturl, cmtname);
+
+				}
+
+			} else {
+				if (cmturl == "") {
+					return "<div class='f14' style='display:inline'>网友:<a>{0}</a></div>".format(cmtname);
+				} else {
+					return "<div class='f14' style='display:inline'>网友:<a href='{1}' target='_blank' title='{1}'>{2}</a></div>".format(id, cmturl, cmtname);
+				}
+
+			}
+
+		}
+	};
+    var type = 0,
+	isMobile = data.reserved1,
+	isHost = Session.isHost,
+	isAnnony = Session.visitorPortrait == '00000000' ? true: false,
+	portraitId = data.portrait,
+	canReply = portraitId == Session.visitorPortrait ? false: true,
+	id = data.reply_id_enc,
+	cmtname = data.un,
+	cmturl = cmtname ? 'http://hi.baidu.com/sys/checkuser/' + cmtname + '/1': '',
+	isCmtAllow =  true ,
+	blogId = "0a3fa76e45727fd780cb4ac9";
+	if (cmtname && cmturl && portraitId) {
+		type = 1;
+	}
+	g_cmtorInfo[portraitId] = cmtname;
+
+	var html = [],
+        perPage = cmtNumPerPage,
+        listCount = count + nowPage*perPage;
+    html.push('<a name="'+id+'" rename="'+cmtname+'" repid="'+portraitId+'"></a>');
+	html.push('<table width="100%" border="0" cellspacing="0" cellpadding="0" class="item" style="table-layout:fixed;word-wrap:break-word;overflow:hidden;"><tr>');
+	html.push('<td valign="top" class="index" width="5%">'+listCount+'</td>');
+    html.push('<td align="center" valign="top" width="10%"><div class="user" style="overflow:hidden;">');
+	html.push(generateUser(type, id, cmtname, cmturl, portraitId));
+	html.push('</div></td><td class="cnt" style="padding-left:20px;">');
+    html.push('<span class="date">');
+	var pattern='yyyy-MM-dd HH:mm';
+	var date_time = new Date();
+    date_time.setTime(parseInt(data.cdatetime) * 1000);
+    html.push(baidu.date.format(date_time,pattern));
+	html.push(generateOprate(type,id,portraitId,cmtname,isHost, isAnnony, canReply, isMobile));
+	html.push("</span>")
+	html.push('<div class="desc" style="overflow:hidden;word-break:normal;"  name="cmtcontent">');
+	html.push(data.content);
+    html.push('</div></td></tr></table>');
+	html.push('<div class="line">&nbsp;</div>');
+	count++;	
+	return html.join("");
+	
+};
+   //获取评论列表
+var  view = function(page){
+   var  threadId ="0a3fa76e45727fd780cb4ac9";
+   page = page || 0;
+   var obj={"thread_id_enc":threadId,"callback":"_Space.commentOperate.viewCallBack","start":page*cmtNumPerPage,"count":cmtNumPerPage,"orderby_type":0};
+   nowPage = page;
+   comment.view(obj);
+};
+	
+	
+	
+            function deleteCmt(cid){
+            var pop=new Popup({ contentType:3,isReloadOnClose:false,width:340,height:80});
+
+            pop.setContent("title","删除评论");
+
+            pop.setContent("confirmCon","您确定要彻底删除这条评论吗？");
+
+            pop.setContent("callBack", function(){
+            
+                var o_pop=pop;
+                var _F = baidu.G('blogCmtSubmitForm');
+                _F.spBlogCmtID.value=cid;
+                _F.spRefURL.value = window.location.href;
+
+                o_pop.config.contentType=1;
+
+                o_pop.setContent("contentUrl","");
+
+                o_pop.reBuild();
+
+                _F.target=o_pop.iframeIdName;
+
+                _F.submit();
+            });
+
+            pop.build();
+
+            pop.show();
+
+            return false;
+        }
+          
+		  function filterCmtContent(n){
+
+            if(!baidu.browser.ie){
+
+                var defaultfilter1='<span style="filter:glow(color=#000000,strength=2);height:0px;color:#000000">';
+
+                var defaultfilter2='<span style="height: 0px; color: rgb(0, 0, 0);">';
+
+                var commentDiv=document.getElementById(n);
+
+                var divs=commentDiv.getElementsByTagName('div');
+
+                var d,tmp;
+
+                for( var i=0,len=divs.length;i<len;i++){
+
+                    d=divs[i];
+
+                    if(d.getAttribute('name')=='cmtcontent'){
+
+                        tmp=d.innerHTML;
+
+                        tmp=tmp.replace(/<span style="filter:glow\(color=#([0-9a-z]{3,6}),strength=2\);height:0px;color:#([0-9a-z]{3,6})">/ig,defaultfilter1);
+
+                        tmp=tmp.replace('<span style="height: 0px; color: rgb(255, 255, 255);">',defaultfilter2);
+
+                        d.innerHTML=tmp;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return {
+            view : view,
+			viewCallBack : viewCallBack,
+            deleteCmt : deleteCmt
+        }
+        
+    })();
+    
+    /**********分享该文章的用户功能**********/
+    
+
+    
+    /*********相关文章的显示函数********/
+    _Space.RelatedDoc=(function(){
+
+        function HI_MOD_IN_RELATED_DOC_CALLBACK(arg){
+
+            if(arg.length <= 1) return false;
+
+            var hasMore = arg[0];
+
+            var D=function(A,B){A[A.length]=B;}
+
+            if(arg.length % 2 == 0) D(arg, ["","","",""]);
+
+
+
+            var html = ['<div id="in_related_doc" onclick="relative_Click()"><div class="tit">相关文章：</div>'];
+
+            D(html, '<table cellpadding="0" cellspacing="3" border="0">');
+
+            for(var i = 1, j = arg.length; i < j; i += 2){
+
+                D(html, '<tr>');
+
+                D(html, '<td width="15px"><a style="font-size:25px" >&#8226;</a></td><td><a href="http://hi.baidu.com/' + arg[i][3] + '/blog/item/' + arg[i][2] + '.html" target="_blank" title="' + arg[i][0] + '">' + arg[i][1] + '</a>');
+
+                D(html, new Array(10).join('\u3000'));
+
+                D(html, '</td>');
+
+                if(arg[i + 1][0] != "")
+
+                    D(html, '<td width="15px"><a style="font-size:25px" >&#8226;</a></td><td><a href="http://hi.baidu.com/' + arg[i + 1][3] + '/blog/item/' + arg[i + 1][2] + '.html" target="_blank" title="' + arg[i + 1][0] + '">' + arg[i + 1][1] + '</a></td>');
+
+                else
+
+                    D(html, '<td>&nbsp;</td><td>&nbsp;</td>');
+
+                D(html, '</tr>');
+
+            }
+
+            if(hasMore) D(html, '<tr><td colspan="4"><a target="_blank" href="/sys/search?pageno=1&type=7&sort=1&word=C%2B%2B%D6%D0%B4%F8%C0%A8%BA%C5%B5%C4new%A1%A3%A1%A3%A3%A8placement%20new%A3%A9&item=0a3fa76e45727fd780cb4ac9">更多&gt;&gt;</a></td></tr>');
+
+            D(html, '</table></div><div class="line">&nbsp;</div>');
+
+
+
+            var div = document.getElementById('in_related_tmp');
+
+            if(div){
+
+                div.innerHTML = html.join('');
+
+                while(div.firstChild){
+
+                    div.parentNode.insertBefore(div.firstChild, div);
+
+                }
+
+                div.parentNode.removeChild(div);
+
+            }
+
+
+        }
+
+        window.HI_MOD_IN_RELATED_DOC_CALLBACK = HI_MOD_IN_RELATED_DOC_CALLBACK;
+
+        function show(){
+            if( baidu.G('in_related_tmp') )
+            baidu.sio.callByServer("/sys/search?type=8&word=C%2B%2B%D6%D0%B4%F8%C0%A8%BA%C5%B5%C4new%A1%A3%A1%A3%A3%A8placement%20new%A3%A9&item=0a3fa76e45727fd780cb4ac9");
+        }
+
+        return {
+            show : show
+        }
+
+    })();
+    
+
+    /*********最近读者*********/
+    _Space.latestReader=(function(){
+        var g_read=[
+
+        
+
+        ["zm0011","f2a45a4d303031315b03","ZM0011"],
+
+        
+
+        ["toooyaaa","2a3d746f6f6f79616161d208","toooyaaa"],
+
+        
+
+        ["gavindge","604a476176696e646765a303","Gavindge"],
+
+        
+
+        ["mfb1","d6276d66623131306200","mfb110"],
+
+        
+
+        ["xufeihouse","b0d27875666569686f757365930e","xufeihouse"],
+
+        
+
+        ["coffeegg1985","1942636f66666565676731393835760a","coffeegg1985"],
+
+        
+
+        ["sladhu","a7ed736c61646875d100","sladhu"],
+
+        
+
+        ["zypas","ddf5cfa6d1f4bdf0d3eacb00","夕阳金雨"],
+
+        
+
+        {}
+
+        ];
+
+        g_read.length=g_read.length-1;
+
+
+
+        var _rh1="";
+
+        var _rh2="";
+
+
+
+        function show(){
+
+            _rh1 += '<table width="100%" ><tr>';
+
+            _rh2+='<tr>';
+
+            if(!Session.isLogin){
+
+                _rh1+='<td align="center" width="10%" ><img border="0" width="55" height="55" src="http://img.baidu.com/hi/img/portraitn.jpg"></td>';
+
+                _rh2+='<td>&nbsp;</td>';
+
+                if(g_read.length>0){
+
+                    _rh1+='<td align="left" width="12%">';
+
+                }else{
+
+                    _rh1+='<td align="left" width="100%">';
+
+                }
+
+                _rh1+='<a href="https://passport.baidu.com/?login&tpl=sp&tpl_reg=sp&u='+myref+'" target="_self" onclick="BdUtil.relogin(); return false;">登录</a>后，您就出现在这里。</td>';
+
+                _rh2+='<td>&nbsp;</td>'
+
+            }
+
+            if(g_read.length==0){
+
+                if(Session.isLogin){
+
+                    _rh1+='<td align=left width="100%">最近还没有登录用户看过这篇文章……</td>';
+
+                    _rh2+='<td>&nbsp;</td>';
+
+                }
+
+            }else{
+
+                for(i=0,len=g_read.length;i<len;i++){
+
+                    _rh1+='<td align="center" valign="bottom" width="10%" class="user"><a href="/'+g_read[i][0]+'" target="_blank" class="ucard" pid="'+g_read[i][1]+'"><img border="0" src="http://tx.bdimg.com/sys/portraitn/item/'+g_read[i][1]+'.jpg"></a></td>';
+
+                    _rh2+='<td align="center" valign="top" class="user"><a href="/'+g_read[i][0]+'" target="_blank" class="ucard" pid="'+g_read[i][1]+'">'+g_read[i][2]+'</a></td>';
+
+                }
+
+            }
+
+            _rh1+='<td width="100%"></td></tr>';
+
+            _rh2+='<td></td></tr></table>';
+
+
+            baidu.dom.insertHTML("in_reader", "beforeEnd", _rh1+_rh2);
+
+        }
+
+        return {
+            show : show
+        }
+    })();
+    
+
+    /*********页面完成后执行的一些东西，比较乱，小心轻放**********/
+    _Space.pageDone = (function(){
+        
+        function initBlogTextForFCK(){
+            //fck init music
+            if(window.Node){Node.prototype.replaceNode=function(Node){this.parentNode.replaceChild(Node,this);}}
+            var imgBox=document.getElementsByName('musicName');
+            var isAutoPlay=true;
+            for(var i=0,n=imgBox.length;i<n;i++){
+                var img=imgBox[i];
+                if(img.getAttribute('rel')){
+                    var musicSrc=img.getAttribute('rel');
+                    var musicDiv = document.createElement("SPAN");
+                    var tmp=musicSrc.substr (musicSrc.indexOf('#')+1, 1);
+                    var tmpAutoPlay=(tmp=='1');
+                    if(isAutoPlay&&tmpAutoPlay){
+                        isAutoPlay=false;
+                        tmpAutoPlay=true;
+                    }else{
+                        tmpAutoPlay=false;
+                    }
+                    var shtml=creatbgmusic(musicSrc.substr(0,musicSrc.indexOf('#')).replace(/[\s><()'"]+/g,''),1,true,false,tmpAutoPlay,tmpAutoPlay,'FckMusicHelper');
+                    shtml=shtml.replace('width=100%','width=200').replace('width="100%"','width=200 height=45');			img.replaceNode(musicDiv);
+                    musicDiv.innerHTML=shtml;
+                    i--;n--;
+                }
+            }
+                //fck init vote
+            !function(){
+                var vote = document.getElementsByName('FCK_VOTE');
+                for(var i=0,len=vote.length,item,rel=0,cdiv;i<len;i++){
+                    item = vote[0];
+                    rel = item.getAttribute('rel')|0;
+                    if(rel){
+                        cdiv = document.createElement('span');
+                        item.parentNode.replaceChild(cdiv,item);
+                        baidu.swf.create({
+                            "id": "VOTE_FLASH_"+i,
+                            "width" : "585",
+                            "height": "100",
+                            "ver"   : "9.0.0",
+                            "wmode" : document.all ? "opaque" : "window",
+                            "allowscriptaccess" : "always",
+                            "url"   : "http://hi.bdimg.com/apps/appvote/spaceVote.swf?vote_id="+rel
+                        },cdiv)
+
+                    }
+                }
+            }()
+            //document.getElementById('blog_text').style.display='';
+        }
+        
+        function resizeBlogImg(){
+
+            if(document.getElementById("m_blog"))
+
+            {
+
+                var imgarray = document.getElementById("m_blog").getElementsByTagName('img');
+
+                var imgw = document.getElementById("m_blog").offsetWidth;
+
+                imgw =imgw-40;
+
+	            var imgs = []
+                for(var i=0; i<imgarray.length; i++){
+                    if(imgarray[i].className=="blogimg" && imgarray[i].width>=imgw) {
+                        imgs[i]=new Image();
+                        (function(_imgarray,_imgs,_i){
+                            _imgs[_i].onload=function(){
+                                var h=imgw/_imgs[_i].width*_imgs[_i].height;
+                                _imgarray[_i].height = h;
+                                _imgarray[_i].style.height=h+'px';
+                            };
+                        })(imgarray,imgs,i);
+                        imgs[i].src=imgarray[i].src;
+                        imgarray[i].width=imgw;
+                        imgarray[i].style.width=imgw+'px';
+                    }
+                }
+            }
+        }
+
+        function fixURLCopyBug(){
+        
+            // Fix ff bugs
+
+            var blog_text = document.getElementById('blog_text');
+            /**
+
+            blog_text.innerHTML = blog_text.innerHTML.replace(/href\s*=\s*("|')?(\.\.\/\.\.\/)/gi,"href=$1../$2");
+            */
+            /*modify by poker, to fix the flashalbum's static domain*/
+            var _blog_trans = blog_text.innerHTML.replace(/href\s*=\s*("|')?(\.\.\/\.\.\/)/gi,"href=$1../$2");
+            _blog_trans = _blog_trans.replace(/http:\/\/hi\.baidu\.com\/static\/album\/album\.swf/g,"http://hi.bdimg.com/static/album/album.swf");
+			_blog_trans = _blog_trans.replace(/`/g,"&#96;");
+            blog_text.innerHTML = _blog_trans;
+        }
+
+        function getPVData(){
+
+            var hstr="";
+
+            baidu.sio.callByServer("/hplonline/brwstat?key1=1&key2=9bf96927733afd03908f9db0_0a3fa76e45727fd780cb4ac9_");   
+        } 
+
+        function setpv(allnum)
+
+        {
+
+            var num = allnum.split('_');
+
+            baidu.G("result").innerHTML=num[0];
+
+        }
+
+        window.setpv = setpv;
+        
+        function initCmtEditor(){ //初始化浏览编辑器
+            var editor=null;
+
+            try{
+
+                editor=new BdEditor("spBlogCmtText",{width:"100%",height:"155px"});
+
+                editor.onfocus = function(){hidErr(3);}
+
+                editor.render();
+
+                //如果用户没有登陆，焦点进入编辑器，弹出登录框
+				
+                var editorCont=editor.window;
+				baidu.Q("ToolbarContainer",baidu.G("in_send"))[0].style.display="none";
+                baidu.on(editorCont,"focus",function(){
+				BdUtil.relogin();
+				return false;
+				});
+				
+
+            }catch(e){
+
+                var spBlogCmtText = document.getElementById("spBlogCmtText");
+                if(!spBlogCmtText ) return false;
+
+                var p = spBlogCmtText.previousSibling;
+
+                while(p && p.nodeType != 1) p = p.previousSibling;
+
+                if(p && /bdeditor_container/.test(p.id)){
+
+                    p.parentNode.removeChild(p);
+
+                }
+
+                spBlogCmtText.style.display = '';
+
+                editor=null;
+
+            }
+
+            
+
+            window.editor = editor;
+        }
+
+        function ok(){
+            getPVData();
+            resizeBlogImg();
+            fixURLCopyBug();
+            initBlogTextForFCK();
+            initCmtEditor();
+
+            gotoreply(); /* external fun*/
+        }
+
+        return {
+            ok : ok
+        }
+    })();
+	
+	function relative_Click(){
+		BdUtil.ns_trackerLink('m_20110329_relative_article','')
+	}
+    /********分段加载处理对象，实验性功能*********/
+    _Space.SectionLoad = (function(){
+
+        var loaded = false;
+
+        var sectioinList = [];
+
+        function complete(item){
+            item.isComplete = true;
+        }
+
+        function add(mod, loadCallback){
+
+            var mod = baidu.G(mod);
+            
+            sectioinList.push({"mod": mod, "callback":loadCallback});
+        }
+
+        function startLoad(item){
+            item['callback']();
+            complete(item);
+        }
+
+        function checkStat(){
+            if(sectioinList.length <= 0) return;
+
+            var pageTop2bottom=getPageTop2bottom();
+            
+            baidu.each(sectioinList, function(item, index){
+
+                if(! item.isComplete){
+                    if(getOffsetTop(item.mod)-100 <= pageTop2bottom)
+                        startLoad(item);
+                }
+            });
+        }
+
+        function getOffsetTop(mod){
+            return baidu.dom.getPosition(mod).top;
+        }
+
+        function getPageTop2bottom(){
+            var dsh = baidu.page.getScrollTop();
+            var dch = baidu.page.getViewHeight();
+
+            return dsh + dch;
+        }
+
+        
+        baidu.on(window, 'resize', checkStat);
+        baidu.on(window, 'onload', checkStat);
+        baidu.on(window, 'scroll', checkStat);
+        
+        return {
+            "add" : add
+        } 
+    })();
+
+    /*******Start Working！*******/
+    var _pageEndTime=(new Date().getTime()) - g_pageTimerStart;
+
+    baidu.on(window, 'load', function(){
+        var _pageLoadTime=(new Date().getTime()) - g_pageTimerStart;
+
+        BdUtil.hi_trackerLink('m_20101109_blogloadtime', _pageLoadTime+'|'+_pageEndTime);
+    });
+
+    /**********Step2***********/
+    _Space.pageDone.ok();
+
+    baidu.G('share_user_list') && _Space.SectionLoad.add('share_user_list', _Space.BlogSharedUser.getData);
+    baidu.G('in_related_tmp') && _Space.SectionLoad.add('in_related_tmp', _Space.RelatedDoc.show);
+    baidu.G('in_reader') && _Space.SectionLoad.add('in_reader', _Space.latestReader.show);
+    baidu.G('blogOpt') && _Space.SectionLoad.add('blogOpt', _Space.commentOperate.view);
+</script>
+
+
+
+
+	<script type="text/javascript" src="/ui/scripts/refer/refer.js"></script>
+	
+<link rel="stylesheet" type="text/css" href="/ui/css/userset.css" />
+<link rel="stylesheet" type="text/css" href="/ui/css/beautify/widget.css" />
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/beautifyconfig/default_user_suit.js"></script>
+
+<script type="text/javascript">
+//页面状态变量
+var Session = Session || {
+    spaceURL: "/hplonline",
+    pageURL: "http://hi.baidu.com/hplonline/blog/item/0a3fa76e45727fd780cb4ac9%2Ehtml",    //当前访问的url
+    isHost: "",         // 是否是空间主人
+    userName: "hplonline",   // 空间主人用户名
+    userNameEnc:    "hplonline", 
+    visitorName:    "",
+    visitorURL: "/index.html",        // 
+    refer: "",
+    spBasicURL:"hplonline",
+    spBasicURLEnc:"hplonline"
+};
+</script>
+<script src="/ui/scripts/beautify/render.js" type="text/javascript"></script>
+<script type="text/javascript">
+baidu.dom.ready(function(){
+    if(typeof spBeautifyConfigData != 'undefined'){
+        var _installList = spBeautifyConfigData.list;
+    } else {
+        spBeautifyConfigData = {};
+        _installList = [];
+    }
+    spBeautifyConfigData.currentDate  = Math.round((new Date('2011/11/26')).getTime() / 1000);    
+    BeautifyWidget.init({timeStamp: spBeautifyConfigData.currentDate, env: 'sys'});
+    BeautifyWidget.render(_installList);
+	if(Space && Space.ActiveTip){
+		if(baidu.g("active_space")){
+			window.active_tip=new Space.ActiveTip("tary_space_name",function(){
+				active_tip.hidden();
+				//activeSpace("pop_tip");
+				if(BdUtil && BdUtil.ns_trackerLink){
+					BdUtil.ns_trackerLink('nm_20101018_activeBlank',''); 
+				}
+				window.open('http://hi.baidu.com/reg/preihome?pageDomain=pop_tip');
+			//	window.location.href="http://hi.baidu.com/reg/preihome?pageDomain=pop_tip";
+				setTimeout(function(){
+					window.location.reload();
+				},1000);
+				
+			
+			});
+		}
+		window.succTip=function(spaceUrl){
+			active_dia.close();
+			//var tiphtml="<div><div class='setBlackcon'>恭喜您，激活成功！欢迎入驻百度空间！</div><div class='setBlackpanel'><div class='blackConfirmbtn' onclick=\"goIhome('"+spaceUrl+"')\">确认</div></div></div>";
+			BdDialog.Alert("恭喜您，激活成功！欢迎入驻百度空间！");
+			baidu.g("dialogYES").onclick=function(){
+				window.location.reload();
+			};	
+		};
+	}
+	
+});
+</script>
+
+
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/quickjs/auto.js"></script>
+<script>
+try{SCD.init("")}catch(e){}
+</script>
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/quickjs/blog_maidian_yali.js"></script>
+<script type="text/javascript">
+	baidu.dom.ready(function(){
+		if(BlogMaiDianYali && BlogMaiDianYali.isSwitchOn) {
+			var pageUrl = BlogMaiDianYali.detailPageUrl .replace("/{spaceurl}","/hplonline").replace("{blogid}","0a3fa76e45727fd780cb4ac9");
+			var divDom = document.createElement("div");
+			divDom.innerHTML = '<iframe src="' + pageUrl + '" style="display:none;">';
+			divDom.style.display = "none";
+			document.body.appendChild(divDom);
+		} 
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,2112 @@
+<!--STATUS OK-->
+
+
+<html><head><meta http-equiv=content-type content="text/html; charset=utf-8">
+<title>[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）_霹雳在线_百度空间      </title>
+
+<style type="text/css">
+    .error{color:#FF0000;font-size:12px}
+    .shareUser,.shareLastEditor{line-height:20px;color:#666666;text-align:left}
+    .shareLastEditor{margin:5px 0 8px;}
+</style>
+
+<script type="text/javascript">
+    var g_pageTimerStart=new Date().getTime();
+</script>
+
+<script type="text/javascript" src="/ui/scripts/global.js"></script>
+<script type="text/javascript" src="/static/common/scripts/libs.js"></script>
+<script type="text/javascript" src="http://img.baidu.com/js/tangram-1.1.0.js"></script>
+
+
+<script type="text/javascript">
+var Session = {
+    isLogin: ! true,
+    isHost: "",
+    userName: "hplonline",   
+    userPortrait:'e60768706c6f6e6c696e65b500',
+    spaceURL: "/hplonline",
+    spBasicURL:"hplonline",
+    spBasicURLEnc:"hplonline",
+    visitorName:    "",
+    visitorPortrait:'00000000',
+    isActive: '',   
+    visitorURL: "/index.html",        // 
+    pageURL: "http://hi.baidu.com/hplonline/blog/item/1b910808d9947ac263d9863a%2Ehtml",    
+    refer: "",
+    spToken: '', 
+    spFriendDomain: 'http://frd.baidu.com',
+    spSpaceDomain: 'http://hi.baidu.com',
+    spPortraitDomain: '',
+    spSpaceStaticDomain: 'http://hi.baidu.com' 
+
+    ,isDrag:  false  
+    ,isProfile:  false   
+    ,isPortraitVerify:!true
+    };
+</script>
+
+</head>
+
+<body>
+
+<center>
+
+<script type="text/javascript">
+/*<![CDATA[*/
+if(top.location != self.location){
+	top.location = self.location;
+}
+var myref = encodeURIComponent("http://hi.baidu.com/hplonline/blog/item/1b910808d9947ac263d9863a%2Ehtml");
+/*]]>*/
+</script>
+<link rel="stylesheet" type="text/css" href="/ui/css/mods.css" />
+
+<link rel="stylesheet" type="text/css" href="http://hitn.bdimg.com/hplonline/css/item/963c2d7f982f070828388a8e.css" />
+
+<link rel="stylesheet" type="text/css" href="/space.css?v=20111116" />
+
+<div class="userbar">
+    <div id="nav">
+        <a class="logo" href="http://hi.baidu.com/index.htm">
+			<img src="http://img.baidu.com/hi/logo/logo_93_30.gif" border="0" alt="百度空间" />
+		</a>
+
+
+
+        <div class="manage no-login">
+            <form action="https://passport.baidu.com/?login" method="post">
+                用户名:<input type="text" name="username" />&nbsp;&nbsp; 
+                密码:<input type="password" name="password" /> 
+                <input type="hidden" name="mem_pass" value="on" />
+                <input type="submit" value="" style="width:0; height:0;" />
+                <a href="#" class="loginlink" onclick="this.parentNode.submit(); return false;">登录</a>  
+            </form> 
+            <a href="/reg/new" class="reglink">注册</a>
+        </div>
+
+    </div>
+</div>
+
+<script type='text/javascript' src='http://hi.bdimg.com/static/base/js/conf/base.js?v=20111121151724'></script>
+ <link rel='stylesheet' type='text/css' href='http://hi.bdimg.com/static/base/css/base.css?v=20111121151724'/>
+
+
+		
+
+
+
+<div id="main" align="left">
+
+<!--[if IE]>
+<script>
+var objmain = document.getElementById("main");
+function updatesize(){ var bodyw = window.document.body.offsetWidth; if(bodyw <= 790) objmain.style.width="772px"; else if(bodyw >= 1016) objmain.style.width="996px"; else objmain.style.width="100%"; }
+updatesize(); window.onresize = updatesize;
+</script>
+<![endif]-->
+
+	<div id="header">
+
+	<div class="lc"><div class="rc"></div></div>
+<div class="tit"><a href="/hplonline/home" class="titlink" title="hplonline的空间 http://hi.baidu.com/hplonline">霹雳在线</a></div>
+<div class="desc">保持沉默，用行动获得尊重</div>
+<div id="tabline">&nbsp;</div>
+
+	<div id="tab"><a href="/hplonline/home">主页</a><a href="/hplonline/blog" class="on">博客</a><a href="/hplonline/album">相册</a><span>|</span><a href="/hplonline/profile">个人档案</a>
+
+	<span>|</span><a href="/hplonline/friends">好友</a>
+
+
+<span>|</span><a href="http://tieba.baidu.com/i/sys/jump?un=hplonline&fr=spacebar" onclick="BdUtil.ns_trackerLink('m_20110330_spacebar','')" target="_blank">i贴吧</a>
+
+
+	</div>
+
+</div>
+
+
+
+<div class="stage">
+
+<div class="stagepad">
+
+<div style="width:100%">
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="modth">
+
+	<tr><td class="modtl" width="7">&nbsp;</td>
+
+	<td class="modtc" nowrap><div class="modhead"><span class="modtit">查看文章</span></div></td>
+
+	<td class="modtc" nowrap align="right"></td>
+
+	<td class="modtr" width="7">&nbsp;</td>
+
+	</tr></table>
+
+
+
+<div id="m_blog" class="modbox" style="overflow-x:hidden;">
+
+<div class="tit">
+
+[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</div>
+
+<div class="date">2011-02-01  00:24</div>
+
+
+
+
+<table style="table-layout:fixed;width:100%"><tr><td><div id="blog_text" class="cnt" ><p>(hplonline)2011.2.1</p><h2><span><span>5.2<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 黑体;">包解码算法</span></h2>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">解码算法比较简单。每个节点都维护有一个存储池，拥有所侦听到的包的拷贝，并且以包编号为</span><span>key</span><span style="font-family: 宋体;">组织成一个</span><span>hash</span><span style="font-family: 宋体;">表。收到编码包的时候，只需要在存储池中搜索</span><span>n-1</span><span style="font-family: 宋体;">个已经侦听到的包，即可完成解码。存储池会周期地（几秒）做垃圾回收。</span></p>
+
+
+
+<h2><span><span>5.3<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 黑体;">伪广播</span></h2>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>802.11</span><span style="font-family: 宋体;">有两种工作模式：单播和广播。</span><span>COPE</span><span style="font-family: 宋体;">需要将包广播到附近的节点，所以很自然地想到使用广播模式。但广播模式有两个问题：低可靠；缺乏回退机制。</span></p>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>802.11</span><span style="font-family: 宋体;">工作在单播模式时，会立即</span><span>ack</span><span style="font-family: 宋体;">一个已经收到的包。</span><span>802.11</span><span style="font-family: 宋体;">通过</span><span>MAC</span><span style="font-family: 宋体;">层的重传机制保证可靠性。没有收到</span><span>ack</span><span style="font-family: 宋体;">会被当作拥塞的信号，发送方会使用指数的随机回退，这样使得多个节点可以共享介质。</span></p>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>802.11</span><span style="font-family: 宋体;">的广播模式，接收方是有多个，所以无法确定谁应该</span><span>ack</span><span style="font-family: 宋体;">。没有</span><span>ack</span><span style="font-family: 宋体;">，故无法重传和保证可靠性。同时，也无法侦测到冲突。如果有大量积压的节点，共享广播信道，它们会持续地用最高速率发送分组，导致非常高的冲突率。</span></p>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">伪广播的实质是在</span><span>802.11</span><span style="font-family: 宋体;">单播包上捎带一个</span><span>XOR</span><span style="font-family: 宋体;">头，里面指明了该编码包的所有下一跳节点，而该单播包的</span><span>MAC</span><span style="font-family: 宋体;">目的地设为下一跳集中的一个即可。由于所有节点都是混杂模式，他们可以听到</span><span>MAC</span><span style="font-family: 宋体;">地址不属于自己的包。当收到包的时候，该节点检查</span><span>XOR</span><span style="font-family: 宋体;">头，如果自己在下一跳集中，则处理该包；否则将该包放入存储池中，当作机遇侦听得到的包。由于所有的包都是单播，可以利用</span><span>802.11</span><span style="font-family: 宋体;">的冲突检测和回退机制。</span></p>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">伪广播比广播更可靠。因为一个单播包被重传的时候，增大了周围节点偷听到它的概率。</span></p>
+
+
+
+<h2><span><span>5.4<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 黑体;">每跳</span><span>ack</span><span style="font-family: 黑体;">和重传</span></h2>
+
+
+
+<h3><span><span>5.4.1<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">原因？</span></h3>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">编码包要求下一跳集中的节点都发送</span><span>ack</span><span style="font-family: 宋体;">，有两个原因：发送放只能得到一个</span><span>MAC</span><span style="font-family: 宋体;">层的</span><span>ack</span><span style="font-family: 宋体;">，就是实际上设置为</span><span>MAC</span><span style="font-family: 宋体;">目的地址的那个节点，其他节点可能没有收到编码包；即使各节点收到编码包，可能由于发送节点的错误猜测，导致无法解码。</span></p>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">标准解法是进行局部的</span><span>ack</span><span style="font-family: 宋体;">和重传。如果某编码包中的本地包没有收到</span><span>ack</span><span style="font-family: 宋体;">，</span><span>COPE</span><span style="font-family: 宋体;">会在超时后进行重传，很可能和其他的本地包一起编码。</span></p>
+
+
+
+<h3><span><span>5.4.2<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">异步</span><span>ack</span><span style="font-family: 宋体;">和重传</span></h3>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>802.11</span><span style="font-family: 宋体;">在</span><span>MAC</span><span style="font-family: 宋体;">层实现了同步的</span><span>ack</span><span style="font-family: 宋体;">。如果对于每个</span><span>COPE</span><span style="font-family: 宋体;">编码的本地包，都进行同步的</span><span>ack</span><span style="font-family: 宋体;">的话，效率会非常低（需要额外的介质争用）。主要思想还是做捎带。接收节点可以将</span><span>ack</span><span style="font-family: 宋体;">累积起来，然后捎带在自己后续发出的编码包中。如果没有数据发送，那么节点会在控制包中周期地送出</span><span>ack</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+<h2><span><span>5.5<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 黑体;">防止</span><span>TCP</span><span style="font-family: 黑体;">乱序</span></h2>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">由于异步</span><span>ack</span><span style="font-family: 宋体;">，还有之前叙述的重传等原因，乱序是无法完全规避的。</span><span>COPE</span><span style="font-family: 宋体;">做了一个排序模块。但自己是收到包的目的，并且上层协议是</span><span>TCP</span><span style="font-family: 宋体;">的时候，会将包排序了再上交。这个需要利用到</span><span>TCP</span><span style="font-family: 宋体;">的序列号。如果收到的包并不会导致一个空洞，则直接交给上层，否则，进行积累，直到空洞被补上或者超时。</span></p>
+<h1><span><span>6<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">实现细节</span></h1>
+
+
+
+<h2><span><span>6.1<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 黑体;">包格式</span></h2>
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/e3f5b409e7e85f756a60fba3.jpg" border="0"></span><br><br>
+</span></p>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">图已经很详细了，主要就是三个部分：</span></p>
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">该编码包中，各本地包的信息，（包编号，下一跳）。</span></p>
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">接收报告，（源</span><span>IP</span><span style="font-family: 宋体;">，上一个</span><span>IP</span><span style="font-family: 宋体;">序列号，位图）</span></p>
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span>Ack</span><span style="font-family: 宋体;">捎带。包含一个局部的</span><span>SEQ</span><span style="font-family: 宋体;">，用于局部</span><span>ack</span><span style="font-family: 宋体;">和重传。每个</span><span>ack</span><span style="font-family: 宋体;">条目包含，（邻居标识，上一个局部</span><span>ack</span><span style="font-family: 宋体;">编号，位图）</span></p>
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">比较有意思的是，</span><span>COPE</span><span style="font-family: 宋体;">如何在一个条目中，实现多个序列号（</span><span>IP</span><span style="font-family: 宋体;">序列号或者</span><span>ack</span><span style="font-family: 宋体;">号）。</span><span>COPE</span><span style="font-family: 宋体;">使用（上一编号，位图）的表达方式。由于存储池中包的序列号和</span><span>ack</span><span style="font-family: 宋体;">的序列号都有数据局部性，所以使用上一编号</span><span>+</span><span style="font-family: 宋体;">位图可以压缩信息。以</span><span>ack</span><span style="font-family: 宋体;">的一个条目为例：</span><span>{A,50,01111111}</span><span style="font-family: 宋体;">，这个</span><span>ack</span><span style="font-family: 宋体;">表示该节点从</span><span>A</span><span style="font-family: 宋体;">收到了</span><span>50</span><span style="font-family: 宋体;">号，以及</span><span>43-49</span><span style="font-family: 宋体;">号，但</span><span>42</span><span style="font-family: 宋体;">号还是缺失的。</span></p>
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">虽然</span><span>COPE</span><span style="font-family: 宋体;">有累积</span><span>ack</span><span style="font-family: 宋体;">的机制，但并不保证链路级的可靠性。每个节点都只重传少数几次（默认为</span><span>2</span><span style="font-family: 宋体;">），然后放弃。</span></p>
+
+
+
+<h2><span><span>6.2<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 黑体;">控制流程</span></h2>
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/2790d0b41f6687228ad4b2a3.jpg" border="0"></span><br><br>
+</span></p>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">如图，看就明白。</span></p>
+
+
+
+<h1><span><span>7<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">实验结论</span></h1>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">（很多数据和图，太啰嗦，需要的时候查阅原文即可）</span></p>
+
+
+
+<h1><span><span>8<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">讨论和总结</span></h1>
+
+
+
+<p class="MsoNormal"><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span style="font-family: 宋体;">这篇文章的</span><span>COPE</span><span style="font-family: 宋体;">主要是用于固定的无线</span><span>mesh</span><span style="font-family: 宋体;">网，所有节点并不是资源有限的。更普遍地，</span><span>COPE</span><span style="font-family: 宋体;">可以用于满足下列条件的无线多跳网：</span></p>
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">内存。</span><span>COPE</span><span style="font-family: 宋体;">需要当前正在网络中传输的包，已经到达目的的包没有必要存储。存储容量的计算方法是：带宽</span><span>*</span><span style="font-family: 宋体;">延迟。比如</span><span>11Mb/s</span><span style="font-family: 宋体;">的环境下，当往返时间</span><span>50ms</span><span style="font-family: 宋体;">时（</span><span>RTT</span><span style="font-family: 宋体;">，</span><span>Round-Trip Time</span><span style="font-family: 宋体;">），大约需要</span><span>70kB</span><span style="font-family: 宋体;">的存储空间。</span></p>
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">全向天线。这是为了机遇侦听的顺利进行。</span></p>
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-family: 宋体;">功率需求。当前的</span><span>COPE</span><span style="font-family: 宋体;">实现，并不优化节点的功率使用，并且假设节点的能量是无限制的。</span></p>
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span>COPE</span><span style="font-family: 宋体;">不仅使用与</span><span>Wifi</span><span style="font-family: 宋体;">的网络，还可以和其他</span><span>MAC</span><span style="font-family: 宋体;">协议一起使用，如</span><span>WiMax</span><span style="font-family: 宋体;">和</span><span>TDMA</span><span style="font-family: 宋体;">。将</span><span>COPE</span><span style="font-family: 宋体;">改造适应传感器网络也是可行的，不过有一些小问题。首先，在任意时间，传感器网络中只有一个子集的传感器处于唤醒状态。传感器网络可能更倾向于节能，而不是吞吐量提高。</span><span>COPE</span><span style="font-family: 宋体;">还可以用于蜂窝中继技术，在基站和移动设备中间建立中继站，形成多跳蜂窝中继网。实际上，爱立信已经动手了</span><span>~</span><span style="font-family: 宋体;">不过他们的中继站只会把双工流量混在一起，和</span><span>Alice-Bob</span><span style="font-family: 宋体;">那个例子一样。</span></p>
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">学术界有若干方法增加无线网的吞吐，包括更精确的拥塞控制、更好的路由、有效的</span><span>MAC</span><span style="font-family: 宋体;">协议。</span><span>COPE</span><span style="font-family: 宋体;">是非常重要的一步，可以帮助我们认识到无线网的承载能力；即，如何最大化单次传输中的信息量。编码机制，通常用在应用层和物理层。</span><span>COPE</span><span style="font-family: 宋体;">和其他一些项目，</span><span>[7][21]</span><span style="font-family: 宋体;">，将编码引入网络中，并且可以和转发、路由、可靠交付等集成在一起。</span></p>
+</div></td></tr></table>
+
+<br>
+
+<div class="opt" id="blogOpt">
+
+<a href="/hplonline/blog/category/Network" title="查看该分类中所有文章">类别：Network</a>
+
+| <a  href="#" onclick="addToShare(); return false;" target="_blank"><img src="http://img.baidu.com/hi/apps/share/share_btn.gif" border="0" align="absbottom"  /></a>
+
+
+
+
+	
+
+	| <a title="将此文章添加到百度搜藏" href="http://cang.baidu.com/do/add" onClick="return addToFavor();" target="_blank">添加到搜藏</a>
+
+	
+    | <a title="将此文章分享到i贴吧" href="#" onclick="addToiTieba(); return false;"  target="_blank">分享到i贴吧</a>
+
+	| 浏览(<span id="result"></span>)
+
+	| <a href="#send">评论</a>&nbsp;(<span id="blogCmtCount">0</span>)
+
+
+
+<script language="javascript">
+
+/*<![CDATA[*/
+
+var pre = [true,'[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）', '[paper] XORs in The Air: Pract...','/hplonline/blog/item/963c2d7f084f771b29388a3a.html'];
+
+var post = [true,'静电','静电', '/hplonline/blog/item/8065aaec00ca46292797914a.html'];
+
+if(pre[0] || post[0]){
+
+	document.write('<div style="height:5px;line-height:5px;">&nbsp;</div><div id="in_nav">');
+
+	if(pre[0]){
+
+		document.write('上一篇：<a href="' + pre[3] + '" title="' + pre[1] + '">' +  pre[2] + '</a>&nbsp;&nbsp;&nbsp;&nbsp;');
+
+	}
+
+	if(post[0]){
+
+		document.write('下一篇：<a href="' + post[3] + '" title="' + post[1] + '">' +  post[2] + '</a>');
+
+	}
+
+	document.write('</div>');
+
+}
+
+/*]]>*/
+
+</script>
+
+
+
+</div>
+
+ 
+<div class="line">&nbsp;</div>
+<div id="share_user_list"></div>
+
+
+<div class="line">&nbsp;</div>
+
+
+
+
+
+
+
+    
+<style type="text/css">
+
+/*<![CDATA[*/
+
+#in_related_doc a { text-decoration:none; }
+
+/*]]>*/
+
+</style>
+
+<div id="in_related_tmp"></div>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="in_reader">
+    <div class="tit">最近读者：</div>
+
+</div>
+
+
+
+
+
+<div class="line">&nbsp;</div>
+
+
+
+
+
+
+
+
+
+
+<div id="in_comment">
+
+    <a name="comment"></a>
+
+    <div class="tit">网友评论：</div>
+
+    <span id="userCommentList"></span>    
+
+    <div id="page"></div>
+
+</div>
+
+<form action='/hplonline/commit' id='blogCmtSubmitForm'  name='blogCmtSubmitForm' method='post'>
+    <input type='hidden' name='bdstoken' value=''>
+    <input type='hidden'  name='ct' value='8'>
+    <input type='hidden'  name='cm' value='2'>
+    <input type='hidden'  name='spBlogID' value='1b910808d9947ac263d9863a'>
+    <input type='hidden'  name='spBlogCmtID' value=''>
+    <input type='hidden'  name='spRefURL' value=''>
+</form>
+
+
+
+
+
+
+<div id="in_send">
+
+<a name="send"></a>
+
+<form name="form1" id="popFormSubmit" action="/hplonline/commit" method="post" onSubmit="return checkcmtform()">
+
+<input type="hidden" name="bdstoken" value="">
+
+<input type="hidden" name="ct" value="8">
+
+<input type="hidden" name="cm" value="1">
+
+<input type="hidden" name="spBlogID" value="1b910808d9947ac263d9863a">
+
+<input type="hidden" name="spRefURL" id="spRefURL" />
+
+<script>
+
+    document.getElementById("spRefURL").value = window.location.href;
+
+</script>
+
+<div class="tit">发表评论：</div>
+
+<table width="620" border="0" cellspacing="5" cellpadding="0">
+
+
+
+
+
+<tr id="2_err" style="display:none">
+
+<td>&nbsp;</td>
+
+<td><div class="error" id="2_err_con"></div></td>
+
+</tr>
+
+
+
+<tr>
+
+<td valign="top" class="f14" id="reTitle">内　容：</td>
+
+<td>
+	<textarea name="spBlogCmtText" id="spBlogCmtText" style="width:520px;height:155px"  tabindex="3" onFocus="hidErr(3);" onclick="BdUtil.relogin(); return false;" ></textarea>
+</td>
+
+</tr>
+
+<tr id="3_err" style="display:none">
+
+<td>&nbsp;</td>
+
+<td><div class="error" id="3_err_con"></div></td>
+
+</tr>
+
+
+
+
+<tr>
+
+<td valign="top"class="f14">&nbsp;</td>
+
+<td valign="top" class="f14"><input id="btn_ok" name="btn_ok" type="submit" autocomplete="off" onclick="BdUtil.relogin(); return false;" value="发表评论" tabindex=5>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="cancleReLink" onClick="canclereply(); return false;" style="display:none; font-size:12px;color:#666;">取消回复</a></td>
+
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+
+
+
+
+
+
+
+
+<br>
+
+</div>
+
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" height="8">
+
+<tr><td class="modbl" width="7">&nbsp;</td>
+
+<td class="modbc">&nbsp;</td>
+
+<td class="modbr" width="7">&nbsp;</td>
+
+</tr></table>
+
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<div class="clearfix"></div>
+<div style="text-align:center;margin:30px auto 0px;padding-bottom:15px;font-family:Arial,simsun;font-size:12px;">
+	<div style="margin:0 auto 6px;">
+		<a href="http://help.baidu.com/question?prod_en=space" target="_blank" style="color:#00C;text-decoration: underline;">帮助中心</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://tieba.baidu.com/f?kw=%B0%D9%B6%C8%BF%D5%BC%E4&fr=wwwt" target="_blank" style="color:#00C;text-decoration: underline;">空间客服</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://tousu.baidu.com/hi/add" target="_blank" style="color:#00C;text-decoration: underline;">投诉中心</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://www.baidu.com/search/hi_contract.html" target="_blank" style="color:#00C;text-decoration: underline;">空间协议</a>
+	</div>
+	<div style="color:#7A77C8;">&copy;2011&nbsp;Baidu</div>
+</div>
+
+
+</center>
+
+<ul id="blogCmtContentList" style="display:none;">
+
+ <li id="blogCmtContent_1">翻译的很是不错，参考这看原文很舒服了</li>
+
+</ul>
+
+<!--inc_getmsgnum.html-->
+
+<iframe id="submitiframe" name="submitiframe" src="/st/blank.html" style="display:none;"></iframe>
+<script src="http://hi.bdimg.com/static/base/js/conf/comment.js?v=111" type="text/javascript"></script>
+
+<script type="text/javascript" src="/ui/scripts/blog/detailpage.js?v=1.1"></script>
+			
+
+
+<script type="text/javascript">
+/*<![CDATA[*/
+
+var SP = SP || {};
+if(!SP.mycard){
+    SP.mycard = new (function(){
+        var me = this;
+        var _cancleAction = Session.isDrag;  
+        var _list = [];
+        var _sourceLoaded = false;    
+        me.bind = function (_id){
+            if(_cancleAction){  //abort
+                return;
+            }
+            if(!_sourceLoaded){
+                _list.push(_id);
+            } else {
+                baidu.space.mycard.bind(_id);
+            }
+        }
+        me.init = function (_config){
+            _cancleAction = !!_config.cancle;
+        }
+        me.onSourceLoaded = function (){
+            _sourceLoaded = true;
+            baidu.space.mycard.init({portrait: Session.visitorPortrait});
+            for(var i=0,len=_list.length; i<len; i++){
+                baidu.space.mycard.bind(_list[i]);
+            }
+        }
+    })();
+    baidu.dom.ready(function(){
+        BdAjax.loadCSS('/ui/css/ucard/ucard.css?v=020507100.css');
+        BdAjax.loadJS('/ui/scripts/ucard/ucard.js?v=020507100.js');
+    });
+}
+SP.mycard.bind('m_blog');  
+/*]]>*/
+</script>
+
+<script type="text/javascript">
+    //*****there is some function。
+    function checkMail(s)
+
+    {
+
+        var pattern=/\w+@\w+\.[a-z]+/;
+
+        if(pattern.test(s))
+
+        {
+
+           return true;
+
+        }
+
+        else
+
+       {
+
+          return false;
+
+       }
+
+    }
+
+
+
+
+
+    function checkeandu(eanduid)
+
+    {
+
+        var eanduvalue=baidu.G(eanduid).value;
+
+        var len=baidu.string.getByteLength(eanduvalue);
+
+        if(len>128)
+
+        {
+
+            showErr(2,"您输入的网址或邮箱太长，请保持在128字节以内。");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+             return true;
+
+        }
+
+
+
+    }
+
+
+
+
+
+    function checkname(strid)
+
+    {
+
+        var ele=baidu.G(strid);
+
+        var len=baidu.string.getByteLength(ele.value);
+
+        if(len>49)
+
+        {
+
+            showErr(1,"您输入的姓名太长，请保持在49字节以内。");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+            if(len==0)
+
+            {
+
+                baidu.G(strid).value="匿名网友";
+
+            }
+
+             return true;
+
+        }
+
+
+
+    }
+
+
+
+    function checktext(textid)
+
+    {
+
+            var tempStr='';
+
+            var isLightFont=false;
+
+            if(editor&&textid=="spBlogCmtText"){
+
+                tempStr=editor.getHtml();
+                
+                /*
+                //火星文处理，能不碰它就别碰它
+                tempStr=tempStr.replace(/<span style="filter:glow\(color=#([0-9a-z]{3,6}),strength=2\);height:0px;color:#([0-9a-z]{3,6})">/ig,'');
+
+                tempStr=tempStr.replace(/<\/span>/ig,'');
+                */
+
+                baidu.G("spBlogCmtText").value=tempStr;
+
+                isLightFont=!(tempStr==editor.getHtml());
+
+            }
+
+
+            var str=baidu.string.trim(baidu.G(textid).value);
+            baidu.G(textid).value=str;
+
+            
+
+            len=str.length;
+
+            if(len==0 || ((/^[\s,　]+$/gi).test(str)) )
+
+            {
+
+                showErr(3,"您必须输入评论内容，请检查。");
+
+                return false;
+
+            }
+
+            else
+
+            {
+
+                    var maxLength=isLightFont?916:1000;
+
+                    if(len > maxLength)
+
+                    {
+
+                        showErr(3,"您输入的评论内容太长，请保持在500字以内。");
+
+                        return false;
+
+                    }
+
+                    if(editor&&textid=="spBlogCmtText"){
+
+                        baidu.G("spBlogCmtText").value=editor.getHtml();
+
+                        baidu.G(textid).value=str;
+
+                    }
+
+
+
+                return true;
+
+            }
+
+    }
+
+
+
+    function showErr(index,str)
+
+    {
+
+        baidu.G(index+"_err").style.display="";
+
+        baidu.G(index+"_err_con").innerHTML=str;
+
+    }
+
+    function hidErr(index)
+
+    {
+
+        baidu.G(index+"_err").style.display="none";
+
+        baidu.G(index+"_err_con").innerHTML="";
+
+    }
+
+
+
+    function alertPop(tit,con)
+
+    {
+
+        var pop=new Popup({ contentType:4,isReloadOnClose:false,width:340,height:80});
+
+        pop.setContent("title",tit);
+
+        pop.setContent("alertCon",con);
+
+        pop.build();
+
+        pop.show();
+
+    }
+
+
+
+    function cmtfull()
+
+    {
+
+        var cnum=1;
+
+        if(cnum>=50000)
+
+        {
+
+            alertPop("发表评论","单篇日志评论数最多为50000条.");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+            return true;
+
+        }
+
+    }
+
+
+	function showCmtSuccess(){
+		ShareBlog.showCmtShareResult(0);
+	}
+
+
+    function checkcmtform()
+
+    {
+
+        if(checkname("spBlogCmtor")&&checkeandu("spBlogCmtURL")&&checktext("spBlogCmtText")&&cmtfull())
+
+        {
+            if(baidu.g("shareBlog").checked && !ShareBlog.isHostReply){
+                baidu.g("shareBlogEchoback").value = "shareblog"; 
+                ShareBlog.submit(Session.spToken);
+            }else{
+                baidu.g("shareBlogEchoback").value = "";
+            }
+            location.hash = "lastcmt";
+            submitForm();
+
+            return true;
+
+        }
+
+        else
+
+        {
+
+            return false;
+
+        }
+
+    }
+
+
+
+    var g_pop=null;
+
+    function submitForm()
+
+    {
+
+        g_pop=new Popup({ contentType:1,isReloadOnClose:false,width:340,height:80});
+
+        g_pop.setContent("title","添加评论");
+
+        g_pop.setContent("contentUrl","");
+
+        g_pop.setContent("someDisabledBtn","btn_ok");
+
+        g_pop.build();
+
+        G("popFormSubmit").target=g_pop.iframeIdName;
+
+        g_pop.show();
+
+    }
+
+
+
+    function g_close_pop()
+
+    {
+
+        g_pop.close();
+
+    }
+
+
+
+    function formatonlinpic()
+
+    {
+
+        var picobj=document.getElementsByName("onlinepic");
+
+        var picnum=picobj.length;
+
+
+
+        for(var i=0;i<picnum;i++)
+
+        {
+
+            if(picobj[i].width>200)
+
+            {
+
+                picobj[i].width=200;
+
+            }
+
+            if(picobj[i].height>200)
+
+            {
+
+                picobj[i].height=200;
+
+            }
+
+        }
+
+        try{baidu.G("btn_ok").disabled = "";}catch(e){}
+
+    }
+
+
+
+    function addToFavor(){
+
+        var blogTitle='[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）'.replace(/&#39;/g,'\'');
+
+        window.open('http://cang.baidu.com/do/add?it='+encodeURIComponent(blogTitle+'_百度空间')+'&iu='+encodeURIComponent(location.href)+'&fr=sp#nw=1','_s','scrollbars=no,width=600,height=450,right=75,top=20,status=no,resizable=yes');
+
+        return false;
+
+    }
+
+    function addToiTieba(){
+        var blogTitle='[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）'.replace(/&#39;/g,'\'');
+        window.open('http://tieba.baidu.com/i/sys/share?link='+encodeURIComponent('http://hi.baidu.com/hplonline/blog/item/1b910808d9947ac263d9863a.html')+'&type=text&title='+encodeURIComponent(blogTitle)+'&content=');
+    }
+
+    function addToShare(){
+        window.open('http://apps.hi.baidu.com/share/?url='+encodeURIComponent('http://hi.baidu.com/hplonline/blog/item/1b910808d9947ac263d9863a.html'));
+    }
+
+
+    /* some functions for cmt-reply */
+    var g_cmtorInfo = [];
+    function goCmtReply(cmtPorID){
+        //如果是主人的话，回复别人的评论，是不需要显示分享的
+        
+
+        cmtreply(g_cmtorInfo[cmtPorID],cmtPorID);
+    }
+    function cmtreply(cmtName,cmtPorID)
+
+    {
+
+        cmtName=cmtName.replace(/<|>/g,"");
+
+        window.location.hash="#send";
+
+        var cmtForm=document.form1;
+
+        cmtForm.cm.value="3";
+
+        if(!cmtForm.spReferTarget)
+
+        {
+
+            var ipt=document.createElement("input");
+
+            ipt.type="hidden";
+
+            ipt.name="spReferTarget";
+
+            ipt.value=cmtPorID;
+
+            cmtForm.appendChild(ipt);
+
+        }else cmtForm.spReferTarget.value=cmtPorID;
+
+
+
+
+
+         //G("reTitle").innerHTML="回复"+cmtName+"：";
+
+         G("cancleReLink").style.display="";
+
+         cmtForm.btn_ok.value="回复评论";
+
+
+
+
+
+         try{
+
+            editor.window.focus();
+
+            editor.window.document.body.innerHTML="回复"+cmtName+"：";
+
+
+
+            var w = editor.window;
+
+            if(w.getSelection){
+
+                var d = w.document;
+
+                var s = w.getSelection();
+
+                var r = d.createRange();
+
+                r.setStartAfter(d.body.firstChild);
+
+                r.setEndAfter(d.body.lastChild);
+
+                s.removeAllRanges();
+
+                s.addRange(r);
+
+            }
+
+        }catch(e){
+
+                try{
+
+                    cmtForm.getElementsByTagName("textarea")[0].focus();
+
+                    cmtForm.getElementsByTagName("textarea")[0].value="回复"+cmtName+"：";
+
+                }catch(e){}
+
+        }
+
+    }
+
+
+
+    function canclereply()
+
+    {
+        //主人可以分享自己的文章
+        ShareBlog.cancelReply();
+
+        var cmtForm=document.form1;
+
+        cmtForm.cm.value="1";
+
+        try{cmtForm.removeChild(cmtForm.spReferTarget);}catch(e){}
+
+        /*
+
+        try{
+
+                var cmt=cmtForm.getElementsByTagName("textarea")[0]
+
+                cmt.value="";
+
+                cmt.focus();
+
+        }catch(e){}
+
+        */
+
+
+
+        try{
+
+                var ed=editor.window.document.body;
+
+                ed.innerHTML="";
+
+                editor.window.focus();
+
+            }catch(e){
+
+                var cmt=cmtForm.getElementsByTagName("textarea")[0];
+
+                cmt.value="";
+
+                cmt.focus();
+
+        }
+
+
+
+        G("cancleReLink").style.display="none";
+
+        cmtForm.btn_ok.value="发表评论";
+
+    }
+
+
+
+    function gotoreply()
+
+    {//to checking whether reply cmt
+
+        if( window.location.hash.indexOf("&re=1")<0) return;
+
+        var cmtID=window.location.hash.split("&")[0].replace("#","");
+
+        var cmtlinks=document.getElementsByTagName("a");
+
+        for(var i=0,n=cmtlinks.length;i<n;i++)
+
+        {
+
+            if(cmtlinks[i].name==cmtID){ var rename=cmtlinks[i].getAttribute("rename");  repid=cmtlinks[i].getAttribute("repid"); break;}
+
+        }
+
+        if(typeof(rename)!="undefined"){
+
+            cmtreply(rename, repid);
+
+        }
+
+    }
+
+    
+    
+    function f_focus(){
+        getVcode();
+    }
+    function getVcode(){
+        var url="http://hi.baidu.com/sys/file/getvcode?echoback=getVcodeDone&t="+(new Date().getTime());
+        BdAjax.loadJS(url)
+    }
+
+    function getVcodeDone(vcode){
+        document.form1.spVcode.value=vcode;
+        var imgsrc="http://hiup.baidu.com/cgi-bin/genimg?"+vcode;
+        G('verifypic').src=imgsrc;
+        G('yanzheng').style.display="block";
+    }
+    function newverifypic(){
+        getVcode();
+        return false;
+    }
+
+    function blogdel(str)
+
+    {
+
+        var pop=new Popup({ contentType:3,isReloadOnClose:false,width:340,height:80});
+
+        pop.setContent("title","删除文章");
+
+        pop.setContent("confirmCon","您确定要彻底删除这篇文章及其所有评论吗？");
+
+        pop.setContent("callBack",delCallback);
+
+        pop.setContent("parameter",{fid:str,popup:pop});
+
+        pop.build();
+
+        pop.show();
+
+        return false;
+
+    }
+
+    
+    function delCallback(para)
+
+    {
+        if(!para["popup"])return;
+
+        var o_pop=para["popup"];
+
+        o_pop.config.contentType=1;
+
+        o_pop.setContent("contentUrl","");
+
+        o_pop.reBuild();
+
+        G(para["fid"]).target=o_pop.iframeIdName;
+        eval("document.draft"+para["fid"]).submit();
+
+        eval("document."+para["fid"]).submit();
+
+    }
+
+
+
+    var _Space = _Space || {};
+    
+    /********这里的东西，是用来生成评论列表的**********/
+   _Space.commentOperate = (function(){
+      /*blog评论的浏览*/
+    var total_page = 0,
+        cmtNumPerPage = 50,
+        nowPage = 0,
+	    count = 1,
+	    comment = new Space.Pubs.Comment(Session.spSpaceDomain+"/cmt/spcmt/");
+    //分页的组件
+   var pager = (function () {
+	var pageNum = '#p#';
+	var MAX = 10;
+    function getPageBar(allPn, nowPn, tplstr) {
+        var Max = 10;
+		allPn = Number(allPn);
+		nowPn = Number(nowPn) + 1; 
+		if (allPn <= 1) {
+			return " &nbsp;";
+		}
+        var _html = [];
+        var startPn = Math.max(1, nowPn - Math.floor(MAX / 2));
+		var endPn = Math.min(allPn, startPn + MAX - 1);
+		startPn = Math.max(1, endPn - MAX + 1);
+        if (nowPn > 1) {
+			_html.push('<a', tplstr.replace('#p#', 0), '>[首页]</a> ');
+			_html.push('<a', tplstr.replace('#p#', (nowPn - 1 - 1)), '>[上一页]</a> ');
+		}
+        for (var i = startPn; i <= endPn; i++) {
+			if (i == nowPn) {
+				_html.push('<span>', i, '</span> ');
+			} else {
+				_html.push('<a', tplstr.replace('#p#', i - 1), '>[', i, ']</a> '); 
+			}
+		}
+		if (nowPn < allPn) {
+			_html.push('<a', tplstr.replace('#p#', nowPn), '>[下一页]</a> ');
+			_html.push('<a', tplstr.replace('#p#', (allPn - 1)), '>[尾页]</a> ');
+		}
+       return _html.join('');
+	}
+	return {
+		render: getPageBar
+	}
+})();
+
+//获取评论数据后，callback，在页面上展现
+var viewCallBack = function(data){
+    var response = data;
+    if(response.err_no == 0){
+    if (response.body.data && response.body.total_count) {
+        var all_page = Math.ceil(response.body.total_count / cmtNumPerPage);
+        total_page = all_page - 1;
+        if("#lastcmt" == location.hash){
+            location.hash = ""+total_page;
+            view(total_page);
+            
+            return;
+        }
+        var output = [];
+        baidu.each(response.body.data, function (list) {
+            output.push(generateHtml(list));
+
+        });
+        count = 1;
+        baidu.G('userCommentList').innerHTML = output.join('');
+        baidu.G('blogCmtCount').innerHTML = response.body.total_count;
+        
+        baidu.G('page').innerHTML = pager.render(all_page, nowPage, ' href="#"  onclick="_Space.commentOperate.view(#p#);return false;"');
+        filterCmtContent('userCommentList');//在非ie浏览器对闪光字做处理
+        SP.mycard.bind('m_blog'); 
+       //锚点会让链接的颜色发生变化，用js来实现锚点功能
+        var scrollObj = baidu.g("in_comment"); 
+        if(scrollObj){
+		 scrollObj.scrollIntoView();
+	    }    
+	
+     }
+ }
+};
+ 
+    var generateHtml = function(data) {
+	var generateOprate = function(type,id,portraitId,cmtname,isHost, isAnnony, canReply, isMobile) {
+		var data = [];
+		if (isMobile) {
+			data.push('  <a href="http://hi.baidu.com/hi/cms/article/help_phone/index.html" target="_blank" style="text-decoration:none;">来自手机<img src="http://img.baidu.com/hi/img/mobile.gif" align="absmiddle" border="0"/></a>');
+		}
+		if (canReply && isCmtAllow) {
+			if (isAnnony) {
+				data.push(' | <a href="#" onclick="BdUtil.relogin();return false;">回复</a>');
+			} else {
+				data.push(' | <a href="#" onclick="goCmtReply(\'' + portraitId + '\');return false;">回复</a>');
+			}
+		}
+       if (isHost) {              
+			data.push(' | <a href="#" onclick="_Space.commentOperate.deleteCmt(\'' + id + '\');return false;">删除</a>');
+			var cName = type==1?cmtname:'';
+			data.push(' | <a href="#" onclick="userSpam.tipBlogCmt(this,\'' + cName + '\',\'' + id + '\',\'' + blogId + '\'); return false;">举报</a>');
+			
+	
+		}
+		return data.join("");
+	};
+    var generateUser = function(type, id, cmtname, cmturl, portraitId) {
+		if ("1" == type) {
+			return "<a  href='{1}' target='_blank' class='ucard' pid='{2}'><img border='0' src='http://tx.bdimg.com/sys/portraitn/item/{2}.jpg'><br />{3}</a>".format(id, cmturl, portraitId, cmtname);
+		} else {
+			if (cmtname == "" || cmtname == "匿名网友") {
+				if (cmturl == "") {
+					return "<a>匿名网友</a>";
+				} else {
+
+					return "<a href='{1}' target='_blank' class='ucard' pid='{0}'>{2}</a>".format(portraitId, cmturl, cmtname);
+
+				}
+
+			} else {
+				if (cmturl == "") {
+					return "<div class='f14' style='display:inline'>网友:<a>{0}</a></div>".format(cmtname);
+				} else {
+					return "<div class='f14' style='display:inline'>网友:<a href='{1}' target='_blank' title='{1}'>{2}</a></div>".format(id, cmturl, cmtname);
+				}
+
+			}
+
+		}
+	};
+    var type = 0,
+	isMobile = data.reserved1,
+	isHost = Session.isHost,
+	isAnnony = Session.visitorPortrait == '00000000' ? true: false,
+	portraitId = data.portrait,
+	canReply = portraitId == Session.visitorPortrait ? false: true,
+	id = data.reply_id_enc,
+	cmtname = data.un,
+	cmturl = cmtname ? 'http://hi.baidu.com/sys/checkuser/' + cmtname + '/1': '',
+	isCmtAllow =  true ,
+	blogId = "1b910808d9947ac263d9863a";
+	if (cmtname && cmturl && portraitId) {
+		type = 1;
+	}
+	g_cmtorInfo[portraitId] = cmtname;
+
+	var html = [],
+        perPage = cmtNumPerPage,
+        listCount = count + nowPage*perPage;
+    html.push('<a name="'+id+'" rename="'+cmtname+'" repid="'+portraitId+'"></a>');
+	html.push('<table width="100%" border="0" cellspacing="0" cellpadding="0" class="item" style="table-layout:fixed;word-wrap:break-word;overflow:hidden;"><tr>');
+	html.push('<td valign="top" class="index" width="5%">'+listCount+'</td>');
+    html.push('<td align="center" valign="top" width="10%"><div class="user" style="overflow:hidden;">');
+	html.push(generateUser(type, id, cmtname, cmturl, portraitId));
+	html.push('</div></td><td class="cnt" style="padding-left:20px;">');
+    html.push('<span class="date">');
+	var pattern='yyyy-MM-dd HH:mm';
+	var date_time = new Date();
+    date_time.setTime(parseInt(data.cdatetime) * 1000);
+    html.push(baidu.date.format(date_time,pattern));
+	html.push(generateOprate(type,id,portraitId,cmtname,isHost, isAnnony, canReply, isMobile));
+	html.push("</span>")
+	html.push('<div class="desc" style="overflow:hidden;word-break:normal;"  name="cmtcontent">');
+	html.push(data.content);
+    html.push('</div></td></tr></table>');
+	html.push('<div class="line">&nbsp;</div>');
+	count++;	
+	return html.join("");
+	
+};
+   //获取评论列表
+var  view = function(page){
+   var  threadId ="1b910808d9947ac263d9863a";
+   page = page || 0;
+   var obj={"thread_id_enc":threadId,"callback":"_Space.commentOperate.viewCallBack","start":page*cmtNumPerPage,"count":cmtNumPerPage,"orderby_type":0};
+   nowPage = page;
+   comment.view(obj);
+};
+	
+	
+	
+            function deleteCmt(cid){
+            var pop=new Popup({ contentType:3,isReloadOnClose:false,width:340,height:80});
+
+            pop.setContent("title","删除评论");
+
+            pop.setContent("confirmCon","您确定要彻底删除这条评论吗？");
+
+            pop.setContent("callBack", function(){
+            
+                var o_pop=pop;
+                var _F = baidu.G('blogCmtSubmitForm');
+                _F.spBlogCmtID.value=cid;
+                _F.spRefURL.value = window.location.href;
+
+                o_pop.config.contentType=1;
+
+                o_pop.setContent("contentUrl","");
+
+                o_pop.reBuild();
+
+                _F.target=o_pop.iframeIdName;
+
+                _F.submit();
+            });
+
+            pop.build();
+
+            pop.show();
+
+            return false;
+        }
+          
+		  function filterCmtContent(n){
+
+            if(!baidu.browser.ie){
+
+                var defaultfilter1='<span style="filter:glow(color=#000000,strength=2);height:0px;color:#000000">';
+
+                var defaultfilter2='<span style="height: 0px; color: rgb(0, 0, 0);">';
+
+                var commentDiv=document.getElementById(n);
+
+                var divs=commentDiv.getElementsByTagName('div');
+
+                var d,tmp;
+
+                for( var i=0,len=divs.length;i<len;i++){
+
+                    d=divs[i];
+
+                    if(d.getAttribute('name')=='cmtcontent'){
+
+                        tmp=d.innerHTML;
+
+                        tmp=tmp.replace(/<span style="filter:glow\(color=#([0-9a-z]{3,6}),strength=2\);height:0px;color:#([0-9a-z]{3,6})">/ig,defaultfilter1);
+
+                        tmp=tmp.replace('<span style="height: 0px; color: rgb(255, 255, 255);">',defaultfilter2);
+
+                        d.innerHTML=tmp;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return {
+            view : view,
+			viewCallBack : viewCallBack,
+            deleteCmt : deleteCmt
+        }
+        
+    })();
+    
+    /**********分享该文章的用户功能**********/
+    
+    _Space.BlogSharedUser=(function(){
+
+        function showList(obj){
+            var count = obj.count || 0,i=0,html=[],len=obj.list.length,item;
+            if(count && len){
+                html[html.length] = '<div class="tit" style="margin-bottom:12px;">已有'+count+'人分享了这篇文章：</div>';
+                html[html.length] = '<table width="100%"><tbody><tr>'
+                for(;i<len;i++){
+                    item=obj.list[i];
+                    html[html.length] = '<td width="10%" valign="bottom" align="center" class="user"><a class="ucard" target="_blank" pid="'+item.portrait+'" href="http://hi.baidu.com/sys/checkuser/'+item.uname+'/3"><img border="0" src="http://tx.bdimg.com/sys/portraitn/item/'+item.portrait+'.jpg" style="display:block"><div style="width:75px;overflow:hidden;height:18px;">'+item.uname+'</div><a href="http://apps.hi.baidu.com/share/user/'+item.portrait+'" target="_blank">Ta的分享</a></a></td>';
+                }
+                html[html.length] = '<td width="100%"></td></tr></tbody></table>';
+                G('share_user_list') && (G('share_user_list').innerHTML = html.join(''));
+                SP.mycard.bind('share_user_list'); 
+            }
+        }
+
+        function getData(){
+            var url = "http://apps.hi.baidu.com/share/getsourceshare?url=http://hi.baidu.com"+encodeURIComponent("/hplonline")+"/blog/item/1b910808d9947ac263d9863a.html&callback=_Space.BlogSharedUser.showList&asyn=1&r="+Math.random();
+            BdAjax.loadJS(url);
+        }
+
+        return {
+            getData : getData,
+            showList : showList
+        }
+    })();
+    
+
+    
+    /*********相关文章的显示函数********/
+    _Space.RelatedDoc=(function(){
+
+        function HI_MOD_IN_RELATED_DOC_CALLBACK(arg){
+
+            if(arg.length <= 1) return false;
+
+            var hasMore = arg[0];
+
+            var D=function(A,B){A[A.length]=B;}
+
+            if(arg.length % 2 == 0) D(arg, ["","","",""]);
+
+
+
+            var html = ['<div id="in_related_doc" onclick="relative_Click()"><div class="tit">相关文章：</div>'];
+
+            D(html, '<table cellpadding="0" cellspacing="3" border="0">');
+
+            for(var i = 1, j = arg.length; i < j; i += 2){
+
+                D(html, '<tr>');
+
+                D(html, '<td width="15px"><a style="font-size:25px" >&#8226;</a></td><td><a href="http://hi.baidu.com/' + arg[i][3] + '/blog/item/' + arg[i][2] + '.html" target="_blank" title="' + arg[i][0] + '">' + arg[i][1] + '</a>');
+
+                D(html, new Array(10).join('\u3000'));
+
+                D(html, '</td>');
+
+                if(arg[i + 1][0] != "")
+
+                    D(html, '<td width="15px"><a style="font-size:25px" >&#8226;</a></td><td><a href="http://hi.baidu.com/' + arg[i + 1][3] + '/blog/item/' + arg[i + 1][2] + '.html" target="_blank" title="' + arg[i + 1][0] + '">' + arg[i + 1][1] + '</a></td>');
+
+                else
+
+                    D(html, '<td>&nbsp;</td><td>&nbsp;</td>');
+
+                D(html, '</tr>');
+
+            }
+
+            if(hasMore) D(html, '<tr><td colspan="4"><a target="_blank" href="/sys/search?pageno=1&type=7&sort=1&word=%5Bpaper%5D%20XORs%20in%20The%20Air%3A%20Practical%20Wireless%20Network%20Coding%A3%A8%B7%AD%D2%EB%A1%A2%C8%FD%A3%A9&item=1b910808d9947ac263d9863a">更多&gt;&gt;</a></td></tr>');
+
+            D(html, '</table></div><div class="line">&nbsp;</div>');
+
+
+
+            var div = document.getElementById('in_related_tmp');
+
+            if(div){
+
+                div.innerHTML = html.join('');
+
+                while(div.firstChild){
+
+                    div.parentNode.insertBefore(div.firstChild, div);
+
+                }
+
+                div.parentNode.removeChild(div);
+
+            }
+
+
+        }
+
+        window.HI_MOD_IN_RELATED_DOC_CALLBACK = HI_MOD_IN_RELATED_DOC_CALLBACK;
+
+        function show(){
+            if( baidu.G('in_related_tmp') )
+            baidu.sio.callByServer("/sys/search?type=8&word=%5Bpaper%5D%20XORs%20in%20The%20Air%3A%20Practical%20Wireless%20Network%20Coding%A3%A8%B7%AD%D2%EB%A1%A2%C8%FD%A3%A9&item=1b910808d9947ac263d9863a");
+        }
+
+        return {
+            show : show
+        }
+
+    })();
+    
+
+    /*********最近读者*********/
+    _Space.latestReader=(function(){
+        var g_read=[
+
+        
+
+        ["zm0011","f2a45a4d303031315b03","ZM0011"],
+
+        
+
+        ["snowworld2008","cfaa736e6f77776f726c64323030387c03","snowworld2008"],
+
+        
+
+        ["choosetea","ee8063686f6f73657465618013","choosetea"],
+
+        
+
+        ["338shiyanshi","444333333873686979616e7368690315","338shiyanshi"],
+
+        
+
+        ["qiuqiujie12","36b27169757169756a69653132fe0f","qiuqiujie12"],
+
+        
+
+        ["longlupanda","46196c6f6e676c7570616e64618406","longlupanda"],
+
+        
+
+        ["chenpengfq","fb2c6368656e70656e676671b410","chenpengfq"],
+
+        
+
+        ["liaochengxiaoting","b1a06c74313533312a00","lt1531"],
+
+        
+
+        {}
+
+        ];
+
+        g_read.length=g_read.length-1;
+
+
+
+        var _rh1="";
+
+        var _rh2="";
+
+
+
+        function show(){
+
+            _rh1 += '<table width="100%" ><tr>';
+
+            _rh2+='<tr>';
+
+            if(!Session.isLogin){
+
+                _rh1+='<td align="center" width="10%" ><img border="0" width="55" height="55" src="http://img.baidu.com/hi/img/portraitn.jpg"></td>';
+
+                _rh2+='<td>&nbsp;</td>';
+
+                if(g_read.length>0){
+
+                    _rh1+='<td align="left" width="12%">';
+
+                }else{
+
+                    _rh1+='<td align="left" width="100%">';
+
+                }
+
+                _rh1+='<a href="https://passport.baidu.com/?login&tpl=sp&tpl_reg=sp&u='+myref+'" target="_self" onclick="BdUtil.relogin(); return false;">登录</a>后，您就出现在这里。</td>';
+
+                _rh2+='<td>&nbsp;</td>'
+
+            }
+
+            if(g_read.length==0){
+
+                if(Session.isLogin){
+
+                    _rh1+='<td align=left width="100%">最近还没有登录用户看过这篇文章……</td>';
+
+                    _rh2+='<td>&nbsp;</td>';
+
+                }
+
+            }else{
+
+                for(i=0,len=g_read.length;i<len;i++){
+
+                    _rh1+='<td align="center" valign="bottom" width="10%" class="user"><a href="/'+g_read[i][0]+'" target="_blank" class="ucard" pid="'+g_read[i][1]+'"><img border="0" src="http://tx.bdimg.com/sys/portraitn/item/'+g_read[i][1]+'.jpg"></a></td>';
+
+                    _rh2+='<td align="center" valign="top" class="user"><a href="/'+g_read[i][0]+'" target="_blank" class="ucard" pid="'+g_read[i][1]+'">'+g_read[i][2]+'</a></td>';
+
+                }
+
+            }
+
+            _rh1+='<td width="100%"></td></tr>';
+
+            _rh2+='<td></td></tr></table>';
+
+
+            baidu.dom.insertHTML("in_reader", "beforeEnd", _rh1+_rh2);
+
+        }
+
+        return {
+            show : show
+        }
+    })();
+    
+
+    /*********页面完成后执行的一些东西，比较乱，小心轻放**********/
+    _Space.pageDone = (function(){
+        
+        function initBlogTextForFCK(){
+            //fck init music
+            if(window.Node){Node.prototype.replaceNode=function(Node){this.parentNode.replaceChild(Node,this);}}
+            var imgBox=document.getElementsByName('musicName');
+            var isAutoPlay=true;
+            for(var i=0,n=imgBox.length;i<n;i++){
+                var img=imgBox[i];
+                if(img.getAttribute('rel')){
+                    var musicSrc=img.getAttribute('rel');
+                    var musicDiv = document.createElement("SPAN");
+                    var tmp=musicSrc.substr (musicSrc.indexOf('#')+1, 1);
+                    var tmpAutoPlay=(tmp=='1');
+                    if(isAutoPlay&&tmpAutoPlay){
+                        isAutoPlay=false;
+                        tmpAutoPlay=true;
+                    }else{
+                        tmpAutoPlay=false;
+                    }
+                    var shtml=creatbgmusic(musicSrc.substr(0,musicSrc.indexOf('#')).replace(/[\s><()'"]+/g,''),1,true,false,tmpAutoPlay,tmpAutoPlay,'FckMusicHelper');
+                    shtml=shtml.replace('width=100%','width=200').replace('width="100%"','width=200 height=45');			img.replaceNode(musicDiv);
+                    musicDiv.innerHTML=shtml;
+                    i--;n--;
+                }
+            }
+                //fck init vote
+            !function(){
+                var vote = document.getElementsByName('FCK_VOTE');
+                for(var i=0,len=vote.length,item,rel=0,cdiv;i<len;i++){
+                    item = vote[0];
+                    rel = item.getAttribute('rel')|0;
+                    if(rel){
+                        cdiv = document.createElement('span');
+                        item.parentNode.replaceChild(cdiv,item);
+                        baidu.swf.create({
+                            "id": "VOTE_FLASH_"+i,
+                            "width" : "585",
+                            "height": "100",
+                            "ver"   : "9.0.0",
+                            "wmode" : document.all ? "opaque" : "window",
+                            "allowscriptaccess" : "always",
+                            "url"   : "http://hi.bdimg.com/apps/appvote/spaceVote.swf?vote_id="+rel
+                        },cdiv)
+
+                    }
+                }
+            }()
+            //document.getElementById('blog_text').style.display='';
+        }
+        
+        function resizeBlogImg(){
+
+            if(document.getElementById("m_blog"))
+
+            {
+
+                var imgarray = document.getElementById("m_blog").getElementsByTagName('img');
+
+                var imgw = document.getElementById("m_blog").offsetWidth;
+
+                imgw =imgw-40;
+
+	            var imgs = []
+                for(var i=0; i<imgarray.length; i++){
+                    if(imgarray[i].className=="blogimg" && imgarray[i].width>=imgw) {
+                        imgs[i]=new Image();
+                        (function(_imgarray,_imgs,_i){
+                            _imgs[_i].onload=function(){
+                                var h=imgw/_imgs[_i].width*_imgs[_i].height;
+                                _imgarray[_i].height = h;
+                                _imgarray[_i].style.height=h+'px';
+                            };
+                        })(imgarray,imgs,i);
+                        imgs[i].src=imgarray[i].src;
+                        imgarray[i].width=imgw;
+                        imgarray[i].style.width=imgw+'px';
+                    }
+                }
+            }
+        }
+
+        function fixURLCopyBug(){
+        
+            // Fix ff bugs
+
+            var blog_text = document.getElementById('blog_text');
+            /**
+
+            blog_text.innerHTML = blog_text.innerHTML.replace(/href\s*=\s*("|')?(\.\.\/\.\.\/)/gi,"href=$1../$2");
+            */
+            /*modify by poker, to fix the flashalbum's static domain*/
+            var _blog_trans = blog_text.innerHTML.replace(/href\s*=\s*("|')?(\.\.\/\.\.\/)/gi,"href=$1../$2");
+            _blog_trans = _blog_trans.replace(/http:\/\/hi\.baidu\.com\/static\/album\/album\.swf/g,"http://hi.bdimg.com/static/album/album.swf");
+			_blog_trans = _blog_trans.replace(/`/g,"&#96;");
+            blog_text.innerHTML = _blog_trans;
+        }
+
+        function getPVData(){
+
+            var hstr="";
+
+            baidu.sio.callByServer("/hplonline/brwstat?key1=1&key2=9bf96927733afd03908f9db0_1b910808d9947ac263d9863a_");   
+        } 
+
+        function setpv(allnum)
+
+        {
+
+            var num = allnum.split('_');
+
+            baidu.G("result").innerHTML=num[0];
+
+        }
+
+        window.setpv = setpv;
+        
+        function initCmtEditor(){ //初始化浏览编辑器
+            var editor=null;
+
+            try{
+
+                editor=new BdEditor("spBlogCmtText",{width:"100%",height:"155px"});
+
+                editor.onfocus = function(){hidErr(3);}
+
+                editor.render();
+
+                //如果用户没有登陆，焦点进入编辑器，弹出登录框
+				
+                var editorCont=editor.window;
+				baidu.Q("ToolbarContainer",baidu.G("in_send"))[0].style.display="none";
+                baidu.on(editorCont,"focus",function(){
+				BdUtil.relogin();
+				return false;
+				});
+				
+
+            }catch(e){
+
+                var spBlogCmtText = document.getElementById("spBlogCmtText");
+                if(!spBlogCmtText ) return false;
+
+                var p = spBlogCmtText.previousSibling;
+
+                while(p && p.nodeType != 1) p = p.previousSibling;
+
+                if(p && /bdeditor_container/.test(p.id)){
+
+                    p.parentNode.removeChild(p);
+
+                }
+
+                spBlogCmtText.style.display = '';
+
+                editor=null;
+
+            }
+
+            
+
+            window.editor = editor;
+        }
+
+        function ok(){
+            getPVData();
+            resizeBlogImg();
+            fixURLCopyBug();
+            initBlogTextForFCK();
+            initCmtEditor();
+
+            gotoreply(); /* external fun*/
+        }
+
+        return {
+            ok : ok
+        }
+    })();
+	
+	function relative_Click(){
+		BdUtil.ns_trackerLink('m_20110329_relative_article','')
+	}
+    /********分段加载处理对象，实验性功能*********/
+    _Space.SectionLoad = (function(){
+
+        var loaded = false;
+
+        var sectioinList = [];
+
+        function complete(item){
+            item.isComplete = true;
+        }
+
+        function add(mod, loadCallback){
+
+            var mod = baidu.G(mod);
+            
+            sectioinList.push({"mod": mod, "callback":loadCallback});
+        }
+
+        function startLoad(item){
+            item['callback']();
+            complete(item);
+        }
+
+        function checkStat(){
+            if(sectioinList.length <= 0) return;
+
+            var pageTop2bottom=getPageTop2bottom();
+            
+            baidu.each(sectioinList, function(item, index){
+
+                if(! item.isComplete){
+                    if(getOffsetTop(item.mod)-100 <= pageTop2bottom)
+                        startLoad(item);
+                }
+            });
+        }
+
+        function getOffsetTop(mod){
+            return baidu.dom.getPosition(mod).top;
+        }
+
+        function getPageTop2bottom(){
+            var dsh = baidu.page.getScrollTop();
+            var dch = baidu.page.getViewHeight();
+
+            return dsh + dch;
+        }
+
+        
+        baidu.on(window, 'resize', checkStat);
+        baidu.on(window, 'onload', checkStat);
+        baidu.on(window, 'scroll', checkStat);
+        
+        return {
+            "add" : add
+        } 
+    })();
+
+    /*******Start Working！*******/
+    var _pageEndTime=(new Date().getTime()) - g_pageTimerStart;
+
+    baidu.on(window, 'load', function(){
+        var _pageLoadTime=(new Date().getTime()) - g_pageTimerStart;
+
+        BdUtil.hi_trackerLink('m_20101109_blogloadtime', _pageLoadTime+'|'+_pageEndTime);
+    });
+
+    /**********Step2***********/
+    _Space.pageDone.ok();
+
+    baidu.G('share_user_list') && _Space.SectionLoad.add('share_user_list', _Space.BlogSharedUser.getData);
+    baidu.G('in_related_tmp') && _Space.SectionLoad.add('in_related_tmp', _Space.RelatedDoc.show);
+    baidu.G('in_reader') && _Space.SectionLoad.add('in_reader', _Space.latestReader.show);
+    baidu.G('blogOpt') && _Space.SectionLoad.add('blogOpt', _Space.commentOperate.view);
+</script>
+
+
+
+
+	<script type="text/javascript" src="/ui/scripts/refer/refer.js"></script>
+	
+<link rel="stylesheet" type="text/css" href="/ui/css/userset.css" />
+<link rel="stylesheet" type="text/css" href="/ui/css/beautify/widget.css" />
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/beautifyconfig/default_user_suit.js"></script>
+
+<script type="text/javascript">
+//页面状态变量
+var Session = Session || {
+    spaceURL: "/hplonline",
+    pageURL: "http://hi.baidu.com/hplonline/blog/item/1b910808d9947ac263d9863a%2Ehtml",    //当前访问的url
+    isHost: "",         // 是否是空间主人
+    userName: "hplonline",   // 空间主人用户名
+    userNameEnc:    "hplonline", 
+    visitorName:    "",
+    visitorURL: "/index.html",        // 
+    refer: "",
+    spBasicURL:"hplonline",
+    spBasicURLEnc:"hplonline"
+};
+</script>
+<script src="/ui/scripts/beautify/render.js" type="text/javascript"></script>
+<script type="text/javascript">
+baidu.dom.ready(function(){
+    if(typeof spBeautifyConfigData != 'undefined'){
+        var _installList = spBeautifyConfigData.list;
+    } else {
+        spBeautifyConfigData = {};
+        _installList = [];
+    }
+    spBeautifyConfigData.currentDate  = Math.round((new Date('2011/11/26')).getTime() / 1000);    
+    BeautifyWidget.init({timeStamp: spBeautifyConfigData.currentDate, env: 'sys'});
+    BeautifyWidget.render(_installList);
+	if(Space && Space.ActiveTip){
+		if(baidu.g("active_space")){
+			window.active_tip=new Space.ActiveTip("tary_space_name",function(){
+				active_tip.hidden();
+				//activeSpace("pop_tip");
+				if(BdUtil && BdUtil.ns_trackerLink){
+					BdUtil.ns_trackerLink('nm_20101018_activeBlank',''); 
+				}
+				window.open('http://hi.baidu.com/reg/preihome?pageDomain=pop_tip');
+			//	window.location.href="http://hi.baidu.com/reg/preihome?pageDomain=pop_tip";
+				setTimeout(function(){
+					window.location.reload();
+				},1000);
+				
+			
+			});
+		}
+		window.succTip=function(spaceUrl){
+			active_dia.close();
+			//var tiphtml="<div><div class='setBlackcon'>恭喜您，激活成功！欢迎入驻百度空间！</div><div class='setBlackpanel'><div class='blackConfirmbtn' onclick=\"goIhome('"+spaceUrl+"')\">确认</div></div></div>";
+			BdDialog.Alert("恭喜您，激活成功！欢迎入驻百度空间！");
+			baidu.g("dialogYES").onclick=function(){
+				window.location.reload();
+			};	
+		};
+	}
+	
+});
+</script>
+
+
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/quickjs/auto.js"></script>
+<script>
+try{SCD.init("")}catch(e){}
+</script>
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/quickjs/blog_maidian_yali.js"></script>
+<script type="text/javascript">
+	baidu.dom.ready(function(){
+		if(BlogMaiDianYali && BlogMaiDianYali.isSwitchOn) {
+			var pageUrl = BlogMaiDianYali.detailPageUrl .replace("/{spaceurl}","/hplonline").replace("{blogid}","1b910808d9947ac263d9863a");
+			var divDom = document.createElement("div");
+			divDom.innerHTML = '<iframe src="' + pageUrl + '" style="display:none;">';
+			divDom.style.display = "none";
+			document.body.appendChild(divDom);
+		} 
+	});
+</script>
+</body>
+</html>

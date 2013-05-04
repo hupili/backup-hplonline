@@ -1,0 +1,2253 @@
+<!--STATUS OK-->
+
+
+<html><head><meta http-equiv=content-type content="text/html; charset=utf-8">
+<title>一个windows下的管道类。（互斥量，信号量，死锁，控制台IO）_霹雳在线_百度空间      </title>
+
+<style type="text/css">
+    .error{color:#FF0000;font-size:12px}
+    .shareUser,.shareLastEditor{line-height:20px;color:#666666;text-align:left}
+    .shareLastEditor{margin:5px 0 8px;}
+</style>
+
+<script type="text/javascript">
+    var g_pageTimerStart=new Date().getTime();
+</script>
+
+<script type="text/javascript" src="/ui/scripts/global.js"></script>
+<script type="text/javascript" src="/static/common/scripts/libs.js"></script>
+<script type="text/javascript" src="http://img.baidu.com/js/tangram-1.1.0.js"></script>
+
+
+<script type="text/javascript">
+var Session = {
+    isLogin: ! true,
+    isHost: "",
+    userName: "hplonline",   
+    userPortrait:'e60768706c6f6e6c696e65b500',
+    spaceURL: "/hplonline",
+    spBasicURL:"hplonline",
+    spBasicURLEnc:"hplonline",
+    visitorName:    "",
+    visitorPortrait:'00000000',
+    isActive: '',   
+    visitorURL: "/index.html",        // 
+    pageURL: "http://hi.baidu.com/hplonline/blog/item/f8ba3f2aeaf233355243c1c1%2Ehtml",    
+    refer: "",
+    spToken: '', 
+    spFriendDomain: 'http://frd.baidu.com',
+    spSpaceDomain: 'http://hi.baidu.com',
+    spPortraitDomain: '',
+    spSpaceStaticDomain: 'http://hi.baidu.com' 
+
+    ,isDrag:  false  
+    ,isProfile:  false   
+    ,isPortraitVerify:!true
+    };
+</script>
+
+</head>
+
+<body>
+
+<center>
+
+<script type="text/javascript">
+/*<![CDATA[*/
+if(top.location != self.location){
+	top.location = self.location;
+}
+var myref = encodeURIComponent("http://hi.baidu.com/hplonline/blog/item/f8ba3f2aeaf233355243c1c1%2Ehtml");
+/*]]>*/
+</script>
+<link rel="stylesheet" type="text/css" href="/ui/css/mods.css" />
+
+<link rel="stylesheet" type="text/css" href="http://hitn.bdimg.com/hplonline/css/item/963c2d7f982f070828388a8e.css" />
+
+<link rel="stylesheet" type="text/css" href="/space.css?v=20111116" />
+
+<div class="userbar">
+    <div id="nav">
+        <a class="logo" href="http://hi.baidu.com/index.htm">
+			<img src="http://img.baidu.com/hi/logo/logo_93_30.gif" border="0" alt="百度空间" />
+		</a>
+
+
+
+        <div class="manage no-login">
+            <form action="https://passport.baidu.com/?login" method="post">
+                用户名:<input type="text" name="username" />&nbsp;&nbsp; 
+                密码:<input type="password" name="password" /> 
+                <input type="hidden" name="mem_pass" value="on" />
+                <input type="submit" value="" style="width:0; height:0;" />
+                <a href="#" class="loginlink" onclick="this.parentNode.submit(); return false;">登录</a>  
+            </form> 
+            <a href="/reg/new" class="reglink">注册</a>
+        </div>
+
+    </div>
+</div>
+
+<script type='text/javascript' src='http://hi.bdimg.com/static/base/js/conf/base.js?v=20111121151724'></script>
+ <link rel='stylesheet' type='text/css' href='http://hi.bdimg.com/static/base/css/base.css?v=20111121151724'/>
+
+
+		
+
+
+
+<div id="main" align="left">
+
+<!--[if IE]>
+<script>
+var objmain = document.getElementById("main");
+function updatesize(){ var bodyw = window.document.body.offsetWidth; if(bodyw <= 790) objmain.style.width="772px"; else if(bodyw >= 1016) objmain.style.width="996px"; else objmain.style.width="100%"; }
+updatesize(); window.onresize = updatesize;
+</script>
+<![endif]-->
+
+	<div id="header">
+
+	<div class="lc"><div class="rc"></div></div>
+<div class="tit"><a href="/hplonline/home" class="titlink" title="hplonline的空间 http://hi.baidu.com/hplonline">霹雳在线</a></div>
+<div class="desc">保持沉默，用行动获得尊重</div>
+<div id="tabline">&nbsp;</div>
+
+	<div id="tab"><a href="/hplonline/home">主页</a><a href="/hplonline/blog" class="on">博客</a><a href="/hplonline/album">相册</a><span>|</span><a href="/hplonline/profile">个人档案</a>
+
+	<span>|</span><a href="/hplonline/friends">好友</a>
+
+
+<span>|</span><a href="http://tieba.baidu.com/i/sys/jump?un=hplonline&fr=spacebar" onclick="BdUtil.ns_trackerLink('m_20110330_spacebar','')" target="_blank">i贴吧</a>
+
+
+	</div>
+
+</div>
+
+
+
+<div class="stage">
+
+<div class="stagepad">
+
+<div style="width:100%">
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="modth">
+
+	<tr><td class="modtl" width="7">&nbsp;</td>
+
+	<td class="modtc" nowrap><div class="modhead"><span class="modtit">查看文章</span></div></td>
+
+	<td class="modtc" nowrap align="right"></td>
+
+	<td class="modtr" width="7">&nbsp;</td>
+
+	</tr></table>
+
+
+
+<div id="m_blog" class="modbox" style="overflow-x:hidden;">
+
+<div class="tit">
+
+一个windows下的管道类。（互斥量，信号量，死锁，控制台IO）</div>
+
+<div class="date">2010-06-13  14:31</div>
+
+
+
+
+<table style="table-layout:fixed;width:100%"><tr><td><div id="blog_text" class="cnt" >(hplonline)2010.6.13<br>
+<br>
+<font color="#0000ff">一。起因</font><br>
+<br>
+之前做了个字符串协议的<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/a23496824285c8b26d8119b0.html">引擎</a>，<br>
+后来基于这个引擎做点协议设计的实验。<br>
+<br>
+考虑了一下，引擎和上层协议之间用什么东西交互呢？<br>
+发送windows消息？<br>
+但是控制台程序，还要去获得句柄，并且改写窗口过程，<br>
+感觉比较麻烦，虽然也有办法得到控制台窗口句柄。（见<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/e9f38c18ddd9cbbd4bedbcf3.html">这里</a>）<br>
+<br>
+想到以前也接触过进线程同步的理论，<br>
+但没有实践过，于是顺便写个管道类备用。<br>
+<br>
+<font color="#0000ff">二。信号量(semaphore)</font><br>
+<br>
+以前粗略了解过<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/7a8a06336903a0f11b4cff5f.html">互斥量，信号量，事件，临界区</a>等几种同步机制。<br>
+对于信号量的认识比较浅，只认识到其用来做互斥之用。<br>
+<font color="#ff0000">其实信号量的关键在于，其含有一个当前计数，和最大计数。</font><br>
+利用这个特点，就可以实现有限数量资源的访问控制了。<br>
+<br>
+从MSDN上摘抄一下对semaphore的介绍，每段只记录大意。<br>
+<br>
+Semaphore Objects<br>
+A semaphore object is a synchronization object that maintains a count between zero and a specified maximum value. The count is decremented each time a thread completes a wait for the semaphore object and incremented each time a thread releases the semaphore. When the count reaches zero, no more threads can successfully wait for the semaphore object state to become signaled. The state of a semaphore is set to signaled when its count is greater than zero, and nonsignaled when its count is zero.<br>
+<br>
+<font color="#ff00ff">信号量的值可以在0和max之间。<br>
+当信号量的值为0的时候，为无信号状态。</font><br>
+<br>
+The semaphore object is useful in controlling a shared resource that can support a limited number of users. It acts as a gate that limits the number of threads sharing the resource to a specified maximum number. For example, an application might place a limit on the number of windows that it creates. It uses a semaphore with a maximum count equal to the window limit, decrementing the count whenever a window is created and incrementing it whenever a window is closed. The application specifies the semaphore object in call to one of the wait functions before each window is created. When the count is zero — indicating that the window limit has been reached — the wait function blocks execution of the window-creation code.<br>
+<br>
+A thread uses the CreateSemaphore or CreateSemaphoreEx function to create a semaphore object. The creating thread specifies the initial count and the maximum value of the count for the object. The initial count must be neither less than zero nor greater than the maximum value. The creating thread can also specify a name for the semaphore object. Threads in other processes can open a handle to an existing semaphore object by specifying its name in a call to the OpenSemaphore function. For additional information about names for mutex, event, semaphore, and timer objects, see Interprocess Synchronization.<br>
+<br>
+<font color="#ff00ff">使用CreateSemaphore创建信号量，可以指定一个名称，用于进程间同步。</font><br>
+<br>
+If more than one thread is waiting on a semaphore, a waiting thread is selected. Do not assume a first-in, first-out (FIFO) order. External events such as kernel-mode APCs can change the wait order.<br>
+<br>
+<font color="#ff00ff">等待同一信号量的多个线程不一定按照FIFO顺序得到信号量。</font><br>
+<br>
+Each time one of the wait functions returns because the state of a semaphore was set to signaled, the count of the semaphore is decreased by one. The ReleaseSemaphore function increases a semaphore's count by a specified amount. The count can never be less than zero or greater than the maximum value.<br>
+<br>
+<font color="#ff00ff">当wait函数返回的时候，信号量的值会减少1。<br>
+ReleaseSemaphore调用会使得信号量的值增加1。<br>
+计数值不会小于0，也不会比max更大。</font><br>
+<br>
+The initial count of a semaphore is typically set to the maximum value. The count is then decremented from that level as the protected resource is consumed. Alternatively, you can create a semaphore with an initial count of zero to block access to the protected resource while the application is being initialized. After initialization, you can use ReleaseSemaphore to increment the count to the maximum value.<br>
+<br>
+<font color="#ff00ff">初始值一般都被设置为max。<br>
+也可以先设置为0，然后程序进行初始化。<br>
+之后多次使用ReleaseSemaphore使计数值达到max。</font><br>
+<br>
+A thread that owns a mutex object can wait repeatedly for the same mutex object to become signaled without its execution becoming blocked. A thread that waits repeatedly for the same semaphore object, however, decrements the semaphore's count each time a wait operation is completed; the thread is blocked when the count gets to zero. Similarly, only the thread that owns a mutex can successfully call the ReleaseMutex function, though any thread can use ReleaseSemaphore to increase the count of a semaphore object.<br>
+<br>
+<font color="#ff00ff">线程可以重复地wait一个信号量，而且每次都减少其值。<br>
+对于互斥量（Mutex），只有拥有它的线程能够调用ReleaseMutex。<br>
+对于信号量（Semaphore），每个线程都可以使用ReleaseSemaphore。</font><br>
+<br>
+A thread can decrement a semaphore's count more than once by repeatedly specifying the same semaphore object in calls to any of the wait functions. However, calling one of the multiple-object wait functions with an array that contains multiple handles of the same semaphore does not result in multiple decrements.<br>
+<br>
+<font color="#ff00ff">线程重复wait，可以重复减少信号量的值。<br>
+但使用multi-wait函数，数组中重复放置该信号量，<br>
+不会产生多次减少的动作。</font><br>
+<br>
+可见，即使是把max和init计数都置为1的信号量，<br>
+与互斥量之间还是有着细微的区别的。<br>
+<br>
+<font color="#0000ff">三。管道的总体结构</font><br>
+<br>
+首先考虑的是存储问题。<br>
+由于管道中不断有东西进出，<br>
+并且同时存在管道中的内容有上限，<br>
+那么可以使用一个循环队列来实现。<br>
+<br>
+在管道的ctor中开启相关的空间，<br>
+在管道的dtor中销毁相关的空间即可。<br>
+<br>
+然后是同步机制的设计。<br>
+<br>
+对循环队列的访问是必须互斥的，<br>
+否则可能会出现操作结果不一致的情况。<br>
+比如两个线程同时对管道进行输入，<br>
+那么可能有这么一句话：<br>
+rear = rear + 1 ;<br>
+两个线程如果“一起”执行到这里，<br>
+最后可能出现rear只加了1，而非2的情况。<br>
+这样，就需要设置一个互斥量mutexLock，<br>
+用来控制对循环队列这种临界资源的访问。<br>
+<br>
+由于队列是有容量上限的，<br>
+所以需要有手段来记录已经消耗的存储空间。<br>
+开设一个semaphoreIn，初始的时候为容量上限，<br>
+每当要向管道输入的时候，需要等待这个信号量，<br>
+如果信号量为0，那么线程就阻塞。<br>
+这样就保证了不会超过队列的容量。<br>
+而从队列输出数据也是类似的，<br>
+当队列里面没有东西的时候，也不能操作。<br>
+开设一个semaphoreOut，初始的时候为0。<br>
+当放入一个数据，semaphoreOut增加，<br>
+取走一个数据，semaphoreOut减少。<br>
+如果semaphoreOut为0，那么线程阻塞，直到有数据输入。<br>
+<br>
+最后是两个关键操作：Input和Output。<br>
+两个操作的大体过程都是：<br>
+<font color="#ff0000">等待信号量、互斥量<br>
+操作<br>
+释放信号量、互斥量</font><br>
+<br>
+<font color="#0000ff">四。I/O流程和死锁</font><br>
+<br>
+先来看我最初流程：<br>
+<font color="#ff00ff"><br>
+输入：</font><br>
+wait for mutexLock<br>
+wait for semaphoreIn<br>
+input some data<br>
+release semaphoreOut<br>
+release mutexLock<br>
+<font color="#ff00ff">输出：</font><br>
+wait for mutexLock<br>
+wait for semaphoreOut<br>
+ouput some data<br>
+release semaphoreIn<br>
+release mutexLock<br>
+<br>
+乍看起来还像那么回事，<br>
+结果第一次跑就卡起来了。<br>
+<br>
+想了很久，才意识到同步顺序上存在问题，<br>
+所以搞出了可耻的死锁。。<br>
+<br>
+以上面的流程为例。<br>
+假设管道位于初始状态，则里面没有任何内容。<br>
+现在一个线程开始要求输出，<br>
+首先，该线程对mutexLock的等待会立即返回。<br>
+然后，该线程开始等待semaphoreOut。<br>
+由于semaphoreOut还是0，于是阻塞起了。<br>
+这个时候，有另外一个线程准备对管道进行输入。<br>
+本来的设想是，一旦有了输入，之前的线程就可以继续工作。<br>
+但实际情况是，这个输入线程对mutexLock的等待会阻塞。<br>
+这样，两边都卡起了，既不能输入，也不能输出。<br>
+<br>
+所以需要对流程顺序作出调整，<br>
+先对信号量进行等待，<br>
+得到信号量表示输入或者输出操作是可行的，<br>
+然后才对循环队列的锁进行等待。<br>
+<br>
+改正过后的流程为：<br>
+<br>
+<font color="#ff00ff">输入：</font><br>
+<br>
+wait for semaphoreIn<br>
+<font color="#ff0000">wait for mutexLock</font><br>
+input some data<br>
+<font color="#ff0000">release mutexLock</font><br>
+release semaphoreOut<br>
+<br>
+<font color="#ff00ff">输出：</font><br>
+<br>
+wait for semaphoreOut<br>
+<font color="#ff0000">wait for mutexLock</font><br>
+ouput some data<br>
+<font color="#ff0000">release mutexLock</font><br>
+release semaphoreIn<br>
+<br>
+对这个教训进行一点归纳，可以提升到方法论的层面：<br>
+<font color="#ff0000">对互斥量的等待和释放操作应该紧包对互斥资源访问的代码段。</font><br>
+（如同改正后流程中标红所示的内容）<br>
+<br>
+最后，就像WaitForSingleObject的参数所示，<br>
+对于等待操作，我们可以指定一个时间。<br>
+由于上层的阻塞与否，是取决于信号量的，<br>
+所以对信号量的等待，应该交由上层来指定超时时间。<br>
+而对互斥量的等待，是用于同步对循环队列的访问，<br>
+其中包含的代码段是我们已知和可控的。<br>
+一般来说，如果不出现正在访问队列的线程时间片用完，<br>
+那么这个操作都是可以瞬间完成的。<br>
+所以对于mutexLock的等待就使用INFINITE（-1）的超时值。<br>
+<br>
+<font color="#0000ff">五。delete和delete[]</font><br>
+<br>
+可以说，这又是一个极其惨痛的教训。<br>
+由于写C++的时间变少了，<br>
+没有注意到这两者还有区别，<br>
+导致开始运行的时候出现了奇怪的现象。<br>
+<br>
+基本原则倒是很简单：<br>
+<font color="#ff0000">使用new的用delete销毁，<br>
+使用new xx[]的用delete[]销毁。</font><br>
+<br>
+不过我这里还是对现象的调试过程记录下，<br>
+其中有不少可以沿用到其他地方的经验。<br>
+<br>
+由于创建的时候，要存储一堆数据，肯定用的是new xx[]的形式。<br>
+在销毁的时候，没有注意到，直接写了个delete。<br>
+<br>
+第一个现象就是，程序运行完后，发现没有自动结束。<br>
+（由输出可以判断，自己写的流程已经走完）<br>
+在vs2008下试的时候，就一直卡在那里，感觉很奇怪。<br>
+<br>
+开始怀疑是不是main函数没有结束，<br>
+于是在自身逻辑完的时候，手动调用exit。<br>
+当然，现象还是一样的。<br>
+<br>
+遂注释掉原来的main函数，<br>
+自己手写了一个空的main函数，<br>
+结果是程序依然会卡住。<br>
+<br>
+之后换回VC6进行调试，发现在卡了几秒后会有ASSERTION错误。<br>
+看下信息，应该是debug模式对堆进行检查时所报的错。<br>
+<br>
+没有想明白，开始散弹枪调试了。。<br>
+依次把各个部分注释掉，<br>
+发现一旦没有用我的管道类就不会出这个问题。。。<br>
+<br>
+检查管道类，没有看出问题，再次散弹枪调试。<br>
+管道类中，原来使用的是<br>
+CPipe&lt;string , 3&gt; pipe;<br>
+内含的是一组string对象，改成其他类型试试。<br>
+发现一旦改成int这些基本类型，就不会出错。<br>
+<br>
+而这些基本类型和string和区别就在于其构造和析构。<br>
+基本类型是有trivial constructor的，而string不行。<br>
+故又检查了对象的创建与销毁，但还是没有发现delete[]的问题。<br>
+<br>
+最后又是一次散弹枪调试，<br>
+把管道类中的各个部分依次注释了看，<br>
+发现不析构居然就不会有任何问题，<br>
+看来bug一定就在析构函数里面。<br>
+这个时候，再仔细看，终于发现了可耻的delete。。。<br>
+<br>
+<font color="#ff0000">散弹枪调试是很暴力、很终极的调试手段，<br>
+但使用它的时候，往往意味着我们已经失去分析问题的理智。。</font><br>
+<br>
+在这个问题上花了近一个小时之后，<br>
+好生想了一下，其实合格的debug过程应该是这样的：<br>
+<font color="#ff0000">1。发现自身逻辑完了，程序还没结束。<br>
+2。肯定是有代码还在运行，不管是自己写的还是系统的。<br>
+3。断到main的结束，发现确实运行过了return。<br>
+4。能够在main之后运行的代码一般只有onexit指定的函数或者全局对象的dtor。<br>
+5。我没有onexit过，所以肯定是的dtor中出的问题。<br>
+6。detor中的一般操作是对资源的释放。<br>
+7。内存管理的时候，delete和new存在配对问题，着重检查。<br>
+8。debug结束。</font><br>
+<br>
+只有清晰的思路才能指导清晰的行动。<br>
+乱枪打鸟就是典型的土鳖表现。<br>
+为了避免经常土鳖，<br>
+多睡一小时觉其实比多debug两个小时还有效。<br>
+<br>
+<font color="#0000ff">六。控制台IO</font><br>
+<br>
+管道类到这里算是折腾完了，<br>
+结果写测试程序的时候又被囧了一下。<br>
+弄了个生产者和消费者的模型，<br>
+最先写出来的运行效果犹如这样：<br>
+<br>
+get stuff 81<br>
+<font color="#ff0000">Produce 'product 81'<br>
+Produce 'product 81'</font><br>
+Consume 'product 81'<br>
+get stuff 82<br>
+<br>
+可以看到，有两个Procude xxxx。<br>
+在有的地方又可以观察到两个Consume xxx。<br>
+但通过对代码的跟踪，和打印一些中间结果，<br>
+可以确定，对管道的输入输出一个产品只对应了一个操作。<br>
+<br>
+这就让人觉得很诡异，无法弄清楚究竟是哪里出的毛病。<br>
+对控制台IO函数进行检查，<br>
+也会发现其实只调用了一次。。<br>
+<br>
+今天中午再来看这个问题，<br>
+突然意识到：<br>
+<font color="#ff0000">控制台在这里也是个临界资源，需要进行互斥访问。。</font><br>
+<br>
+于是速度写个控制台的类：<br>
+class CConsole{<br>
+private:<br>
+HANDLE mutexLock ;<br>
+public:<br>
+CConsole(){<br>
+mutexLock = CreateMutex(NULL , FALSE , NULL) ;<br>
+}<br>
+<font color="#ff0000">void Write(char *p){<br>
+WaitForSingleObject(mutexLock , INFINITE) ;<br>
+printf(&quot;%s&quot; , p) ;<br>
+ReleaseMutex(mutexLock) ;<br>
+}</font><br>
+} ;<br>
+<br>
+对控制台的输出就通过Write成员函数进行。<br>
+<br>
+没想到一加上这个，输出就变正常了。<br>
+<font color="#ff0000">但之前为什么不是输出内容交错，<br>
+而是输出内容重复呢？</font><br>
+这个问题暂时还没解决。。<br>
+<br>
+<font color="#0000ff">七。相关代码下载</font><br>
+<br>
+pipe.h，管道类，包含可用。<br>
+pipetest.cpp，正常的测试样例。<br>
+pipetest2.cpp，没有考虑控制台问题的测试代码。<br>
+<br>
+<a target="_blank" href="http://www.box.net/shared/cv73fe113q">下载地址</a><br></div></td></tr></table>
+
+<br>
+
+<div class="opt" id="blogOpt">
+
+<a href="/hplonline/blog/category/Vc" title="查看该分类中所有文章">类别：Vc</a>
+
+| <a  href="#" onclick="addToShare(); return false;" target="_blank"><img src="http://img.baidu.com/hi/apps/share/share_btn.gif" border="0" align="absbottom"  /></a>
+
+
+
+
+	
+
+	| <a title="将此文章添加到百度搜藏" href="http://cang.baidu.com/do/add" onClick="return addToFavor();" target="_blank">添加到搜藏</a>
+
+	
+    | <a title="将此文章分享到i贴吧" href="#" onclick="addToiTieba(); return false;"  target="_blank">分享到i贴吧</a>
+
+	| 浏览(<span id="result"></span>)
+
+	| <a href="#send">评论</a>&nbsp;(<span id="blogCmtCount">0</span>)
+
+
+
+<script language="javascript">
+
+/*<![CDATA[*/
+
+var pre = [true,'在word2003中反色控制台窗口截图的另类方法（图解）', '在word2003中反色控制台窗口截图...','/hplonline/blog/item/5a11f1ed61451a4279f0557c.html'];
+
+var post = [true,'各种混乱。。。','各种混乱。。。', '/hplonline/blog/item/34c7de2a3f0f1f96023bf656.html'];
+
+if(pre[0] || post[0]){
+
+	document.write('<div style="height:5px;line-height:5px;">&nbsp;</div><div id="in_nav">');
+
+	if(pre[0]){
+
+		document.write('上一篇：<a href="' + pre[3] + '" title="' + pre[1] + '">' +  pre[2] + '</a>&nbsp;&nbsp;&nbsp;&nbsp;');
+
+	}
+
+	if(post[0]){
+
+		document.write('下一篇：<a href="' + post[3] + '" title="' + post[1] + '">' +  post[2] + '</a>');
+
+	}
+
+	document.write('</div>');
+
+}
+
+/*]]>*/
+
+</script>
+
+
+
+</div>
+
+ 
+<div class="line">&nbsp;</div>
+<div id="share_user_list"></div>
+
+
+<div class="line">&nbsp;</div>
+
+
+
+
+
+
+
+    
+<style type="text/css">
+
+/*<![CDATA[*/
+
+#in_related_doc a { text-decoration:none; }
+
+/*]]>*/
+
+</style>
+
+<div id="in_related_tmp"></div>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="in_reader">
+    <div class="tit">最近读者：</div>
+
+</div>
+
+
+
+
+
+<div class="line">&nbsp;</div>
+
+
+
+
+
+
+
+
+
+
+<div id="in_comment">
+
+    <a name="comment"></a>
+
+    <div class="tit">网友评论：</div>
+
+    <span id="userCommentList"></span>    
+
+    <div id="page"></div>
+
+</div>
+
+<form action='/hplonline/commit' id='blogCmtSubmitForm'  name='blogCmtSubmitForm' method='post'>
+    <input type='hidden' name='bdstoken' value=''>
+    <input type='hidden'  name='ct' value='8'>
+    <input type='hidden'  name='cm' value='2'>
+    <input type='hidden'  name='spBlogID' value='f8ba3f2aeaf233355243c1c1'>
+    <input type='hidden'  name='spBlogCmtID' value=''>
+    <input type='hidden'  name='spRefURL' value=''>
+</form>
+
+
+
+
+
+
+<div id="in_send">
+
+<a name="send"></a>
+
+<form name="form1" id="popFormSubmit" action="/hplonline/commit" method="post" onSubmit="return checkcmtform()">
+
+<input type="hidden" name="bdstoken" value="">
+
+<input type="hidden" name="ct" value="8">
+
+<input type="hidden" name="cm" value="1">
+
+<input type="hidden" name="spBlogID" value="f8ba3f2aeaf233355243c1c1">
+
+<input type="hidden" name="spRefURL" id="spRefURL" />
+
+<script>
+
+    document.getElementById("spRefURL").value = window.location.href;
+
+</script>
+
+<div class="tit">发表评论：</div>
+
+<table width="620" border="0" cellspacing="5" cellpadding="0">
+
+
+
+
+
+<tr id="2_err" style="display:none">
+
+<td>&nbsp;</td>
+
+<td><div class="error" id="2_err_con"></div></td>
+
+</tr>
+
+
+
+<tr>
+
+<td valign="top" class="f14" id="reTitle">内　容：</td>
+
+<td>
+	<textarea name="spBlogCmtText" id="spBlogCmtText" style="width:520px;height:155px"  tabindex="3" onFocus="hidErr(3);" onclick="BdUtil.relogin(); return false;" ></textarea>
+</td>
+
+</tr>
+
+<tr id="3_err" style="display:none">
+
+<td>&nbsp;</td>
+
+<td><div class="error" id="3_err_con"></div></td>
+
+</tr>
+
+
+
+
+<tr>
+
+<td valign="top"class="f14">&nbsp;</td>
+
+<td valign="top" class="f14"><input id="btn_ok" name="btn_ok" type="submit" autocomplete="off" onclick="BdUtil.relogin(); return false;" value="发表评论" tabindex=5>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="cancleReLink" onClick="canclereply(); return false;" style="display:none; font-size:12px;color:#666;">取消回复</a></td>
+
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+
+
+
+
+
+
+
+
+<br>
+
+</div>
+
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" height="8">
+
+<tr><td class="modbl" width="7">&nbsp;</td>
+
+<td class="modbc">&nbsp;</td>
+
+<td class="modbr" width="7">&nbsp;</td>
+
+</tr></table>
+
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<div class="clearfix"></div>
+<div style="text-align:center;margin:30px auto 0px;padding-bottom:15px;font-family:Arial,simsun;font-size:12px;">
+	<div style="margin:0 auto 6px;">
+		<a href="http://help.baidu.com/question?prod_en=space" target="_blank" style="color:#00C;text-decoration: underline;">帮助中心</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://tieba.baidu.com/f?kw=%B0%D9%B6%C8%BF%D5%BC%E4&fr=wwwt" target="_blank" style="color:#00C;text-decoration: underline;">空间客服</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://tousu.baidu.com/hi/add" target="_blank" style="color:#00C;text-decoration: underline;">投诉中心</a>
+		<span style="color:#00C;">&nbsp;|&nbsp;</span>
+		<a href="http://www.baidu.com/search/hi_contract.html" target="_blank" style="color:#00C;text-decoration: underline;">空间协议</a>
+	</div>
+	<div style="color:#7A77C8;">&copy;2011&nbsp;Baidu</div>
+</div>
+
+
+</center>
+
+<ul id="blogCmtContentList" style="display:none;">
+
+</ul>
+
+<!--inc_getmsgnum.html-->
+
+<iframe id="submitiframe" name="submitiframe" src="/st/blank.html" style="display:none;"></iframe>
+<script src="http://hi.bdimg.com/static/base/js/conf/comment.js?v=111" type="text/javascript"></script>
+
+<script type="text/javascript" src="/ui/scripts/blog/detailpage.js?v=1.1"></script>
+			
+
+
+<script type="text/javascript">
+/*<![CDATA[*/
+
+var SP = SP || {};
+if(!SP.mycard){
+    SP.mycard = new (function(){
+        var me = this;
+        var _cancleAction = Session.isDrag;  
+        var _list = [];
+        var _sourceLoaded = false;    
+        me.bind = function (_id){
+            if(_cancleAction){  //abort
+                return;
+            }
+            if(!_sourceLoaded){
+                _list.push(_id);
+            } else {
+                baidu.space.mycard.bind(_id);
+            }
+        }
+        me.init = function (_config){
+            _cancleAction = !!_config.cancle;
+        }
+        me.onSourceLoaded = function (){
+            _sourceLoaded = true;
+            baidu.space.mycard.init({portrait: Session.visitorPortrait});
+            for(var i=0,len=_list.length; i<len; i++){
+                baidu.space.mycard.bind(_list[i]);
+            }
+        }
+    })();
+    baidu.dom.ready(function(){
+        BdAjax.loadCSS('/ui/css/ucard/ucard.css?v=020507100.css');
+        BdAjax.loadJS('/ui/scripts/ucard/ucard.js?v=020507100.js');
+    });
+}
+SP.mycard.bind('m_blog');  
+/*]]>*/
+</script>
+
+<script type="text/javascript">
+    //*****there is some function。
+    function checkMail(s)
+
+    {
+
+        var pattern=/\w+@\w+\.[a-z]+/;
+
+        if(pattern.test(s))
+
+        {
+
+           return true;
+
+        }
+
+        else
+
+       {
+
+          return false;
+
+       }
+
+    }
+
+
+
+
+
+    function checkeandu(eanduid)
+
+    {
+
+        var eanduvalue=baidu.G(eanduid).value;
+
+        var len=baidu.string.getByteLength(eanduvalue);
+
+        if(len>128)
+
+        {
+
+            showErr(2,"您输入的网址或邮箱太长，请保持在128字节以内。");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+             return true;
+
+        }
+
+
+
+    }
+
+
+
+
+
+    function checkname(strid)
+
+    {
+
+        var ele=baidu.G(strid);
+
+        var len=baidu.string.getByteLength(ele.value);
+
+        if(len>49)
+
+        {
+
+            showErr(1,"您输入的姓名太长，请保持在49字节以内。");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+            if(len==0)
+
+            {
+
+                baidu.G(strid).value="匿名网友";
+
+            }
+
+             return true;
+
+        }
+
+
+
+    }
+
+
+
+    function checktext(textid)
+
+    {
+
+            var tempStr='';
+
+            var isLightFont=false;
+
+            if(editor&&textid=="spBlogCmtText"){
+
+                tempStr=editor.getHtml();
+                
+                /*
+                //火星文处理，能不碰它就别碰它
+                tempStr=tempStr.replace(/<span style="filter:glow\(color=#([0-9a-z]{3,6}),strength=2\);height:0px;color:#([0-9a-z]{3,6})">/ig,'');
+
+                tempStr=tempStr.replace(/<\/span>/ig,'');
+                */
+
+                baidu.G("spBlogCmtText").value=tempStr;
+
+                isLightFont=!(tempStr==editor.getHtml());
+
+            }
+
+
+            var str=baidu.string.trim(baidu.G(textid).value);
+            baidu.G(textid).value=str;
+
+            
+
+            len=str.length;
+
+            if(len==0 || ((/^[\s,　]+$/gi).test(str)) )
+
+            {
+
+                showErr(3,"您必须输入评论内容，请检查。");
+
+                return false;
+
+            }
+
+            else
+
+            {
+
+                    var maxLength=isLightFont?916:1000;
+
+                    if(len > maxLength)
+
+                    {
+
+                        showErr(3,"您输入的评论内容太长，请保持在500字以内。");
+
+                        return false;
+
+                    }
+
+                    if(editor&&textid=="spBlogCmtText"){
+
+                        baidu.G("spBlogCmtText").value=editor.getHtml();
+
+                        baidu.G(textid).value=str;
+
+                    }
+
+
+
+                return true;
+
+            }
+
+    }
+
+
+
+    function showErr(index,str)
+
+    {
+
+        baidu.G(index+"_err").style.display="";
+
+        baidu.G(index+"_err_con").innerHTML=str;
+
+    }
+
+    function hidErr(index)
+
+    {
+
+        baidu.G(index+"_err").style.display="none";
+
+        baidu.G(index+"_err_con").innerHTML="";
+
+    }
+
+
+
+    function alertPop(tit,con)
+
+    {
+
+        var pop=new Popup({ contentType:4,isReloadOnClose:false,width:340,height:80});
+
+        pop.setContent("title",tit);
+
+        pop.setContent("alertCon",con);
+
+        pop.build();
+
+        pop.show();
+
+    }
+
+
+
+    function cmtfull()
+
+    {
+
+        var cnum=0;
+
+        if(cnum>=50000)
+
+        {
+
+            alertPop("发表评论","单篇日志评论数最多为50000条.");
+
+            return false;
+
+        }
+
+        else
+
+        {
+
+            return true;
+
+        }
+
+    }
+
+
+	function showCmtSuccess(){
+		ShareBlog.showCmtShareResult(0);
+	}
+
+
+    function checkcmtform()
+
+    {
+
+        if(checkname("spBlogCmtor")&&checkeandu("spBlogCmtURL")&&checktext("spBlogCmtText")&&cmtfull())
+
+        {
+            if(baidu.g("shareBlog").checked && !ShareBlog.isHostReply){
+                baidu.g("shareBlogEchoback").value = "shareblog"; 
+                ShareBlog.submit(Session.spToken);
+            }else{
+                baidu.g("shareBlogEchoback").value = "";
+            }
+            location.hash = "lastcmt";
+            submitForm();
+
+            return true;
+
+        }
+
+        else
+
+        {
+
+            return false;
+
+        }
+
+    }
+
+
+
+    var g_pop=null;
+
+    function submitForm()
+
+    {
+
+        g_pop=new Popup({ contentType:1,isReloadOnClose:false,width:340,height:80});
+
+        g_pop.setContent("title","添加评论");
+
+        g_pop.setContent("contentUrl","");
+
+        g_pop.setContent("someDisabledBtn","btn_ok");
+
+        g_pop.build();
+
+        G("popFormSubmit").target=g_pop.iframeIdName;
+
+        g_pop.show();
+
+    }
+
+
+
+    function g_close_pop()
+
+    {
+
+        g_pop.close();
+
+    }
+
+
+
+    function formatonlinpic()
+
+    {
+
+        var picobj=document.getElementsByName("onlinepic");
+
+        var picnum=picobj.length;
+
+
+
+        for(var i=0;i<picnum;i++)
+
+        {
+
+            if(picobj[i].width>200)
+
+            {
+
+                picobj[i].width=200;
+
+            }
+
+            if(picobj[i].height>200)
+
+            {
+
+                picobj[i].height=200;
+
+            }
+
+        }
+
+        try{baidu.G("btn_ok").disabled = "";}catch(e){}
+
+    }
+
+
+
+    function addToFavor(){
+
+        var blogTitle='一个windows下的管道类。（互斥量，信号量，死锁，控制台IO）'.replace(/&#39;/g,'\'');
+
+        window.open('http://cang.baidu.com/do/add?it='+encodeURIComponent(blogTitle+'_百度空间')+'&iu='+encodeURIComponent(location.href)+'&fr=sp#nw=1','_s','scrollbars=no,width=600,height=450,right=75,top=20,status=no,resizable=yes');
+
+        return false;
+
+    }
+
+    function addToiTieba(){
+        var blogTitle='一个windows下的管道类。（互斥量，信号量，死锁，控制台IO）'.replace(/&#39;/g,'\'');
+        window.open('http://tieba.baidu.com/i/sys/share?link='+encodeURIComponent('http://hi.baidu.com/hplonline/blog/item/f8ba3f2aeaf233355243c1c1.html')+'&type=text&title='+encodeURIComponent(blogTitle)+'&content=');
+    }
+
+    function addToShare(){
+        window.open('http://apps.hi.baidu.com/share/?url='+encodeURIComponent('http://hi.baidu.com/hplonline/blog/item/f8ba3f2aeaf233355243c1c1.html'));
+    }
+
+
+    /* some functions for cmt-reply */
+    var g_cmtorInfo = [];
+    function goCmtReply(cmtPorID){
+        //如果是主人的话，回复别人的评论，是不需要显示分享的
+        
+
+        cmtreply(g_cmtorInfo[cmtPorID],cmtPorID);
+    }
+    function cmtreply(cmtName,cmtPorID)
+
+    {
+
+        cmtName=cmtName.replace(/<|>/g,"");
+
+        window.location.hash="#send";
+
+        var cmtForm=document.form1;
+
+        cmtForm.cm.value="3";
+
+        if(!cmtForm.spReferTarget)
+
+        {
+
+            var ipt=document.createElement("input");
+
+            ipt.type="hidden";
+
+            ipt.name="spReferTarget";
+
+            ipt.value=cmtPorID;
+
+            cmtForm.appendChild(ipt);
+
+        }else cmtForm.spReferTarget.value=cmtPorID;
+
+
+
+
+
+         //G("reTitle").innerHTML="回复"+cmtName+"：";
+
+         G("cancleReLink").style.display="";
+
+         cmtForm.btn_ok.value="回复评论";
+
+
+
+
+
+         try{
+
+            editor.window.focus();
+
+            editor.window.document.body.innerHTML="回复"+cmtName+"：";
+
+
+
+            var w = editor.window;
+
+            if(w.getSelection){
+
+                var d = w.document;
+
+                var s = w.getSelection();
+
+                var r = d.createRange();
+
+                r.setStartAfter(d.body.firstChild);
+
+                r.setEndAfter(d.body.lastChild);
+
+                s.removeAllRanges();
+
+                s.addRange(r);
+
+            }
+
+        }catch(e){
+
+                try{
+
+                    cmtForm.getElementsByTagName("textarea")[0].focus();
+
+                    cmtForm.getElementsByTagName("textarea")[0].value="回复"+cmtName+"：";
+
+                }catch(e){}
+
+        }
+
+    }
+
+
+
+    function canclereply()
+
+    {
+        //主人可以分享自己的文章
+        ShareBlog.cancelReply();
+
+        var cmtForm=document.form1;
+
+        cmtForm.cm.value="1";
+
+        try{cmtForm.removeChild(cmtForm.spReferTarget);}catch(e){}
+
+        /*
+
+        try{
+
+                var cmt=cmtForm.getElementsByTagName("textarea")[0]
+
+                cmt.value="";
+
+                cmt.focus();
+
+        }catch(e){}
+
+        */
+
+
+
+        try{
+
+                var ed=editor.window.document.body;
+
+                ed.innerHTML="";
+
+                editor.window.focus();
+
+            }catch(e){
+
+                var cmt=cmtForm.getElementsByTagName("textarea")[0];
+
+                cmt.value="";
+
+                cmt.focus();
+
+        }
+
+
+
+        G("cancleReLink").style.display="none";
+
+        cmtForm.btn_ok.value="发表评论";
+
+    }
+
+
+
+    function gotoreply()
+
+    {//to checking whether reply cmt
+
+        if( window.location.hash.indexOf("&re=1")<0) return;
+
+        var cmtID=window.location.hash.split("&")[0].replace("#","");
+
+        var cmtlinks=document.getElementsByTagName("a");
+
+        for(var i=0,n=cmtlinks.length;i<n;i++)
+
+        {
+
+            if(cmtlinks[i].name==cmtID){ var rename=cmtlinks[i].getAttribute("rename");  repid=cmtlinks[i].getAttribute("repid"); break;}
+
+        }
+
+        if(typeof(rename)!="undefined"){
+
+            cmtreply(rename, repid);
+
+        }
+
+    }
+
+    
+    
+    function f_focus(){
+        getVcode();
+    }
+    function getVcode(){
+        var url="http://hi.baidu.com/sys/file/getvcode?echoback=getVcodeDone&t="+(new Date().getTime());
+        BdAjax.loadJS(url)
+    }
+
+    function getVcodeDone(vcode){
+        document.form1.spVcode.value=vcode;
+        var imgsrc="http://hiup.baidu.com/cgi-bin/genimg?"+vcode;
+        G('verifypic').src=imgsrc;
+        G('yanzheng').style.display="block";
+    }
+    function newverifypic(){
+        getVcode();
+        return false;
+    }
+
+    function blogdel(str)
+
+    {
+
+        var pop=new Popup({ contentType:3,isReloadOnClose:false,width:340,height:80});
+
+        pop.setContent("title","删除文章");
+
+        pop.setContent("confirmCon","您确定要彻底删除这篇文章及其所有评论吗？");
+
+        pop.setContent("callBack",delCallback);
+
+        pop.setContent("parameter",{fid:str,popup:pop});
+
+        pop.build();
+
+        pop.show();
+
+        return false;
+
+    }
+
+    
+    function delCallback(para)
+
+    {
+        if(!para["popup"])return;
+
+        var o_pop=para["popup"];
+
+        o_pop.config.contentType=1;
+
+        o_pop.setContent("contentUrl","");
+
+        o_pop.reBuild();
+
+        G(para["fid"]).target=o_pop.iframeIdName;
+        eval("document.draft"+para["fid"]).submit();
+
+        eval("document."+para["fid"]).submit();
+
+    }
+
+
+
+    var _Space = _Space || {};
+    
+    /********这里的东西，是用来生成评论列表的**********/
+   _Space.commentOperate = (function(){
+      /*blog评论的浏览*/
+    var total_page = 0,
+        cmtNumPerPage = 50,
+        nowPage = 0,
+	    count = 1,
+	    comment = new Space.Pubs.Comment(Session.spSpaceDomain+"/cmt/spcmt/");
+    //分页的组件
+   var pager = (function () {
+	var pageNum = '#p#';
+	var MAX = 10;
+    function getPageBar(allPn, nowPn, tplstr) {
+        var Max = 10;
+		allPn = Number(allPn);
+		nowPn = Number(nowPn) + 1; 
+		if (allPn <= 1) {
+			return " &nbsp;";
+		}
+        var _html = [];
+        var startPn = Math.max(1, nowPn - Math.floor(MAX / 2));
+		var endPn = Math.min(allPn, startPn + MAX - 1);
+		startPn = Math.max(1, endPn - MAX + 1);
+        if (nowPn > 1) {
+			_html.push('<a', tplstr.replace('#p#', 0), '>[首页]</a> ');
+			_html.push('<a', tplstr.replace('#p#', (nowPn - 1 - 1)), '>[上一页]</a> ');
+		}
+        for (var i = startPn; i <= endPn; i++) {
+			if (i == nowPn) {
+				_html.push('<span>', i, '</span> ');
+			} else {
+				_html.push('<a', tplstr.replace('#p#', i - 1), '>[', i, ']</a> '); 
+			}
+		}
+		if (nowPn < allPn) {
+			_html.push('<a', tplstr.replace('#p#', nowPn), '>[下一页]</a> ');
+			_html.push('<a', tplstr.replace('#p#', (allPn - 1)), '>[尾页]</a> ');
+		}
+       return _html.join('');
+	}
+	return {
+		render: getPageBar
+	}
+})();
+
+//获取评论数据后，callback，在页面上展现
+var viewCallBack = function(data){
+    var response = data;
+    if(response.err_no == 0){
+    if (response.body.data && response.body.total_count) {
+        var all_page = Math.ceil(response.body.total_count / cmtNumPerPage);
+        total_page = all_page - 1;
+        if("#lastcmt" == location.hash){
+            location.hash = ""+total_page;
+            view(total_page);
+            
+            return;
+        }
+        var output = [];
+        baidu.each(response.body.data, function (list) {
+            output.push(generateHtml(list));
+
+        });
+        count = 1;
+        baidu.G('userCommentList').innerHTML = output.join('');
+        baidu.G('blogCmtCount').innerHTML = response.body.total_count;
+        
+        baidu.G('page').innerHTML = pager.render(all_page, nowPage, ' href="#"  onclick="_Space.commentOperate.view(#p#);return false;"');
+        filterCmtContent('userCommentList');//在非ie浏览器对闪光字做处理
+        SP.mycard.bind('m_blog'); 
+       //锚点会让链接的颜色发生变化，用js来实现锚点功能
+        var scrollObj = baidu.g("in_comment"); 
+        if(scrollObj){
+		 scrollObj.scrollIntoView();
+	    }    
+	
+     }
+ }
+};
+ 
+    var generateHtml = function(data) {
+	var generateOprate = function(type,id,portraitId,cmtname,isHost, isAnnony, canReply, isMobile) {
+		var data = [];
+		if (isMobile) {
+			data.push('  <a href="http://hi.baidu.com/hi/cms/article/help_phone/index.html" target="_blank" style="text-decoration:none;">来自手机<img src="http://img.baidu.com/hi/img/mobile.gif" align="absmiddle" border="0"/></a>');
+		}
+		if (canReply && isCmtAllow) {
+			if (isAnnony) {
+				data.push(' | <a href="#" onclick="BdUtil.relogin();return false;">回复</a>');
+			} else {
+				data.push(' | <a href="#" onclick="goCmtReply(\'' + portraitId + '\');return false;">回复</a>');
+			}
+		}
+       if (isHost) {              
+			data.push(' | <a href="#" onclick="_Space.commentOperate.deleteCmt(\'' + id + '\');return false;">删除</a>');
+			var cName = type==1?cmtname:'';
+			data.push(' | <a href="#" onclick="userSpam.tipBlogCmt(this,\'' + cName + '\',\'' + id + '\',\'' + blogId + '\'); return false;">举报</a>');
+			
+	
+		}
+		return data.join("");
+	};
+    var generateUser = function(type, id, cmtname, cmturl, portraitId) {
+		if ("1" == type) {
+			return "<a  href='{1}' target='_blank' class='ucard' pid='{2}'><img border='0' src='http://tx.bdimg.com/sys/portraitn/item/{2}.jpg'><br />{3}</a>".format(id, cmturl, portraitId, cmtname);
+		} else {
+			if (cmtname == "" || cmtname == "匿名网友") {
+				if (cmturl == "") {
+					return "<a>匿名网友</a>";
+				} else {
+
+					return "<a href='{1}' target='_blank' class='ucard' pid='{0}'>{2}</a>".format(portraitId, cmturl, cmtname);
+
+				}
+
+			} else {
+				if (cmturl == "") {
+					return "<div class='f14' style='display:inline'>网友:<a>{0}</a></div>".format(cmtname);
+				} else {
+					return "<div class='f14' style='display:inline'>网友:<a href='{1}' target='_blank' title='{1}'>{2}</a></div>".format(id, cmturl, cmtname);
+				}
+
+			}
+
+		}
+	};
+    var type = 0,
+	isMobile = data.reserved1,
+	isHost = Session.isHost,
+	isAnnony = Session.visitorPortrait == '00000000' ? true: false,
+	portraitId = data.portrait,
+	canReply = portraitId == Session.visitorPortrait ? false: true,
+	id = data.reply_id_enc,
+	cmtname = data.un,
+	cmturl = cmtname ? 'http://hi.baidu.com/sys/checkuser/' + cmtname + '/1': '',
+	isCmtAllow =  true ,
+	blogId = "f8ba3f2aeaf233355243c1c1";
+	if (cmtname && cmturl && portraitId) {
+		type = 1;
+	}
+	g_cmtorInfo[portraitId] = cmtname;
+
+	var html = [],
+        perPage = cmtNumPerPage,
+        listCount = count + nowPage*perPage;
+    html.push('<a name="'+id+'" rename="'+cmtname+'" repid="'+portraitId+'"></a>');
+	html.push('<table width="100%" border="0" cellspacing="0" cellpadding="0" class="item" style="table-layout:fixed;word-wrap:break-word;overflow:hidden;"><tr>');
+	html.push('<td valign="top" class="index" width="5%">'+listCount+'</td>');
+    html.push('<td align="center" valign="top" width="10%"><div class="user" style="overflow:hidden;">');
+	html.push(generateUser(type, id, cmtname, cmturl, portraitId));
+	html.push('</div></td><td class="cnt" style="padding-left:20px;">');
+    html.push('<span class="date">');
+	var pattern='yyyy-MM-dd HH:mm';
+	var date_time = new Date();
+    date_time.setTime(parseInt(data.cdatetime) * 1000);
+    html.push(baidu.date.format(date_time,pattern));
+	html.push(generateOprate(type,id,portraitId,cmtname,isHost, isAnnony, canReply, isMobile));
+	html.push("</span>")
+	html.push('<div class="desc" style="overflow:hidden;word-break:normal;"  name="cmtcontent">');
+	html.push(data.content);
+    html.push('</div></td></tr></table>');
+	html.push('<div class="line">&nbsp;</div>');
+	count++;	
+	return html.join("");
+	
+};
+   //获取评论列表
+var  view = function(page){
+   var  threadId ="f8ba3f2aeaf233355243c1c1";
+   page = page || 0;
+   var obj={"thread_id_enc":threadId,"callback":"_Space.commentOperate.viewCallBack","start":page*cmtNumPerPage,"count":cmtNumPerPage,"orderby_type":0};
+   nowPage = page;
+   comment.view(obj);
+};
+	
+	
+	
+            function deleteCmt(cid){
+            var pop=new Popup({ contentType:3,isReloadOnClose:false,width:340,height:80});
+
+            pop.setContent("title","删除评论");
+
+            pop.setContent("confirmCon","您确定要彻底删除这条评论吗？");
+
+            pop.setContent("callBack", function(){
+            
+                var o_pop=pop;
+                var _F = baidu.G('blogCmtSubmitForm');
+                _F.spBlogCmtID.value=cid;
+                _F.spRefURL.value = window.location.href;
+
+                o_pop.config.contentType=1;
+
+                o_pop.setContent("contentUrl","");
+
+                o_pop.reBuild();
+
+                _F.target=o_pop.iframeIdName;
+
+                _F.submit();
+            });
+
+            pop.build();
+
+            pop.show();
+
+            return false;
+        }
+          
+		  function filterCmtContent(n){
+
+            if(!baidu.browser.ie){
+
+                var defaultfilter1='<span style="filter:glow(color=#000000,strength=2);height:0px;color:#000000">';
+
+                var defaultfilter2='<span style="height: 0px; color: rgb(0, 0, 0);">';
+
+                var commentDiv=document.getElementById(n);
+
+                var divs=commentDiv.getElementsByTagName('div');
+
+                var d,tmp;
+
+                for( var i=0,len=divs.length;i<len;i++){
+
+                    d=divs[i];
+
+                    if(d.getAttribute('name')=='cmtcontent'){
+
+                        tmp=d.innerHTML;
+
+                        tmp=tmp.replace(/<span style="filter:glow\(color=#([0-9a-z]{3,6}),strength=2\);height:0px;color:#([0-9a-z]{3,6})">/ig,defaultfilter1);
+
+                        tmp=tmp.replace('<span style="height: 0px; color: rgb(255, 255, 255);">',defaultfilter2);
+
+                        d.innerHTML=tmp;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return {
+            view : view,
+			viewCallBack : viewCallBack,
+            deleteCmt : deleteCmt
+        }
+        
+    })();
+    
+    /**********分享该文章的用户功能**********/
+    
+    _Space.BlogSharedUser=(function(){
+
+        function showList(obj){
+            var count = obj.count || 0,i=0,html=[],len=obj.list.length,item;
+            if(count && len){
+                html[html.length] = '<div class="tit" style="margin-bottom:12px;">已有'+count+'人分享了这篇文章：</div>';
+                html[html.length] = '<table width="100%"><tbody><tr>'
+                for(;i<len;i++){
+                    item=obj.list[i];
+                    html[html.length] = '<td width="10%" valign="bottom" align="center" class="user"><a class="ucard" target="_blank" pid="'+item.portrait+'" href="http://hi.baidu.com/sys/checkuser/'+item.uname+'/3"><img border="0" src="http://tx.bdimg.com/sys/portraitn/item/'+item.portrait+'.jpg" style="display:block"><div style="width:75px;overflow:hidden;height:18px;">'+item.uname+'</div><a href="http://apps.hi.baidu.com/share/user/'+item.portrait+'" target="_blank">Ta的分享</a></a></td>';
+                }
+                html[html.length] = '<td width="100%"></td></tr></tbody></table>';
+                G('share_user_list') && (G('share_user_list').innerHTML = html.join(''));
+                SP.mycard.bind('share_user_list'); 
+            }
+        }
+
+        function getData(){
+            var url = "http://apps.hi.baidu.com/share/getsourceshare?url=http://hi.baidu.com"+encodeURIComponent("/hplonline")+"/blog/item/f8ba3f2aeaf233355243c1c1.html&callback=_Space.BlogSharedUser.showList&asyn=1&r="+Math.random();
+            BdAjax.loadJS(url);
+        }
+
+        return {
+            getData : getData,
+            showList : showList
+        }
+    })();
+    
+
+    
+    /*********相关文章的显示函数********/
+    _Space.RelatedDoc=(function(){
+
+        function HI_MOD_IN_RELATED_DOC_CALLBACK(arg){
+
+            if(arg.length <= 1) return false;
+
+            var hasMore = arg[0];
+
+            var D=function(A,B){A[A.length]=B;}
+
+            if(arg.length % 2 == 0) D(arg, ["","","",""]);
+
+
+
+            var html = ['<div id="in_related_doc" onclick="relative_Click()"><div class="tit">相关文章：</div>'];
+
+            D(html, '<table cellpadding="0" cellspacing="3" border="0">');
+
+            for(var i = 1, j = arg.length; i < j; i += 2){
+
+                D(html, '<tr>');
+
+                D(html, '<td width="15px"><a style="font-size:25px" >&#8226;</a></td><td><a href="http://hi.baidu.com/' + arg[i][3] + '/blog/item/' + arg[i][2] + '.html" target="_blank" title="' + arg[i][0] + '">' + arg[i][1] + '</a>');
+
+                D(html, new Array(10).join('\u3000'));
+
+                D(html, '</td>');
+
+                if(arg[i + 1][0] != "")
+
+                    D(html, '<td width="15px"><a style="font-size:25px" >&#8226;</a></td><td><a href="http://hi.baidu.com/' + arg[i + 1][3] + '/blog/item/' + arg[i + 1][2] + '.html" target="_blank" title="' + arg[i + 1][0] + '">' + arg[i + 1][1] + '</a></td>');
+
+                else
+
+                    D(html, '<td>&nbsp;</td><td>&nbsp;</td>');
+
+                D(html, '</tr>');
+
+            }
+
+            if(hasMore) D(html, '<tr><td colspan="4"><a target="_blank" href="/sys/search?pageno=1&type=7&sort=1&word=%D2%BB%B8%F6windows%CF%C2%B5%C4%B9%DC%B5%C0%C0%E0%A1%A3%A3%A8%BB%A5%B3%E2%C1%BF%A3%AC%D0%C5%BA%C5%C1%BF%A3%AC%CB%C0%CB%F8%A3%AC%BF%D8%D6%C6%CC%A8IO%A3%A9&item=f8ba3f2aeaf233355243c1c1">更多&gt;&gt;</a></td></tr>');
+
+            D(html, '</table></div><div class="line">&nbsp;</div>');
+
+
+
+            var div = document.getElementById('in_related_tmp');
+
+            if(div){
+
+                div.innerHTML = html.join('');
+
+                while(div.firstChild){
+
+                    div.parentNode.insertBefore(div.firstChild, div);
+
+                }
+
+                div.parentNode.removeChild(div);
+
+            }
+
+
+        }
+
+        window.HI_MOD_IN_RELATED_DOC_CALLBACK = HI_MOD_IN_RELATED_DOC_CALLBACK;
+
+        function show(){
+            if( baidu.G('in_related_tmp') )
+            baidu.sio.callByServer("/sys/search?type=8&word=%D2%BB%B8%F6windows%CF%C2%B5%C4%B9%DC%B5%C0%C0%E0%A1%A3%A3%A8%BB%A5%B3%E2%C1%BF%A3%AC%D0%C5%BA%C5%C1%BF%A3%AC%CB%C0%CB%F8%A3%AC%BF%D8%D6%C6%CC%A8IO%A3%A9&item=f8ba3f2aeaf233355243c1c1");
+        }
+
+        return {
+            show : show
+        }
+
+    })();
+    
+
+    /*********最近读者*********/
+    _Space.latestReader=(function(){
+        var g_read=[
+
+        
+
+        ["%CE%E7%D2%B9%C7%E5%C3%F7","e01ccee7d2b9c7e5c3f72705","午夜清明"],
+
+        
+
+        ["tph85666031","4d0474706838353636363033311c03","tph85666031"],
+
+        
+
+        ["linux%5Fhang","17996c696e75785f68616e679a10","linux_hang"],
+
+        
+
+        ["peter%5F17","1a3b3334383433393538318f00","348439581"],
+
+        
+
+        ["%F0%A5%D3%F4518","3f6af0a5d3f43531383913","馥郁518"],
+
+        
+
+        ["zhujingyi%5F522","0e7d7a68756a696e6779694f00","zhujingyi"],
+
+        
+
+        ["liulinbo1989","01be6c69756c696e626f31393839ab0a","liulinbo1989"],
+
+        
+
+        ["crimsoncn","d75a4372696d736f6e636ea402","Crimsoncn"],
+
+        
+
+        {}
+
+        ];
+
+        g_read.length=g_read.length-1;
+
+
+
+        var _rh1="";
+
+        var _rh2="";
+
+
+
+        function show(){
+
+            _rh1 += '<table width="100%" ><tr>';
+
+            _rh2+='<tr>';
+
+            if(!Session.isLogin){
+
+                _rh1+='<td align="center" width="10%" ><img border="0" width="55" height="55" src="http://img.baidu.com/hi/img/portraitn.jpg"></td>';
+
+                _rh2+='<td>&nbsp;</td>';
+
+                if(g_read.length>0){
+
+                    _rh1+='<td align="left" width="12%">';
+
+                }else{
+
+                    _rh1+='<td align="left" width="100%">';
+
+                }
+
+                _rh1+='<a href="https://passport.baidu.com/?login&tpl=sp&tpl_reg=sp&u='+myref+'" target="_self" onclick="BdUtil.relogin(); return false;">登录</a>后，您就出现在这里。</td>';
+
+                _rh2+='<td>&nbsp;</td>'
+
+            }
+
+            if(g_read.length==0){
+
+                if(Session.isLogin){
+
+                    _rh1+='<td align=left width="100%">最近还没有登录用户看过这篇文章……</td>';
+
+                    _rh2+='<td>&nbsp;</td>';
+
+                }
+
+            }else{
+
+                for(i=0,len=g_read.length;i<len;i++){
+
+                    _rh1+='<td align="center" valign="bottom" width="10%" class="user"><a href="/'+g_read[i][0]+'" target="_blank" class="ucard" pid="'+g_read[i][1]+'"><img border="0" src="http://tx.bdimg.com/sys/portraitn/item/'+g_read[i][1]+'.jpg"></a></td>';
+
+                    _rh2+='<td align="center" valign="top" class="user"><a href="/'+g_read[i][0]+'" target="_blank" class="ucard" pid="'+g_read[i][1]+'">'+g_read[i][2]+'</a></td>';
+
+                }
+
+            }
+
+            _rh1+='<td width="100%"></td></tr>';
+
+            _rh2+='<td></td></tr></table>';
+
+
+            baidu.dom.insertHTML("in_reader", "beforeEnd", _rh1+_rh2);
+
+        }
+
+        return {
+            show : show
+        }
+    })();
+    
+
+    /*********页面完成后执行的一些东西，比较乱，小心轻放**********/
+    _Space.pageDone = (function(){
+        
+        function initBlogTextForFCK(){
+            //fck init music
+            if(window.Node){Node.prototype.replaceNode=function(Node){this.parentNode.replaceChild(Node,this);}}
+            var imgBox=document.getElementsByName('musicName');
+            var isAutoPlay=true;
+            for(var i=0,n=imgBox.length;i<n;i++){
+                var img=imgBox[i];
+                if(img.getAttribute('rel')){
+                    var musicSrc=img.getAttribute('rel');
+                    var musicDiv = document.createElement("SPAN");
+                    var tmp=musicSrc.substr (musicSrc.indexOf('#')+1, 1);
+                    var tmpAutoPlay=(tmp=='1');
+                    if(isAutoPlay&&tmpAutoPlay){
+                        isAutoPlay=false;
+                        tmpAutoPlay=true;
+                    }else{
+                        tmpAutoPlay=false;
+                    }
+                    var shtml=creatbgmusic(musicSrc.substr(0,musicSrc.indexOf('#')).replace(/[\s><()'"]+/g,''),1,true,false,tmpAutoPlay,tmpAutoPlay,'FckMusicHelper');
+                    shtml=shtml.replace('width=100%','width=200').replace('width="100%"','width=200 height=45');			img.replaceNode(musicDiv);
+                    musicDiv.innerHTML=shtml;
+                    i--;n--;
+                }
+            }
+                //fck init vote
+            !function(){
+                var vote = document.getElementsByName('FCK_VOTE');
+                for(var i=0,len=vote.length,item,rel=0,cdiv;i<len;i++){
+                    item = vote[0];
+                    rel = item.getAttribute('rel')|0;
+                    if(rel){
+                        cdiv = document.createElement('span');
+                        item.parentNode.replaceChild(cdiv,item);
+                        baidu.swf.create({
+                            "id": "VOTE_FLASH_"+i,
+                            "width" : "585",
+                            "height": "100",
+                            "ver"   : "9.0.0",
+                            "wmode" : document.all ? "opaque" : "window",
+                            "allowscriptaccess" : "always",
+                            "url"   : "http://hi.bdimg.com/apps/appvote/spaceVote.swf?vote_id="+rel
+                        },cdiv)
+
+                    }
+                }
+            }()
+            //document.getElementById('blog_text').style.display='';
+        }
+        
+        function resizeBlogImg(){
+
+            if(document.getElementById("m_blog"))
+
+            {
+
+                var imgarray = document.getElementById("m_blog").getElementsByTagName('img');
+
+                var imgw = document.getElementById("m_blog").offsetWidth;
+
+                imgw =imgw-40;
+
+	            var imgs = []
+                for(var i=0; i<imgarray.length; i++){
+                    if(imgarray[i].className=="blogimg" && imgarray[i].width>=imgw) {
+                        imgs[i]=new Image();
+                        (function(_imgarray,_imgs,_i){
+                            _imgs[_i].onload=function(){
+                                var h=imgw/_imgs[_i].width*_imgs[_i].height;
+                                _imgarray[_i].height = h;
+                                _imgarray[_i].style.height=h+'px';
+                            };
+                        })(imgarray,imgs,i);
+                        imgs[i].src=imgarray[i].src;
+                        imgarray[i].width=imgw;
+                        imgarray[i].style.width=imgw+'px';
+                    }
+                }
+            }
+        }
+
+        function fixURLCopyBug(){
+        
+            // Fix ff bugs
+
+            var blog_text = document.getElementById('blog_text');
+            /**
+
+            blog_text.innerHTML = blog_text.innerHTML.replace(/href\s*=\s*("|')?(\.\.\/\.\.\/)/gi,"href=$1../$2");
+            */
+            /*modify by poker, to fix the flashalbum's static domain*/
+            var _blog_trans = blog_text.innerHTML.replace(/href\s*=\s*("|')?(\.\.\/\.\.\/)/gi,"href=$1../$2");
+            _blog_trans = _blog_trans.replace(/http:\/\/hi\.baidu\.com\/static\/album\/album\.swf/g,"http://hi.bdimg.com/static/album/album.swf");
+			_blog_trans = _blog_trans.replace(/`/g,"&#96;");
+            blog_text.innerHTML = _blog_trans;
+        }
+
+        function getPVData(){
+
+            var hstr="";
+
+            baidu.sio.callByServer("/hplonline/brwstat?key1=1&key2=9bf96927733afd03908f9db0_f8ba3f2aeaf233355243c1c1_");   
+        } 
+
+        function setpv(allnum)
+
+        {
+
+            var num = allnum.split('_');
+
+            baidu.G("result").innerHTML=num[0];
+
+        }
+
+        window.setpv = setpv;
+        
+        function initCmtEditor(){ //初始化浏览编辑器
+            var editor=null;
+
+            try{
+
+                editor=new BdEditor("spBlogCmtText",{width:"100%",height:"155px"});
+
+                editor.onfocus = function(){hidErr(3);}
+
+                editor.render();
+
+                //如果用户没有登陆，焦点进入编辑器，弹出登录框
+				
+                var editorCont=editor.window;
+				baidu.Q("ToolbarContainer",baidu.G("in_send"))[0].style.display="none";
+                baidu.on(editorCont,"focus",function(){
+				BdUtil.relogin();
+				return false;
+				});
+				
+
+            }catch(e){
+
+                var spBlogCmtText = document.getElementById("spBlogCmtText");
+                if(!spBlogCmtText ) return false;
+
+                var p = spBlogCmtText.previousSibling;
+
+                while(p && p.nodeType != 1) p = p.previousSibling;
+
+                if(p && /bdeditor_container/.test(p.id)){
+
+                    p.parentNode.removeChild(p);
+
+                }
+
+                spBlogCmtText.style.display = '';
+
+                editor=null;
+
+            }
+
+            
+
+            window.editor = editor;
+        }
+
+        function ok(){
+            getPVData();
+            resizeBlogImg();
+            fixURLCopyBug();
+            initBlogTextForFCK();
+            initCmtEditor();
+
+            gotoreply(); /* external fun*/
+        }
+
+        return {
+            ok : ok
+        }
+    })();
+	
+	function relative_Click(){
+		BdUtil.ns_trackerLink('m_20110329_relative_article','')
+	}
+    /********分段加载处理对象，实验性功能*********/
+    _Space.SectionLoad = (function(){
+
+        var loaded = false;
+
+        var sectioinList = [];
+
+        function complete(item){
+            item.isComplete = true;
+        }
+
+        function add(mod, loadCallback){
+
+            var mod = baidu.G(mod);
+            
+            sectioinList.push({"mod": mod, "callback":loadCallback});
+        }
+
+        function startLoad(item){
+            item['callback']();
+            complete(item);
+        }
+
+        function checkStat(){
+            if(sectioinList.length <= 0) return;
+
+            var pageTop2bottom=getPageTop2bottom();
+            
+            baidu.each(sectioinList, function(item, index){
+
+                if(! item.isComplete){
+                    if(getOffsetTop(item.mod)-100 <= pageTop2bottom)
+                        startLoad(item);
+                }
+            });
+        }
+
+        function getOffsetTop(mod){
+            return baidu.dom.getPosition(mod).top;
+        }
+
+        function getPageTop2bottom(){
+            var dsh = baidu.page.getScrollTop();
+            var dch = baidu.page.getViewHeight();
+
+            return dsh + dch;
+        }
+
+        
+        baidu.on(window, 'resize', checkStat);
+        baidu.on(window, 'onload', checkStat);
+        baidu.on(window, 'scroll', checkStat);
+        
+        return {
+            "add" : add
+        } 
+    })();
+
+    /*******Start Working！*******/
+    var _pageEndTime=(new Date().getTime()) - g_pageTimerStart;
+
+    baidu.on(window, 'load', function(){
+        var _pageLoadTime=(new Date().getTime()) - g_pageTimerStart;
+
+        BdUtil.hi_trackerLink('m_20101109_blogloadtime', _pageLoadTime+'|'+_pageEndTime);
+    });
+
+    /**********Step2***********/
+    _Space.pageDone.ok();
+
+    baidu.G('share_user_list') && _Space.SectionLoad.add('share_user_list', _Space.BlogSharedUser.getData);
+    baidu.G('in_related_tmp') && _Space.SectionLoad.add('in_related_tmp', _Space.RelatedDoc.show);
+    baidu.G('in_reader') && _Space.SectionLoad.add('in_reader', _Space.latestReader.show);
+    baidu.G('blogOpt') && _Space.SectionLoad.add('blogOpt', _Space.commentOperate.view);
+</script>
+
+
+
+
+	<script type="text/javascript" src="/ui/scripts/refer/refer.js"></script>
+	
+<link rel="stylesheet" type="text/css" href="/ui/css/userset.css" />
+<link rel="stylesheet" type="text/css" href="/ui/css/beautify/widget.css" />
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/beautifyconfig/default_user_suit.js"></script>
+
+<script type="text/javascript">
+//页面状态变量
+var Session = Session || {
+    spaceURL: "/hplonline",
+    pageURL: "http://hi.baidu.com/hplonline/blog/item/f8ba3f2aeaf233355243c1c1%2Ehtml",    //当前访问的url
+    isHost: "",         // 是否是空间主人
+    userName: "hplonline",   // 空间主人用户名
+    userNameEnc:    "hplonline", 
+    visitorName:    "",
+    visitorURL: "/index.html",        // 
+    refer: "",
+    spBasicURL:"hplonline",
+    spBasicURLEnc:"hplonline"
+};
+</script>
+<script src="/ui/scripts/beautify/render.js" type="text/javascript"></script>
+<script type="text/javascript">
+baidu.dom.ready(function(){
+    if(typeof spBeautifyConfigData != 'undefined'){
+        var _installList = spBeautifyConfigData.list;
+    } else {
+        spBeautifyConfigData = {};
+        _installList = [];
+    }
+    spBeautifyConfigData.currentDate  = Math.round((new Date('2011/11/26')).getTime() / 1000);    
+    BeautifyWidget.init({timeStamp: spBeautifyConfigData.currentDate, env: 'sys'});
+    BeautifyWidget.render(_installList);
+	if(Space && Space.ActiveTip){
+		if(baidu.g("active_space")){
+			window.active_tip=new Space.ActiveTip("tary_space_name",function(){
+				active_tip.hidden();
+				//activeSpace("pop_tip");
+				if(BdUtil && BdUtil.ns_trackerLink){
+					BdUtil.ns_trackerLink('nm_20101018_activeBlank',''); 
+				}
+				window.open('http://hi.baidu.com/reg/preihome?pageDomain=pop_tip');
+			//	window.location.href="http://hi.baidu.com/reg/preihome?pageDomain=pop_tip";
+				setTimeout(function(){
+					window.location.reload();
+				},1000);
+				
+			
+			});
+		}
+		window.succTip=function(spaceUrl){
+			active_dia.close();
+			//var tiphtml="<div><div class='setBlackcon'>恭喜您，激活成功！欢迎入驻百度空间！</div><div class='setBlackpanel'><div class='blackConfirmbtn' onclick=\"goIhome('"+spaceUrl+"')\">确认</div></div></div>";
+			BdDialog.Alert("恭喜您，激活成功！欢迎入驻百度空间！");
+			baidu.g("dialogYES").onclick=function(){
+				window.location.reload();
+			};	
+		};
+	}
+	
+});
+</script>
+
+
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/quickjs/auto.js"></script>
+<script>
+try{SCD.init("")}catch(e){}
+</script>
+
+<script type="text/javascript" src="http://hi.baidu.com/hi/cms/article/quickjs/blog_maidian_yali.js"></script>
+<script type="text/javascript">
+	baidu.dom.ready(function(){
+		if(BlogMaiDianYali && BlogMaiDianYali.isSwitchOn) {
+			var pageUrl = BlogMaiDianYali.detailPageUrl .replace("/{spaceurl}","/hplonline").replace("{blogid}","f8ba3f2aeaf233355243c1c1");
+			var divDom = document.createElement("div");
+			divDom.innerHTML = '<iframe src="' + pageUrl + '" style="display:none;">';
+			divDom.style.display = "none";
+			document.body.appendChild(divDom);
+		} 
+	});
+</script>
+</body>
+</html>
