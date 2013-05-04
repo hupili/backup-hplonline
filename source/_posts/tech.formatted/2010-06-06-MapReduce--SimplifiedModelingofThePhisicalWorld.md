@@ -1,0 +1,241 @@
+---
+layout: post
+title: "MapReduce--Simplified Modeling of The Phisical World"
+date: 2010-06-06  15:25
+comments: true
+categories: tech
+tags: ["算法"]
+_baiduhi_id: addb5660b04359d28cb10d86.html
+_baiduhi_category: 算法
+---
+
+(hplonline)2010.6.6<br/><br/>
+讲解MapReduce的原文：<a href="http://labs.google.com/papers/mapreduce.html" target="_blank">下载</a><br/><br/>
+原来的题目是：<strong>MapReduce: Simplified Data Processing on Large Clusters </strong><br/><br/>
+草草阅读之后，有点感悟，<br/>
+觉得MapReduce的关键在于提出了一个简易的建模方法，<br/>
+也就是本篇的题目了。。<br/><br/><font color="#0000ff">》》精髓</font><br/><br/>
+MapReduce的关键在于，<br/>
+它对现实世界中的问题进行了归纳，<br/>
+发现<font color="#ff0000">有一大类问题可以用Map和Reduce两个过程</font>来表达。<br/>
+当然，有的问题只需要Map就可以表达，<br/>
+而另一些问题只需要Reduce就可以表达，<br/>
+这两类都是MapReduce的子集。<br/><br/>
+通过这样的建模之后，<br/>
+并行计算的过程就只有两步：<br/><font color="#ff0000">1。在一个集群上，实现Map和Reduce之间关联的机制，也就是引擎。<br/>
+2。把原问题用Map和Reduce两个过程来表达。</font><br/><br/><font color="#0000ff">》》适用的问题类型</font><br/><br/>
+能够用MapReduce来表达的问题，往往都这样的特点：<br/><font color="#ff0000">(1)可以用简单而暴力的语言来书写；<br/>
+(2)往往涉及到“遍历”这样的操作；<br/>
+(3)遍历的往往是个“集合”，也就是遍历动作可交换，可结合；<br/>
+(4)输入变量，中间变量，输出变量，一般都具有&lt;key,value&gt;的形式。</font><br/><br/><font color="#ff00ff">例1：</font>数组中的所有元素都加1<br/>
+for ( i = 0 ; i &lt; n ; i ++ )<br/>
+{<br/>
+a[i]++;<br/>
+}<br/>
+（算法大意）<br/><br/><font color="#ff00ff">例2：</font>实现从离散概率密度函数（pdf）到离散概率分布函数（cdf）的计算<br/>
+for ( i = 1 ; i &lt; n ; i ++ )<br/>
+{<br/>
+cdf[i]=cdf[i-1]+pdf[i] ;<br/>
+}<br/>
+（算法大意）<br/><br/>
+其中，例1就满足各个条件，在后面可以看到，能够用MapReduce来解决。<br/><br/>
+例2虽然也有遍历动作，但不满足条件（3）。<br/>
+对于cdf，我们必须处理了cdf[i-1]，才能推知cdf[i]。<br/>
+后面可以看到，虽然通过对问题转化，<br/>
+可以实现MapReduce，<br/>
+但那样的并发没有提高任何效率。<br/><br/><font color="#ff00ff">例3：</font>统计url的访问次数。<br/>
+输入：一堆log，每有一次访问，就写一条url在里面<br/>
+输出：每个url，后面带一个数字，表示访问次数<br/>
+暴力算法如下：<br/>
+把log一条条读进来，<font color="#ff9900">是a就给a加上1，是b就给b加上1</font>。<br/><br/><font color="#ff00ff">例3</font>也具有很好的“MapReduce形态”：<br/>
+（1）我们很容易得到一个简易而暴力的算法。<br/>
+（2）输入的log文件具有&lt;文件名，文件内容&gt;的形式<br/>
+（3）中间变量具有&lt;url，1&gt;的形式（上面标黄的那句话即是这个意思）<br/>
+（4）输出变量有&lt;url，次数&gt;这样的形式<br/>
+（5）我先读哪个log文件，不影响最后的结果。<br/>
+（6）对每个log文件，我先处理最后一行，还是第一行，不影响最后的结果。<br/><br/><font color="#0000ff">》》什么是Map，什么是Reduce？</font><br/><br/>
+首先引用官方的说法：<br/>
+Map接手一个&lt;key,value&gt;的数据对，输出一个&lt;key,<font color="#ff0000">value</font>&gt;的中间数据。<br/>
+MapReduce引擎负责搜集所有中间的&lt;key,value&gt;数据，<br/>
+按照key把他们组合起来，然后把&lt;key,<font color="#ff0000">values</font>&gt;传递给Reduce过程。<br/>
+Reduce接收&lt;key,values&gt;这样的中间数据，把values进行约化（合并）。<br/><br/>
+为了直观地理解Map，先来看看普通方法对例3的实现。<br/>
+通过上面对例三的分析，我们最容易想到的是用STL的map来做存储结构。<br/>
+那么整个算法过程如下：<br/><font color="#ff9900"><br/>
+input(documents)<br/><br/>
+for (each d in documents)<br/>
+{<br/>
+for (each line in d.content)<br/>
+{<br/><font color="#ff0000">map[line] = map[line] + 1 ;</font><br/>
+}<br/>
+}<br/><br/>
+for (each element in map)<br/>
+{<br/>
+output(element.key,element.value) ;<br/>
+}</font><br/><br/>
+其中，标红的这句是整个计算任务的核心。<br/>
+由于在问题的表述过程中，<br/>
+中间变量存在明显的&lt;key,value&gt;这样的形式，<br/>
+所以我们很容易想到STL里面的map。<br/><br/>
+在上例中，Map函数的任务是产生<br/>
+&lt;line,1&gt;这样的一个数据对，这和STL中map存储的pair是类似的。<br/><br/>
+再来看Reduce。<br/><br/>
+根据官方定义，Reduce函数得到的应该这样的东西<br/>
+&lt;url1,{1,1,1,1,1}&gt;<br/>
+&lt;url2,{1,1,1,1,1,1,1,1,1}&gt;<br/>
+这里的<font color="#ff0000">values</font>是由map函数产生的多个中间数据的列表。<br/>
+而Reduce输出的是这样的：<br/>
+&lt;url1,5&gt;<br/>
+&lt;url2,9&gt;<br/>
+可以明显地看到输入列表被结合起来了，成为了一个单个的数值。<br/><font color="#ff0000">Reduce的输出往往是1个或者0个，（原文2节1段）<br/>
+从效果上看，就好像输入数据被Reduce了一样。</font><br/><br/><font color="#0000ff">》》建模</font><br/><br/>
+上一节对Map和Reduce进行认识的时候，<br/>
+已经用Map和Reduce来表达例3这个问题了，<br/>
+并且这是原文中的经典例子，<br/>
+所以下面来看下例1和例2的建模方法。<br/><br/><font color="#ff00ff">例1：</font>数组中的所有元素都加1<br/>
+for ( i = 0 ; i &lt; n ; i ++ )<br/>
+{<br/>
+a[i]++;<br/>
+}<br/><br/>
+MapReduce模型：<br/>
+Map(数组下标，数组元素)<br/>
+{<br/>
+EmitIntermediate(数组下标，数组元素)<br/>
+}<br/>
+Reduce(数组下标，数组元素)<br/>
+{<br/>
+Emit(数组下标，数组元素+1)<br/>
+}<br/><br/>
+这里的Map函数相当于是一个Identity函数，<br/>
+它输出的是输入本身。<br/>
+这样情况出现在使用Map或者Reduce单个即足以建模的情况，<br/>
+则另外一个可以使用Identity函数。<br/><font color="#0000ff"><br/>
+》》带问题转化的建模</font><br/><br/><font color="#ff00ff">例2：</font>实现从离散概率密度函数（pdf）到离散概率分布函数（cdf）的计算<br/><font color="#ff9900">for ( i = 1 ; i &lt; n ; i ++ )<br/>
+{<br/>
+cdf[i]=cdf[i-1]+pdf[i] ;<br/>
+}</font><br/><font color="#ff00ff">（写法1）</font><br/><br/>
+上面分析过，例2并不适合用MapReduce来建模，<br/>
+但通过改变我们对问题的基本认识，也是可以办到的。<br/>
+改写算法如下：<br/><font color="#ff9900">for ( i = 1 ; i &lt; n ; i ++ )<br/>
+{<br/>
+for ( j=0 ; j &lt;=i ; j++ )<br/>
+{<br/>
+cdf[i] = cdf[i] + pdf[j] ;<br/>
+}<br/>
+}</font><br/><font color="#ff00ff">（写法2）</font><br/><br/>
+改写后的关键区别在于，<br/><font color="#ff0000">计算的输出结果cdf[]前后元素之间的耦合关系被去除了。</font><br/>
+每个cdf[i]都是可以独立计算的，而不依赖以前的结果。<br/><br/>
+这时，可以构造MapReduce框架如下：<br/><br/>
+Map(pdf的下标，pdf的元素)<br/>
+{<br/>
+for ( i = pdf的下标 ;<font color="#ff0000"> i &lt;= n</font> ; i ++ )<br/>
+{<br/>
+EmitIntermediate(i，pdf的元素)<br/>
+}<br/>
+}<br/><br/>
+Reduce(cdf的下标，{一个数值列表} l )<br/>
+{<br/>
+total = 0 ;<br/>
+for ( i = 0 ; i &lt; l的长度 ; i ++ )<br/>
+{<br/>
+total = total + l[i] ;<br/>
+}<br/>
+Emit(cdf的下标，total)<br/>
+}<br/><br/>
+这里的Reduce函数看起来问题不大，<br/>
+但Map函数里面的i&lt;=n的实现就有点困惑了。<br/>
+由于对pdf[i]我们要把它的值加到cdf[i..n]的元素中，<br/>
+所以这是个必要的过程，但这个n要怎么传进去呢？<br/><br/>
+其实各种变通的方法还是挺多的。<br/>
+如果引擎支持对全局参数设定，那么n就放在一个全局位置。<br/>
+不过这样的解法有点破坏完美主义，因为我们给了Map额外的信息。<br/>
+还有个办法就是先把pdf数组做个reverse操作，<br/>
+这样我们发送的中间变量为&lt;0..i,pdf[i]&gt;，<br/>
+得到的cdf显然也是反的，最后再reverse一下即可。<br/><br/>
+为了讨论问题叙述简单，就假设上面的Map在实现上没有问题。<br/><br/>
+这里，我们可以看到，<br/>
+有些表面上<font color="#ff0000">不适合MapReduce的问题</font>也可以转化过来。<br/>
+现在的遗留问题是，<font color="#ff0000">这样的转化在多大程度上是有意义的呢</font>？<br/><br/>
+由于并行计算中，耗时取决于最长通路，<br/>
+所以我们主要考察最长的Map到Reduce的途径。<br/>
+先看Map，每个Map发射中间值&lt;i..n，pdf[i]&gt;。<br/>
+最慢的Map肯定是第一个元素，发射了n次。<br/>
+再看Reduce，每个Reduce要累加收到的所有数值，<br/>
+最多的一个，cdf[n]=pdf[0]+pdf[1]...+pdf[n]。<br/><br/>
+也就是说，在这个框架下，计算效率是O(n)的。<br/>
+再看下我们的<font color="#ff00ff">（写法1）</font>，很明显，也就是O(n)的。。。<br/><br/>
+从绝对效果来看，这样的并行化并没有起到作用。<br/>
+那是不是意味着MapReduce在这里失去意义了呢？<br/><br/>
+其实也不尽然，<font color="#ff0000">关键在于我们是如何对原始问题进行第一表达的</font>。<br/>
+在pdf转cdf这个问题中，我们也许可以很容易地写出O(n)的解法。<br/>
+但是如果有个类似问题，我们拿到的时候只写出了<font color="#ff00ff">（写法2）</font>，<br/>
+那么我们将花费n方的时间，而我们手里有MapReduce这样的工具，<br/>
+并且转化很明显，于是问题在n的时间内得到的解决。<br/><br/>
+再思考为什么写法1并不适合MapReduce化，<br/>
+我们可以发现，他利用了输出结果间的相关性。<br/>
+从本质上来说，这里原来就已经是一个效率的提升了。<br/><font color="#ff0000">而不适合MapReduce的问题，很多时候可能就是由于这种相关性。<br/>
+所以我们在解除相关性的同时，一般来说会增加计算开销。<br/>
+再由MapReduce的并行化来提高效率，整个过程走了一点弯路。</font><br/><br/>
+所以根据对问题的第一表达：<br/>
+如果有很好的MapReduce形态，那就用吧；<br/>
+如果不是很明显的MapReduce形态，大多数情况下应该可以不用了。<br/><br/><font color="#0000ff">》》实现关键</font><br/><br/>
+在整个系统中，引擎实际上是很关键的。<br/>
+用自然语言描述一下：<br/>
+MapReduce引擎负责搜集所有中间的&lt;key,value&gt;数据，<br/>
+按照key把他们组合起来，然后把&lt;key,<font color="#ff0000">values</font>&gt;传递给Reduce过程。<br/><br/>
+其实这个动作很明显就是一个map，或者说一个hashtable。<br/>
+那么整个引擎的底层可以概括地认为是一个<font color="#ff0000">分布式的map（hashtable）</font>。<br/>
+当然，最容易实现的就是hashtable了。<br/><br/>
+假设我们有许多的运行map过程的mapper机器，<br/>
+有许多运行reduce过程的reducer机器，<br/>
+此外，还有一个负责控制的master机器，相当于引擎。<br/>
+那么整个过程为：<br/>
+master对任务进行划分，传给各个mapper，<br/>
+mapper把计算到的中间结果&lt;key,value&gt;传给master，<br/>
+master对key调用确定的hash算法，可以得到负责该key的reducer是谁，<br/>
+master把这个中间结果交给这个reducer，<br/>
+最后master收集reducer的处理结果，整理输出（比如可以按照key进行排序。。。）<br/><br/>
+其中有些过程只是表述模型所用，在实现上可以另辟蹊径的。<br/>
+比如mapper不用把中间结果交给master，而是自己去找reducer，<br/>
+只要所有mapper运行的hash算法是一样的，<br/>
+那么&lt;key,value&gt;对总是会交到正确的reducer手上。<br/><br/>
+当然，都通过master有个好处，<br/>
+就是master可以把握各个机器的进度，<br/>
+对于出了问题的mapper，可能很久都收不到中间值，<br/>
+那么master可以重新启动一个mapper，而忽略以前的结果。<br/><br/>
+妄想一下，如果有个超人在全球的PC上实现了这套引擎，<br/>
+那么将实现多么强大的计算能力。<br/><br/>
+但这套底层机制的实现是很困难的，<br/>
+一些比较明显想到的问题有：<br/><font color="#ff0000">master的单点故障，<br/>
+网络传输带宽的问题，<br/>
+文件存储的问题。<br/></font><br/>
+master的单点故障是系统结构固有的，<br/>
+从它交master这个名字就会得知了。<br/>
+在我们遇到的各种系统中都会有这个问题，<br/>
+一般考虑多机备份等手段。<br/><br/>
+网络传输带宽对于全球化来说，是个超级问题。<br/>
+因为地区发展的不平衡，网管策略的不同，<br/>
+很难协调各个机器的工作。<br/>
+所以一般是在机房里面，<br/>
+在高性能交换机连接的集群上实现这个引擎。<br/><br/>
+文件存储就是一个更伤脑经的问题了。<br/>
+我们先把输入和输出都用“文件”这个概念来表达，<br/>
+那么master一开始将分割输入文件，再递交给各个mapper。<br/>
+如果输入文件一开始是只存在于master上的，<br/>
+那么master的网络传送负担将相当的重。<br/>
+也许一个报文从UESTC穿越GFW到达米国的的时间就远大于本地计算开销。<br/>
+即使对于一个机房中的集群来说也是如此，<br/>
+master还没来得及把文件传给后面的mapper，<br/>
+前面的mapper就在纷纷递交结果了。。<br/>
+而google这套机制的优势在于，<br/>
+他们早就有了分布式的GFS文件系统。<br/>
+文件本来就在各个mapper手上，<br/>
+而且往往一份文件会在3个机器上有备份。<br/>
+那么master在分配任务的时候，<br/>
+可以尽量把各个机器本地持有的文件输入给相应的mapper。<br/>
+再高级一点，master可以掌握机房的交换线路图，<br/>
+当机器非本地持有文件的时候，<br/>
+尽量让临近节点间进行文件交互（比如同一个交换机下）。<br/><br/>
+===<br/><br/>
+ORZ，出来这么久的东西杂现在才知道喃。。<br/><img src="http://img.baidu.com/hi/jx2/j_0025.gif"/><br/>
+看来还得继续在土鳖阵营里待一段时间了。

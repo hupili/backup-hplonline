@@ -1,0 +1,81 @@
+---
+layout: post
+title: "[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）"
+date: 2011-02-01  00:22
+comments: true
+categories: tech
+tags: ["Network"]
+_baiduhi_id: 8fbb05b3697a32b4d8335a3f.html
+_baiduhi_category: Network
+---
+
+<p>(hplonline)2011.1.31</p><p>偶然读到的一篇网络编码方面文章，作为这个领域的入门材料，应该是很赞的。正好又做了翻译，不share出来就可惜了。这个领域的许多研究，正如这篇文章所说，主要是集中在理论和多播。一方面，理论让人感觉到生涩；另一方面，多播的应用环境本来就不是很显然，有点人工制造的味道。比如网络编码的经典蝶形图，一个宿从多个源收数据在大多数时候应该是没这需求的。我们能想到的多播应用环境，应该也就是类似vod之类的，当多个用户点播不同片源的时候，中间节点可以从编码上得到收益。然而在无线网中，网络编码很自然的有了需求。无线网本身有广播的特点，而大部分MAC协议，比如802.11，却利用比较复杂的规则，使得上层能拿到一个单播、“可靠”的接口。在大多数研究中， 也会把无线网抽象成点对点的形式，再套上有线网中成熟的方案。问题是解决了，但不一定拿到了最高的收益。这篇文章从无线切入，是一个很好的点。另外，关于Network Coding，这篇文章只用到了简单的XOR，这就使得我们这样的数学盲也能够理解。更令我眼前一亮的是许多工程上的考究。以前感觉学术界做事情，总是理论上非常好，实际应用的时候，受种种限制，结果没用。这篇文章提供了完整的解决方案，可以把COPE集成进现有协议栈。如果对802.11的MAC、无线路由协议（非IP的路由）、TCP等的细节比较了解的话，会有豁然开朗的感觉。即使忘干净了， 也正好可以复习一下，发现当年课堂上应付考试背的条条框框居然在这里被巧妙地用上了。</p><p>下面的部分也不是严格意义上的翻译，算是意译吧。专有名词不一定翻得准，就把原文中的term括在后面了。有些地方做了扩充，是根据自己的理解来的，在括号里面。像ETX等，原文只是简单提出，并给出参考文献。作者认为ETX就像TCP一样，对读者来说是个常识。。于是我又被赤裸裸地鄙视了，然后去找了相关资料，在相关部分做了下简述。</p><p>===================================（<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/3f37a9ccc1a8261100e92839.html">转载提示</a>，第四条）</p><p>
+
+</p><h1 style="margin-left: 0cm; text-indent: 0cm;"><span style="font-family: 宋体;">摘要</span></h1>
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span>COPE</span><span style="font-family: 宋体;">，一种新的无线</span><span>mesh</span><span style="font-family: 宋体;">网架构。主要是建立在网络编码理论上，让中间节点在存储转发之外，还可以把多个包混在一起，从而增加吞吐量。网络编码先前的工作主要集中在理论推导和多播流量。这篇文章主要的工作是把理论带入实践，处理通常情况下的单播、动态和突发流量、以及把</span><span>COPE</span><span style="font-family: 宋体;">集成到现有协议栈中的其他问题。在</span><span>20</span><span style="font-family: 宋体;">节点的网络中测试了</span><span>COPE</span><span style="font-family: 宋体;">的性能，网络吞吐量有极大的增加。根据流量模式、拥塞程度、传送层协议不同，获得的在增益从百分之几到几倍不等。</span></p>
+
+<h1><span><span>1<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">简介</span></h1>
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">无线网不可或缺，（一堆废话）。当前无线网的主要问题是吞吐量有限，并且不可扩展到高密度的大型网络。（主要还是无线介质共享，带来的冲突问题）</span></p>
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span>COPE</span><span style="font-family: 宋体;">在</span><span>MAC</span><span style="font-family: 宋体;">和</span><span>IP</span><span style="font-family: 宋体;">中间插入一个编码层，发掘编码机会，并试图在一次传输中转发多个包。</span></p>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/5adca6af93570a9d7dd92aa2.jpg" border="0"/></span><br/><br/></span></p>
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">用这个图来解释下</span><span>COPE</span><span style="font-family: 宋体;">的基本原理。当前方法（</span><span>a</span><span style="font-family: 宋体;">），</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">各向对方发送一个包，总共需要</span><span>4</span><span style="font-family: 宋体;">次传输。由于</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">都知道自己发出去的包是什么，所以</span><span>Relay</span><span style="font-family: 宋体;">可以将两个包</span><span>XOR</span><span style="font-family: 宋体;">在一起。接收方将</span><span>Relay</span><span style="font-family: 宋体;">发来的包与自己本地的包</span><span>XOR</span><span style="font-family: 宋体;">之后，即可得到发送方的包。这样传输次数只有</span><span>3</span><span style="font-family: 宋体;">次。</span></p>
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">实际上，</span><span>COPE</span><span style="font-family: 宋体;">带来的收益远比上面这个例子要大。利用无线介质本身广播的特点，让传输路径周围的节点都能侦听到该包。每个节点都将听到的包存储一段时间，并且向自己周围的节点报告。节点在发送包的时候，可以利用周围节点报告的信息，来实现<b>机遇编码</b>（</span><span>opportunistic
+coding</span><span style="font-family: 宋体;">）。在所有下一跳节点均能解码的情况下，</span><span>COPE</span><span style="font-family: 宋体;">会尽可能地混合多个包。这让</span><span>COPE</span><span style="font-family: 宋体;">可以在发送包的时候，带上反方向的流量，如</span><span>Alice-Bob</span><span style="font-family: 宋体;">的例子所示，并且可以混上更多的包。</span></p>
+
+<p class="MsoNormal"><span><span>       </span>COPE</span><span style="font-family: 宋体;">的两个基本原则：</span></p>
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">不使用点对点的无线网抽象方式，而是利用无线网的广播特性。网络设计者通常是将无线网抽象成点对点的方式，然后讲有线网的转发、路由技术应用于无线网。</span><span>COPE</span><span style="font-family: 宋体;">需要利用无线网的广播特性，而不是通过人工抽象去隐藏它。</span></p>
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">利用网络编码。以往这方面的工作主要是理论和多播流量的，</span><span>COPE</span><span style="font-family: 宋体;">会解决单播、动态突发流量，还有其他实践问题。</span></p>
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span> </span></p>
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">他们</span><span>05</span><span style="font-family: 宋体;">年发表了</span><span>opportunistic
+wireless network coding</span><span style="font-family: 宋体;">的文章，参考文献</span><span>[23]</span><span style="font-family: 宋体;">。这篇文章的不同点在</span><span>3</span><span style="font-family: 宋体;">个方面</span><span>:</span></p>
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">这是无线网络编码的第一个实现，将</span><span>COPE</span><span style="font-family: 宋体;">无缝集成到现有的协议栈中，支持</span><span>TCP</span><span style="font-family: 宋体;">和</span><span>UDP</span><span style="font-family: 宋体;">，并且运行了真实的应用程序来试验。</span></p>
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">在</span><span>linux</span><span style="font-family: 宋体;">内核和</span><span>Roofnet</span><span style="font-family: 宋体;">平台上实现了</span><span>COPE</span><span style="font-family: 宋体;">，第一次在无线网环境中部署网络编码。</span></p>
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">研究了</span><span>COPE</span><span style="font-family: 宋体;">的性能，揭示了</span><span>COPE</span><span style="font-family: 宋体;">和无线信道、路由协议、高层应用的交互。研究结果总结如下：</span></p>
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">网络编码有实践收益，可以极大增加无线网的吞吐量。</span></p>
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">实验中，当无线信道拥塞、伴有大量随机的</span><span>UDP</span><span style="font-family: 宋体;">包的时候，增益大概</span><span>3-4</span><span style="font-family: 宋体;">倍。</span></p>
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">如果上层流量没有拥塞控制，比如</span><span>UDP</span><span style="font-family: 宋体;">，</span><span>COPE</span><span style="font-family: 宋体;">的增益比理论还大。这个额外增益主要是因为编码使得路由的发送队列更短，减小了拥塞的下行链路上丢包的可能性。（被丢弃的实际上包已经消耗了部分网络资源）</span></p>
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">在通过一个</span><span>AP</span><span style="font-family: 宋体;">连接到</span><span>Internet</span><span style="font-family: 宋体;">的无线</span><span>mesh</span><span style="font-family: 宋体;">网上，吞吐量增益根据上下行流量比例不同，从</span><span>5%</span><span style="font-family: 宋体;">到</span><span>70%</span><span style="font-family: 宋体;">不等。</span></p>
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">隐藏终端将导致很高的冲突率，即使配置成</span><span>802.11</span><span style="font-family: 宋体;">的最大重传次数也无法掩盖。这种情况下，</span><span>TCP</span><span style="font-family: 宋体;">的发送速率不足以产生足够的编码机会。（因为</span><span>TCP</span><span style="font-family: 宋体;">在流控上的特点是，线性增加，乘法减少。当冲突发生的时候，发送窗口会折半。发送的包骤降，导致编码机会变得更少）。当没有隐藏终端问题的时候，</span><span>TCP</span><span style="font-family: 宋体;">的吞吐量平均增加</span><span>38%</span><span style="font-family: 宋体;">。</span></p>
+
+<p class="MsoNormal"><span> </span></p>
+
+<h1><span><span>2<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">背景和相关工作</span></h1>
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a8d2915084487c33843524a2.jpg" border="0"/></span><br/><br/></span></p>
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">上一幅网络编码方面经典的蝶状图。这个演示的是</span><span>S1</span><span style="font-family: 宋体;">向</span><span>R1</span><span style="font-family: 宋体;">和</span><span>R2</span><span style="font-family: 宋体;">发送的多播流量</span><span>a</span><span style="font-family: 宋体;">，</span><span>S2</span><span style="font-family: 宋体;">向</span><span>R1</span><span style="font-family: 宋体;">和</span><span>R2</span><span style="font-family: 宋体;">发送的多播流量</span><span>b</span><span style="font-family: 宋体;">。</span></p>
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">网络编码方面最早的工作是</span><span>Ahiswede</span><span style="font-family: 宋体;">做的</span><span>[2]</span><span style="font-family: 宋体;">，他展示了允许路由混合多个包中的信息，可以达到多播的容量。紧接着是</span><span>Li</span><span style="font-family: 宋体;">的工作，</span><span>[26]</span><span style="font-family: 宋体;">，他证明了线性编码就可以达到容量上界。</span><span style="font-size: 9pt;">Koetter and M´edard</span><span style="font-family: 宋体;">提出了多项式复杂度的编解码算法，</span><span>[24]</span><span style="font-family: 宋体;">，</span><span style="font-size: 9pt;">Ho et al.</span><span style="font-family: 宋体;">把他们的结论扩展到了随机编码，</span><span>[17]</span><span style="font-family: 宋体;">。</span><span>[11]</span><span style="font-family: 宋体;">、</span><span>[31]</span><span style="font-family: 宋体;">，是最近研究无线网络编码的文献。</span><span style="font-size: 9pt;">Lun et al.</span><span style="font-family: 宋体;">，研究了全向天线情况下的无线网络编码，指出最小化通信开销的问题可以被表达为一个线性规划问题，并且可以分布式求解。前面这些文章都是理论的，并且研究多播流量。</span><span>[39]</span><span style="font-family: 宋体;">，</span><span>[16]</span><span style="font-family: 宋体;">，</span><span>[37]</span><span style="font-family: 宋体;">研究了单播拓扑，并且正式网络编码比纯粹转发的吞吐量要高。这篇文章就是要将理论运用于实践，并提供一个为通用单播流量实现的协议。</span></p>
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">为了提高无线网的吞吐量，在系统级优化上，也有许多研究。</span><span>[10]</span><span style="font-family: 宋体;">、</span><span>[5]</span><span style="font-family: 宋体;">、</span><span>[12]</span><span style="font-family: 宋体;">寻找更好的路由度量（</span><span>routing
+metric</span><span style="font-family: 宋体;">）。</span><span>[33]</span><span style="font-family: 宋体;">微调</span><span>TCP</span><span style="font-family: 宋体;">协议。</span><span>[6]</span><span style="font-family: 宋体;">、</span><span>[22]</span><span style="font-family: 宋体;">、</span><span>[15]</span><span style="font-family: 宋体;">改进路由和</span><span>MAC</span><span style="font-family: 宋体;">协议。</span></p><span/><br/><p class="MsoNormal" style="text-align: center;" align="center"><span><br/></span></p><br/>

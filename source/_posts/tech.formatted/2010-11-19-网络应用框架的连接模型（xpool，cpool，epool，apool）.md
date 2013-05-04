@@ -1,0 +1,98 @@
+---
+layout: post
+title: "网络应用框架的连接模型（xpool，cpool，epool，apool）"
+date: 2010-11-19  00:30
+comments: true
+categories: tech
+tags: ["Network"]
+_baiduhi_id: 314e4c23994d0b429922edd1.html
+_baiduhi_category: Network
+---
+
+(hplonline)2010.11.18<br/><br/>
+这几个pool的名称貌似是公司里面人做框架时候取的，<br/>
+不过不管姓谁名啥，有些考虑点倒是通的。<br/>
+这周听课就只对这几个pool有点印象，简记之。<br/><br/><font color="#0000ff">》》xpool</font><br/><br/>
+使用的是leader-follower的模型。<br/>
+就是多个线程本来都是leader，共同竞争建立状态的连接。<br/>
+一旦竞争成功，则进入follower状态，<br/>
+不断处理其所follow的客户的所有请求，直到结束。<br/><br/>
+这样的模型有个问题，就是一个线程和一个连接实时对应。<br/>
+这样，当上有模块发起的连接数大于该服务模块的工作线程数时，就会产生服务拒绝。<br/>
+这个模型适合于连接特别少，持续时间长，CPU消耗密集型的服务。<br/><br/>
+在这个模型下，几乎看不到“框架”的影子。<br/>
+各个工作线程能够处理从accept到close的所有过程。<br/><font color="#0000ff"><br/>
+》》cpool/epool<br/></font><br/>
+两者都是pendingpool模型，<br/>
+只不过cpool用select实现，而epool用epoll实现而已。<br/>
+从这个模型开始，框架的影子逐渐显现了。<br/><br/>
+维护pendingpool输入端的是一个主线程，<br/>
+当socket的accept队列上有新建立的连接时，<br/>
+就从系统取出这个fd，放进pendingpool中。<br/><br/>
+多个worker线程竞争pendingpool的输出端。<br/>
+这里的pendingpool使用“生产-消费”机制实现，<br/>
+由“框架”提供加锁的功能。<br/><br/>
+在这个连接模型下，框架接管了accept之前的操作。<br/>
+但read和write仍然是在worker中处理的。<br/>
+可以看到，这种模型解决了前一种的最大同时连接问题。<br/>
+只要pendingpool开得够大， 可以“同时”维护许多连接。<br/>
+但真正同时服务的worker数量是固定的，多余的连接也处于等待状态。<br/>
+另一角度看来，此模型似乎只是扩充了系统accept队列的长度而已。<br/><br/><font color="#0000ff">》》xpool，cpool，epool的问题</font><br/><br/>
+在前面的模型中，一旦一个worker拿到某个连接，<br/>
+就会一直与连接对端交互，直到完成服务。<br/>
+这里可能的问题是，<br/>
+某worker发给上游一个PDU，然后一直等待客户的下一个请求。<br/>
+在这个过程中，worker可能阻塞在read等操作上。<br/>
+与此同时，却有大量的连接在pendingpool中等待服务。<br/>
+总的效果就是，服务器并没有达到最大的吞吐。<br/><br/>
+如果使用epool模型，常用解决方案是改为无状态协议，选择短连接。<br/>
+即上游每来一个请求PDU，服务器都能独立解释，并返回应答PDU。<br/>
+这样的“一问一答”模式，不依赖之前交互过的任何PDU。<br/>
+好处就是，处理完一个请求后，worker可以立即close掉fd，<br/>
+然后立马从pendingpool接管下一个连接。<br/>
+注意，这里worker触发close后，网络IO的任务就交给系统了。<br/>
+雅致关闭模式下，系统会发完发送缓冲的内容，再FIN。<br/>
+（<br/>
+摘段MSDN上关于graceful disconnect的阐述。<br/>
+If the <strong>l_onoff</strong> member of the <a href="linger_2.htm"><strong>LINGER</strong></a>  structure is zero on a stream socket, the <strong>closesocket</strong> call will return  immediately and does not receive <a href="windows_sockets_error_codes_2.htm#winsock.wsaewouldblock_2">WSAEWOULDBLOCK</a>  whether the socket is blocking or nonblocking. However, any data queued for  transmission will be sent, if possible, before the underlying socket is closed.  This is also called a graceful disconnect or close. In this case, the Windows  Sockets provider cannot release the socket and other resources for an arbitrary  period, thus affecting applications that expect to use all available sockets.  This is the default behavior for a socket.<br/>
+）<br/>
+短连接化后，上游模块的请求就在pendingpool中轮转，<br/>
+看上去似乎是没有间断地在服务，这个和CPU调度挺像的。<br/>
+宏观来看，服务器能同时处理的远超过worker数量的连接。<br/><br/><font color="#0000ff">》》apool<br/></font><br/>
+apool的a是异步的意思。<br/>
+形容的对象是CPU和网络IO。<br/>
+就是说框架接管了网络IO的全部任务，<br/>
+worker只关心自己的业务逻辑。<br/><br/>
+这样，长短连接都无所谓了，因为只有框架知道。<br/>
+对于worker来说一切都是透明的，他们只能收到<br/>
+“谁发了什么东西给我”这样的数据，<br/>
+并且告诉框架，“给谁发什么东西”。<br/><br/>
+一般的实现可能是注册个回调函数，<br/>
+一旦框架组合好PDU，就调用之。<br/>
+并且框架提供接口，可以返回数据用。<br/><br/>
+不过这里又有一个设计上纠结的问题：<br/>
+框架究竟应该做到多少才合适？？<br/>
+比如，框架可以在read到一片数据后就直接交给一个worker处理。<br/>
+这样，由于TCP的分片/重组问题，可能这片数据不是完整的语义单元。<br/>
+这就导致worker需要另外的结构来维护交互的信息，客户编程很不方便。<br/>
+此外，框架也可以完成PDU的定界和拆分操作，<br/>
+让worker看到的都是完整，可解释的PDU。<br/>
+从二次开发的方便性角度来说，最好是后者；<br/>
+但前者提供的灵活性也是在某些场合正好需要的。<br/><br/><font color="#0000ff">》》总结<br/></font><br/>
+其实不管这些名字多样的pool是怎么定义的，<br/>
+关键区别也就是frame和worker的切分点，<br/>
+把一般的网络交互抽象成下面几个阶段的话，<br/>
+其中的数字就分别对应上面三中模型的切分位置：<br/>
+...network...(1)...accept...(2)...read/wrte...(3)...<br/><br/>
+从这个维度来看，上学期写的那个<a href="http://hi.baidu.com/hplonline/blog/item/a23496824285c8b26d8119b0.html" target="_blank">字符串PDU的C/S框架</a>很像所谓apool。<br/>
+稍微欠点火候的就是，没有使用到多线程。<br/>
+当时做这个框架，假定了工作逻辑是瞬时的，<br/>
+所以框架在组合好PDU后直接阻塞式调用了应用端的回调函数。<br/>
+实际上，正确的做法应该是，把组合好的PDU交给其中一个worker，<br/>
+这样，框架可以继续处理其他的连接。<br/><br/>
+突然还想到点关于paper的问题。<br/>
+如果像上段所引这篇，写那么个东东，代码+文档，<br/>
+最后的结果顶多也就是个实验报告或者课程设计。<br/>
+如果先综述一下各个模型，优缺点各是什么，<br/>
+为什么要选这个，这就仿佛到了另外一个高度。<br/>
+至于实现，可以蜻蜓点水一下，就很像paper了。<br/><br/><br/>

@@ -1,0 +1,385 @@
+---
+layout: post
+title: "C++中带括号的new。。（placement new）"
+date: 2010-06-16  20:35
+comments: true
+categories: tech
+tags: ["c","c++"]
+_baiduhi_id: 0a3fa76e45727fd780cb4ac9.html
+_baiduhi_category: c&c++
+---
+
+(hplonline)2010.6.16<br/><br/><font color="#0000ff">》》起因</font><br/><br/>
+之前有同学做个在线笔试，碰到了这个题：<br/><br/>
+#include &lt;iostream&gt;<br/>
+using std::cout;<br/>
+using namespace std ;<br/><br/>
+class P<br/>
+{<br/>
+public:<br/>
+virtual void print()<br/>
+{<br/>
+cout &lt;&lt; "P";<br/>
+}<br/>
+};<br/><br/>
+class Q: public P<br/>
+{<br/>
+public:<br/>
+virtual void print()<br/>
+{<br/>
+cout &lt;&lt; "Q";<br/>
+}<br/>
+};<br/><br/>
+int main()<br/>
+{<br/>
+P * p = new P;<br/>
+Q * q = static_cast &lt;Q *&gt; (p);<br/>
+q-&gt;print();<br/>
+delete p;<br/>
+cout &lt;&lt; endl;<br/><br/>
+q = new Q;<br/>
+p = q;<br/>
+q-&gt;print();<br/>
+p-&gt;print();<br/>
+cout &lt;&lt; endl;<br/><br/><font color="#ff0000">p = new (q) P;</font><br/>
+q-&gt;print();<br/>
+p-&gt;print();<br/>
+cout &lt;&lt; endl;<br/><font color="#ff0000">p-&gt;~P();</font><br/>
+delete q;<br/><br/>
+return 0;<br/>
+}<br/><br/>
+题目当然是让你判断会出什么结果。<br/><br/>
+对于前两个，应该说比较好搞定。<br/>
+第一个，static_cast，<br/>
+在这里和平时用的强制类型转换是一样的。<br/>
+当存在多重继承的时候，会有一些猫腻，<br/>
+详情见笔记：<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/a8f8c2fc9100a4f5fd037fa4.html">C++类型转换(static_cast,reinterpret_cast)</a><br/>
+第二个，就是一般的虚函数的问题，<br/>
+创建的对象是什么那就调用谁的函数。<br/><br/>
+比较诡异的是第三个，<br/>
+new(q)P这种用法还真是第一次见到。<br/>
+（深刻表示土鳖。。以前就是没看到过。。<br/>
+并且这个东西没法构造关键词在网上搜。。）<br/><font color="#0000ff"><br/>
+》》new的几种常用写法</font><br/><br/>
+new XXX<br/>
+这种必须要配合delete 来使用。<br/><br/>
+new XXX[]<br/>
+这种必须要配合delete[]来使用。<br/><br/>
+另外可以用括号来初始化创建的对象，<br/>
+括号的位置相当于是构造函数的位置。<br/>
+比如：new int(3) ;<br/><br/>
+今天遇到的这种形式为：<br/>
+new(??) XXX<br/><br/><font color="#0000ff">》》目标代码查看</font><br/><br/>
+实验环境：VC6+debug，OD<br/><br/>
+其中，main函数的汇编代码如下：<br/><br/>
+（有些注释是后面手动加的，<br/>
+关键位置标红显示）<br/><br/>
+004011A0 &gt; &gt; \55            push    ebp<br/>
+004011A1   .  8BEC          mov     ebp, esp<br/>
+004011A3   .  6A FF         push    -1<br/>
+004011A5   .  68 07FE4100   push    0041FE07                         ;  SE handler installation<br/>
+004011AA   .  64:A1 0000000&gt;mov     eax, dword ptr fs:[0]<br/>
+004011B0   .  50            push    eax<br/>
+004011B1   .  64:8925 00000&gt;mov     dword ptr fs:[0], esp<br/>
+004011B8   .  83EC 74       sub     esp, 74<br/>
+004011BB   .  53            push    ebx<br/>
+004011BC   .  56            push    esi<br/>
+004011BD   .  57            push    edi<br/>
+004011BE   .  8D7D 80       lea     edi, dword ptr [ebp-80]<br/>
+004011C1   .  B9 1D000000   mov     ecx, 1D<br/>
+004011C6   .  B8 CCCCCCCC   mov     eax, CCCCCCCC<br/>
+004011CB   .  F3:AB         rep     stos dword ptr es:[edi]<br/><br/>
+到这里为止，都是一些进入函数的初始化过程。<br/><br/>
+004011CD   .  6A 04         push    4<br/><font color="#ff0000">004011CF   .  E8 CC810000   call    operator new</font><br/>
+004011D4   .  83C4 04       add     esp, 4<br/><br/>
+第一个operator new的调用，申请一片空间<br/><br/>
+004011D7   .  8945 E4       mov     dword ptr [ebp-1C], eax<br/>
+004011DA   .  C745 FC 00000&gt;mov     dword ptr [ebp-4], 0<br/>
+004011E1   .  837D E4 00    cmp     dword ptr [ebp-1C], 0<br/>
+004011E5   .  74 0D         je      short 004011F4<br/>
+004011E7   .  8B4D E4       mov     ecx, dword ptr [ebp-1C]<br/><font color="#ff0000">004011EA   .  E8 BBFEFFFF   call    004010AA                         ;  P::P</font><br/>
+004011EF   .  8945 C8       mov     dword ptr [ebp-38], eax<br/><br/>
+调用的是P的构造函数，构造函数返回类的引用（指针）。<br/><br/>
+004011F2   .  EB 07         jmp     short 004011FB<br/>
+004011F4   &gt;  C745 C8 00000&gt;mov     dword ptr [ebp-38], 0<br/>
+004011FB   &gt;  8B45 C8       mov     eax, dword ptr [ebp-38]<br/>
+004011FE   .  8945 E8       mov     dword ptr [ebp-18], eax<br/>
+00401201   .  C745 FC FFFFF&gt;mov     dword ptr [ebp-4], -1<br/>
+00401208   .  8B4D E8       mov     ecx, dword ptr [ebp-18]<br/>
+0040120B   .  894D F0       mov     dword ptr [ebp-10], ecx<br/>
+0040120E   .  8B55 F0       mov     edx, dword ptr [ebp-10]<br/>
+00401211   .  8955 EC       mov     dword ptr [ebp-14], edx<br/><br/>
+然后是一些赋值，主要是static_cast那一团的东西。<br/><br/>
+00401214   .  8B45 EC       mov    <font color="#ff0000"> eax, dword ptr [ebp-14]</font><br/>
+00401217   .  8B10          mov     <font color="#ff0000">edx, dword ptr [eax]</font><br/>
+00401219   .  8BF4          mov     esi, esp<br/>
+0040121B   .  8B4D EC       mov     ecx, dword ptr [ebp-14]<br/>
+0040121E   .  FF12         <font color="#ff0000"> call    dword ptr [edx]</font><br/><br/>
+这里就是print函数的调用，代码为虚函数调用的标准长相。<br/>
+关于虚函数其他方面的研究，见：<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/1bacf81f75e4026af724e485.html">虚函数的底层机制</a><br/><font color="#ff0000">（其中关于点调用和箭头调用的不同之处，值得注意）</font><br/><br/>
+00401220   .  3BF4          cmp     esi, esp<br/>
+00401222   .  E8 69860000   call    _chkesp<br/>
+00401227   .  8B45 F0       mov     eax, dword ptr [ebp-10]<br/>
+0040122A   .  8945 E0       mov     dword ptr [ebp-20], eax<br/>
+0040122D   .  8B4D E0       mov     ecx, dword ptr [ebp-20]<br/>
+00401230   .  51            push    ecx<br/>
+00401231   .  E8 AA3F0000   call    operator delete<br/>
+00401236   .  83C4 04       add     esp, 4<br/>
+00401239   .  68 32104000   push    00401032                         ;  std::endl<br/>
+0040123E   .  B9 28954300   mov     ecx, offset std::cout            ;  ASCII "4 C"<br/>
+00401243   .  E8 3AFEFFFF   call    00401082                         ;  cout::operator&lt;&lt;<br/>
+00401248   .  6A 04         push    4<br/><br/>
+第一节的代码完。<br/><br/>
+0040124A   .  E8 51810000   call    operator new<br/>
+0040124F   .  83C4 04       add     esp, 4<br/>
+00401252   .  8945 D8       <font color="#ff0000">mov     dword ptr [ebp-28], eax</font><br/>
+00401255   .  C745 FC 01000&gt;mov     dword ptr [ebp-4], 1<br/>
+0040125C   .  837D D8 00    cmp     dword ptr [ebp-28], 0<br/>
+00401260   .  74 0D         je      short 0040126F<br/>
+00401262   .  8B4D D8       <font color="#ff0000">mov     ecx, dword ptr [ebp-28]</font><br/>
+00401265   .  E8 B9FDFFFF   call    00401023<br/>
+0040126A   .  8945 C4       <font color="#ff0000">mov     dword ptr [ebp-3C], eax</font><br/>
+0040126D   .  EB 07         jmp     short 00401276<br/>
+0040126F   &gt;  C745 C4 00000&gt;mov     dword ptr [ebp-3C], 0<br/>
+00401276   &gt;  8B55 C4      <font color="#ff0000"> mov     edx, dword ptr [ebp-3C]</font><br/>
+00401279   .  8955 DC       <font color="#ff0000">mov     dword ptr [ebp-24], edx</font><br/>
+0040127C   .  C745 FC FFFFF&gt;mov     dword ptr [ebp-4], -1<br/>
+00401283   .  8B45 DC      <font color="#ff0000"> mov     eax, dword ptr [ebp-24]</font><br/>
+00401286   .  8945 EC       <font color="#ff0000">mov     dword ptr [ebp-14], eax</font><br/>
+00401289   .  8B4D EC       mov     ecx, dword ptr [ebp-14]<br/>
+0040128C   .  894D F0       mov     dword ptr [ebp-10], ecx<br/>
+0040128F   .  8B55 EC       mov     edx, dword ptr [ebp-14]<br/>
+00401292   .  8B02          mov     eax, dword ptr [edx]<br/>
+00401294   .  8BF4          mov     esi, esp<br/>
+00401296   .  8B4D EC       mov     ecx, dword ptr [ebp-14]<br/>
+00401299   .  FF10          call    dword ptr [eax]<br/>
+0040129B   .  3BF4          cmp     esi, esp<br/>
+0040129D   .  E8 EE850000   call    _chkesp<br/>
+004012A2   .  8B4D F0       mov     ecx, dword ptr [ebp-10]<br/>
+004012A5   .  8B11          mov     edx, dword ptr [ecx]<br/>
+004012A7   .  8BF4          mov     esi, esp<br/>
+004012A9   .  8B4D F0       mov     ecx, dword ptr [ebp-10]<br/>
+004012AC   .  FF12          call    dword ptr [edx]<br/>
+004012AE   .  3BF4          cmp     esi, esp<br/>
+004012B0   .  E8 DB850000   call    _chkesp<br/>
+004012B5   .  68 32104000   push    00401032<br/>
+004012BA   .  B9 28954300   mov     ecx, offset std::cout            ;  ASCII "4 C"<br/>
+004012BF   .  E8 BEFDFFFF   call    00401082<br/><br/>
+第二节到此完，本节没有什么新的东西。<br/>
+中间一系列赋值，不知道VC为什么编得如此复杂。<br/>
+不过通过标红的几句，知道<font color="#ff0000">：<br/>
+dword ptr [ebp-14]</font>中存的就是new Q后返回的地址。<br/>
+通过上下文，知道这个[ebp-14]实际上就是q变量。<br/>
+这个很重要，因为下面要用到了。<br/><br/>
+004012C4   .  8B45 EC       mov     eax, dword ptr [ebp-14]<br/>
+004012C7   .  50            <font color="#ff0000">push    eax                              ;  eax=00360FF0</font><br/>
+004012C8   .  6A 04         push    4<br/>
+004012CA   .  E8 40FDFFFF   call    0040100F                         ;  operator new<br/><br/>
+0040100F 这个位置的函数也叫operator new，<br/>
+但它和我们之前看到的operator new不是同一个东西，<br/>
+传进去了两个参数，一个是地址值，一个是申请的空间大小。<br/><br/>
+004012CF   .  83C4 08      <font color="#ff0000"> add     esp, 8                           ;  eax=00360FF0</font><br/><br/>
+从这个operator new的返回值可以看到，得到的地址和之前p的值一样。<br/><br/>
+004012D2   .  8945 D0       mov     dword ptr [ebp-30], eax<br/>
+004012D5   .  C745 FC 02000&gt;mov     dword ptr [ebp-4], 2<br/>
+004012DC   .  837D D0 00    cmp     dword ptr [ebp-30], 0<br/>
+004012E0   .  74 0D         je      short 004012EF<br/>
+004012E2   .  8B4D D0       mov     ecx, dword ptr [ebp-30]<br/>
+004012E5   .  E8 C0FDFFFF  <font color="#ff0000"> call    004010AA                         ;  P::P</font><br/><br/>
+并且紧接着就会调用P的构造函数。<br/><br/>
+004012EA   .  8945 C0       mov     dword ptr [ebp-40], eax<br/>
+004012ED   .  EB 07         jmp     short 004012F6<br/>
+004012EF   &gt;  C745 C0 00000&gt;mov     dword ptr [ebp-40], 0<br/>
+004012F6   &gt;  8B4D C0       mov     ecx, dword ptr [ebp-40]<br/>
+004012F9   .  894D D4       mov     dword ptr [ebp-2C], ecx<br/>
+004012FC   .  C745 FC FFFFF&gt;mov     dword ptr [ebp-4], -1<br/>
+00401303   .  8B55 D4       mov     edx, dword ptr [ebp-2C]<br/>
+00401306   .  8955 F0       mov     dword ptr [ebp-10], edx<br/>
+00401309   .  8B45 EC       mov     eax, dword ptr [ebp-14]<br/>
+0040130C   .  8B10          mov     edx, dword ptr [eax]<br/>
+0040130E   .  8BF4          mov     esi, esp<br/>
+00401310   .  8B4D EC       mov     ecx, dword ptr [ebp-14]<br/>
+00401313   .  FF12          call    dword ptr [edx]<br/>
+00401315   .  3BF4          cmp     esi, esp<br/>
+00401317   .  E8 74850000   call    _chkesp<br/>
+0040131C   .  8B45 F0       mov     eax, dword ptr [ebp-10]<br/>
+0040131F   .  8B10          mov     edx, dword ptr [eax]<br/>
+00401321   .  8BF4          mov     esi, esp<br/>
+00401323   .  8B4D F0       mov     ecx, dword ptr [ebp-10]<br/>
+00401326   .  FF12          call    dword ptr [edx]<br/>
+00401328   .  3BF4          cmp     esi, esp<br/>
+0040132A   .  E8 61850000   call    _chkesp<br/><br/>
+中间这截也是虚函数的调用，同上。<br/><br/>
+0040132F   .  68 32104000   push    00401032                         ;  ---cout&lt;&lt;endl<br/>
+00401334   .  B9 28954300   mov     ecx, offset std::cout            ;  ASCII "4 C"<br/>
+00401339   .  E8 44FDFFFF   call    00401082<br/><br/>
+这截是cout&lt;&lt;endl<br/><br/>
+0040133E   .  8B45 EC       mov     eax, dword ptr [ebp-14]          ;  ---delete q<br/>
+00401341   .  8945 CC       mov     dword ptr [ebp-34], eax<br/>
+00401344   .  8B4D CC       mov     ecx, dword ptr [ebp-34]<br/>
+00401347   .  51            push    ecx<br/>
+00401348   .  E8 933E0000   call    operator delete<br/><br/>
+这截是delete q。<br/><br/>
+可以看到，之前源码中的<font color="#ff0000">p-&gt;~P();</font>并没有生成任何目标代码。<br/><br/>
+0040134D   .  83C4 04       add     esp, 4<br/>
+00401350   .  33C0          xor     eax, eax<br/>
+00401352   .  8B4D F4       mov     ecx, dword ptr [ebp-C]<br/>
+00401355   .  64:890D 00000&gt;mov     dword ptr fs:[0], ecx<br/>
+0040135C   .  5F            pop     edi<br/>
+0040135D   .  5E            pop     esi<br/>
+0040135E   .  5B            pop     ebx<br/>
+0040135F   .  81C4 80000000 add     esp, 80<br/>
+00401365   .  3BEC          cmp     ebp, esp<br/>
+00401367   .  E8 24850000   call    _chkesp<br/>
+0040136C   .  8BE5          mov     esp, ebp<br/>
+0040136E   .  5D            pop     ebp<br/>
+0040136F   .  C3            retn<br/><br/>
+最后是一些扫尾的工作。<br/><br/><font color="#0000ff">》》观察目标代码的结论</font><br/><br/>
+从目标代码来看，p=new(q)P做了以下事情：<br/><font color="#ff0000">1。直接让p的值等于q<br/>
+2。以p这个地址为this指针，调用了P的构造函数。</font><br/><br/>
+如果觉得看汇编太麻烦，可以用C++写个更简洁点的实验：<br/><br/>
+#include &lt;iostream&gt;<br/>
+using namespace std;<br/><br/>
+class cls1{<br/>
+public:<br/>
+int i ;<br/>
+cls1(){<br/>
+i = 1 ;<br/>
+}<br/>
+void print(){<br/>
+cout&lt;&lt;i&lt;&lt;endl ;<br/>
+}<br/>
+} ;<br/><br/>
+class cls2{<br/>
+public:<br/>
+int i1 , i2 ;<br/>
+cls2(){<br/>
+i1 = 2 ; <br/>
+i2 = 2 ;<br/>
+}<br/>
+void print(){<br/>
+cout&lt;&lt;i1&lt;&lt;','&lt;&lt;i2&lt;&lt;endl ;<br/>
+}<br/>
+} ;<br/><br/>
+int main(){<br/>
+int *p ;<br/>
+cls1 *p1 = new cls1 ;<br/>
+p1-&gt;print() ;<br/>
+cls2 *p2 = new(p1) cls2 ;<br/>
+p2-&gt;print() ;<br/>
+p1-&gt;print() ;<br/>
+return 0 ;<br/>
+}<br/><br/>
+输出：<br/><br/>
+1<br/>
+2,2<br/>
+2<br/><br/>
+这个实验也可以证实两个指针的值相同，<br/>
+并且后者的构造函数已经被调用了。<br/><br/><font color="#0000ff">》》空间分配的问题</font><br/><br/>
+这里，我们又遇到了另一个很矛盾的问题：<br/><font color="#ff0000">new(??) XX是进行简单的指针赋值呢，还是重新分配空间？</font><br/><br/>
+如果不重新分配空间的话，<br/>
+新类和旧类所占空间不一定是相同的，<br/>
+这样，有的数据成员可能就已经存到了无效区域。<br/><br/>
+还好，<font color="#ff0000">new出来的东西会有一个cookie，<br/>
+在指针前面某地，是存储得有空间大小的。</font><br/>
+根据这个，我们可以设计实验来观察。<br/><br/>
+实验：<br/><br/>
+int main(){<br/>
+int *p1 , *p2 ;<br/>
+p1 = new int[12] ;<br/>
+printf("%d\n" , p1[-4]) ;<br/><br/>
+p2 = new(p1) int[13] ;<br/>
+printf("%d\n" , p2[-4]) ;<br/><br/>
+p2 = new int[13] ;<br/>
+printf("%d\n" , p2[-4]) ;<br/>
+return 0 ;<br/>
+}<br/><br/>
+输出：<br/><br/>
+48<br/><font color="#ff0000">48<br/>
+52</font><br/><br/>
+可以看到new(p1) int[13] ;出来的cookie，<br/>
+标注空间大小为48，和原来一样。<br/>
+new int[13] ;出来的coockie，<br/>
+则是和新申请的一样，52。<br/><br/>
+这说明new(??)XX的形式并没有重新分配空间。<br/>
+在上面这个实验中，使用的是基础类型int，<br/>
+这种类型具有trivial的dtor和ctor，<br/>
+实验中，delete p1或者p2都是正常的。<br/><br/>
+但下面的实验将展示出它的一个副作用：<br/><br/>
+#include &lt;iostream&gt;<br/>
+using namespace std;<br/><br/>
+class cls1{<br/>
+public:<br/>
+int i ;<br/>
+cls1(){<br/>
+i = 1 ;<br/>
+}<br/>
+void print(){<br/>
+cout&lt;&lt;i&lt;&lt;endl ;<br/>
+}<br/>
+} ;<br/><br/>
+class cls2{<br/>
+public:<br/>
+int i1 , i2 ;<br/>
+cls2(){<br/>
+i1 = 2 ; <br/>
+i2 = 2 ;<br/>
+}<br/>
+void print(){<br/>
+cout&lt;&lt;i1&lt;&lt;','&lt;&lt;i2&lt;&lt;endl ;<br/>
+}<br/>
+} ;<br/><br/>
+int main(){<br/>
+int *p ;<br/>
+cls1 *p1 = new cls1 ;<br/>
+p = (int*)p1 ;<br/>
+cout&lt;&lt;p[0]&lt;&lt;','&lt;&lt;p[1]&lt;&lt;endl ;<br/>
+cls2 *p2 = new(p1) cls2 ;<br/>
+p = (int*)p2 ;<br/>
+cout&lt;&lt;p[0]&lt;&lt;','&lt;&lt;p[1]&lt;&lt;endl ;<br/><font color="#ff0000"><br/>
+//delete p1 ;<br/>
+//delete p2 ;<br/>
+//both will fail here!!</font><br/><br/>
+return 0 ;<br/>
+}<br/><br/>
+在以上语句执行后，<br/>
+不管delete哪个指针，<br/>
+最后都会出现错误！<br/><br/>
+这是由于cls2 *p2 = new(p1) cls2 ;没有重新分配空间，<br/>
+也就是p2指向的地方只有一个int的位置，<br/>
+但是cls2的构造函数很明显地向两个地方写入了数据，<br/>
+后者已经在有效空间范围外了。<br/><br/><font color="#0000ff">》》总结</font><br/><br/>
+由于没有重新分配空间，<br/>
+所以new(??)XXX这样的用法是非常危险的。<br/>
+当新对象所占空间小于原分配空间的时候，不会出问题。<br/>
+但当新对象所占空间比之大的时候，可能造成对非法区域的改写。<br/><br/>
+那是不是就要完全放弃这种写法呢？？<br/><br/>
+显然不是！<br/><font color="#ff0000">第一，就像上面分析的，如果能保证新对象的空间更小，则无所谓。</font><br/>
+C的哲学不是让我们放弃一切危险的动作，<br/>
+而是让我们深入了解每个动作，让危险可控。<br/><br/><font color="#ff0000">第二，这给我们手动调用构造函数提供了一个方法！</font><br/>
+其实这个问题也困扰了我很久，如今却无心插柳地发现了玄机。<br/>
+从OD中对目标代码的分析，和几个实验，<br/>
+可以看到，这个写法仅仅是在原指针位置调用了一下新对象的构造函数。<br/><br/>
+我们知道，一般情况下，我们是无法手动调用构造函数的，<br/>
+ctor都是在new或者栈变量初始化的时候，由编译器调用的。<br/>
+而现在，我们可以通过这种写法来调用ctor，如下：<br/><br/>
+int main(){<br/>
+cls1 *p = new cls1() ;<br/>
+p-&gt;print() ;<br/>
+p-&gt;i = 2 ;<br/>
+p-&gt;print() ;<br/><font color="#ff0000">p = new(p) cls1() ;</font><br/>
+p-&gt;print() ;<br/>
+return 0 ;<br/>
+}<br/><br/>
+输出：<br/><br/>
+1<br/>
+2<br/>
+1<br/><br/>
+其实。。。调用构造函数还是可以这么写的：<br/><font color="#ff0000">p-&gt;cls1::cls1() ;</font><br/><br/>
+在VC6里面是过了，但应该是不标准的用法。<br/><br/>
+又查了些东西，知道了本篇一直讨论的形式原来叫：<font color="#ff0000">placement new</font><br/><br/>
+感觉这个东西就是和手动析构联合起来用的：<br/>
+先手动调用一个对象的dtor，然后使用placement new调用ctor。<br/>
+如果不是同一类对象，使用placement new有潜在的空间分配问题。<br/>
+或者是程序员能从某处拿到非new方法（比如malloc分配的空间），<br/>
+于是使用placement new来初始化这段空间。<br/>
