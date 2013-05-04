@@ -17,6 +17,7 @@ comments: true
 categories: tech
 tags: %s
 _baiduhi_id: %s
+_baiduhi_category: %s
 ---
 '''
 
@@ -32,4 +33,4 @@ info['category'] = info['category'].replace('&#47;', '&')
 
 tags = '[' + ','.join(map(lambda x: '"' + x + '"', info['category'].split('&'))) + ']'
 
-print template % (info['title'], info['date'], tags, fn)
+print template % (info['title'], info['date'], tags, fn, info['category'])

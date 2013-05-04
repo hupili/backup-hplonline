@@ -13,5 +13,6 @@ fn = sys.argv[1]
 
 info = data[fn]
 name = info['date'].split(' ')[0] + '-' + info['title'].strip() + '.md'
+name = name.replace('/', '').replace(' ', '')
 print name
 
