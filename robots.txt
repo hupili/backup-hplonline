@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://hupili.github.io/backup-hplonline/sitemap.xml 
