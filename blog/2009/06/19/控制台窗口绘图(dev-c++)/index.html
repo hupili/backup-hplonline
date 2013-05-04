@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>控制台窗口绘图(dev-c++) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.6.19
+C有一套图形接口函数在graphics.h里面定义。
+而C++的编译器一般都没有带上这套库了。
+不管怎么说，控制台窗口虽然长得黑不溜秋的，
+本质上也是个窗口，那么就可以用win32的GDI来完成。
+下面就画这样一个矩形出来。 原理： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%AA%97%E5%8F%A3%E7%BB%98%E5%9B%BE%28dev-c%2B%2B%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">控制台窗口绘图(dev-c++)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-19T17:33:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.6.19<br/><br/>
+C有一套图形接口函数在graphics.h里面定义。<br/>
+而C++的编译器一般都没有带上这套库了。<br/><br/>
+不管怎么说，控制台窗口虽然长得黑不溜秋的，<br/>
+本质上也是个窗口，那么就可以用win32的GDI来完成。<br/><br/>
+下面就画这样一个矩形出来。<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/89c8780e083ffcec7acbe1b8.jpg" small="0" class="blogimg"/></div></p>
+
+<br/><font color="#0000ff">原理：</font><br/><br/>
+
+
+<p>和一般的GDI绘图步骤一样。<br/>
+得到窗口句柄，创建DC，绘图，释放DC<br/><br/><font color="#0000ff">程序：</font><br/><br/>
+看到下面注释掉的东西，就知道经过了不少梗塞的尝试。<br/>
+先把代码拿出来，然后说说实现上的问题。<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/></h1>
+
+<p>using namespace std ; <br/><font color="#339966">//#pragma comment(lib , &#8220;gdi32.lib&#8221;)</font><br/><br/>
+typedef BOOL (<em>func_rectangle)(<br/>
+  HDC hdc,          // handle to device context<br/>
+  int nLeftRect,    // x-coord of bounding rectangle&#8217;s upper-left corner<br/>
+  int nTopRect,     // y-coord of bounding rectangle&#8217;s upper-left corner<br/>
+  int nRightRect,  // x-coord of bounding rectangle&#8217;s lower-right corner<br/>
+  int nBottomRect  // y-coord of bounding rectangle&#8217;s lower-right corner<br/>
+)<font color="#ff0000"><strong>attribute</strong>((stdcall));</font><br/><br/>
+int main(){<br/>
+     SetConsoleTitle(&#8220;hplonline&#8221;) ;<br/>
+     HWND hWnd = FindWindow(NULL , &#8220;hplonline&#8221;) ;<br/>
+     HDC hDC = GetDC(hWnd) ;<br/>
+     HMODULE hLib = LoadLibrary(&#8220;gdi32.dll&#8221;) ;<br/><font color="#339966">     //printf(&#8220;%x\n&#8221;,hLib);</font><br/>
+     func_rectangle pRectangle = (func_rectangle)GetProcAddress(hLib , &#8220;Rectangle&#8221;) ;<br/><font color="#339966">     //printf(&#8220;%x\n&#8221;,pRectangle);</font><br/>
+     (</em>pRectangle)(hDC , 100 , 100 , 200 , 200 ) ;<br/><font color="#339966">     //Rectangle(hDC , 100 , 100 , 200 , 200 ) ;</font><br/>
+     getchar();<br/>
+     ReleaseDC(hWnd , hDC) ;  <br/><font color="#339966">     //system(&#8220;pause&#8221;) ;</font><br/>
+     return 0 ;     <br/>
+}<br/><br/><font color="#0000ff">1。得到窗口句柄<br/><br/></font>GetStdHandle函数得到的是控制台的<font color="#ff0000">输入输出句柄</font>，<br/>
+这里要绘图，应该先得到<font color="#ff0000">窗口句柄</font>。<br/><br/>
+由于没有直接的函数来完成这个事情。<br/>
+M$给了一套用FindWindow的<a href="http://support.microsoft.com/kb/124103/zh-cn" target="_blank">解决方案</a>。<br/>
+讲解很详细，而且考虑很周全，<br/>
+比如先把窗口标题改为唯一的，再查找窗口，然后又改回来。<br/><br/><font color="#0000ff">2。取得相关的函数</font><br/><br/>
+根据我的注释就看得出来，其实本来想直接写<br/>
+Rectangle函数调用的。<br/><br/>
+结果出来个错误：<br/><font color="#ff0000">  [Linker error] undefined reference to `Rectangle@20&#8217; </font><br/><br/>
+连接器没有找到Rectangle的实现。<br/>
+从函数的名字来看，知道要传入20字节的参数，是<strong>stdcall约定的。<br/><br/>
+在VC6下，IDE默认给连接器设置了如下库的：<br/>
+kernel32.lib user32.lib winspool.lib comdlg32.lib advapi32.lib <font color="#ff0000">gdi32.lib</font><br/>
+shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib <br/>
+可以在project-&gt;settings-&gt;link  .. Object/Library modules 看到他们。<br/><br/>
+当然，我所想到的第二点就是用#pragma comment把库添加进去，<br/><font color="#339966">#pragma comment(lib , &#8220;gdi32.lib&#8221;)</font><br/>
+在VC下经常这样搞，但是这回还是报错依然。<br/><br/>
+于是去VC下面试了一下，手动把gdi32.lib从链接选项中去掉。<br/>
+错误出来了：<br/><font color="#ff0000">error LNK2001: unresolved external symbol </strong>imp<strong>Rectangle@20</font><br/>
+多个</strong>imp<strong>前缀，表示导入函数。<br/>
+加上<font color="#339966">pragma comment(lib , &#8220;gdi32.lib&#8221;)<br/></font>结果可以用了。<br/><br/>
+看来在DEV下要找点其他的方法。<br/>
+这里仅仅缺GDI32.DLL的函数，<br/>
+但像 LoadLIbrary,GetProcAddress之类的都是有的。<br/>
+于是就用他们两来取得任何想要的函数了。<br/><br/><font color="#0000ff">3。函数指针，调用约定</font><br/><br/>
+用GetProcAddress得到的仅仅是一个地址，<br/>
+要自己指定函数指针的类型。<br/><br/>
+typedef BOOL (*func_rectangle)(<br/>
+  HDC hdc,          // handle to device context<br/>
+  int nLeftRect,    // x-coord of bounding rectangle&#8217;s upper-left corner<br/>
+  int nTopRect,     // y-coord of bounding rectangle&#8217;s upper-left corner<br/>
+  int nRightRect,  // x-coord of bounding rectangle&#8217;s lower-right corner<br/>
+  int nBottomRect  // y-coord of bounding rectangle&#8217;s lower-right corner<br/>
+)<font color="#ff0000"></strong>attribute__((stdcall));</font><br/><br/>
+上午在VC6中试的时候，由于对结合规则不清楚搞了很久。<a href="http://hi.baidu.com/hplonline/blog/item/e936db001972dd18738b65a2.html" target="_blank">参考这个</a>。<br/>
+用DEV的话，就像下面标红的地方一样，比较容易写。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-19T17:33:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%AA%97%E5%8F%A3%E7%BB%98%E5%9B%BE%28dev-c%2B%2B%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%AA%97%E5%8F%A3%E7%BB%98%E5%9B%BE%28dev-c%2B%2B%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E4%B8%8B%E6%94%B9%E5%8F%98%E6%96%87%E5%AD%97%E9%A2%9C%E8%89%B2/" title="Previous Post: 控制台下改变文字颜色">&laquo; 控制台下改变文字颜色</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/26/volatile%E7%9A%84%E4%BF%AE%E9%A5%B0%E7%BB%93%E5%90%88%E6%80%A7%E9%97%AE%E9%A2%98/" title="Next Post: volatile的修饰结合性问题">volatile的修饰结合性问题 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

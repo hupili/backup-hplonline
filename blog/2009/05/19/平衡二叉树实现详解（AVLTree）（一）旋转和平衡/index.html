@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>平衡二叉树实现详解（AVLTree）（一）旋转和平衡 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.19
+完整的实现，可以参考前面，这篇将分解各个细节部分。
+一来是最近发现一个画图很好用的软件visio，决定用一下，感觉良好。 二是这玩意写起来确实很费事，趁还记忆良好，记着，老了也好翻一翻。本文的读者应该是看过一定资料，
+对AVL有基本了解， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/19/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%B8%80%EF%BC%89%E6%97%8B%E8%BD%AC%E5%92%8C%E5%B9%B3%E8%A1%A1">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">平衡二叉树实现详解（AVLTree）（一）旋转和平衡</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-19T20:56:00+08:00" pubdate data-updated="true">May 19<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.19<br/><br/>
+完整的实现，可以<a href="http://hi.baidu.com/hplonline/blog/item/4a5fc3ea9cb588dbd439c90a.html" target="_blank">参考</a>前面，这篇将分解各个细节部分。<br/>
+一来是最近发现一个画图很好用的软件visio，决定用一下，感觉良好。<br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0f979f0e693208ba50f52fb.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>二是这玩意写起来确实很费事，趁还记忆良好，记着，老了也好翻一翻。<br/><br/><font color="#ff0000">本文的读者应该是看过一定资料，<br/>
+对AVL有基本了解，<br/>
+但在实现时卡住的同学。<br/>
+否则，这篇文章会把人弄昏掉。</font><br/><br/>
+由于这个结构是很对称的，所以都只拿一半来讲。<br/><br/><font color="#0000ff">基本记号约定：</font><br/><br/>
+方形：表示节点<br/>
+三角形：表示树，可能为空树<br/>
+h(x)：x节点的高度，即x到最远子孙的路径长度，叶节点为0，空树为-1<br/>
+left,right,parent：左，右孩子，父亲，根节点父亲为NULL<br/>
+b(x)：x节点的平衡因子，定义为h(x-&gt;left) - h(x-&gt;right)<br/><br/>
+AVLTree类的成员函数中，<br/>
+对外开放的接口习惯用每个单词大起命名。<br/>
+私有函数用下划线起小写命名。<br/><br/><font color="#0000ff">AVL的目标：</font><br/><br/>
+取最大，取最小，取前驱，取后继，插入，删除，查找，遍历<br/><br/><font color="#0000ff">总体实施方案：</font><br/><br/>
+以上操作为一般搜索树都支持的，<br/>
+实现的时候前半截和BST一样，<br/>
+核心在于随时保持对每个节点x，b(x) = -1,0,1之一。<br/>
+这样就能保证对数级的深度了。 <br/><br/><font color="#0000ff">旋转操作：</font><br/><br/>
+向右旋转前：<br/><div forimg="1"><img height="269" border="0" width="285" src="http://hiphotos.baidu.com/hplonline/pic/item/93ccc5fc6886f0a6b801a0c4.jpg" small="0" class="blogimg"/><br/>
+向右旋转后：</div></p>
+
+<div forimg="1"><img height="296" border="0" width="281" src="http://hiphotos.baidu.com/hplonline/pic/item/e9f38c18b4eba0904bedbcc4.jpg" small="0" class="blogimg"/><br/>
+实现上，主要注意的是父子的关系。<br/>
+上图仅表达出了旋转的轴心parent，<br/>
+而旋转后要注意维护parent的父节点ancestor和子树的关系。<br/>
+同时判断parent为整棵树根的情况。<br/><br/><font color="#ff6600">PANode AVLTree::_rotate_right(PANode p ){<br/>
+             PANode child = p-&gt;left ;<br/>
+             p-&gt;left = child-&gt;right ;<br/>
+             if ( child-&gt;right ) child-&gt;right-&gt;parent = p ;<br/>
+             child-&gt;right = p ;<br/>
+             PANode ancestor = p-&gt;parent ;<br/>
+             if ( ancestor ) {<br/>
+                          if ( ancestor-&gt;left == p ) ancestor-&gt;left = child ;<br/>
+                          else ancestor-&gt;right = child ;<br/>
+             }else{<br/>
+                          root = child ;<br/>
+             }<br/>
+             child-&gt;parent = ancestor ;<br/>
+             p-&gt;parent = child ;<br/>
+             return child ;<br/>
+}</font><br/><br/>
+旋转操作是平衡操作的子步骤，<br/>
+在该步骤中不用考虑平衡因子的调整。<br/>
+把平衡因子的问题交给平衡操作和插入删除操作配合完成。<br/><br/><font color="#0000ff">左平衡操作一。左左型：</font><br/><br/>
+parent是第一个失去平衡的节点。<br/>
+cur是导致失去平衡的节点。<br/>
+在插入操作中，可以理解为是<font color="#ff0000">cur的增高</font>。<br/><br/>
+有点绕口。。<br/><br/>
+如下：<br/><br/>
+实际情况中，其实就是ABCD都为空，而cur是新插入到child的节点。<br/>
+这将导致h(parent) = 2，失去平衡。</div>
+
+
+<div forimg="1"><img height="411" border="0" width="310" src="http://hiphotos.baidu.com/hplonline/pic/item/18c9d7544edce87cd00906c4.jpg" small="0" class="blogimg"/><br/>
+在cur改变之前，该树一定是平衡的，而cur的插入导致了该树不平衡。<br/>
+此时的b(child) = 1<br/><br/>
+旋转后如下，重点就是讨论旋转后的平衡因子的变化。</div>
+
+
+<div forimg="1"><img height="271" border="0" width="369" src="http://hiphotos.baidu.com/hplonline/pic/item/7a8a063338d591dc1b4cffc4.jpg" small="0" class="blogimg"/><br/>
+由于ABCD为空，这时，显然：<br/>
+B(parent) = B(child) = B(cur) = 0<br/><br/>
+对应的代码就是：<br/><font color="#ff6600">           case 1:<br/>
+                      re = _rotate_right(p) ;<br/>
+                      re-&gt;balance = 0 ;<br/>
+                      re-&gt;right-&gt;balance = 0 ;<br/>
+                      break;</font><br/><br/>
+当然，左左出现，还有可能是在删除过程中，由于A树的降低导致的。<br/>
+那么还是这幅图：<br/><br/><div forimg="1"><img height="437" border="0" width="331" src="http://hiphotos.baidu.com/hplonline/pic/item/18c9d7544edce87cd00906c4.jpg" small="0" class="blogimg"/><br/>
+当h(cur) - h(B) = 1的时候，同上面的讨论。<br/>
+而当h(cur) - h(B) = 0的时候，<br/>
+由于：<br/>
+h(child) - h(A) = 2 <br/>
+h(cur) + 1 - h(A) = 2<br/>
+h(cur) - h(A) = 1</div>
+<div forimg="1"><img height="282" border="0" width="384" src="http://hiphotos.baidu.com/hplonline/pic/item/7a8a063338d591dc1b4cffc4.jpg" small="0" class="blogimg"/><br/>
+b(child) = h(cur) - h(parent) = h(cur) - (h(B) + 1) = -1 <br/>
+b(parent) = h(B) - h(A) = h(cur) - h(A) = 1<br/><br/>
+对应的代码就是：<br/><font color="#ff6600">          case 0:<br/>
+                    re = _rotate_right(p) ;<br/>
+                    re-&gt;balance = -1 ;<br/>
+                    re-&gt;right-&gt;balance = 1 ;<br/>
+                    break;</font><br/><br/><font color="#0000ff">左平衡操作二。左右：<br/></font></div>
+</div>
+
+
+<div forimg="1"><img height="416" border="0" width="323" src="http://hiphotos.baidu.com/hplonline/pic/item/9a3eb91c0f90dbaf86d6b6c4.jpg" small="0" class="blogimg"/><br/>
+既为左右，那么h(cur) - h(B) = 1<br/>
+先左旋：</div>
+
+
+<div forimg="1"><img height="417" border="0" width="338" src="http://hiphotos.baidu.com/hplonline/pic/item/8fc50d08a6a96514e82488c4.jpg" small="0" class="blogimg"/><br/>
+再右旋：</div>
+
+
+<div forimg="1"><img height="277" border="0" width="400" src="http://hiphotos.baidu.com/hplonline/pic/item/46c61bdf377df037622798c4.jpg" small="0" class="blogimg"/><br/>
+此时的情况是：<br/>
+h(cur) = h(B) + 1;因为是“左右”情况，b(child) = -1<br/>
+h(A) = h(child) - 2 = h(cur) - 1 = h(B)<br/>
+h(C)&lt;=h(B),h(D)&lt;=h(B);否则child就已经不平衡了<br/>
+所以b(parent) = h(child) - h(parent) = max{h(B),h(C)} - max{h(D),h(A)} = 0<br/><br/>
+而child和parent的平衡因子将根据C,D的关系调整。<br/><br/>
+比如h(C) = h(D)的时候，必有h(C) = h(B)，否则A的降低不足以使parent失衡。<br/>
+于是b(child) = b(parent) = 0 ;<br/><br/>
+若由于插入失衡，那么设C增高。于是有：<br/>
+h(C) = h(B) = h(D) + 1<br/><br/>
+对应代码：<br/><font color="#ff6600">         case -1:<br/>
+                  _rotate_left(child) ;<br/>
+                  re = _rotate_right(p) ;<br/>
+                  tmp = re-&gt;balance ;<br/>
+                  re-&gt;balance = 0 ;<br/>
+                  switch(tmp){<br/>
+                  case 0:<br/>
+                           re-&gt;left-&gt;balance = 0 ;<br/>
+                           re-&gt;right-&gt;balance = 0 ;<br/>
+                           break;<br/>
+                  case 1:<br/>
+                           re-&gt;left-&gt;balance = 0 ;<br/>
+                           re-&gt;right-&gt;balance = -1 ;<br/>
+                           break;<br/>
+                  case -1:<br/>
+                           re-&gt;left-&gt;balance = 1 ;<br/>
+                           re-&gt;right-&gt;balance = 0 ;<br/>
+                           break;<br/>
+                  }<br/>
+                  break;</font><br/><br/><font color="#0000ff">完整的左平衡代码如下：</font><br/><br/><font color="#ff6600">PANode AVLTree::_balance_left(PANode p ){<br/>
+         PANode child = p-&gt;left ;<br/>
+         PANode re ;<br/>
+         int tmp ;<br/>
+         switch ( child-&gt;balance ) {<br/>
+         case 1:<br/>
+                  re = _rotate_right(p) ;<br/>
+                  re-&gt;balance = 0 ;<br/>
+                  re-&gt;right-&gt;balance = 0 ;<br/>
+                  break;<br/>
+         case -1:<br/>
+                  _rotate_left(child) ;<br/>
+                  re = _rotate_right(p) ;<br/>
+                  tmp = re-&gt;balance ;<br/>
+                  re-&gt;balance = 0 ;<br/>
+                  switch(tmp){<br/>
+                  case 0:<br/>
+                           re-&gt;left-&gt;balance = 0 ;<br/>
+                           re-&gt;right-&gt;balance = 0 ;<br/>
+                           break;<br/>
+                  case 1:<br/>
+                           re-&gt;left-&gt;balance = 0 ;<br/>
+                           re-&gt;right-&gt;balance = -1 ;<br/>
+                           break;<br/>
+                  case -1:<br/>
+                           re-&gt;left-&gt;balance = 1 ;<br/>
+                           re-&gt;right-&gt;balance = 0 ;<br/>
+                           break;<br/>
+                  }<br/>
+                  break;<br/>
+         case 0:<br/>
+                  re = _rotate_right(p) ;<br/>
+                  re-&gt;balance = -1 ;<br/>
+                  re-&gt;right-&gt;balance = 1 ;<br/>
+                  break;<br/>
+         default:;<br/>
+                  //assert(&#8220;false&#8221;) ;<br/>
+         }<br/>
+         return re ;<br/>
+}</font></div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-19T20:56:00+08:00" pubdate data-updated="true">May 19<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/19/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%B8%80%EF%BC%89%E6%97%8B%E8%BD%AC%E5%92%8C%E5%B9%B3%E8%A1%A1/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/19/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%B8%80%EF%BC%89%E6%97%8B%E8%BD%AC%E5%92%8C%E5%B9%B3%E8%A1%A1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/19/POJ2524%EF%BC%88%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%89/" title="Previous Post: POJ2524（并查集）">&laquo; POJ2524（并查集）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/20/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%BA%8C%EF%BC%89%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4/" title="Next Post: 平衡二叉树实现详解（AVLTree）（二）插入和删除">平衡二叉树实现详解（AVLTree）（二）插入和删除 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

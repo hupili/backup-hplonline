@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>STL的堆（堆函数及泛型堆实现） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.4.14
+STL并没有提供“堆”这个东西，但是提供了一套堆函数，
+以及一个封装好的priority_queue。
+曾经也在网上找了一通，看得迷迷糊糊的。
+今天把堆函数的源码看了，才知道原来是那么回事。一。封装一个泛型堆
+先展示一下这一套堆函数的易用性， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/14/STL%E7%9A%84%E5%A0%86%EF%BC%88%E5%A0%86%E5%87%BD%E6%95%B0%E5%8F%8A%E6%B3%9B%E5%9E%8B%E5%A0%86%E5%AE%9E%E7%8E%B0%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">STL的堆（堆函数及泛型堆实现）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-14T22:49:00+08:00" pubdate data-updated="true">Apr 14<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.4.14<br/><br/>
+STL并没有提供“堆”这个东西，但是提供了一套堆函数，<br/>
+以及一个封装好的priority_queue。<br/><br/>
+曾经也在网上找了一通，看得迷迷糊糊的。<br/>
+今天把堆函数的源码看了，才知道原来是那么回事。<br/><br/><font color="#0000ff">一。封装一个泛型堆</font><br/><br/>
+先展示一下这一套堆函数的易用性，紧跟后面再详细阐述他们的用法。<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;algorithm&gt;<br/></h1>
+
+<h1>include &lt;vector&gt;<br/></h1>
+
+<h1>include &lt;functional&gt;  <br/><br/></h1>
+
+<p>using namespace std ;<br/><br/>
+//接口说明<br/>
+//bool empty()            判空<br/>
+//size()                  堆大小<br/>
+//clear()                  清空堆<br/>
+//push(const T&amp; x)      推入元素x<br/>
+//const T&amp; top()      堆顶元素<br/>
+//pop()                        弹出堆顶<br/>
+template&lt;class T , class Compare = less&lt;T&gt; &gt;<br/>
+class myheap{<br/>
+private:<br/>
+      vector&lt;T&gt; data ;<br/>
+      Compare comp ;<br/>
+public:<br/>
+      myheap(){};<br/>
+      bool empty(){return data.empty() ;}<br/>
+      vector&lt;T&gt;::size_type size(){return data.size();} ;<br/>
+      void clear(){data.clear();} ;<br/>
+      void push(const T&amp; x){<br/>
+            data.push_back(x);<br/>
+            push_heap(data.begin() , data.end() , comp) ;<br/>
+      }<br/>
+      const T&amp; top(){<br/>
+            return *(data.begin()) ;<br/>
+      }<br/>
+      void pop(){<br/>
+            pop_heap(data.begin() , data.end() , comp) ;<br/>
+            data.pop_back() ;<br/>
+      }<br/>
+} ;<br/><br/><font color="#0000ff">二。测试该泛型堆</font><br/><br/>
+      int a[] = {2,5,1,67,95,9,0,4,6} ;<br/>
+      int sz = sizeof(a) / sizeof(int) ;<br/>
+      int i;<br/>
+      myheap&lt;int&gt; h ;<br/>
+      <br/>
+      h.clear() ;<br/>
+      for ( i = 0 ; i &lt; sz ; i ++ ){<br/>
+            h.push(a[i]) ;<br/>
+      }<br/>
+      for ( i = 0 ; i &lt; sz ; i ++ ) {<br/>
+            cout&lt;&lt;h.top()&lt;&lt;&#8217; &#8216;;<br/>
+            h.pop() ;<br/>
+      }<br/><br/>
+      return 0 ;<br/><br/>
+输出：95 67 9 6 5 4 2 1 0<br/><br/>
+这里是STL堆算法默认的大顶堆。<br/><br/>
+做如下修改：<br/><br/>
+      int a[] = {2,5,1,67,95,9,0,4,6} ;<br/>
+      int sz = sizeof(a) / sizeof(int) ;<br/>
+      int i;<br/>
+   <font color="#ff0000"> myheap&lt;int , greater&lt;int&gt; &gt; h ;</font><br/>
+      <br/>
+      h.clear() ;<br/>
+      for ( i = 0 ; i &lt; sz ; i ++ ){<br/>
+            h.push(a[i]) ;<br/>
+      }<br/>
+      for ( i = 0 ; i &lt; sz ; i ++ ) {<br/>
+            cout&lt;&lt;h.top()&lt;&lt;&#8217; &#8216;;<br/>
+            h.pop() ;<br/>
+      }<br/><br/>
+      return 0 ;<br/><br/>
+输出：0 1 2 4 5 6 9 67 95<br/><br/>
+这一次就是小顶堆了。<br/><br/>
+总得来说，这个实现看上去有点别扭，默认传的是less&lt;T&gt;作为比较器，却是大顶堆。<br/>
+而传greater&lt;T&gt;却是小顶堆。是因为STL的堆算法按照小于比较的时候排出来的是大顶堆。<br/><br/>
+为了改善这个名字上的别扭，可以参考<font color="#ff0000">STL.functional</font>里面的less和greater的写法。<br/>
+自己写一个诸如myheap_small_top , myheap_big_top这样的functor。<br/><br/>
+（顺便补充一句。。肯定有同学看出来了。其实上面这个泛型堆就是仿照priority_queue的写法。）<br/><br/><font color="#0000ff">三。STL的堆函数</font><br/><br/>
+这些函数看别人用起来，觉得别扭，但一看这些函数的实现，却又真是那么回事。<br/>
+只不过他们的名字可能取得不太好，所以理解起来有点不容易。<br/><br/><font color="#ff0000">首先，要知道STL的堆函数要求的是RandomIterator 。<br/>
+然后，要知道STL普遍采用的是前闭后开的区间表示。</font><br/><br/><font color="#0000ff">push_heap</font><br/>
+这个函数与其说是push，更好的说是一个adjust。<br/>
+pre-condition:[begin,end-1)区间内已经成堆，end-1放的是新入堆的元素<br/>
+post-condition:[begin,end)区间调整成堆。<br/><br/>
+所以用法是先把要放进堆的元素放到容器的尾端。<br/>
+然后再调用这个函数，把整体的堆区间传进去，将调整好。<br/><br/>
+例：<br/>
+            data.push_back(x);<br/>
+            push_heap(data.begin() , data.end() , comp) ;<br/><br/><font color="#0000ff">pop_heap</font><br/>
+这个函数做的是把堆顶的元素放到堆尾，并调整好堆。<br/>
+pre-condition:[begin,end)已经成堆<br/>
+post-condition:堆顶元素（begin的位置）放到end-1的位置，[begin,end-1)调整成堆<br/><br/>
+所以出堆的做法是先调用该函数，然后从底层容器弹出最后的元素。<br/><br/>
+例：<br/>
+          pop_heap(data.begin() , data.end() , comp) ;<br/>
+          data.pop_back() ;<br/><br/><font color="#0000ff">make_heap</font><br/>
+建堆的函数。<br/>
+pre-condition:无<br/>
+post-condition:[begin,end)区间成堆<br/><br/>
+这个函数本质上就是区间的一半处开始，依次向前调整成堆。<br/>
+调用的是内部使用的<em>Adjust_heap函数。<br/><br/><font color="#0000ff">sort_heap</font><br/>
+这个函数我认为最容易让人误解。<br/>
+根据名字，我们知道是“堆排序”，那么就想，<br/>
+传进去一个区间，他就使用堆排序把该区间弄成有序的。<br/>
+（正如我们调用sort一样）<br/>
+但是这个函数是有<font color="#ff0000">前置条件</font>的。（为什么要有这个条件见后）<br/>
+pre-condition:[begin,end)已经成堆<br/>
+post-condition:[begin,end)被排序<br/><br/><font color="#ff0000">用之前一定要make_heap一下</font><br/><br/>
+上面两个函数的综合例子：<br/>
+     int a[] = {2,5,1,67,95,9,0,4,6} ;<br/>
+     int sz = sizeof(a) / sizeof(int) ;<br/>
+     ostream_iterator&lt;int&gt; oit(cout , &#8221; &#8220;)  ;<br/>
+     make_heap(a , a + sz);<br/>
+     sort_heap(a , a + sz);<br/>
+     copy(a , a + sz , oit) ;cout&lt;&lt;endl;<br/>
+输出：<br/>
+0 1 2 4 5 6 9 67 95<br/><br/>
+如果把make_heap一句注释掉，发现输出的是乱序的。<br/>
+这就是前置条件未满足的结果。<br/><br/>
+用copy输出，这个用法在一般的讲STL的手册上应该都要出现。不是这里关心的。<br/><br/><font color="#ff0000">从最初的对sort_heap的疑惑，到解决这个疑惑，中间仅仅是看一下代码这么简单。</font><br/>
+我把VC中的PJ实现复制过来：<br/><br/>
+  template&lt;class </em>RI&gt; inline<br/>
+     void sort_heap(<em>RI </em>F, <em>RI </em>L)<br/>
+     {for (; 1 &lt; <em>L - </em>F; &#8211;<em>L)<br/>
+          pop_heap(</em>F, <em>L); }<br/>
+          // TEMPLATE FUNCTION sort_heap WITH PRED<br/><br/>
+当看到这么些长得很怪的符号时，不要吓到，耐心读一下就可知其大意。<br/><br/>
+这个函数就只有一个循环。<br/>
+他不断的对[</em>F,<em>L)区间执行pop_heap操作。并且递减右界</em>L。<br/><br/>
+根据前面对pop_heap的说明，<br/>
+每一次，该函数把堆顶放到区间尾端，<br/>
+同时把除尾元素外的区域调整成堆。<br/><br/>
+如果是大顶堆，第一个到尾端的是最大的元素。<br/>
+紧接着，第二大的元素到倒数第二个位置。<br/>
+。。。<br/>
+于是就排好了。<br/><br/><font color="#ff6600">有时候，去理解前人的工作，并不代表我们也要去实现这些东西，<br/>
+仅仅是为了更好地使用已有的成果。</font></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-14T22:49:00+08:00" pubdate data-updated="true">Apr 14<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/14/STL%E7%9A%84%E5%A0%86%EF%BC%88%E5%A0%86%E5%87%BD%E6%95%B0%E5%8F%8A%E6%B3%9B%E5%9E%8B%E5%A0%86%E5%AE%9E%E7%8E%B0%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/14/STL%E7%9A%84%E5%A0%86%EF%BC%88%E5%A0%86%E5%87%BD%E6%95%B0%E5%8F%8A%E6%B3%9B%E5%9E%8B%E5%A0%86%E5%AE%9E%E7%8E%B0%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/13/explicit%28c%2B%2B%29/" title="Previous Post: explicit(c++)">&laquo; explicit(c++)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/16/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88KRUSCAL%2CPRIM%E6%80%9D%E6%83%B3%E5%8F%8ASOLLIN%E5%AE%9E%E7%8E%B0%29/" title="Next Post: 最小生成树（KRUSCAL,PRIM思想及SOLLIN实现)">最小生成树（KRUSCAL,PRIM思想及SOLLIN实现) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

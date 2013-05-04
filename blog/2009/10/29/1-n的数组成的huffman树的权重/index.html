@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>1-n的数组成的huffman树的权重 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.10.29 在某群上听到这个题，
+正好没啥事干，找了下规律，弄了个结论出来。 首先，关于huffman树的定义这里不重复了。
+然后权重的意思就是每个节点的值乘上路径长度的总合。 先企图直接推点东西出来，找不到下手的地方。
+故干脆把前面一些n值对应的权重打出来， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/10/29/1-n%E7%9A%84%E6%95%B0%E7%BB%84%E6%88%90%E7%9A%84huffman%E6%A0%91%E7%9A%84%E6%9D%83%E9%87%8D">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">1-n的数组成的huffman树的权重</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-29T16:27:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.10.29</p>
+
+
+<p>在某群上听到这个题，<br/>
+正好没啥事干，找了下规律，弄了个结论出来。</p>
+
+
+<p>首先，关于huffman树的定义这里不重复了。<br/>
+然后权重的意思就是每个节点的值乘上路径长度的总合。</p>
+
+
+<p>先企图直接推点东西出来，找不到下手的地方。<br/>
+故干脆把前面一些n值对应的权重打出来，然后找规律。<br/>
+用之前写过的<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/ede9984524881f3787947397.html">程序</a>，比较方便：<br/>
+acl(1:n,huffman(1:n))</p>
+
+
+<p>前面几组是这样的：<br/>
+2 3<br/>
+3 9<br/>
+4 19<br/>
+5 33<br/>
+6 51<br/>
+7 74<br/>
+8 102<br/>
+9 135<br/>
+10 173<br/>
+11 216<br/>
+12 264</p>
+
+
+<p>跟指数比起来，显得小了不少，<br/>
+感觉通项应该是个多项式。</p>
+
+
+<p>于是在matlab里面用polyfit试了下，<br/>
+发现各种低阶多项式都是有残差的，<br/>
+也就是说没有完全满足这个规律的。</p>
+
+
+<p>在一个群友的提示下，前后作差试试。<br/>
+出来的数列b有点那个意思了，像个等差数列。<br/>
+再次差分，能够得到公差k。</p>
+
+
+<p><font color="#ff0000">由于作了两次差分，<br/>
+那么在k为常数的情况下，<br/>
+写出来的通项应该是个二次多项式。<br/></font>不过这个k都还在变化。</p>
+
+
+<p>将前2-90的情况打印出来。<br/>
+其中i是编号。<br/>
+关键就是想办法<font color="#ff0000">描述出k的变化规律</font>就行了。</p>
+
+
+<p><br/>
+            i            n            a            b            k <br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-<br/>
+            1            2            3            6            4<br/>
+            2            3            9           10            4<br/>
+            3            4           19           14            4<br/>
+            4            5           33           18            5<br/>
+            5            6           51           23            5<br/>
+            6            7           74           28            5<br/>
+            7            8          102           33            5<br/>
+            8            9          135           38            5<br/>
+            9           10          173           43            5<br/>
+           10           11          216           48            6<br/>
+           11           12          264           54            6<br/>
+           12           13          318           60            6<br/>
+           13           14          378           66            6<br/>
+           14           15          444           72            6<br/>
+           15           16          516           78            6<br/>
+           16           17          594           84            6<br/>
+           17           18          678           90            6<br/>
+           18           19          768           96            6<br/>
+           19           20          864          102            6<br/>
+           20           21          966          108            6<br/>
+           21           22         1074          114            6<br/>
+           22           23         1188          120            7<br/>
+           23           24         1308          127            7<br/>
+           24           25         1435          134            7<br/>
+           25           26         1569          141            7<br/>
+           26           27         1710          148            7<br/>
+           27           28         1858          155            7<br/>
+           28           29         2013          162            7<br/>
+           29           30         2175          169            7<br/>
+           30           31         2344          176            7<br/>
+           31           32         2520          183            7<br/>
+           32           33         2703          190            7<br/>
+           33           34         2893          197            7<br/>
+           34           35         3090          204            7<br/>
+           35           36         3294          211            7<br/>
+           36           37         3505          218            7<br/>
+           37           38         3723          225            7<br/>
+           38           39         3948          232            7<br/>
+           39           40         4180          239            7<br/>
+           40           41         4419          246            7<br/>
+           41           42         4665          253            7<br/>
+           42           43         4918          260            7<br/>
+           43           44         5178          267            7<br/>
+           44           45         5445          274            7<br/>
+           45           46         5719          281            7<br/>
+           46           47         6000          288            8<br/>
+           47           48         6288          296            8<br/>
+           48           49         6584          304            8<br/>
+           49           50         6888          312            8<br/>
+           50           51         7200          320            8<br/>
+           51           52         7520          328            8<br/>
+           52           53         7848          336            8<br/>
+           53           54         8184          344            8<br/>
+           54           55         8528          352            8<br/>
+           55           56         8880          360            8<br/>
+           56           57         9240          368            8<br/>
+           57           58         9608          376            8<br/>
+           58           59         9984          384            8<br/>
+           59           60        10368          392            8<br/>
+           60           61        10760          400            8<br/>
+           61           62        11160          408            8<br/>
+           62           63        11568          416            8<br/>
+           63           64        11984          424            8<br/>
+           64           65        12408          432            8<br/>
+           65           66        12840          440            8<br/>
+           66           67        13280          448            8<br/>
+           67           68        13728          456            8<br/>
+           68           69        14184          464            8<br/>
+           69           70        14648          472            8<br/>
+           70           71        15120          480            8<br/>
+           71           72        15600          488            8<br/>
+           72           73        16088          496            8<br/>
+           73           74        16584          504            8<br/>
+           74           75        17088          512            8<br/>
+           75           76        17600          520            8<br/>
+           76           77        18120          528            8<br/>
+           77           78        18648          536            8<br/>
+           78           79        19184          544            8<br/>
+           79           80        19728          552            8<br/>
+           80           81        20280          560            8<br/>
+           81           82        20840          568            8<br/>
+           82           83        21408          576            8<br/>
+           83           84        21984          584            8<br/>
+           84           85        22568          592            8<br/>
+           85           86        23160          600            8<br/>
+           86           87        23760          608            8<br/>
+           87           88        24368          616            8</p>
+
+
+<p>看一下各个k值对应的数据个数：<br/>
+4，3<br/>
+5，6<br/>
+6，12<br/>
+7，24<br/>
+。。。</p>
+
+
+<p>看来这个就是要找的规律了。<br/>
+对于每一段<br/>
+b = k * (m - 1) + b1 ;<br/>
+a = (m - 1) * b1 + k * ( m - 2 ) * ( m - 1 ) / 2 + a1 ;<br/>
+m即为从段首开始的计数。</p>
+
+
+<p>设L为段长，那么从上一个段的首项推下一个段的首项，<br/>
+取的m应该为L+1。</p>
+
+
+<p>从第一段开始递推，即可得到答案。<br/>
+因为段长是每次加倍的，<br/>
+所以能在n的对数级解决问题。</p>
+
+
+<p>演示程序如下：</p>
+
+
+<p>n = 90 ;%要求的输入<br/>
+n = n - 2 ;<br/>
+a1 = 3 ;<br/>
+b1 = 6 ;<br/>
+L = 3 ;<br/>
+k = 4 ;<br/>
+while L &lt;= n<br/>
+     m = L + 1 ;<br/>
+     b = k * (m - 1) ;<br/>
+     a = (m - 1) * b1 + k * ( m - 2 ) * ( m - 1 ) / 2 ;<br/>
+     n = n - L ;<br/>
+     L = L * 2 ;<br/>
+     k = k + 1 ;<br/>
+     a1 = a + a1 ;<br/>
+     b1 = b + b1 ;<br/>
+     <br/>
+end</p>
+
+
+<p>n = n + 1 ;<br/>
+m = n ;<br/>
+a = (m - 1) * b1 + k * ( m - 2 ) * ( m - 1 ) / 2 ;<br/>
+a1 = a + a1 ;</p>
+
+
+<p>result = a1</p>
+
+
+<p>由于是演示，就没作输入检验了。<br/>
+因为这个关系是从2开始的，<br/>
+所以对输入1，特殊输出为0即可。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-29T16:27:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/10/29/1-n%E7%9A%84%E6%95%B0%E7%BB%84%E6%88%90%E7%9A%84huffman%E6%A0%91%E7%9A%84%E6%9D%83%E9%87%8D/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/10/29/1-n%E7%9A%84%E6%95%B0%E7%BB%84%E6%88%90%E7%9A%84huffman%E6%A0%91%E7%9A%84%E6%9D%83%E9%87%8D/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/10/26/%E4%BC%A0%E8%AF%B4%E4%B8%AD%E7%88%B1%E5%9B%A0%E6%96%AF%E5%9D%A6%E7%9A%84%E9%A2%98%EF%BC%88%E6%9A%B4%E5%8A%9B%E6%B3%95%EF%BC%89/" title="Previous Post: 传说中爱因斯坦的题（暴力法）">&laquo; 传说中爱因斯坦的题（暴力法）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/11/09/%EF%BC%83line%EF%BC%88VC6%EF%BC%89/" title="Next Post: ＃line（VC6）">＃line（VC6） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

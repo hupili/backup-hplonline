@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>vb的str的一个细节 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.3.10
+在知道上看到有人问：
+vb中len(str（val(&#8220;123.4&#8221;）））的值多少？请说清楚点
+而马上就有人想当然地跟帖。。。无语。。。
+直观感觉以为是5，其实是6。。因为str执行完后前面还有一个空格 是“ 123.4” &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/10/vb%E7%9A%84str%E7%9A%84%E4%B8%80%E4%B8%AA%E7%BB%86%E8%8A%82">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Vb的str的一个细节</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-10T22:35:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.3.10<br/><br/>
+在知道上看到有人问：<br/><br/>
+vb中len(str（val(&#8220;123.4&#8221;）））的值多少？请说清楚点<br/><br/>
+而马上就有人想当然地跟帖。。。无语。。。<br/><br/>
+直观感觉以为是5，其实是6。。<br/><br/><span><cn>因为str执行完后前面还有一个空格 <br/><br/>
+是“ 123.4” <br/><br/><font color="#ff0000">MSDN</font>上面解释清楚了: <br/><br/><em>返回代表一数值的 Variant (String)。 <br/><br/>
+语法 <br/><br/>
+Str(number) <br/><br/>
+必要的 number 参数为一 Long，其中可包含任何有效的数值表达式。 <br/><br/>
+说明 <br/><br/>
+当一数字转成字符串时，总会在前头保留一空位来表示正负。如果 number 为正，返回的字符串包含一前导空格暗示有一正号。 <br/><br/>
+使用 Format 函数可将数值转成必要的格式，如日期、时间、货币或其他用户自定义格式。与 Str 不同的是，Format 函数不包含前导空格来放置 number 的正负号。 <br/><br/>
+注意   Str 函数只视句点 (.) 为有效的小数点。如果使用不同的小数点（例如，国际性的应用程序），可使用 CStr 将数字转成字符串。</em>       </cn></span></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-10T22:35:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/10/vb%E7%9A%84str%E7%9A%84%E4%B8%80%E4%B8%AA%E7%BB%86%E8%8A%82/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/10/vb%E7%9A%84str%E7%9A%84%E4%B8%80%E4%B8%AA%E7%BB%86%E8%8A%82/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/10/%E4%B8%B2%E8%A1%8C%E9%80%9A%E4%BF%A1%E5%92%8C%E8%99%9A%E6%8B%9F%E7%BB%88%E7%AB%AF/" title="Previous Post: 串行通信和虚拟终端">&laquo; 串行通信和虚拟终端</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/13/LCD_AMPIRE12864%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%EF%BC%88PROTEUS%EF%BC%89/" title="Next Post: LCD_AMPIRE12864的简单使用（PROTEUS）">LCD_AMPIRE12864的简单使用（PROTEUS） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>控制台下改变文字颜色 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.6.19
+用MFC的类或者GDI做图形编程的时候。
+要改变下文字的颜色比较容易，有若干直观的函数可以调用。
+比如SetBkColor之类的。
+在控制台下，还有一套古老的API可以用。
+虽然不是很直观，也能达到一定效果。效果： 代码： include &lt; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E4%B8%8B%E6%94%B9%E5%8F%98%E6%96%87%E5%AD%97%E9%A2%9C%E8%89%B2">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">控制台下改变文字颜色</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-19T13:23:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.6.19<br/><br/>
+用MFC的类或者GDI做图形编程的时候。<br/>
+要改变下文字的颜色比较容易，有若干直观的函数可以调用。<br/>
+比如SetBkColor之类的。<br/><br/>
+在控制台下，还有一套古老的API可以用。<br/>
+虽然不是很直观，也能达到一定效果。<br/><br/><font color="#0000ff">效果：</font><br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/b0aea7346dea9b91d1a2d31c.jpg"/></div></p>
+
+<br/><br/><font color="#0000ff">代码：</font><br/><br/>
+
+
+<h1>include &lt;windows.h&gt;<br/><br/></h1>
+
+<p>int main(){<br/>
+      HANDLE h ;<br/>
+      int len ;<br/>
+      COORD coord ;<br/>
+      WORD att ;<br/>
+      h = GetStdHandle(STD_OUTPUT_HANDLE) ;<br/>
+      len = lstrlen(&#8220;hplonline&#8221;) ;<br/>
+      WriteConsole(h , &#8220;hplonline&#8221; , len , &amp;len , NULL) ;<br/><br/>
+      coord.X = 0 ;<br/>
+      coord.Y = 0 ;<br/>
+      att =  BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_BLUE;<br/>
+      FillConsoleOutputAttribute(h , att , len , coord , &amp;len) ;<br/>
+      <br/>
+      getchar();<br/>
+      return 0 ;<br/>
+}<br/><br/><font color="#0000ff">说明：</font><br/><br/>
+这套函数的名字里面一般都有Console字样。<br/>
+GetStdHandle用来取得当前的标准输入，输出，或错误输出的句柄。<br/>
+在调用其他函数的时候，一般都要求传入这个句柄。<br/><br/>
+att比较有意思，是个WORD型的，定义的常量中只有RED GREEN BLUE 这几个，<br/>
+但是可以用 | 把他们连接起来，组成其他的颜色。一共有8种。<br/><br/>
+屏幕坐标按照惯例，也是向右为x的正方向，向下为y的正方向。<br/><br/>
+其他的在MSDN里面说明很详尽了。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-19T13:23:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E4%B8%8B%E6%94%B9%E5%8F%98%E6%96%87%E5%AD%97%E9%A2%9C%E8%89%B2/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E4%B8%8B%E6%94%B9%E5%8F%98%E6%96%87%E5%AD%97%E9%A2%9C%E8%89%B2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/18/windows%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6%E7%9A%84%E5%87%A0%E4%B8%AA%E7%AE%80%E5%8D%95%E5%AE%9E%E9%AA%8C%EF%BC%88__try%2C__finally%2C__except%29%EF%BC%88VC6%29/" title="Previous Post: windows异常处理机制的几个简单实验（__try , __finally , __except)（VC6)">&laquo; windows异常处理机制的几个简单实验（__try , __finally , __except)（VC6)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%AA%97%E5%8F%A3%E7%BB%98%E5%9B%BE%28dev-c%2B%2B%29/" title="Next Post: 控制台窗口绘图(dev-c++)">控制台窗口绘图(dev-c++) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

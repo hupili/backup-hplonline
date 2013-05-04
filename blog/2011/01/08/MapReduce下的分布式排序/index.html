@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>MapReduce下的分布式排序 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.11.8几个月前，粗略学了下MapReduce的原理。一直都是理论，没有动过手，最近尝试了一下。以前见到有人是这样讲MR的分布式排序的：mapper把输入直接cat进系统当key，reducer的数量设置成一个。这样得到的结果当然是有序，依赖MR系统本身， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2011/01/08/MapReduce%E4%B8%8B%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">MapReduce下的分布式排序</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-08T00:46:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.11.8<br/><br/>几个月前，粗略学了下<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/addb5660b04359d28cb10d86.html">MapReduce</a>的原理。<br/>一直都是理论，没有动过手，最近尝试了一下。<br/><br/>以前见到有人是这样讲MR的分布式排序的：<br/><span style="color: rgb(255, 153, 0);">mapper把输入直接cat进系统当key，reducer的数量设置成一个</span>。<br/>这样得到的结果当然是有序，依赖MR系统本身，<br/>因为reducer接收到的&lt;key,value&gt;对是按照key排序的。<br/><br/>MR的这个特性很好，可以将同一个key的所有数据归到一起处理。<br/>不过需要注意的是：<span style="color: rgb(255, 0, 0);">reducer收到的同一个key的各个value之间，非发射顺序</span>。<br/>在这点上我就吃过亏。估计是由于使用不稳定排序造成的。<br/>当时是实现一个分布式处理日志的脚本，输入数据已经按照query分块过了，<br/>由于mapper的输入和输出都是按照日志顺序的，于是觉得reducer得到的也是有序的。<br/>而实际上，reducer得到的只保证同一个query的各行任在一起，之间却不有序，<br/>这样就会导致有前后依赖关系的处理失败。<br/><br/>最囧的是这样造成的是<span style="color: rgb(255, 0, 0);">逻辑失败</span>，很难查发觉。<br/>我们单机测试小数据的时候，一般都用下面的简单命令：<br/><span style="color: rgb(255, 0, 0);">cat input | mapper | sort -k1 | reducer &gt; output</span><br/>中间这个发射过程是伪的，<br/>很多时候reducer收到的刚好就是mapper发射的顺序。<br/>看着没什么问题后，一到hadoop上面，就是超大数据了。<br/>这时候统计出的东西要没对，也不会发现了。。<br/><br/><span style="color: rgb(0, 0, 255);">》》&#8221;伪分布式排序&#8221;</span><br/><br/>那么再说开篇这个“分布式排序”的问题，其实很明显的。<br/>在这个过程中，mapper和reducer实际上都是不作为，<br/>那么时间消耗肯定还是在系统的内部。<br/>如果是单点的master分发，最快也是nlogn的下界，还考虑存储问题。<br/>如果是mapper和reducer之间直接交互，能实现的最好局面应该是：<br/>系统在mapper端对key进行排序，reducer端使用多路归并。<br/>两个阶段的时间应该是：<span style="color: rgb(255, 0, 0);">n/k * log(n/k) + n * logk &#8230; (1)</span>，k是map的数量。<br/>在这种实现下，能够做到与k有关的复杂度，方能显示出“分布式”的一点作用。<br/><br/>但我们在设计算法的时候，应该是依赖模型而不是依赖实现的。<br/>所以之前提到的用cat做mapper，设一个reducer的方法还不算用到了分布式的特点。<br/><br/><span style="color: rgb(0, 0, 255);">》》法1-直接转化，手动实现</span><br/><br/>mapper和reducer都直接使用cat，<br/>与上面不同的是，reducer的数量不止一个。<br/>这样各个reducer出来的显然不全局有序，<br/>于是需要一个single阶段，来做多路归并。<br/>用km和kr分别代表mapper和reducer的数量，整体的复杂度为：<br/><span style="color: rgb(255, 0, 0);">n/km<em>log(n/km) + n/kr</em>log(km) + n * log(kr)  &#8230; (2)</span><br/>这里的假设是数据均匀，前两项与（1）的计算是一样的，最后是单击归并的复杂度。<br/><br/><span style="color: rgb(0, 85, 255);">》》法2-利用先验知识</span><br/><br/>前面的想法都有一个局限，<br/>就是认为多个worker分别排出来的数据不全局有序。<br/>这种障碍下，我们就得想办法做多路归并。<br/><br/>其实可以跳出来，设计一个方案，让多个worker出来的直接全局有序就行了。<br/>要办到的话，其实很简单，让reducer编号小的拿到小的数据，编号大的反之。<br/>粗听起来似乎是不可能的，既然任务就是排序，怎么可能先知道大小呢？<br/><br/>这里就需要引入<span style="color: rgb(255, 0, 0);">先验知识</span>了。<br/>比如我们已经拿到了待排数据的分布F(x)（累加概率密度），有k个reducer。<br/>对于某个x0，如果有 1/k * (i-1) &lt;= F(x0) &lt; 1/k * i，就把x0发射给第i个reducer处理。<br/><br/>实现上有两个问题，第一个是怎么计算F(x0)，第二个是怎么定向发射。<br/>第一个问题一般是反过来实现的，通过统计，<br/>可以得到k个区间，端点为：x_min, x(1), x(2) &#8230;x(k-1), x_max ，<br/>使得 F(x(i)) = 1/k * i，F(x_min)=0，F(x_max)=1，相当于是求到了F(x)反函数在某些位置的值。<br/>在mapper分发的时候，二分比较这一系列端点，就可以确定reducer的编号了。<br/>第二个问题需要引入一个partitioner的概念，hadoop的实现中已经包括了。<br/>partitioner的作用就是，根据key，来确定该中间数据应该交给的reducer。<br/>这里需要实现一个partitioner，将中间数据交给key编号相同的reducer。<br/>这里，mapper发射出来的数据为&lt;i, x0&gt;。<br/><br/>mapper和partitioner的分工不是绝对的。<br/>完全可以用一个cat去替换map，然后在partitioner中实现按区间发射的逻辑。<br/>在hadoop中，已经有内嵌的<a target="_blank" href="http://hadoop.apache.org/mapreduce/docs/current/api/org/apache/hadoop/mapreduce/lib/partition/TotalOrderPartitioner.html">TotalOrderPartitioner</a>，可以满足要求，<br/>这个partitioner可以根据一个外部可配的列表，来分发数据。<br/><br/>至于先验知识如何得到，第一次只好懵了，<br/>从第二次开始，可以利用上一次的排序结果进行统计。<br/><br/>这个方法实现的复杂度为：<br/><span style="color: rgb(255, 0, 0);">n/km * log(kr) + n/kr * log (n/kr)  &#8230; (3)</span><br/><br/><span style="color: rgb(0, 85, 255);">》》比较</span><br/><br/>排序的下界是没有改变的，但可以通过分布式取得常数上的收益。<br/>三个式子中，可以看到（3）是最优的。<br/>这说明合理先验知识的引入是十分有意义的。<br/><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-08T00:46:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2011/01/08/MapReduce%E4%B8%8B%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2011/01/08/MapReduce%E4%B8%8B%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/12/31/%E7%82%B9%E7%9D%80%E8%89%B2%E7%9A%84%E5%88%A4%E5%AE%9A%E9%97%AE%E9%A2%98%E5%92%8C%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98/" title="Previous Post: 点着色的判定问题和优化问题">&laquo; 点着色的判定问题和优化问题</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2011/01/15/%E7%94%A8Makefile%E6%9D%A5%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F/" title="Next Post: 用Makefile来拓扑排序">用Makefile来拓扑排序 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

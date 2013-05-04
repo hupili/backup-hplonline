@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>4种可并堆 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.6.5
+今天比较失败，搞忘带实验室钥匙了。
+被卡在门外，于是去参观了下新图书馆。
+本来是要去找找斐波那契堆(fibonacci heap)的资料，
+主要是搞这个玩意搞了两天了，还是有点问题，都不好意思拿出来。。。
+翻了好多地方还是没有翻到， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/05/4%E7%A7%8D%E5%8F%AF%E5%B9%B6%E5%A0%86">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">4种可并堆</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-05T15:10:00+08:00" pubdate data-updated="true">Jun 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.6.5<br/>
+今天比较失败，搞忘带实验室钥匙了<img src="http://img.baidu.com/hi/jx/j_0009.gif"/>。<br/>
+被卡在门外，于是去参观了下新图书馆。<br/><br/>
+本来是要去找找斐波那契堆(fibonacci heap)的资料，<br/>
+主要是搞这个玩意搞了两天了，还是有点问题，都不好意思拿出来。。。<br/>
+翻了好多地方还是没有翻到，倒是乱七八糟地看了一堆还没来得及实践的结构。<br/><br/><font color="#0000ff">可并堆：</font><br/><br/>
+一般谈到的二项堆，关注其根有序的特性。<br/>
+支持插入，弹出最小，等操作。<br/>
+用来局部排序的效果很好(比如STL里面的partial_sort)<br/><br/>
+不足在于，没有给出具体的合并方式。<br/><br/>
+合并的基本思想：<br/>
+h1，h2的根节点中小者显然为合并后的根节点，假设是h1。<br/>
+那么就要将h1的<font color="#ff0000">某个子树</font>和h2，合并。<br/>
+这个过程一直递归到，h1和h2中有一个为空的时候，返回另一个即可。<br/><font color="#0000ff"><br/>
+1。非对称堆</font><br/><br/>
+根据上面叙述的合并思想，唯一的歧义在于，某个子树应该怎么选取？<br/>
+非对称堆的结构中，不增加额外信息。<br/>
+办法是，交换一下左右枝，然后选择右枝（左枝）合并。<br/>
+这样就不至于出现，每次都选右枝，导致右边明显臃肿的现象。<br/>
+但是这种不至于只是个期望。<br/><br/>
+而从期望的角度，貌似每次合并的时候，<font color="#ff0000">随机</font>选取左右枝也是不错的方案。<br/><br/><font color="#0000ff">2。左偏树</font><br/><br/>
+上面看到的非对称堆，发现选取合并枝的关键在于：<br/><font color="#ff0000">尽量使合并用枝更短。<br/></font><br/>
+左偏树的节点中<font color="#ff0000">保留了到外节点的距离</font>。<br/>
+（由于限制了右边的距离一定比左边的距离小或等，<br/>
+所以当合并到达外节点的时候，右子树一定为空，这时合并操作就结束了）<br/>
+这个距离相当于就是沿着这个分支合并下去还要的次数。<br/>
+既然右边的距离小，那么每次就拿右边来合并。<br/>
+而每递归完一层后，检查左右的距离，把小的放到右边。<br/><br/>
+我的代码可以<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/7a8a0633d33d0ef01b4cff08.html">参考这个</a>。<br/><br/><font color="#0000ff">3。对称堆</font><br/><br/>
+这个描述更有“堆”的感觉。<br/>
+（和前面认识的二项堆在结构上很不相同）<br/>
+每一层都是若干个堆拉成的链表。（而不仅仅是两个孩子的左右堆）<br/><br/>
+保有一个根节点，使得可以对整个堆进行访问。<br/><br/>
+插入操作，因为单节点也是个堆，于是使用合并来实现。<br/><br/>
+合并的时候，比较两个堆的元素，小的作为新的根。比如h1，<br/>
+那么h2直接放到h1的孩子链表里面就行了。<br/><br/>
+降值操作。把相关节点降值后，拿来和原来的堆合并即可。<br/><br/>
+由于合并的复杂度是O(1)，导致上面的几个操作都很快。<br/><br/>
+麻烦之处在于删除最小元素。<br/>
+由于删除了原来的根，该根的孩子都跑到同一层了，<br/>
+并且是散的，所以执行c-1次合并把他们弄成一个堆（c是原来根的孩子数）<br/><br/>
+这个复杂度就是O(c)的。<br/><br/>
+c是个啥玩意喃？？比较囧，<br/>
+多的时候，可以到n<br/>
+（比如这个堆除根外的左右元素都是根的孩子，<br/>
+那么一删，相当于是n-1个散点在一层了）<br/>
+少的时候，也可能就是1<br/>
+（比如每个节点都只有一个孩子，拉成一个有序的链表）<br/><br/><font color="#0000ff">4。斐波那契堆</font><br/><br/>
+跟3号叙述的对称堆比较相似，有几点不同：<br/>
+1。保留的是一个根的链表，而不是一个单根。<br/>
+（对整个堆的访问，从一个指向根链表的最小元素的指针开始。）<br/>
+2。增加了孩子数的记录（一般资料叫这个为度数）<br/>
+3。增加了一个标记<br/>
+（很诡异的想法，还没想透他的意义；<br/>
+这个标记跟减值操作有关，跟可并堆的实现没有直接关系）<br/><br/>
+插入，直接放到根链表中。<br/><br/>
+合并，比较一下，把大点的树并到小点的树的孩子链表里面。<br/><br/>
+删除，把根节点删了，其孩子全部放到根链表里面。<br/>
+此时的根链表可能很臃肿了，于是进行至多c-1次合并(c是孩子数)<br/>
+合并的规则是，选取度数（就是前面定义的孩子数）相同的节点合并。<br/>
+合并到没有两个节点的度数相同就可以了。<br/><br/>
+科学家有严密的推算，说在均摊意义下，<br/>
+插入合并减值为O(1)<br/>
+删除是O(logn)<br/><br/><a href="http://hi.baidu.com/hplonline/blog/item/c0f979f073fcb7a7a50f5295.html" target="_blank">相关资料</a><br/><br/><font color="#0000ff">小结：<br/></font><br/>
+2和4感觉分别是在1和3的基础上增加了一定的信息。<br/>
+并且更加充分地利用这些信息，来达到某种效果。<br/><img src="http://img.baidu.com/hi/jx/j_0016.gif"/>不过我的斐波那契堆都还没写出来。。<br/>
+就在这里说了一大堆。。。跟放屁似的。。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-05T15:10:00+08:00" pubdate data-updated="true">Jun 5<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/05/4%E7%A7%8D%E5%8F%AF%E5%B9%B6%E5%A0%86/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/05/4%E7%A7%8D%E5%8F%AF%E5%B9%B6%E5%A0%86/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/02/%E5%B7%A6%E5%81%8F%E6%A0%91%EF%BC%88%E9%A1%BA%E4%BE%BF%E5%88%B7%E4%B8%AAHDU1512%EF%BC%89/" title="Previous Post: 左偏树（顺便刷个HDU1512）">&laquo; 左偏树（顺便刷个HDU1512）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/06/%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E5%A0%86%28fibonacciheap%29%28poj2253%29%28hdu1512%29/" title="Next Post: 斐波那契堆(fibonacci heap)(poj2253)(hdu1512)">斐波那契堆(fibonacci heap)(poj2253)(hdu1512) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

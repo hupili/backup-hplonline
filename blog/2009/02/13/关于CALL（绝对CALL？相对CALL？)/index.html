@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>关于CALL（绝对CALL？相对CALL？) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.2.13
+先是有同学讨论绝对的CALL
+网上搜了下，啥都没搜到。
+有人说了用FF15。不过里面还有点小东西，后面跟的不是地址。
+就把我论坛发言COPY下来了&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;第一份
+貌似FF15 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/13/%E5%85%B3%E4%BA%8ECALL%EF%BC%88%E7%BB%9D%E5%AF%B9CALL%EF%BC%9F%E7%9B%B8%E5%AF%B9CALL%EF%BC%9F%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">关于CALL（绝对CALL？相对CALL？)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-13T14:06:00+08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.2.13<br/><br/>
+先是有同学讨论绝对的CALL<br/>
+网上搜了下，啥都没搜到。<br/><br/>
+有人说了用FF15。不过里面还有点小东西，后面跟的不是地址。<br/>
+就把我论坛发言COPY下来了<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;第一份</font><br/><br/>
+貌似FF15 后面跟的也不是绝对的地址，应该是一个DWORD的地址，<br/>
+而这个地址正好存了你要CALL的地方<br/><br/>
+.data<br/>
+n DWORD m<br/>
+.CODE<br/>
+m proc<br/>
+ret<br/>
+m endp<br/>
+START:<br/>
+call DWORD PTR [n]<br/>
+ret<br/>
+end start<br/><br/>
+然后就这长相，<br/><br/>
+00401000  /$  C3            retn<br/>
+00401001 &gt;|.  FF15 00304000 call    dword ptr [403000]               ;  CONSOLE.00401000<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-第二份</font><br/><br/>
+像下面这样，后面跟的就是过程地址，然后执行就挂掉<br/><br/>
+.data<br/>
+n DWORD m<br/>
+.CODE<br/>
+m proc<br/>
+ret<br/>
+m endp<br/>
+START:<br/>
+call DWORD PTR [m]<br/>
+ret<br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;-<br/>
+00401000  /$  C3            retn<br/>
+00401001 &gt;|.  FF15 00104000 call    dword ptr [401000]<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-第三份</font><br/><br/>
+然后给一组对比<br/>
+.data<br/>
+n DWORD m<br/>
+.CODE<br/>
+m proc<br/>
+ret<br/>
+m endp<br/>
+START:<br/>
+call DWORD PTR[n]<br/>
+call NEAR PTR [n]<br/>
+call DWORD PTR[m]<br/>
+call NEAR PTR [m]<br/>
+ret<br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;-<br/>
+00401001 &gt;|.  FF15 00304000 call    dword ptr [403000]               ;  CONSOLE.00401000<br/>
+00401007  |?  E8 F41F0000   call    00403000<br/>
+0040100C  |.  FF15 00104000 call    dword ptr [401000]               ; [getchar<br/>
+00401012  /$  E8 E9FFFFFF   call    00401000<br/><br/>
+其中第一个和第四个用法是可以的，中间两个用了程序要挂掉。<br/>
+然后，默认的写法<br/>
+call n == call DWORD PTR[n]<br/>
+call m == call NEAR PTR [m]<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;第四份</font><br/><h6 class="quote">Quote:</h6></p>
+
+<blockquote>引用第24楼依然随意于2009-02-13 11:57发表的  :<br/><br/>
+一个是相对偏移量，一个是绝对地址<br/>
+call DWORD PTR[xxx]：其中的xxx处存放着要call的指令的地址<br/>
+call NEAR       PTR [xxx]：最终要运行到的地址也是根据当前EIP和xxx联合计算出来的<br/><br/>
+&#8230;&#8230;.</blockquote>
+
+
+<br/><br/>
+
+
+<p>不知道吧。呵呵，不过FF15那个可以变相实现还是可以。<br/><br/>
+调用许多系统API的时候就是用的那个<br/><br/>
+call DWORD PTR [thunk VA]<br/><br/>
+thunk VA，是叫这个吧。。？<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;<br/><br/>
+想在网上搜一份详细的机器码表的，但是没有找到。。<br/><br/>
+有人在他的BLOG上上传了一套，但是分了好几十个页面。。<br/><br/>
+要弄下来太累了。。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-13T14:06:00+08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/13/%E5%85%B3%E4%BA%8ECALL%EF%BC%88%E7%BB%9D%E5%AF%B9CALL%EF%BC%9F%E7%9B%B8%E5%AF%B9CALL%EF%BC%9F%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/13/%E5%85%B3%E4%BA%8ECALL%EF%BC%88%E7%BB%9D%E5%AF%B9CALL%EF%BC%9F%E7%9B%B8%E5%AF%B9CALL%EF%BC%9F%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/02/11/%E5%85%A8%E5%B1%80%E5%BF%AB%E6%8D%B7%E9%94%AE%2B%E6%98%BE%E9%9A%90%E7%AA%97%E5%8F%A3%EF%BC%88VB%29/" title="Previous Post: 全局快捷键+显隐窗口（VB)">&laquo; 全局快捷键+显隐窗口（VB)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/02/15/%E6%A0%BC%E5%BC%8F%E5%8C%96%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E6%B5%AE%E7%82%B9%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%86%E5%BE%AE%E9%97%AE%E9%A2%98%EF%BC%88C%E6%A0%87%E5%87%86%EF%BC%9Aprintf%2Cscanf%29/" title="Next Post: 格式化输入输出浮点数据的细微问题（C标准：printf,scanf)">格式化输入输出浮点数据的细微问题（C标准：printf,scanf) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>C库函数memset()的源码 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="        page    ,132
+        title   memset - set sections of memory all to one byte
+;
+;memset.asm - set a section of memory to all one byte &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/06/C%E5%BA%93%E5%87%BD%E6%95%B0memset%28%29%E7%9A%84%E6%BA%90%E7%A0%81">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">C库函数memset()的源码</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-06T23:16:00+08:00" pubdate data-updated="true">Feb 6<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>         page     ,132<br/>
+         title    memset - set sections of memory all to one byte<br/>
+;<strong><em><br/>
+;memset.asm - set a section of memory to all one byte<br/>
+;<br/>
+;        Copyright (c) Microsoft Corporation. All rights reserved.<br/>
+;<br/>
+;Purpose:<br/>
+;        contains the memset() routine<br/>
+;<br/>
+;</em></strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em><strong><em><br/><br/>
+         .xlist<br/>
+         include cruntime.inc<br/>
+         .list<br/><br/>
+page<br/>
+;</em></strong><br/>
+;char </em>memset(dst, value, count) - sets &#8220;count&#8221; bytes at &#8220;dst&#8221; to &#8220;value&#8221;<br/>
+;<br/>
+;Purpose:<br/>
+;        Sets the first &#8220;count&#8221; bytes of the memory starting<br/>
+;        at &#8220;dst&#8221; to the character value &#8220;value&#8221;.<br/>
+;<br/>
+;        Algorithm:<br/>
+;        char <em><br/>
+;        memset (dst, value, count)<br/>
+;                char </em>dst;<br/>
+;                char value;<br/>
+;                unsigned int count;<br/>
+;                {<br/>
+;                char <em>start = dst;<br/>
+;<br/>
+;                while (count&#8211;)<br/>
+;                        </em>dst++ = value;<br/>
+;                return(start);<br/>
+;                }<br/>
+;<br/>
+;Entry:<br/>
+;        char <em>dst - pointer to memory to fill with value<br/>
+;        char value - value to put in dst bytes<br/>
+;        int count - number of bytes of dst to fill<br/>
+;<br/>
+;Exit:<br/>
+;        returns dst, with filled bytes<br/>
+;<br/>
+;Uses:<br/>
+;<br/>
+;Exceptions:<br/>
+;<br/>
+;</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>******<br/><br/>
+         CODESEG<br/><br/>
+         public  memset<br/>
+memset proc<br/><br/>
+         .FPO     ( 0, 3, 0, 0, 0, 0 )<br/><br/>
+         mov      edx,[esp + 0ch] ; edx = &#8220;count&#8221;<br/>
+         mov      ecx,[esp + 4]    ; ecx points to &#8220;dst&#8221;<br/><br/>
+         test     edx,edx          ; 0?<br/>
+         jz       short toend      ; if so, nothing to do<br/><br/>
+         xor      eax,eax<br/>
+         mov      al,[esp + 8]     ; the byte &#8220;value&#8221; to be stored<br/><br/><br/>
+; Align address on dword boundary<br/><br/>
+         push     edi              ; preserve edi<br/>
+         mov      edi,ecx          ; edi = dest pointer<br/><br/>
+         cmp      edx,4            ; if it&#8217;s less then 4 bytes<br/>
+         jb       tail             ; tail needs edi and edx to be initialized<br/><br/>
+         neg      ecx<br/>
+         and      ecx,3            ; ecx = # bytes before dword boundary<br/>
+         jz       short dwords     ; jump if address already aligned<br/><br/>
+         sub      edx,ecx          ; edx = adjusted count (for later)<br/>
+adjust_loop:<br/>
+         mov      [edi],al<br/>
+         add      edi,1<br/>
+         sub      ecx,1<br/>
+         jnz      adjust_loop<br/><br/>
+dwords:<br/>
+; set all 4 bytes of eax to [value]<br/>
+         mov      ecx,eax          ; ecx=0/0/0/value<br/>
+         shl      eax,8            ; eax=0/0/value/0<br/><br/>
+         add      eax,ecx          ; eax=0/0val/val<br/><br/>
+         mov      ecx,eax          ; ecx=0/0/val/val<br/><br/>
+         shl      eax,10h          ; eax=val/val/0/0<br/><br/>
+         add      eax,ecx          ; eax = all 4 bytes = [value]<br/><br/>
+; Set dword-sized blocks<br/>
+         mov      ecx,edx          ; move original count to ecx<br/>
+         and      edx,3            ; prepare in edx byte count (for tail loop)<br/>
+         shr      ecx,2            ; adjust ecx to be dword count<br/>
+         jz       tail             ; jump if it was less then 4 bytes<br/><br/>
+         rep      stosd<br/>
+main_loop_tail:<br/>
+         test     edx,edx          ; if there is no tail bytes,<br/>
+         jz       finish           ; we finish, and it&#8217;s time to leave<br/>
+; Set remaining bytes<br/><br/>
+tail:<br/>
+         mov      [edi],al         ; set remaining bytes<br/>
+         add      edi,1<br/><br/>
+         sub      edx,1            ; if there is some more bytes<br/>
+         jnz      tail             ; continue to fill them<br/><br/>
+; Done<br/>
+finish:<br/>
+         mov      eax,[esp + 8]    ; return dest pointer<br/>
+         pop      edi              ; restore edi<br/><br/>
+         ret<br/><br/>
+toend:<br/>
+         mov      eax,[esp + 4]    ; return dest pointer<br/><br/>
+         ret<br/><br/>
+memset  endp<br/><br/>
+         end<br/><br/><br/>
+其实上面的C语言算法描述和下面的汇编实现之间还是有很大的区别的。。<br/><br/>
+上面只是说了一个外围看进去的意思。<br/><br/>
+下面汇编的思路是这样的。<br/><br/>
+首先按照32位（4字节）的长度进行内存赋值，<br/><br/>
+当小于4字节的时候才一个个字节地赋值，<br/><br/>
+而四字节赋值的时候也有个细节处理，就是对齐到双字的地址处，<br/><br/>
+这些都是为了在32位平台上加速而设计的。<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-06T23:16:00+08:00" pubdate data-updated="true">Feb 6<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/06/C%E5%BA%93%E5%87%BD%E6%95%B0memset%28%29%E7%9A%84%E6%BA%90%E7%A0%81/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/06/C%E5%BA%93%E5%87%BD%E6%95%B0memset%28%29%E7%9A%84%E6%BA%90%E7%A0%81/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/02/08/%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E8%AF%AF%E8%A7%A3_%E8%AF%BB%E5%90%8E%E5%AE%9E%E9%AA%8C%E7%AC%94%E8%AE%B0/" title="Next Post: 指针和数组的误解_读后实验笔记">指针和数组的误解_读后实验笔记 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

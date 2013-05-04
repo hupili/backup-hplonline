@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>画心（MATLAB，fill，《魔术师》） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.25
+记得微积分的最后有个讲心形线的东西。
+看了那个图，只能觉得，大致上算吧，总体上看去还是很别扭。
+今天看到用旋转的椭圆来拼成一个心，感觉很逼真。
+matlab的eaplot真的是很easy，表达式一上去就出来了。ezplot(&#8216;24xx- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/25/%E7%94%BB%E5%BF%83%EF%BC%88MATLAB%EF%BC%8Cfill%EF%BC%8C%E3%80%8A%E9%AD%94%E6%9C%AF%E5%B8%88%E3%80%8B%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">画心（MATLAB，fill，《魔术师》）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-25T13:56:00+08:00" pubdate data-updated="true">May 25<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.25<br/><br/>
+记得微积分的最后有个讲心形线的东西。<br/>
+看了那个图，只能觉得，大致上算吧，总体上看去还是很别扭。<br/><br/>
+今天看到用旋转的椭圆来拼成一个心，感觉很逼真。<br/><br/>
+matlab的eaplot真的是很easy，表达式一上去就出来了。<br/><font color="#ff6600">ezplot(&#8216;24<em>x</em>x-20<em>abs(x)</em>y+15<em>y</em>y=225&#8217;) ;</font><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0b2c6bfb8c8452e18d81f3c.jpg" small="0" class="blogimg"/><br/><br/>
+貌似也没看到有啥好方法，据说还在百度知道上搜到这种“<a href="http://zhidao.baidu.com/question/52524620.html" target="_blank">不会</a>”为最佳答案的东西。。</div></p>
+
+<br/>
+
+
+<p>瞟了一下，matlab里面有fill和fill3两个函数。<br/>
+fill是对给出的点的序列描出的多边形画图。<br/>
+于是就想把这个心上的点顺次生成，用fill画出来。<br/><br/>
+因为表达式：24<em>x</em>x-20<em>abs(x)</em>y+15<em>y</em>y=225<br/>
+的长相问题，在直角坐标下，很难找到一个办法来描述“顺次”这个意思。<br/><br/>
+故转化到极坐标下。<br/>
+当然，算出theta对应的r后，plot画图前还是得转回直角坐标来的。<br/><br/>
+这里由于图像左右对称，所以theta只取[-0.5pi,0.5pi]。<br/>
+把得到的点翻转一下就是了：<br/><br/><font color="#ff6600">theta = -pi/2:0.01:pi/2 ;<br/>
+r = (225 ./ (24 .<em> cos(theta).<sup>2</sup> - 20 .</em> cos(theta).<em>sin(theta) + 15 .</em> sin(theta).<sup>2</sup> )) ;<br/>
+x = r .<em> cos(theta) ;<br/>
+y = r .</em> sin(theta) ;<br/>
+fill([x -fliplr(x)] , [y fliplr(y)] , &#8216;r&#8217;) ;</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/f11493257878994435a80f3c.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>不过有个问题，貌似和上面的函数式ezplot出来的轮廓不一样。<br/>
+从某种意义上来说，这个图还是很像心的。但为啥不一样呢。。囧。。<br/><br/>
+yhsa678同学用他那犀利的眼神发现了问题所在：<br/><font color="#ff0000">r = sqrt(225 ./ (24 .<em> cos(theta).<sup>2</sup> - 20 .</em> cos(theta).<em>sin(theta) + 15 .</em> sin(theta).<sup>2</sup> )) ;</font><br/>
+就是推极坐标表达的时候搞忘对r开方了。<br/>
+这下弄出来就是这个样子了。<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/b605c41b255f38deae51333c.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>关于上面提到的fill要顺次连接的问题，可以改一点来观察。<br/><div forimg="1"><font color="#ff6600">theta = -pi/2:0.01:pi/2 ;<br/>
+r = sqrt(225 ./ (24 .<em> cos(theta).<sup>2</sup> - 20 .</em> cos(theta).<em>sin(theta) + 15 .</em> sin(theta).<sup>2</sup> )) ;<br/>
+x = r .<em> cos(theta) ;<br/>
+y = r .</em> sin(theta) ;<br/>
+%fill([x -fliplr(x)] , [y fliplr(y)] , &#8216;r&#8217;) ;</font><br/><font color="#ff0000">fill([x -x] , [y y] , &#8216;r&#8217;) ;</font></div></p>
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/450d3cd183677c1c9a50273c.jpg" small="0" class="blogimg"/></div>
+
+
+<div forimg="1"><br/>
+这两句：</div>
+
+
+<div forimg="1">fill([x -fliplr(x)] , [y fliplr(y)] , &#8216;r&#8217;) ;<br/>
+fill([x -x] , [y y] , &#8216;r&#8217;) ;</div>
+
+
+<div forimg="1"><br/>
+区别就在第一个先把相关序列翻转了，画出来的就没有中间的黑线。<br/>
+第二个的话，fill从最下面延逆时针画到上方x=0处，<br/>
+然后瞬间跑到最下方，延顺时针画，这就导致图形有问题。<br/><br/>
+所以<font color="#ff0000">fill对点的顺次连接有要求</font></div>
+
+
+<br/>
+
+
+<p>不知道那个24<em>x</em>x-20<em>abs(x)</em>y+15<em>y</em>y=225的式子是哪来的。。<br/><br/>
+想了一下，可以看成是一个椭圆，先做旋转，然后取正半截，再翻转。见下图：<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/6a1e00d12d9037f7562c843c.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>关于向量的旋转，可以参考：<a href="http://www.box.net/shared/casqylxr01" target="_blank">向量的旋转</a><br/><br/>
+这样的话，就可以改变长轴a，短轴b，和转角phi来完成各种参数的心形。<br/><br/><font color="#ff6600"><font color="#ff0000">a = 3 ;<br/>
+b = 3 ;<br/>
+phi = 20 * pi / 180 ;</font><br/>
+rotate = [cos(phi) -sin(phi) ; sin(phi) -cos(phi)] ;%旋转矩阵<br/>
+theta = -pi:0.01:pi ;<br/>
+x0 = a * cos(theta) ;<br/>
+y0 = b * sin(theta) ;%标准椭圆的点序列<br/>
+pt = rotate * [x0 ; y0] ;<br/>
+x1 = pt(1,:) ;<br/>
+y1 = pt(2,:) ;%旋转后的序列<br/>
+pos = ( x1 &gt;= 0 ) ;<br/>
+x = x1(pos) ;<br/>
+y = y1(pos) ;%提取正半截<br/>
+axis equal<br/>
+hold on<br/>
+fill([x -fliplr(x)] , [y fliplr(y)] , &#8216;r&#8217;) ;%翻转加绘图<br/>
+plot(x0,y0,x1,y1) ;%打印出参考线</font><br/><br/>
+那这个旋转椭圆画心又是怎么想到的呢。。<br/>
+我也不知道，不过电影《魔术师》里面有类似的情节：<br/><br/>
+（男主送给女主的礼物）<br/><br/>
+1.看起来虽然不是很椭圆，也有那个意思<br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c8d9c295c489686fd0135ebc.jpg" small="0" class="blogimg"/><br/><br/>
+2.好家伙，可以掰开的。。</div></p>
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/0ba65b0fa133120e6159f3bd.jpg" small="0" class="blogimg"/><br/><br/>
+3.哇，转一圈过来是个心哦。。</div>
+
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/04243cd351f373243bf3cfbd.jpg" small="0" class="blogimg"/><br/><br/>
+4.还可以这样。。。<img src="http://img.baidu.com/hi/jx/j_0016.gif"/>。。？？</div>
+
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/42a9f1f23cdb5637b17ec5bd.jpg" small="0" class="blogimg"/></div>
+
+
+<br/>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-25T13:56:00+08:00" pubdate data-updated="true">May 25<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/25/%E7%94%BB%E5%BF%83%EF%BC%88MATLAB%EF%BC%8Cfill%EF%BC%8C%E3%80%8A%E9%AD%94%E6%9C%AF%E5%B8%88%E3%80%8B%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/25/%E7%94%BB%E5%BF%83%EF%BC%88MATLAB%EF%BC%8Cfill%EF%BC%8C%E3%80%8A%E9%AD%94%E6%9C%AF%E5%B8%88%E3%80%8B%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/24/%E7%BA%A2%E9%BB%91%E6%A0%91%EF%BC%88RBTree%EF%BC%89%E7%9A%84%E4%B8%80%E4%B8%AA%E5%AE%9E%E7%8E%B0/" title="Previous Post: 红黑树（RBTree）的一个实现">&laquo; 红黑树（RBTree）的一个实现</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/27/%E7%A8%8B%E5%BA%8F%E5%88%A4%E6%96%AD%E9%80%BB%E8%BE%91%E9%97%AE%E9%A2%98%EF%BC%8C%E8%95%B4%E5%90%AB%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E7%AD%89%E4%BB%B7%E8%BD%AC%E6%8D%A2%EF%BC%88MATLAB%29/" title="Next Post: 程序判断逻辑问题，蕴含表达式的等价转换（MATLAB)">程序判断逻辑问题，蕴含表达式的等价转换（MATLAB) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

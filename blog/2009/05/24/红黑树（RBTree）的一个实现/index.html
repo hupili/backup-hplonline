@@ -1,0 +1,705 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>红黑树（RBTree）的一个实现 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.24
+这里有份资料，可谓写得相当详细了，于是我都不好意思来描述了：
+http://imlazy.ycool.com/post.1104022.html
+我的代码的框架基本上是从前面写的AVL搬过来的。
+因为不同的地方就是插入和删除，搜索树的其他操作是一样的。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/24/%E7%BA%A2%E9%BB%91%E6%A0%91%EF%BC%88RBTree%EF%BC%89%E7%9A%84%E4%B8%80%E4%B8%AA%E5%AE%9E%E7%8E%B0">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">红黑树（RBTree）的一个实现</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-24T19:38:00+08:00" pubdate data-updated="true">May 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.24<br/><br/>
+这里有份资料，可谓写得相当详细了，于是我都不好意思来描述了：<br/>
+http://imlazy.ycool.com/post.1104022.html<br/><br/>
+我的代码的框架基本上是从前面写的AVL搬过来的。<br/>
+因为不同的地方就是<font color="#ff0000">插入和删除</font>，搜索树的其他操作是一样的。<br/>
+写的时候，也是照着上面的讲解来的，<br/>
+但是调了很久，最后只得对着上面的程序来调，搞得大体上也长得差不多了。<br/><br/>
+做了下200000个点排序的<font color="#ff0000">benchmark</font>。<br/>
+如果用直接的malloc和free搞，要1300ms的样子。<br/>
+用静态分配空间的办法，大概130ms的样子。<br/>
+还是比较显著。<br/><br/><font color="#ff0000">有一个教训，就是以后千万不要在NULL上捡懒了。</font><br/>
+因为实现红黑树的时候，自己做了个nil节点。<br/>
+于是，如果以前AVL的框架中，用到NULL的地方，我都改成nil就对了。<br/>
+这个操作用个替换就完成了，很方便。<br/>
+但是前面的写法中，有很多if ( p ) {&#8230;}这种。<br/>
+这就麻烦了，没改到的话，运行就出问题。<br/><br/>
+还有在看那位强人的代码时，才意识到搜索树还有一极大的功能：<br/><font color="#ff0000">获取第k大节点，获取x节点排序后的位置。</font><br/>
+这两个操作都是对数级的，而我们平时谈到搜索树时，<br/>
+往往关注插入，判重等，很少提到这点。<br/>
+其实取最小和取最大都是这两个操作的特化。<br/><br/>
+具体实现就是对每个节点增加左右子树节点的记数就可以了。<br/>
+下面的代码没有实现这两个操作，准备在把搜索树做得差不多时一起加上。<br/><br/><font color="#0000ff">代码如下：</font><br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;stdlib.h&gt;<br/><br/></h1>
+
+<p>//元素类型<br/>
+typedef int ElemType ;<br/><br/>
+typedef bool <em>RB_COLOR ;<br/>
+</em>RB_COLOR <em>RB_RED = true ;<br/>
+</em>RB_COLOR <em>RB_BLACK = false ;<br/><br/>
+//树的节点<br/>
+struct RBNode{<br/>
+     ElemType data ;<br/>
+     RBNode <em>left , </em>right , *parent ;<br/>
+     </em>RB_COLOR color ;<br/>
+};<br/>
+typedef RBNode *PRBNode ;<br/><br/>
+//空间分配宏，便于实现其他配置方式<br/></p>
+
+<h1>define _RB_initspace <br/></h1>
+
+<h1>define _RB_allocate() (RBNode *)malloc(sizeof(RBNode))<br/></h1>
+
+<h1>define _RB_deallocate(p) free(p) <br/></h1>
+
+<p>//RBNode space[200000] , *spacehead ;<br/>
+//#define <em>RB_initspace spacehead = space <br/>
+//#define </em>RB_allocate() spacehead++ ;<br/>
+//#define <em>RB_deallocate(p) <br/><br/>
+//RB<br/>
+class RBTree{<br/>
+private:<br/>
+     PRBNode root ;<br/>
+     RBNode nil_node ; //空节点<br/>
+     PRBNode nil ;<br/>
+     void </em>delete_node(PRBNode p) ;<br/>
+     PRBNode <em>next_node(PRBNode p) ;//中继前驱<br/>
+     PRBNode </em>prev_node(PRBNode p) ;//中继后继<br/>
+     PRBNode <em>rotate_left(PRBNode p ) ;//以p为轴左旋<br/>
+     PRBNode </em>rotate_right(PRBNode p ) ;//以p为轴右旋<br/>
+     PRBNode <em>find_node(PRBNode p , ElemType d ) ;//从p开始的位置寻找节点<br/>
+     PRBNode </em>find_parent(ElemType d ) ;//寻找d的父节点<br/>
+     void <em>in_order(PRBNode p) ;//p节点的中序遍历<br/>
+     void </em>pre_order(PRBNode p) ;//p节点的前序遍历<br/>
+     void <em>insert_fix(PRBNode child , PRBNode parent) ;<br/>
+     void </em>erase_fix(PRBNode child , PRBNode parent) ;<br/>
+public:<br/>
+     <br/>
+     RBTree() ;//构造空树<br/>
+     ~RBTree() ;//销毁树<br/>
+     PRBNode Find(ElemType d) ;//查找元素，<br/>
+     PRBNode FindMax() ;//查找最大元素，<br/>
+     PRBNode FindMin() ;//查找最小元素，<br/>
+     ElemType&amp; Retrieve(PRBNode p) ;//获取元素<br/>
+     PRBNode Insert(ElemType d) ;//插入元素<br/>
+     void Delete(ElemType d) ;//按元素删除<br/>
+     void Erase(PRBNode p) ;//按节点位置删除<br/>
+     void Clear() ;//清除整棵树<br/>
+     void InOrder() ; //中序遍历<br/>
+     void PreOrder() ; //前序遍历<br/>
+     PRBNode Nil() ;//返回空节点，便于调用端判断边界条件<br/>
+     static void Sort(ElemType a[] , int n , int d = 1) ;//利用RB进行排序，静态函数<br/>
+} ;<br/><br/>
+PRBNode RBTree::Nil(){<br/>
+     return nil ;<br/>
+}<br/><br/>
+//d：1，从小到大，0，从大到小<br/>
+void RBTree::Sort(ElemType a[] , int n , int d){<br/>
+     RBTree tree ;<br/>
+     int i ;<br/>
+     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+          tree.Insert(a[i]) ;<br/>
+     //     tree.InOrder() ;<br/>
+     //     tree.PreOrder() ;<br/>
+     }<br/>
+//     tree.InOrder() ;<br/>
+//     tree.PreOrder() ;<br/>
+     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+          PRBNode p ;<br/>
+          if ( d ) {<br/>
+               p = tree.FindMin() ;<br/>
+          }else{<br/>
+               p = tree.FindMax() ;     <br/>
+          }<br/>
+          a[i] = tree.Retrieve(p) ;<br/>
+          tree.Erase(p) ;<br/>
+     }<br/>
+}<br/><br/>
+RBTree::RBTree(){<br/>
+     nil = &amp;nil_node ;<br/>
+     root = nil ;<br/>
+     nil_node.color = <em>RB_BLACK ;<br/>
+     nil_node.left = nil ;<br/>
+     nil_node.right = nil ;<br/>
+     nil_node.parent = nil ;<br/>
+}<br/><br/>
+RBTree::~RBTree(){<br/>
+     Clear() ;<br/>
+}<br/><br/>
+void RBTree::</em>in_order(PRBNode p){<br/>
+     if ( p != nil ) {<br/>
+          <em>in_order(p-&gt;left) ;<br/>
+          std::cout&lt;&lt;p-&gt;data&lt;&lt;&#8217; &#8216;&lt;&lt;p-&gt;color&lt;&lt;&#8217;,&#8217; ;<br/>
+          </em>in_order(p-&gt;right) ;<br/>
+     }<br/>
+}<br/><br/>
+void RBTree::<em>pre_order(PRBNode p){<br/>
+     if ( p != nil ) {<br/>
+          std::cout&lt;&lt;p-&gt;data&lt;&lt;&#8217; &#8217; ;<br/>
+          </em>pre_order(p-&gt;left) ;<br/>
+          <em>pre_order(p-&gt;right) ;<br/>
+     }     <br/>
+}<br/><br/>
+void RBTree::InOrder(){<br/>
+     </em>in_order(root) ;<br/>
+     std::cout&lt;&lt;std::endl;<br/>
+}<br/><br/>
+void RBTree::PreOrder(){<br/>
+     <em>pre_order(root) ;<br/>
+     std::cout&lt;&lt;std::endl;<br/>
+}<br/><br/>
+PRBNode RBTree::</em>next_node(PRBNode p){<br/>
+     if ( p == nil ) return nil ;<br/>
+     if ( p-&gt;right != nil ){<br/>
+          p = p-&gt;right ;<br/>
+          while ( p-&gt;left != nil ) p = p-&gt;left ;<br/>
+     }else{<br/>
+          while ( p-&gt;parent &amp;&amp; p-&gt;parent-&gt;right == p ) p = p-&gt;parent ;<br/>
+          p = p-&gt;parent ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+PRBNode RBTree::<em>prev_node(PRBNode p){<br/>
+     if ( p == nil ) return nil ;<br/>
+     if ( p-&gt;left != nil ){<br/>
+          p = p-&gt;left ;<br/>
+          while ( p-&gt;right != nil ) p = p-&gt;right ;<br/>
+     }else{<br/>
+          while ( p-&gt;parent &amp;&amp; p-&gt;parent-&gt;left == p ) p = p-&gt;parent ;<br/>
+          p = p-&gt;parent ;<br/>
+     }<br/>
+     return p ;     <br/>
+}<br/><br/>
+PRBNode RBTree::Find(ElemType d){     <br/>
+     return </em>find_node(root , d) ;<br/>
+}<br/><br/>
+PRBNode RBTree::FindMax(){<br/>
+     if ( root == nil ) return nil ;<br/>
+     PRBNode p = root ;<br/>
+     while ( p-&gt;right != nil ){<br/>
+          p = p-&gt;right ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+PRBNode RBTree::FindMin(){<br/>
+     if ( root == nil ) return nil ;<br/>
+     PRBNode p = root ;<br/>
+     while ( p-&gt;left != nil ){<br/>
+          p = p-&gt;left ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+ElemType&amp; RBTree::Retrieve(PRBNode p){<br/>
+     if ( p != nil ) <br/>
+          return p-&gt;data ;<br/>
+     else return nil-&gt;data ;<br/>
+}<br/><br/>
+//左旋<br/>
+PRBNode RBTree::<em>rotate_left(PRBNode p ){<br/>
+     PRBNode child = p-&gt;right ;<br/>
+     p-&gt;right = child-&gt;left ;<br/>
+     if ( child-&gt;left != nil ) child-&gt;left-&gt;parent = p ;<br/>
+     child-&gt;left = p ;<br/>
+     PRBNode ancestor = p-&gt;parent ;<br/>
+     if ( ancestor != nil ) {<br/>
+          if ( ancestor-&gt;left == p ) ancestor-&gt;left = child ;<br/>
+          else ancestor-&gt;right = child ;<br/>
+     }else{<br/>
+          root = child ;<br/>
+     }<br/>
+     child-&gt;parent = ancestor ;<br/>
+     p-&gt;parent = child ;<br/>
+     return child ;<br/>
+}<br/><br/>
+//右旋<br/>
+PRBNode RBTree::</em>rotate_right(PRBNode p ){<br/>
+     PRBNode child = p-&gt;left ;<br/>
+     p-&gt;left = child-&gt;right ;<br/>
+     if ( child-&gt;right != nil ) child-&gt;right-&gt;parent = p ;<br/>
+     child-&gt;right = p ;<br/>
+     PRBNode ancestor = p-&gt;parent ;<br/>
+     if ( ancestor != nil ) {<br/>
+          if ( ancestor-&gt;left == p ) ancestor-&gt;left = child ;<br/>
+          else ancestor-&gt;right = child ;<br/>
+     }else{<br/>
+          root = child ;<br/>
+     }<br/>
+     child-&gt;parent = ancestor ;<br/>
+     p-&gt;parent = child ;<br/>
+     return child ;<br/>
+}<br/><br/>
+PRBNode RBTree::<em>find_node(PRBNode p , ElemType d ){<br/>
+     if ( p == nil ) return root ;//说明p是根节点的父节点<br/>
+     while ( p != nil &amp;&amp; p-&gt;data != d ){<br/>
+          if ( d &lt; p-&gt;data ) p = p-&gt;left ;<br/>
+          else p = p-&gt;right ;<br/>
+     }     <br/>
+     return p ;<br/>
+}<br/><br/>
+PRBNode RBTree::</em>find_parent(ElemType d ){<br/>
+     if ( root == nil ) return nil ;<br/>
+     PRBNode p = nil ;<br/>
+     PRBNode q = root ;<br/>
+     do{<br/>
+          if ( q-&gt;data == d ) return p ;<br/>
+          p = q ;<br/>
+          if ( d &lt; q-&gt;data ) q = q-&gt;left ;<br/>
+          else q = q-&gt;right ;<br/>
+     }while (q != nil ) ;<br/>
+     return p ;<br/>
+}<br/><br/>
+//child为红且parent为红时需要调整<br/>
+void RBTree::<em>insert_fix(PRBNode child , PRBNode parent){<br/>
+     while ( parent-&gt;color == </em>RB_RED ){<br/>
+          //由于根节点始终为黑色，所以这时的grand一定不是nil<br/>
+          PRBNode grand = parent-&gt;parent ;<br/>
+          if ( parent == grand-&gt;left ){<br/>
+               PRBNode uncle = grand-&gt;right ;<br/>
+               if ( uncle-&gt;color == <em>RB_RED ){<br/>
+                    parent-&gt;color = </em>RB_BLACK ;<br/>
+                    uncle-&gt;color = <em>RB_BLACK ;<br/>
+                    grand-&gt;color = </em>RB_RED ;<br/>
+                    child = grand ;<br/>
+                    parent = child-&gt;parent ;<br/>
+               }else{<br/>
+                    if ( child == parent-&gt;right ) {<br/>
+                          parent = <em>rotate_left(parent) ;<br/>
+                    }<br/>
+                    parent-&gt;color = </em>RB_BLACK ;//此时已经调整完毕，下一个循环判断即退出<br/>
+                    grand-&gt;color = <em>RB_RED ;<br/>
+                    </em>rotate_right(grand) ;<br/>
+               }<br/>
+          }else{<br/>
+               PRBNode uncle = grand-&gt;left ;<br/>
+               if ( uncle-&gt;color == <em>RB_RED ){<br/>
+                    parent-&gt;color = </em>RB_BLACK ;<br/>
+                    uncle-&gt;color = <em>RB_BLACK ;<br/>
+                    grand-&gt;color = </em>RB_RED ;<br/>
+                    child = grand ;<br/>
+                    parent = child-&gt;parent ;<br/>
+               }else{<br/>
+                    if ( child == parent-&gt;left ){<br/>
+                         parent = <em>rotate_right(parent) ;<br/>
+                    }<br/>
+                    parent-&gt;color = </em>RB_BLACK ;<br/>
+                    grand-&gt;color = <em>RB_RED ;<br/>
+                    </em>rotate_left(grand) ;<br/>
+               }<br/>
+          }<br/>
+     }<br/>
+     root-&gt;color = <em>RB_BLACK ;//根节点始终为黑色<br/>
+}<br/><br/>
+PRBNode RBTree::Insert(ElemType d){     <br/>
+     PRBNode parent = </em>find_parent(d);     <br/>
+     PRBNode child = <em>find_node(parent , d) ;<br/><br/>
+     //存在的节点<br/>
+     if ( child != nil ) return child ;<br/><br/>
+     //新建节点<br/>
+     child = </em>RB_allocate() ;<br/>
+     child-&gt;color = <em>RB_RED ;<br/>
+     child-&gt;left = nil ;<br/>
+     child-&gt;right = nil ;<br/>
+     child-&gt;parent = parent ;<br/>
+     child-&gt;data = d ;<br/><br/>
+     //为根节点<br/>
+     if ( parent == nil ){<br/>
+          root = child ;<br/>
+          root -&gt;color = </em>RB_BLACK ;<br/>
+          return root ;<br/>
+     }<br/><br/>
+     //将child挂到parent上面<br/>
+     if ( d &lt; parent-&gt;data ) parent-&gt;left = child ;<br/>
+     else parent-&gt;right = child ;<br/><br/>
+     <em>insert_fix(child , parent) ;<br/><br/>
+     return child ;<br/>
+}<br/><br/>
+//child所在路径上的黑色减少，需要增加一个黑色节点<br/>
+void RBTree::</em>erase_fix(PRBNode child , PRBNode parent){<br/>
+     while ( parent != nil &amp;&amp; child-&gt;color == <em>RB_BLACK ){<br/>
+          if ( child == parent-&gt;left ){<br/>
+               PRBNode sibling = parent-&gt;right ;<br/>
+               if ( sibling-&gt;color == </em>RB_RED ){<br/>
+                    sibling-&gt;color = <em>RB_BLACK ;<br/>
+                    parent-&gt;color = </em>RB_RED ;<br/>
+                    <em>rotate_left(parent) ;<br/>
+                    sibling = parent-&gt;right ;<br/>
+               }<br/>
+               if ( sibling-&gt;left-&gt;color == </em>RB_BLACK <br/>
+                    &amp;&amp; sibling-&gt;right-&gt;color == <em>RB_BLACK ){<br/>
+                    sibling-&gt;color = </em>RB_RED ;<br/>
+                    child = parent ;<br/>
+                    parent = parent-&gt;parent ;<br/>
+               }else{<br/>
+                    if ( sibling-&gt;right-&gt;color == <em>RB_BLACK ){<br/>
+                         sibling-&gt;color = </em>RB_RED ;<br/>
+                         sibling-&gt;left-&gt;color = <em>RB_BLACK ;<br/>
+                         sibling = </em>rotate_right(sibling) ;<br/>
+                    }<br/>
+                    sibling-&gt;right-&gt;color = <em>RB_BLACK ;<br/>
+                    sibling-&gt;color = parent-&gt;color ;<br/>
+                    parent-&gt;color = </em>RB_BLACK ;<br/>
+                    <em>rotate_left(parent) ;<br/>
+                    parent = nil ; //到此已经调整完毕，破坏循环条件跳出<br/>
+               }<br/>
+          }else{<br/>
+               PRBNode sibling = parent-&gt;left ;<br/>
+               if ( sibling-&gt;color == </em>RB_RED ){<br/>
+                    sibling-&gt;color = <em>RB_BLACK ;<br/>
+                    parent-&gt;color = </em>RB_RED ;<br/>
+                    <em>rotate_right(parent) ;<br/>
+                    sibling = parent-&gt;left ;<br/>
+               }<br/>
+               if ( sibling-&gt;left-&gt;color == </em>RB_BLACK <br/>
+                    &amp;&amp; sibling-&gt;right-&gt;color == <em>RB_RED ){<br/>
+                    sibling-&gt;color = </em>RB_RED ;<br/>
+                    child = parent ;<br/>
+                    parent = parent-&gt;parent ;<br/>
+               }else{<br/>
+                    if ( sibling-&gt;left-&gt;color == <em>RB_BLACK ){<br/>
+                         sibling-&gt;color = </em>RB_RED ;<br/>
+                         sibling-&gt;right-&gt;color = <em>RB_BLACK ;<br/>
+                         sibling = </em>rotate_left(sibling) ;<br/>
+                    }<br/>
+                    sibling-&gt;left-&gt;color = <em>RB_BLACK ;<br/>
+                    sibling-&gt;color = parent-&gt;color ;<br/>
+                    parent-&gt;color = </em>RB_BLACK ;<br/>
+                    <em>rotate_right(parent) ;<br/>
+                    parent = nil ;<br/>
+               }<br/>
+          }<br/>
+     }<br/>
+     child-&gt;color = </em>RB_BLACK ;<br/>
+}<br/><br/>
+void RBTree::Erase(PRBNode pos){<br/>
+     //获得替换节点<br/>
+     PRBNode subs = pos ;<br/>
+     if ( pos-&gt;left != nil &amp;&amp; pos-&gt;right != nil ){<br/>
+          //即右二子的最左枝<br/>
+          subs = <em>next_node(pos) ;<br/>
+          pos-&gt;data = subs-&gt;data ;<br/>
+     }<br/><br/>
+     PRBNode child ;<br/>
+     if ( subs-&gt;left != nil ) child = subs-&gt;left ;<br/>
+     else child = subs-&gt;right ;<br/><br/>
+     PRBNode parent = subs-&gt;parent ;<br/>
+     //把child挂到parent上去<br/>
+     if ( parent == nil ) {<br/>
+          root = child ;     <br/>
+          child-&gt;parent = nil ;<br/>
+     }else{<br/>
+          if ( subs == parent-&gt;left ) parent-&gt;left = child ;<br/>
+          else parent-&gt;right = child ;<br/>
+     }<br/>
+     if ( child != nil ) child-&gt;parent = parent ;<br/><br/>
+     //若删除的是黑色，会导致路径上的黑色变少，要调整<br/>
+     if ( subs-&gt;color == </em>RB_BLACK ) {<br/>
+          <em>erase_fix(child , parent) ;<br/>
+     }<br/><br/>
+     </em>RB_deallocate(subs) ;<br/>
+}<br/><br/>
+void RBTree::Delete(ElemType d){<br/>
+     PRBNode p = Find(d) ;<br/>
+     if ( p != nil ) {<br/>
+          Erase(p) ;<br/>
+     }<br/>
+}<br/><br/>
+void RBTree::<em>delete_node(PRBNode p){<br/>
+     if ( p != nil ){<br/>
+          </em>delete_node(p-&gt;left) ;<br/>
+          <em>delete_node(p-&gt;right) ;<br/>
+          </em>RB_deallocate(p) ;<br/>
+     }<br/>
+}<br/><br/>
+void RBTree::Clear(){<br/>
+     _delete_node(root) ;<br/>
+     root = nil ;<br/>
+}<br/><br/><br/>
+//测试代码<br/>
+using namespace std;<br/></p>
+
+<h1>include &lt;algorithm&gt;<br/></h1>
+
+<h1>include &lt;time.h&gt;<br/><br/></h1>
+
+<p>const TOTAL = 200000 ;<br/>
+int c[TOTAL] ;<br/><br/>
+int main(){<br/><br/>
+     int a[] = {3,2,9,7,5,8,6} ;<br/>
+//     int a[] = {5 , 2 , 3} ;<br/>
+     int b[10] ;<br/>
+     int sz = sizeof(a) / sizeof(int)  ;<br/>
+     int i;<br/><br/>
+     //初始化空间<br/>
+      <em>RB_initspace ;<br/><br/>
+     for ( i = 0 ; i &lt; sz ; i ++ ) b[i] = a[i] ;<br/><br/>
+     //排序测试<br/>
+//     RBTree::Sort(a , sz , 1) ;<br/>
+     for ( i = 0 ; i &lt; sz ; i ++ )cout&lt;&lt;a[i]&lt;&lt;&#8217; &#8216;;<br/>
+     cout&lt;&lt;endl;<br/>
+     <br/>
+     RBTree tree ;<br/><br/>
+     //插入，删除，中序遍历，空树测试<br/>
+     tree.Insert(1) ;<br/>
+     tree.InOrder() ;<br/>
+     tree.Insert(1) ;<br/>
+     tree.InOrder() ;<br/>
+     tree.Delete(1) ;<br/>
+     tree.InOrder() ;<br/><br/>
+     //插入测试，根据中序和前序，可以构造出整树，来检验插入是否正确<br/>
+     for ( i = 0 ; i &lt; sz ; i ++ ){<br/>
+          tree.Insert(a[i]) ;<br/>
+          tree.InOrder() ;<br/>
+          tree.PreOrder() ;<br/>
+     }<br/>
+     cout&lt;&lt;endl;<br/><br/>
+//     return 0 ;<br/><br/>
+     //查找测试<br/>
+     //不存在元素<br/>
+     cout&lt;&lt;tree.Find(4)&lt;&lt;endl;<br/>
+     cout&lt;&lt;endl;<br/>
+     //存在的元素<br/>
+     cout&lt;&lt;tree.Find(9)&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(9)-&gt;data&lt;&lt;endl;<br/>
+     //删除元素<br/>
+     tree.Delete(9) ;<br/>
+     cout&lt;&lt;tree.Find(9)&lt;&lt;endl;<br/><br/>
+     tree.InOrder() ;<br/>
+     tree.PreOrder() ;<br/><br/>
+     //清除测试<br/>
+     cout&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(3)&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Retrieve(tree.Find(3))&lt;&lt;endl;<br/>
+     tree.Clear() ;<br/>
+     cout&lt;&lt;tree.Find(3)&lt;&lt;endl;     <br/>
+     tree.PreOrder() ;<br/><br/>
+//大数据测试<br/>
+     for ( i = 0 ; i &lt; TOTAL ; i ++ ) c[i] = i ; <br/>
+     random_shuffle(c , c + TOTAL) ;<br/>
+//     可选择输出数据检验     <br/>
+//     for ( i = 0 ; i &lt; TOTAL ; i ++ ) cout&lt;&lt;c[i]&lt;&lt;&#8217; &#8217; ;<br/>
+//     cout&lt;&lt;endl;<br/>
+//     return 0 ;<br/>
+     clock_t tt = clock() ;<br/>
+//     </em>RB_initspace ;<br/>
+     RBTree::Sort(c , TOTAL , 1) ;<br/>
+     printf(&#8220;time: %d\n&#8221; , clock() - tt) ;<br/>
+     for ( i = 0 ; i &lt; TOTAL ; i ++ ) if ( c[i] != i ) break; <br/>
+     if ( i == TOTAL ) cout&lt;&lt;&#8221;ok&#8221;&lt;&lt;endl;<br/>
+     else cout&lt;&lt;&#8221;bad alg!&#8221;&lt;&lt;endl;<br/><br/>
+     return 0 ;<br/>
+}<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-24T19:38:00+08:00" pubdate data-updated="true">May 24<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/24/%E7%BA%A2%E9%BB%91%E6%A0%91%EF%BC%88RBTree%EF%BC%89%E7%9A%84%E4%B8%80%E4%B8%AA%E5%AE%9E%E7%8E%B0/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/24/%E7%BA%A2%E9%BB%91%E6%A0%91%EF%BC%88RBTree%EF%BC%89%E7%9A%84%E4%B8%80%E4%B8%AA%E5%AE%9E%E7%8E%B0/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/23/%E4%B8%89%E7%A7%8D%E5%BC%82%E5%89%8D%E7%BD%AE%E7%BC%96%E7%A0%81%EF%BC%88%E9%A6%99%E5%86%9C%E7%BC%96%E7%A0%81%EF%BC%8C%E8%B4%B9%E8%AF%BA%E7%BC%96%E7%A0%81%EF%BC%8C%E5%93%88%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81%EF%BC%89%EF%BC%88%2BMATLAB%E7%A8%8B%E5%BA%8F%29/" title="Previous Post: 三种异前置编码（香农编码，费诺编码，哈夫曼编码）（+MATLAB程序)">&laquo; 三种异前置编码（香农编码，费诺编码，哈夫曼编码）（+MATLAB程序)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/25/%E7%94%BB%E5%BF%83%EF%BC%88MATLAB%EF%BC%8Cfill%EF%BC%8C%E3%80%8A%E9%AD%94%E6%9C%AF%E5%B8%88%E3%80%8B%EF%BC%89/" title="Next Post: 画心（MATLAB，fill，《魔术师》）">画心（MATLAB，fill，《魔术师》） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

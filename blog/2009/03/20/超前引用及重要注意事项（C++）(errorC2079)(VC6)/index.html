@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>超前引用及重要注意事项（C++）(error C2079)(VC6) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline) 2009.3.20
+今天遇到了这样的错误：error C2079: &#8216;xxx&#8217; uses undefined class &#8216;yyy&#8217;
+不得不承认自己有土鳖的基因。本来是很普通的一件事情。
+自己居然不知道。。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/20/%E8%B6%85%E5%89%8D%E5%BC%95%E7%94%A8%E5%8F%8A%E9%87%8D%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%88C%2B%2B%EF%BC%89%28errorC2079%29%28VC6%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">超前引用及重要注意事项（C++）(error C2079)(VC6)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-20T20:16:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline) 2009.3.20<br/><br/>
+今天遇到了这样的错误：<font color="#ff0000">error C2079: &#8216;xxx&#8217; uses undefined class &#8216;yyy&#8217;</font><br/><br/>
+不得不承认自己有土鳖的基因。本来是很普通的一件事情。<br/>
+自己居然不知道。。直到今天为了做作业才发现。唉。直入正题。<br/><br/>
+比如说，我们先定义一个b类再定义一个a类，a的一个成员就是b，如下：<br/><font color="#ff6600"><br/>
+class b{<br/>
+int i;<br/>
+};<br/><br/>
+class a {<br/>
+b val ;<br/>
+};</font><br/><br/>
+这显然是可以的。<br/><br/>
+如果这个时候，要把b的定义放到后面去，大家都知道在前面先声明b，那么：<br/><br/><font color="#ff6600">class b;<br/><br/>
+class a {<br/>
+b val ;<br/>
+};<br/><br/>
+class b{<br/>
+int i;<br/>
+};</font><br/><br/>
+这段对不对呢？如果不编译，直观感觉，我以前总以为是可以的。。<br/><br/>
+但其实是通过不了编译的。那么再改，把val换成对b的指针，这样：<br/><br/><font color="#ff6600">class b;<br/><br/>
+class a {<br/>
+b<font color="#ff0000"> <em></font>val ;<br/>
+};<br/><br/>
+class b{<br/>
+int i;<br/>
+};</font><br/><br/>
+然后就可以了。<br/><br/>
+那么，直接给出一条重要的结论：<br/><font color="#ff0000">超前引用不可使用类名来定义变量和函数的变量参数，只可用来定义引用或者指针。</font><br/><br/>
+要解释其实是很简单的，因为编译器在处理类的时候，要为他的成员分配空间。<br/><br/>
+如果我们用指针，那么直接分配4个字节就可以了，就像：<br/><font color="#ff6600"><br/>
+class b;<br/>
+class a;<br/><br/>
+class a {<br/>
+b </em>val ;<br/>
+};<br/><br/>
+class b{<br/>
+a *val ;<br/>
+};</font><br/><br/>
+但是，如果成员变量是类呢？？<br/><br/><font color="#ff6600">class b;<br/>
+class a;<br/><br/>
+class a {<br/>
+b val ;<br/>
+};<br/><br/>
+class b{<br/>
+a val ;<br/>
+};</font><br/><br/>
+这种情况下，就好比把两面镜子对着放置一样。。<br/><br/>
+当处理到a的val的时候，发现是个b，那么给b留出空间，<br/>
+为了知道给b留出多少空间，再看b，发现b的val是a，<br/>
+那么又需要再知道该给a多少空间。。。<br/><br/>
+这个道理其实是很显然的。<br/><br/>
+所以，VC编译的时候说<font color="#ff0000">&#8216;xxx&#8217; uses undefined class &#8216;yyy&#8217; 。 </font><br/><br/><font color="#ff0000">也许你觉得这些是很显然的事情，自己写的时候不会犯这种傻。<br/>
+那么要小心的就是STL了。比如说你list &lt;myClass&gt;。<br/><br/>
+而这个时候myClass是处于已定义状态，则没有问题。<br/>
+如果这个时候myClass是处于声明状态，则会有很大的问题。<br/><br/>
+而VC6对STL报错的囧况，想必用过的人都知道。<br/>
+往往都是一大堆，要从中提取有用的信息很不容易。</font><br/><br/>
+唉。。也许是我入门看的资料太瓜了。。虽然超前声明这个概念到处都提，<br/>
+却没怎么见有人专门指出这点。。看来有时间还是要从头学学国外名著了。。。<br/><br/>
+今天发现这个问题，也是因为我们助教给的一堆接口及实现。<br/><br/>
+我现在真的是严重怀疑他究竟有没有编译通过。。。改了我半天。。<br/><br/>
+就算他通过了，也是俨然一不标准的用法。明显是留有逻辑黑洞的隐患的。<br/><br/><font color="#ff0000">众所周知，VS可以编译好些VC不能编译的东西。。<br/>
+原因是放宽了对标准的审核</font><br/><br/><font color="#ff0000">又众所周知，DEV可以编译好些VC不能编译的东西。。<br/>
+原因是VC对C++的有些标准实现上有问题</font><br/>
+（比如using namespace std下的cout重载）<br/><br/>
+以前我对老师总是留一份怀疑的态度，而现在感觉要保持严重怀疑的态度。。。<br/><br/>
+这个戳瓢事浪费了我半个小时，自然也就不吝啬多花这半个小时来记之。<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-20T20:16:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/20/%E8%B6%85%E5%89%8D%E5%BC%95%E7%94%A8%E5%8F%8A%E9%87%8D%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%88C%2B%2B%EF%BC%89%28errorC2079%29%28VC6%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/20/%E8%B6%85%E5%89%8D%E5%BC%95%E7%94%A8%E5%8F%8A%E9%87%8D%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%88C%2B%2B%EF%BC%89%28errorC2079%29%28VC6%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/17/CEdit%E7%9A%84%E5%A4%9A%E8%A1%8C%E6%98%BE%E7%A4%BA%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88VC6%29/" title="Previous Post: CEdit 的多行显示遇到的问题（VC6)">&laquo; CEdit 的多行显示遇到的问题（VC6)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/22/%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8%E7%9A%84%E8%AF%AD%E4%B9%89%E5%8F%8A%E5%BA%94%E7%94%A8/" title="Next Post: 数组引用的语义及应用">数组引用的语义及应用 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

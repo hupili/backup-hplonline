@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>MATLAB符号运算求傅立叶变换（反变换） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.12.20
+今天抽到一道题，
+在频域上给了一个矩形脉冲，
+让求出连续信号的时域波形和频谱，
+以及采样后信号的时域波形和频谱。
+之前看其他人做的样题，
+就是把点取得很密，
+然后用ifft这样的方法去算。
+最后plot出来虽然看起来是连续的，
+但是根据取点数的不同， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/12/20/MATLAB%E7%AC%A6%E5%8F%B7%E8%BF%90%E7%AE%97%E6%B1%82%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2%EF%BC%88%E5%8F%8D%E5%8F%98%E6%8D%A2%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">MATLAB符号运算求傅立叶变换（反变换）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-20T12:54:00+08:00" pubdate data-updated="true">Dec 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.12.20<br/><br/>
+今天抽到一道题，<br/>
+在频域上给了一个矩形脉冲，<br/>
+让求出连续信号的时域波形和频谱，<br/>
+以及采样后信号的时域波形和频谱。<br/><br/>
+之前看其他人做的样题，<br/>
+就是把点取得很密，<br/>
+然后用ifft这样的方法去算。<br/>
+最后plot出来虽然看起来是连续的，<br/>
+但是根据取点数的不同，<br/>
+其幅度都有变化。。<br/>
+本质上也是画的时间或频率采样后的信号，<br/>
+不是原模拟信号。<br/><br/>
+于是当时想了手算表达式，然后取点来画。<br/>
+最后觉得时间有点短，没有囧出来。<br/>
+回来又整了下，发现这个问题应该用matlab的符号运算来解决。<br/>
+通过符号运算，推得时域的准确表达式，<br/>
+再subs函数得到需要画的点的值就可以了。<br/><br/>
+最后剩下的问题就是怎么构造频域的那个矩形脉冲了。<br/>
+用heaviside可以构造出阶跃函数，<br/>
+（跟平时的阶跃有点不同，可以参考help）<br/>
+让它与频移后的阶跃相减就可以了。<br/><br/><font color="#0000ff">代码：</font><br/><br/>
+clear ;<br/>
+clc ;<br/>
+close all ;<br/><br/>
+syms f t ;<br/><br/>
+Y = heaviside(f) - heaviside(f - 10000) ;<br/>
+ff = linspace(0 , 20000 , 100) ;<br/>
+YY = subs(Y , f , ff) ;<br/>
+subplot(2 , 1 , 1) ;<br/>
+plot(ff , YY) ;<br/>
+axis([-100 20100 -0.1 1.1]) ;<br/>
+y = ifourier(Y , f , t) <br/>
+tt = linspace(-0.0025 ,0.0025 ,  200) ;<br/>
+yy = subs(y , t , tt) ;<br/>
+subplot(2 , 1 , 2) ;<br/>
+plot(tt , abs(yy)) ;<br/><br/><font color="#0000ff">样图：<br/></font><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a3fb991362e649b06438dbd7.jpg" small="0" class="blogimg"/></span><br/>
+上面是题目给的矩形脉冲，下面是反变换后的时域信号。<br/><br/>
+朝死。。夕闻到。。也可。。<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-20T12:54:00+08:00" pubdate data-updated="true">Dec 20<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/12/20/MATLAB%E7%AC%A6%E5%8F%B7%E8%BF%90%E7%AE%97%E6%B1%82%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2%EF%BC%88%E5%8F%8D%E5%8F%98%E6%8D%A2%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/12/20/MATLAB%E7%AC%A6%E5%8F%B7%E8%BF%90%E7%AE%97%E6%B1%82%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2%EF%BC%88%E5%8F%8D%E5%8F%98%E6%8D%A2%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/12/19/DSP%E7%9A%84MATLAB%E7%BB%83%E4%B9%A0%E9%A2%98/" title="Previous Post: DSP的MATLAB练习题">&laquo; DSP的MATLAB练习题</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/12/20/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88DIT2%2CDIF2%E7%9A%84%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%EF%BC%8C%E5%AE%9E%E5%BA%8F%E5%88%97fft%E8%AE%A1%E7%AE%97%29/" title="Next Post: FFT相关（一）（MATLAB）（DIT2,DIF2的递归实现，实序列fft计算)">FFT相关（一）（MATLAB）（DIT2,DIF2的递归实现，实序列fft计算) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>数组引用的语义及应用 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.3.22
+此篇的实验在DEV C++完成，因为有些特性VC编译并不支持。
+引用，也一直忽略了很久。因为从最底层来看，大部分引用都是用指针来实现的。
+于是，很多书也给出了这样的结论：引用就是指针，或者说是一种让编译器自动脱指针运算的方式。
+对于一般的引用， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/22/%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8%E7%9A%84%E8%AF%AD%E4%B9%89%E5%8F%8A%E5%BA%94%E7%94%A8">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">数组引用的语义及应用</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-22T18:56:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.3.22<br/><br/>
+此篇的实验在DEV C++完成，因为有些特性VC编译并不支持。<br/><br/>
+引用，也一直忽略了很久。<font color="#ff0000">因为从最底层来看，大部分引用都是用指针来实现的</font>。<br/>
+于是，很多书也给出了这样的结论：<br/><font color="#3366ff">引用就是指针，或者说是一种让编译器自动脱指针运算的方式。</font><br/><br/>
+对于一般的引用，通过一个例子来验证以上说法：<br/><font color="#ff6600">int swap(int &amp;a , int &amp;b){<br/>
+      int t = a ;<br/>
+      a = b ;<br/>
+      b = t ;<br/>
+}</font><br/><br/><font color="#ff0000">那么把所有引用的声明位置替换成指针声明。把所有引用使用的位置替换成脱指针操作。</font><br/><font color="#ff0000">就可以得到一个等价的程序</font><br/><br/><font color="#ff6600">int swap(int <em>a , int </em>b){<br/>
+      int t = <em>a ;<br/>
+      </em>a = <em>b ;<br/>
+      </em>b = t ;<br/>
+}</font><br/><font color="#ff6600">（注：这两段代码是为了表意直接在页面上写的）</font><br/><br/>
+这样的一段话实现同样的功能，这让我们更加坚定以上结论。<br/>
+他在大多数时候描述的就是事实。而后面给出的替换法则也是通常成立的。<br/><br/>
+正如上回偶然看到的<a href="http://hi.baidu.com/hplonline/blog/item/8ed7f2dc0f1e6ea6cc116674.html" target="_blank">数组和指针的差异</a>一样。<br/>
+今天突然发现了<font color="#ff0000">数组引用</font>的另外的特性。<br/><br/>
+先上一段代码吧:<br/><br/>
+void f(int a[5]){<br/>
+       cout&lt;&lt;sizeof(a)&lt;&lt;endl;       <br/>
+}<br/><br/>
+void g(int *a){<br/>
+       cout&lt;&lt;sizeof(a)&lt;&lt;endl;       <br/>
+}<br/><br/>
+void h(<font color="#ff0000">int (&amp;a)[5]</font>){<br/>
+       cout&lt;&lt;sizeof(a)&lt;&lt;endl;<br/>
+}<br/><br/>
+int main(){<br/>
+      int a[5];<br/>
+      f(a);<br/>
+      g(a);<br/>
+      h(a);<br/>
+      system(&#8220;pause&#8221;);<br/>
+      return 0 ;<br/>
+}<br/><br/><font color="#0000ff">输出:</font><br/>
+4<br/>
+4<br/>
+20<br/><br/>
+前两个说明了一句，我搞忘是哪里说的了：<br/>
+作为函数的参数，指针和数组是一样的。<br/><br/>
+也就是第一个数组虽然给了长度5，但是，作为函数参数，处理为一个指针，丢失了长度信息。<br/><br/>
+而最后一个，就是土鳖我今天发现的新大陆。<br/><font color="#ff0000">数组的引用，携带了有关数组长度的信息。</font><br/><br/>
+这里，引用&amp;这种修饰符是针对变量的。所以要用括号结合起来。<br/><br/>
+不过这里既然是引用，那么引用和被引用双方一定得是相同的东西了。<br/>
+所以如果把a[5];改成a[6];这下编译器就报错了。<br/><br/>
+那么，同时在网上看到的一段很通用的模板代码：<br/><br/>
+template&lt;typename T, size_t N&gt;<br/>
+void f(T (&amp;a)[N])<br/>
+{<br/>
+     cout&lt;&lt;sizeof(a)&lt;&lt;endl;<br/>
+}<br/><br/>
+int main(){<br/>
+      int a[6];<br/>
+      char c[3];<br/>
+      f(a);<br/>
+      f(c);<br/>
+      system(&#8220;pause&#8221;);<br/>
+      return 0 ;<br/>
+}<br/><br/><font color="#0000ff">输出：</font><br/>
+24<br/>
+3<br/><br/>
+可以适应不同类型和大小的数组。<br/><br/>
+可见。。以前对引用的认识不完全。<br/>
+那么今后会得到怎样的认识呢。。期待。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-22T18:56:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/22/%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8%E7%9A%84%E8%AF%AD%E4%B9%89%E5%8F%8A%E5%BA%94%E7%94%A8/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/22/%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8%E7%9A%84%E8%AF%AD%E4%B9%89%E5%8F%8A%E5%BA%94%E7%94%A8/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/20/%E8%B6%85%E5%89%8D%E5%BC%95%E7%94%A8%E5%8F%8A%E9%87%8D%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%88C%2B%2B%EF%BC%89%28errorC2079%29%28VC6%29/" title="Previous Post: 超前引用及重要注意事项（C++）(error C2079)(VC6)">&laquo; 超前引用及重要注意事项（C++）(error C2079)(VC6)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/22/DAC0808%E5%AE%9E%E7%8E%B0LED%E4%BA%AE%E5%BA%A6%E8%B0%83%E8%8A%82/" title="Next Post: DAC0808实现LED亮度调节">DAC0808实现LED亮度调节 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

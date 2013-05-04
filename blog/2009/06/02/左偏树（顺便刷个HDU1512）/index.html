@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>左偏树（顺便刷个HDU1512） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.6.2
+关于左偏树的资料，
+网上到处转载的大多是05年黄源河的论文《左偏树》
+应该说从理论到实现讲解得很清楚了，分享出来。
+主要在网上搜的时候，很多地方提到HDU1512
+（其实就是一个人提到，到家转出来的）
+于是顺便去刷了下。
+处理猴子认识与否， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/02/%E5%B7%A6%E5%81%8F%E6%A0%91%EF%BC%88%E9%A1%BA%E4%BE%BF%E5%88%B7%E4%B8%AAHDU1512%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">左偏树（顺便刷个HDU1512）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-02T22:10:00+08:00" pubdate data-updated="true">Jun 2<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.6.2<br/><br/>
+关于左偏树的资料，<br/>
+网上到处转载的大多是05年黄源河的论文<br/><a href="http://www.box.net/shared/01tp7616qx" target="_blank">《左偏树》</a><br/>
+应该说从理论到实现讲解得很清楚了，分享出来。<br/><br/>
+主要在网上搜的时候，很多地方提到HDU1512<br/>
+（其实就是一个人提到，到家转出来的）<br/>
+于是顺便去刷了下。<br/><br/>
+处理猴子认识与否，是典型的<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/bd4524dd0463bcd18c1029c6.html">并查集</a>擅长解决的。<br/>
+每次要得到<font color="#ff0000">strongness</font>最大的。<br/>
+（<img src="http://img.baidu.com/hi/jx/j_0016.gif"/>个人认为应该是<font color="#ff0000">strength</font>。。。）<br/>
+且打完一架之后要合并，于是需要可并堆来支持。<br/>
+左偏树是性价比很高的可并堆的实现方案。<br/><br/>
+写法上，和下面的左偏树的实现有点出入：<a href="http://www.box.net/shared/h82h087lxs" target="_blank">HDU1512</a>.txt<br/>
+意思上是一样的。<br/><br/><font color="#0000ff">个人的理解：</font><br/><br/>
+merge操作作为左偏树的基础。<br/>
+按照堆的性质，取出待合并的树中最小的作为根即可。<br/>
+由于限制了右树的“距离”更小。<br/>
+所以确定根之后，把另一棵树和根的右枝合并。<br/>
+可以尽可能地减少合并的次数。<br/><br/>
+距离为0的点的右树是空的，这时候merge可以结束。<br/>
+而从某节点走到距离为0的节点，只需要他的距离步。<br/>
+这样可以保证很高的效率。<br/><br/><font color="#0000ff">我的左偏树代码：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;stdlib.h&gt;<br/></h1>
+
+<h1>include &lt;iostream&gt;<br/><br/></h1>
+
+<p>typedef int ElemType ;<br/><br/>
+typedef struct leftistnode_type{<br/>
+       ElemType data ;<br/>
+       int dis ;<br/>
+       leftistnode_type <em>left , </em>right ;<br/>
+}LNode ;<br/><br/>
+typedef LNode* PLNode ;<br/><br/>
+//空间分配宏，便于实现其他配置方式<br/></p>
+
+<h1>define _L_initspace <br/></h1>
+
+<h1>define _L_allocate() (LNode *)malloc(sizeof(LNode))<br/></h1>
+
+<h1>define _L_deallocate(p) free(p) <br/></h1>
+
+<p>//ANode space[1000] , *spacehead ;<br/>
+//#define <em>L_initspace spacehead = space <br/>
+//#define </em>L_allocate() spacehead++ ;<br/>
+//#define <em>L_deallocate(p) <br/><br/>
+class LeftistTree{<br/>
+private:<br/>
+       PLNode root ;<br/>
+       LNode nil_node ;<br/>
+       PLNode nil ;<br/>
+       PLNode </em>merge(PLNode t1 , PLNode t2) ;<br/>
+       void <em>delete_node(PLNode p) ;<br/>
+public:<br/>
+       LeftistTree() ;<br/>
+       ~LeftistTree() ;<br/>
+       ElemType Root() ;//获得根节点<br/>
+       void Join(LeftistTree &amp;t) ;//合并另一个树到该树上<br/>
+       void Insert(ElemType d) ;//插入<br/>
+       void DeleteRoot() ;//删除<br/>
+       void Clear() ;//清空树<br/>
+       bool Empty() ;//判空<br/>
+       friend LeftistTree ;<br/>
+} ;<br/><br/>
+PLNode LeftistTree::</em>merge(PLNode t1 , PLNode t2){<br/>
+       if ( t1 == nil ) return t2 ;<br/>
+       if ( t2 == nil ) return t1 ;<br/>
+       PLNode t ;<br/>
+       if ( t1-&gt;data &gt; t2-&gt;data ) {<br/>
+              t = t1 ; t1 = t2 ; t2 = t ;<br/>
+       }<br/>
+       t = <em>merge(t1-&gt;right , t2) ;<br/>
+       if ( t-&gt;dis &gt; t1-&gt;left-&gt;dis ) {<br/>
+              t1-&gt;right = t1-&gt;left ;<br/>
+              t1-&gt;left = t ;<br/>
+       }else{<br/>
+              t1-&gt;right = t ;<br/>
+       }<br/>
+       t1-&gt;dis = t1-&gt;right-&gt;dis + 1 ;<br/>
+       return t1 ;<br/>
+}<br/><br/>
+LeftistTree::LeftistTree(){<br/>
+       nil = &amp;nil_node ;<br/>
+       nil-&gt;left = nil ;<br/>
+       nil-&gt;right = nil ;<br/>
+       nil-&gt;dis = -1 ;//为维护左偏性质而规定<br/>
+       root = nil ;<br/>
+}<br/><br/>
+LeftistTree::~LeftistTree(){<br/>
+       Clear() ;<br/>
+}<br/><br/>
+void LeftistTree::</em>delete_node(PLNode p){<br/>
+       if ( p != nil ){<br/>
+              <em>delete_node(p-&gt;left) ;<br/>
+              </em>delete_node(p-&gt;right) ;<br/>
+              <em>L_deallocate(p) ;<br/>
+       }<br/>
+}<br/><br/>
+void LeftistTree::Clear(){<br/>
+       </em>delete_node(root) ;<br/>
+}<br/><br/>
+ElemType LeftistTree::Root(){<br/>
+       return root-&gt;data ;<br/>
+}<br/><br/>
+void LeftistTree::Insert(ElemType d){<br/>
+       PLNode p = <em>L_allocate() ;<br/>
+       p-&gt;data = d ;<br/>
+       p-&gt;left = nil ;<br/>
+       p-&gt;right = nil ;<br/>
+       p-&gt;dis = 0 ;<br/>
+       root = </em>merge(root , p) ;<br/>
+}<br/><br/>
+void LeftistTree::DeleteRoot(){<br/>
+       PLNode p = root ;<br/>
+       root = <em>merge(root-&gt;left , root-&gt;right) ;<br/>
+       </em>L_deallocate(p) ;<br/>
+}<br/><br/>
+void LeftistTree::Join(LeftistTree &amp;t){<br/>
+       root = _merge(root , t.root) ;<br/>
+       t.root = t.nil ;<br/>
+}<br/><br/>
+bool LeftistTree::Empty(){<br/>
+       return root == nil ;<br/>
+}<br/><br/>
+using namespace std ;<br/><br/>
+int main(){<br/>
+       int a[] = {3 , 2 , 9 , 10 , 5 , 4 , 6 , 7} ;<br/>
+       int sz = sizeof(a) / sizeof(a[0]) ;<br/>
+       LeftistTree lt ;<br/>
+       int i ;<br/>
+       for ( i = 0 ; i &lt; sz ; i ++ )<br/>
+              lt.Insert(a[i]) ;<br/>
+       for ( i = 0 ; i &lt; sz ; i ++ ){<br/>
+              cout&lt;&lt;lt.Root() &lt;&lt;endl;<br/>
+              lt.DeleteRoot() ;<br/>
+       }<br/>
+       return 0 ;<br/>
+}</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-02T22:10:00+08:00" pubdate data-updated="true">Jun 2<span>nd</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/02/%E5%B7%A6%E5%81%8F%E6%A0%91%EF%BC%88%E9%A1%BA%E4%BE%BF%E5%88%B7%E4%B8%AAHDU1512%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/02/%E5%B7%A6%E5%81%8F%E6%A0%91%EF%BC%88%E9%A1%BA%E4%BE%BF%E5%88%B7%E4%B8%AAHDU1512%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/02/%E5%85%B3%E4%BA%8E%E6%8E%92%E5%BA%8F%E7%9A%84%E4%B8%80%E7%82%B9%E4%BA%8B%E6%83%85/" title="Previous Post: 关于排序的一点事情">&laquo; 关于排序的一点事情</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/05/4%E7%A7%8D%E5%8F%AF%E5%B9%B6%E5%A0%86/" title="Next Post: 4种可并堆">4种可并堆 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

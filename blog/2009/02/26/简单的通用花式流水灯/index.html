@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>简单的通用花式流水灯 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.2.26
+虽然是汇编，但是实现得简单，用查表法，可以实现花式显示。
+主要目的是练一下KEIL下的汇编。。
+一。电路
+就这个样子。。好像没啥说的。。旁边那个发光管是因为才用proteus，为了验证确实可以这样点亮放的。。再旁边的一排按键暂时还没用到。
+二。代码
+org &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/26/%E7%AE%80%E5%8D%95%E7%9A%84%E9%80%9A%E7%94%A8%E8%8A%B1%E5%BC%8F%E6%B5%81%E6%B0%B4%E7%81%AF">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">简单的通用花式流水灯</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-26T19:18:00+08:00" pubdate data-updated="true">Feb 26<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><div forimg="1">(hplonline)2009.2.26<br/><br/>
+虽然是汇编，但是实现得简单，用查表法，可以实现花式显示。<br/>
+主要目的是练一下KEIL下的汇编。。<br/><br/><br/>
+一。电路<br/><br/>
+就这个样子。。好像没啥说的。。旁边那个发光管是因为才用proteus，为了验证确实可以这样点亮放的。。再旁边的一排按键暂时还没用到。<br/><br/><img height="423" width="589" border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a35ddaa2caf1ab8dcaefd074.jpg" small="0" class="blogimg"/><br/><br/>
+二。代码<br/><br/>
+org 00h <br/><br/>
+mov R0 , #0 <br/>
+mov R1 , #count<br/><br/>
+main:<br/>
+mov A , r0<br/>
+mov DPTR , #table <br/>
+movc A , @A + DPTR <br/>
+mov P1 , A<br/>
+call delay<br/>
+inc R0<br/>
+djnz R1 , main<br/><br/>
+mov R0 , #0 <br/>
+mov R1 , #count <br/><br/>
+ljmp main<br/><br/>
+ljmp $<br/><br/>
+delay:<br/>
+mov R5,#10<br/>
+D3:<br/>
+mov R7,#100<br/>
+D1:<br/>
+MOV R6,#200<br/>
+D2:<br/>
+djnz R6,D2<br/>
+djnz R7,D1<br/>
+djnz R5,D3<br/>
+ret<br/><br/>
+table: db 1 , 2 , 4 , 8 , 16 , 32 , 64 , 128  ,0ffh , 00h , 0f0h , 0fh<br/>
+count EQU $ - table<br/><br/>
+END 　　<br/><br/>
+首先，在最后有个table，指示的是灯的显示掩码。<br/>
+程序运行开始就查这个表，然后依次按样式显示。<br/>
+表长是可以任意更改的，<br/>
+因为最后是用count这个编译期常量来指定的，所以加入任意的式样掩码就可以了。<br/><br/>
+delay:到ret之间就是一般的延时程序，没啥好说的。<br/>
+之所以用了三层，是为了所需时间的伸缩性考虑。<br/><br/>
+ljmp $这个就是典型的死循环，就是while(1)的意思，在这个程序里面执行不到这里。<br/>
+纯粹是作为习惯打在这个地方的，这样，在指定操作完后，死循环，<br/>
+避免程序一直执行到底后复位。<br/><br/>
+然后是最前面的部分。<br/><br/>
+这里用R1来做循环计数，所以有初值#count</div>
+
+
+<p>这里又丑陋了一次，不小心写成count了（意思为立即寻址。。）<br/><br/>
+R0来做table的下标指示，从0开始递增<br/><br/>
+mov DPTR , #table 这条貌似是51里面唯一一条16位指令。<br/>
+把地址送到DPTR里面去。<br/>
+注意如果#table写成了talbe就戳了。。直接编译错误，<br/>
+因为把table的值（在ROM里的位置)按照直接寻址来操作，<br/>
+都超过可直接寻址的范围了。<br/><br/>
+movc A , @A + DPTR  ， 这条的写法很固定。。。<br/>
+相当于查table表，把掩码送到A里面，<br/>
+注意是MOVC就是了，MOVC这条指令专门用来查ROM里面的值。<br/><br/>
+嗯，顺便，与片外RAM传递要用MOVX<br/><br/>
+三。花样<br/><br/>
+table: db 1 , 2 , 4 , 8 , 16 , 32 , 64 , 128  ,0ffh , 00h , 0f0h , 0fh<br/><br/>
+就改这个表就OK 了。。所以说简单。。<br/><br/>
+比方说：<br/>
+table: db 1 , 2 , 4 , 8 , 16 , 32 , 64 , 128<br/>
+按照我这个电路跑出来就是一个一个地依次灭掉<br/><br/>
+table: db 0ffh , 00h , 0f0h , 0fh<br/>
+这个跑出来就是全灭，全开，下一半开，上一半开<br/><br/>
+。。想怎么改就怎么改。。<br/><br/><br/><br/>
+其实我就是拿来练汇编的。。所以实现的功能戳一点。。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-26T19:18:00+08:00" pubdate data-updated="true">Feb 26<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/26/%E7%AE%80%E5%8D%95%E7%9A%84%E9%80%9A%E7%94%A8%E8%8A%B1%E5%BC%8F%E6%B5%81%E6%B0%B4%E7%81%AF/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/26/%E7%AE%80%E5%8D%95%E7%9A%84%E9%80%9A%E7%94%A8%E8%8A%B1%E5%BC%8F%E6%B5%81%E6%B0%B4%E7%81%AF/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/02/19/MAP%E6%96%87%E4%BB%B6%E5%92%8C%E8%B0%83%E8%AF%95%EF%BC%88VC%29%28%E4%BB%8E%E5%B4%A9%E6%BA%83%E5%9C%B0%E5%9D%80%E6%89%BE%E5%87%BA%E9%94%99%E6%BA%90%E7%A0%81%E4%BD%8D%E7%BD%AE%29/" title="Previous Post: MAP文件和调试（VC)(从崩溃地址找出错源码位置)">&laquo; MAP文件和调试（VC)(从崩溃地址找出错源码位置)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/02/27/%E5%AE%9A%E6%97%B6%E4%B8%AD%E6%96%AD%E9%97%AA%E7%83%81%E7%81%AF/" title="Next Post: 定时中断闪烁灯">定时中断闪烁灯 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

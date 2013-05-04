@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>格式化RFC文档 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.10.5 起因： RFC文档的介绍：http://baike.baidu.com/view/6108.htm
+对于学习网络来说，是相当重要的资料。 可以在IETF的网站上下载：http://www.ietf.org/rfc/rfcXXXX.txt &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/10/05/%E6%A0%BC%E5%BC%8F%E5%8C%96RFC%E6%96%87%E6%A1%A3">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">格式化RFC文档</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-05T20:27:00+08:00" pubdate data-updated="true">Oct 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.10.5</p>
+
+
+<p><font color="#0000ff">起因：</font></p>
+
+
+<p>RFC文档的介绍：<a href="http://baike.baidu.com/view/6108.htm">http://baike.baidu.com/view/6108.htm</a><br/>
+对于学习网络来说，是相当重要的资料。</p>
+
+
+<p>可以在IETF的网站上下载：<br/><a href="http://www.ietf.org/rfc/rfcXXXX.txt">http://www.ietf.org/rfc/rfcXXXX.txt</a><br/>
+XXXX换成编号对应的编号。</p>
+
+
+<p>比较郁闷的是，文档是按照txt格式发布的，<br/>
+而且文档很长，往往都有上百页，<br/>
+随便打开一个，即可看到细细的滚动条。。。<br/>
+浏览起来可谓不方便。</p>
+
+
+<p>在网上搜了下，也有些做了这个的软件，<br/>
+不过就这么个功能还要<font color="#ff0000">注册</font>，囧。<br/>
+于是自己弄一个基本的，把txt转成html，<br/>
+主要完成这些功能：<br/><font color="#ff9900">1.分页存为.htm文件<br/>
+2.每页后面加上previous,next,return<br/>
+    这几个功能，表示上一页，下一页，返回目录<br/>
+3.识别为目录的条目，添加超链接到对应的.htm文件<br/>
+4.将每页的头两行（页号行，rfc编号行）加色，主要是减缓视觉疲劳。。</font></p>
+
+
+<p>实现上需要考虑的一点东西：<br/><font color="#ff9900">1.每页很标准的56行，这样可以简化分页工作<br/>
+2.txt文档中的诸如空格，小于号等需要替换成html实体<br/>
+3.生成目录页content.htm，其他的按照页码排为xxx.htm<br/>
+4.将文章居中，但是又要保持段落本身的缩进，</font><br/>
+     开始试着用&lt;center&gt;&lt;/center&gt;标签来做，<br/>
+     组合了如&lt;p&gt;&lt;div&gt;&lt;span&gt;等等，没达到效果。<br/>
+     最后是：<br/>
+     &lt;table align=center&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;<br/>
+     文字文字&lt;br&gt;<br/>
+     文字文字&lt;br&gt;<br/>
+     &lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;<br/>
+     这样解决的。<br/>
+     （非常感谢<a target="_blank" href="http://www.shallway.net/">shallway</a>同学）</p>
+
+
+<p><font color="#0000ff">程序：</font></p>
+
+
+<p>（<font color="#ff0000">为了简化程序，在当前目录下手工建立名为&#8221;rfc&#8221;的文件夹，否则无法使用</font>）</p>
+
+
+<p>#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;</p>
+
+
+<p>const int PAGE_LINE = 56 ;</p>
+
+
+<p>#define TEXT_BEGIN &#8220;&lt;table align=center&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&#8221;<br/>
+#define TEXT_END &#8220;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&#8221;</p>
+
+
+<p>const char single_char[] = {&#8217; &#8217; , &#8216;&lt;&#8217; , &#8216;&gt;&#8217; , &#8216;&amp;&#8217; , &#8216;&#34;&#8217; , &#8216;&#39;&#8217; } ;<br/>
+const char *entity_name[] = {&#8220;&amp;#160;&#8221; , &#8220;&amp;#60;&#8221; , &#8220;&amp;#62;&#8221; , &#8220;&amp;#38;&#8221; , &#8220;&amp;#34;&#8221; , &#8220;&amp;#39;&#8221; } ;<br/>
+const int entity_num = sizeof(single_char) ;<br/>
+//conert between html entity and visual element<br/>
+void convert(char *src , char *dst){<br/>
+     int n , i ;<br/>
+     while ( *src ){<br/>
+         for ( i = 0 ; i &lt; entity_num ; i ++ ){<br/>
+             if ( single_char[i] == *src ) break ;<br/>
+         }<br/>
+         if ( i == entity_num ){<br/>
+             *dst = *src ;<br/>
+             dst ++ ;<br/>
+         }else{<br/>
+             n = sprintf(dst , &#8220;%s&#8221; , entity_name[i]) ;<br/>
+             dst += n ;<br/>
+         }         <br/>
+         src ++ ;<br/>
+     }<br/>
+     *dst = &#8216;\0&#8217; ;<br/>
+}</p>
+
+
+<p>//make a content with link to the pages<br/>
+void make_link(char *s , FILE *fp){<br/>
+     char *p = strstr(s , &#8220;&#8230;.&#8221;) ;<br/>
+     if ( !p ) return ;<br/>
+     char tmp1[1000] , tmp2[1000] ;<br/>
+     int page ;<br/>
+     sscanf(p , &#8220;%[^0123456789]%d&#8221; , tmp1 , &amp;page) ;<br/>
+     convert(s , tmp1) ;<br/>
+     sprintf(tmp2 , &#8220;&lt;a href=%d.htm&gt;%s&lt;/a&gt;&#8221; , page , tmp1) ;<br/>
+     fprintf(fp , &#8220;%s&lt;br&gt;\n&#8221; , tmp2) ;<br/>
+}</p>
+
+
+<p>//add color to title<br/>
+//just to avoid visual fatigue<br/>
+void add_title_color(char *src , char *dst){<br/>
+     sprintf(dst , &#8220;&lt;font color = red&gt;%s&lt;/font&gt;&#8221; , src) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     freopen(&#8220;rfc.txt&#8221; , &#8220;r&#8221; , stdin) ;<br/>
+     int i = 0 , file = 0 ;<br/>
+     char buf[1000] ;<br/>
+     char addr[500] ;<br/>
+     char text[1000] ;</p>
+
+
+<p>     //reopen file for each page <br/>
+     freopen(&#8220;rfc&#92;0.htm&#8221; , &#8220;w&#8221; , stdout) ;<br/>
+     printf(TEXT_BEGIN) ;</p>
+
+
+<p>     //for the content<br/>
+     FILE *fp = fopen(&#8220;rfc&#92;content.htm&#8221; , &#8220;w&#8221;) ;<br/>
+     fprintf(fp , &#8220;&lt;p&gt;&lt;center&gt;&lt;font color = red size = 24&gt;content&lt;/font&gt;&lt;/center&gt;&lt;/p&gt;&lt;p&gt;&lt;center&gt;\n&#8221;) ;<br/>
+     <br/>
+     while ( gets(buf) ){<br/>
+         i ++ ;<br/>
+         if ( i == PAGE_LINE ) {<br/>
+             int pre = file - 1 ;<br/>
+             int next = file + 1 ;<br/>
+             if ( pre &lt; 0 ) pre = 0 ;<br/>
+             printf(&#8220;&lt;center&gt;&lt;a href=%d.htm&gt;【previous】&lt;/a&gt;&#8221;<br/>
+                 &#8220;&amp;#160;&amp;#160;&amp;#160;&amp;#160;&#8221;<br/>
+                 &#8220;&lt;a href=%d.htm&gt;【next】&lt;/a&gt;&#8221;<br/>
+                 &#8220;&amp;#160;&amp;#160;&amp;#160;&amp;#160;&#8221;<br/>
+                 &#8220;&lt;a href=content.htm&gt;【return】&lt;/a&gt;&lt;/center&gt;&#8221;, pre , next) ;<br/>
+             i = 0 ;<br/>
+             file ++ ;<br/>
+             sprintf(addr , &#8220;rfc&#92;%d.htm&#8221; , file) ;<br/>
+             printf(TEXT_END) ;<br/>
+             freopen(addr , &#8220;w&#8221; , stdout) ;<br/>
+             printf(TEXT_BEGIN) ;<br/>
+         }<br/>
+         if ( file &lt; 10 ) {<br/>
+             //assume content appears only in the beginning <br/>
+             //maybe 9 pages .<br/>
+             make_link(buf , fp) ;<br/>
+         }<br/>
+         convert(buf , text) ;<br/>
+         if ( i == 2 || i == 4 ){<br/>
+             strcpy(buf , text) ;<br/>
+             add_title_color(buf , text) ;<br/>
+         }<br/>
+         printf(&#8220;%s&lt;br&gt;&#8221; , text) ;<br/>
+     }<br/>
+     <br/>
+     //end of pages<br/>
+     printf(&#8220;&lt;center&gt;&lt;a href=%d.htm&gt;【previous】&lt;/a&gt;&#8221;<br/>
+         &#8220;&amp;#160;&amp;#160;&amp;#160;&amp;#160;&#8221;<br/>
+         &#8220;&amp;#160;&amp;#160;&amp;#160;&amp;#160;&#8221;<br/>
+         &#8220;&lt;a href=content.htm&gt;【return】&lt;/a&gt;&lt;/center&gt;&#8221;<br/>
+         TEXT_END , file - 1) ;</p>
+
+
+<p>     //end of content<br/>
+     fprintf(fp , &#8220;&lt;/center&gt;&lt;/p&gt;&#8221;) ;<br/>
+     fclose(fp) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p><font color="#0000ff">后记：</font></p>
+
+
+<p>现在仅仅实现一些基本的功能，<br/>
+感觉有时间把这个做丰富还是相当有必要的，<br/>
+毕竟以后可能有很多时间和RFC打交道。</p>
+
+
+<p>暂时考虑到的功能：<br/><font color="#ff9900">1.为目录生成树状列表，转到任意页<br/>
+2.搜索功能，关键词加亮<br/>
+3.自动从IETF网站拉取任意编号的文档（只要存在）<br/>
+4.更智能的格式化</font><br/>
+     比如，下面这段话<br/>
+     Every implementor is urged to read [INTRO:4] and<br/>
+     应该为 [INTRO:4] 这样的加上超链接。<br/>
+     又如，下面这个<br/>
+     This document is an updated version of RFC 1716<br/>
+     应该为 RFC 1716 加上链接到相关的文档。<br/><font color="#ff9900">5.书签功能<br/>
+6.批注功能<br/>
+7.更多的加色功能，主要用于缓解视觉疲劳</font></p>
+
+
+<p> </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-05T20:27:00+08:00" pubdate data-updated="true">Oct 5<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/10/05/%E6%A0%BC%E5%BC%8F%E5%8C%96RFC%E6%96%87%E6%A1%A3/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/10/05/%E6%A0%BC%E5%BC%8F%E5%8C%96RFC%E6%96%87%E6%A1%A3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/10/04/%E6%8C%89CIDR%E6%96%B9%E5%BC%8F%E8%81%9A%E5%90%88%E7%9A%84%E4%B8%AD%E5%9B%BD%E8%B7%AF%E7%94%B1/" title="Previous Post: 按CIDR方式聚合的中国路由">&laquo; 按CIDR方式聚合的中国路由</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/10/06/%E7%82%B9%E5%88%B0%E7%82%B9%E9%93%BE%E8%B7%AF%E7%9A%84%E4%B8%89%E7%A7%8DIP%E5%88%86%E9%85%8D%E6%8A%80%E6%9C%AF/" title="Next Post: 点到点链路的三种IP分配技术">点到点链路的三种IP分配技术 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

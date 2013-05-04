@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>编译器打表（MASM) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.2.9
+打表这个说法对在各大OJ上交题的同学们来说那是相当熟悉了。
+假设有一道题，让你输出Fibonacci数列第X个数，
+其实这道题本身没啥讨论的，我们就用一般的递推，主要说打表。
+如果是运行时打表。
+比如，开始的时候先用一段，算出小于XXXX的所有数。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/09/%E7%BC%96%E8%AF%91%E5%99%A8%E6%89%93%E8%A1%A8%EF%BC%88MASM%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">编译器打表（MASM)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-09T16:16:00+08:00" pubdate data-updated="true">Feb 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.2.9<br/><br/>
+打表这个说法对在各大OJ上交题的同学们来说那是相当熟悉了。<br/><br/>
+假设有一道题，让你输出<span style="font-size: 10.5pt; color: rgb(0, 0, 0); line-height: normal;"><strong>Fibonacci数列</strong></span>第X个数，<br/>
+其实这道题本身没啥讨论的，我们就用一般的递推，主要说打表。<br/><br/>
+如果是运行时打表。<br/>
+比如，开始的时候先用一段，算出小于XXXX的所有数。<br/>
+然后输入一个n，直接读个fib[n]就输出了。<br/>
+这种就是常说的预处理。。。<br/><br/>
+然后可以在编写代码时打表。<br/>
+比如写源代码的时候就<br/>
+int fib[NUM] = {1,1,2,3,5,8,13 &#8230;.}<br/>
+这样写好。这种静态打表就是常说的打表了。<br/><br/>
+对于这两种打表，前者仍然占用一定运行时间的，感觉不极致<br/>
+后者的话，会造成代码臃肿，还是不爽。<br/><br/>
+用C的话，暂时还不知道啥方法了，<br/>
+不过最近学了点MASM，很火星地发现编译时解释的宏简直就是强大。。。。<br/><br/>
+比如这样：<br/><br/>
+.data<br/>
+v1 = 1<br/>
+v2 = 1                              ;初始值<br/>
+fib DWORD v1<br/>
+DWORD v2                              ;放置前两个值<br/>
+count = 0                         ;一个计数器<br/>
+WHILE count LT 20            ;重复20次<br/>
+      v3 = v1 + v2            ;Fibonacci的递推公式<br/>
+      DWORD v3                        ;放置当前产生的这个值<br/>
+      v1 = v2                        ;<br/>
+      v2 = v3                        ;递推<br/>
+      count = count + 1      ;计数增加<br/>
+ENDM                                    ;是ENDM，不是ENDW。。<br/><br/>
+在我的数据段fib标号开始的地方就存上了前22个Fibonacci数了。<br/>
+这里<strong>WHILE</strong>和<strong>.WHILE</strong> 是不同的。<br/>
+后面这个是运行时的。前面这个是发生在编译期间的。<br/><br/>
+做一个测试输出<br/>
+.code<br/>
+      mov ebx , 1<br/>
+      .WHILE ebx &lt; count<br/>
+            mov eax , ebx<br/>
+            dec eax<br/>
+            mov eax , fib[eax * 4]<br/>
+            invoke WriteInt10 , eax       ;我的输出整数的函数，具体替换<br/>
+            call WriteCrLf                              ;我的输出换行的函数，具体替换<br/>
+            inc ebx <br/>
+      .ENDW<br/><br/>
+这段除了两个我自己用的函数，其他都很熟悉的东西了。<br/><br/>
+这个姑且就叫编译器打表了吧。。<br/>
+配合的还有如IF之类的宏。。几乎可以完成各种计算逻辑。。<br/>
+怎一个强大了得。。<br/><br/>
+跟前面的打表比来说，代码又不臃肿，又不占运行时间，<br/>
+但是如果没写好的话，编译器也可以死循环。。。<br/><br/>
+比如：<br/>
+WHILE 1<br/>
+ENDM<br/>
+这样之后，打开任务管理，可以看到ml.exe占满了在跑。。。<br/><br/>
+虽然说起来编译器打表很强。。但是现在还没看哪个OJ允许用MASM的吧。。。<br/>
+要不你交个上去，打成死循环了杂办呢。。<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-09T16:16:00+08:00" pubdate data-updated="true">Feb 9<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/09/%E7%BC%96%E8%AF%91%E5%99%A8%E6%89%93%E8%A1%A8%EF%BC%88MASM%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/09/%E7%BC%96%E8%AF%91%E5%99%A8%E6%89%93%E8%A1%A8%EF%BC%88MASM%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/02/08/%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E8%AF%AF%E8%A7%A3_%E8%AF%BB%E5%90%8E%E5%AE%9E%E9%AA%8C%E7%AC%94%E8%AE%B0/" title="Previous Post: 指针和数组的误解_读后实验笔记">&laquo; 指针和数组的误解_读后实验笔记</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/02/10/%E5%B7%AE%E5%88%86%E7%BA%A6%E6%9D%9F%E7%B3%BB%E7%BB%9F%28POJ1201%29/" title="Next Post: 差分约束系统(POJ1201)">差分约束系统(POJ1201) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

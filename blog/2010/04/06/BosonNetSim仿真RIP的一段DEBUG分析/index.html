@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Boson NetSim仿真RIP的一段DEBUG分析 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.4.6
+在用Boson Netsim仿真配置rip的时候，遇到比较奇怪的现象。
+命令就是按照他的sequential lab敲的，但是到后面没有完全通。
+在各个设备上检查了一遍之后，发现其中一台的debug信息比较奇怪。
+下面是截取的一次周期到时， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/04/06/BosonNetSim%E4%BB%BF%E7%9C%9FRIP%E7%9A%84%E4%B8%80%E6%AE%B5DEBUG%E5%88%86%E6%9E%90">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Boson NetSim仿真RIP的一段DEBUG分析</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-06T18:32:00+08:00" pubdate data-updated="true">Apr 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.4.6<br/><br/>
+在用Boson Netsim仿真配置rip的时候，遇到比较奇怪的现象。<br/>
+命令就是按照他的<font color="#ff0000">sequential lab</font>敲的，但是到后面没有完全通。<br/><br/>
+在各个设备上检查了一遍之后，发现其中一台的debug信息比较奇怪。<br/>
+下面是截取的一次周期到时，s0和s1口收发的rip报文情况。<br/><br/><font color="#ff0000">从这段DEBUG信息，<br/>
+应该可以在不知道具体拓扑的情况下推出不少东西。</font><br/><br/>
+=========<br/>
+RIP: received update from 175.10.1.1 on Serial0<br/>
+160.10.1.0 in 1 hops<br/><br/>
+RIP: received update from 180.10.1.2 on Serial1<br/><span style="color: rgb(0, 128, 0);">     195.10.1.0 in 1 hops</span><br/><br/>
+RIP: sending update to 255.255.255.255 via Serial0 (175.10.1.2)<br/><span style="color: rgb(255, 0, 255);"> subnet 180.10.1.0, metric 1</span><br/><span style="color: rgb(255, 0, 0);"> subnet 197.10.1.0, metric 1</span><br/><span style="color: rgb(0, 128, 0);"> subnet 195.10.1.0, metric 2</span><br style="color: rgb(0, 128, 0);"/><br/>
+RIP: sending update to 255.255.255.255 via Serial1 (180.10.1.1)<br/><span style="color: rgb(255, 0, 255);"> subnet 175.10.1.0, metric 1</span><br/><span style="color: rgb(255, 0, 0);"> subnet 197.10.1.0, metric 1</span><br/>
+===========<br/><br/><font color="#0000ff">下面是分析：</font><br/><br/>
+红色的是两个接口发出都有的报文，并且metric为1，可以判断是该路由直连的一个子网。<br/>
+紫色分别是s1和s0接口所在的子网，也是直连。<br/>
+绿色是从s1口收到的条目，可以看到更新路由表之后从s0发出去了。<br/>
+剩下一个从s0收到的条目，并没有从s1发出去。<br/><br/>
+show ip route可以看到160.10.1.0已经添加到路由表了。<br/>
+rip的过滤表也没有设置。<br/><br/><font color="#0000ff">结论：</font><br/><br/>
+根据以上现象，个人认为是该模拟软件的问题。<br/><br/>
+mail了老师一下，也是这个意思。<br/><br/>
+（<br/><font color="#ff0000">如果有同学知道出现这种现象可能的原因，<br/>
+麻烦跟我说一下，好检查检查</font><br/>
+）<br/><br/><font color="#0000ff">感受：</font><br/><br/>
+其实在这些网络设备上，<br/>
+debug可以看到很多信息的，<br/>
+善于观察，可以黑箱出不少有价值的东西。<br/><br/><font color="#ff0000">并且debug不是在有bug的时候才用的，<br/>
+恰恰是在一切都正常时候用。</font><br/><br/>
+当一切正常的时候，常常瞟一下debug会是什么样，<br/>
+那么当不正常的时候，才能很快反映过来是什么问题。<br/>
+否则，当这正bug出现的时候，<br/>
+面对刷版似的debug信息，直接就懵了。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-06T18:32:00+08:00" pubdate data-updated="true">Apr 6<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/04/06/BosonNetSim%E4%BB%BF%E7%9C%9FRIP%E7%9A%84%E4%B8%80%E6%AE%B5DEBUG%E5%88%86%E6%9E%90/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/04/06/BosonNetSim%E4%BB%BF%E7%9C%9FRIP%E7%9A%84%E4%B8%80%E6%AE%B5DEBUG%E5%88%86%E6%9E%90/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/04/06/%E8%A7%A3%E5%86%B3TCP%E7%9A%84TIME-WAIT%E7%8A%B6%E6%80%81%E5%AF%BC%E8%87%B4%E7%9A%84%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%EF%BC%88%E5%9B%9B%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%89/" title="Previous Post: 解决TCP的TIME-WAIT状态导致的端口占用（四种方法）">&laquo; 解决TCP的TIME-WAIT状态导致的端口占用（四种方法）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/04/16/PPPoE%E7%9A%84%E5%B0%81%E8%A3%85%E7%BB%93%E6%9E%84/" title="Next Post: PPPoE的封装结构">PPPoE的封装结构 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

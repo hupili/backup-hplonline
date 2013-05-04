@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>find对象（word.vba） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.7.26起因：
+看到王老师的这篇日志。
+里面加粗了125的“的”字。
+好家伙，这工作量可不小啊，很难想象人工操作要费多久。
+于是把word的宏搞出来用用，
+    n = Selection.Characters.Count
+    For i = 1 To n &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/07/26/find%E5%AF%B9%E8%B1%A1%EF%BC%88word.vba%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">find对象（word.vba）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-26T12:02:00+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.7.26<br/><br/><font color="#0000ff">起因：</font><br/><br/>
+看到王老师的这篇<a href="http://www.wangxiaofeng.net/?p=3537" target="_blank">日志</a>。<br/>
+里面加粗了125的“的”字。<br/>
+好家伙，这工作量可不小啊，很难想象人工操作要费多久。<br/><br/>
+于是把word的宏搞出来用用，<br/><font color="#ff6600"><br/>
+     n = Selection.Characters.Count<br/>
+     For i = 1 To n<br/>
+         If Selection.Characters(i) = &#8220;的&#8221; Then<br/>
+             Selection.Characters(i).Bold = True &#8216;wdToggle<br/>
+         End If<br/>
+     Next i</font><br/><br/>
+这不就可以了嘛。<br/><br/>
+可是一执行就傻了，卡了好几十秒钟才做完。。<br/>
+可见vb那个慢啊。。。<br/><font color="#0000ff"><br/>
+经过：</font><br/><br/>
+仔细想了一下，就没见王老师发过正儿八经的技术文章，<br/>
+应该不至于沦落到写宏这步田地。。<br/><br/>
+于是跑去问人了，发现原来word自己就有这个功能，囧啊。<br/>
+就在平常经常用的替换功能里面，是可以设置格式的。。。<img src="http://img.baidu.com/hi/jx/j_0012.gif"/><br/><br/>
+这不就结了嘛，比起写宏来说，<br/>
+显然是老少皆宜啊。<br/><br/><img src="http://img.baidu.com/hi/jx/j_0025.gif"/>所以软件这东西啊，会用的人跟熟练工毕竟是有差别的。。。<br/><br/><font color="#0000ff">结果：</font><br/><br/>
+其实写个宏到真没啥，不过没想到那么慢啊。。<br/>
+Characters又是集合类型，还用for来一个一个地访问。。<br/><br/>
+于是我猜有其他的办法，比如啥find方法之类的。<br/>
+打开帮助，找find，没有find方法，倒是有<font color="#ff0000">find属性和find对象</font>。<br/><br/>
+再一看，下面有几个例子，好强大的样子，可以设置的东西挺多的。<br/><br/>
+正准备写，突然发现有点傻，<br/>
+既然word自己就可以完成这个，那录制一下宏不就有了。<br/><br/>
+把“的”字都替换成粗体的代码段：<br/><br/>
+     Selection.Find.ClearFormatting<br/>
+     Selection.Find.Replacement.ClearFormatting<br/>
+     With Selection.Find<br/>
+         .Text = &#8220;的&#8221;<br/>
+         .Replacement.Text = &#8220;的&#8221;<br/>
+       <font color="#ff0000"> .Replacement.Font.Bold = True</font><br/>
+         .Forward = True<br/>
+         .Wrap = wdFindContinue<br/>
+         .Format = True<br/>
+         .MatchCase = False<br/>
+         .MatchWholeWord = False<br/>
+         .MatchByte = True<br/>
+         .MatchAllWordForms = False<br/>
+         .MatchSoundsLike = False<br/>
+         .MatchWildcards = False<br/>
+         .MatchFuzzy = False<br/>
+     End With<br/>
+     Selection.Find.Execute Replace:=wdReplaceAll<br/><br/>
+中间那句红色的在录制出来的时候是没有的，<br/>
+不知道是什么原因，试了若干次都是如此。。。<br/>
+于是自己加上去。。<br/><br/>
+至于为什么要这么加，我也不知道。。<br/>
+今天之前我不知道有find对象，更不所里面还含一个replacement对象，<br/>
+而replacement对象还有个font对象，font对象还有bold属性。<br/><br/>
+唯一知道的就是先打一个点出来，然后后面会跟一个列表，<br/>
+看谁顺眼就选谁，继续点下去。。<br/>
+看来vba是相当意识流的一个玩意儿。。。<br/><br/>
+再加上详细的帮助，偶尔蛋疼一下是完全足够了。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-26T12:02:00+08:00" pubdate data-updated="true">Jul 26<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/07/26/find%E5%AF%B9%E8%B1%A1%EF%BC%88word.vba%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/07/26/find%E5%AF%B9%E8%B1%A1%EF%BC%88word.vba%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/07/23/%E4%B8%80%E4%B8%AA%E7%BA%BF%E6%80%A7%E7%AD%9B%E7%B4%A0%E6%95%B0%E7%9A%84%E5%9B%BE%E5%BD%A2%E6%BC%94%E7%A4%BA%28matlab%29/" title="Previous Post: 一个线性筛素数的图形演示(matlab)">&laquo; 一个线性筛素数的图形演示(matlab)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/07/28/assert%E7%94%A8%E6%B3%95%EF%BC%8C%E5%8E%9F%E7%90%86%EF%BC%8C%E6%94%B9%E7%BC%96%EF%BC%88C%2B%2B%29/" title="Next Post: assert用法，原理，改编（C++)">assert用法，原理，改编（C++) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

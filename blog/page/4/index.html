@@ -1,0 +1,1992 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.5.11 注意：本篇所谈的这种模式是通用的，
+例子用的C#，穿插一些C++，
+但在很多语言中都可以构造类似的东西。 一。需求 在做接口的时候，调用端往往要向被调用端传递若干信息。
+通常情况下，接口本身用函数来做；
+信息通过参数进行传递；
+如果有语言支持默认参数， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/page/4">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/05/11/%E7%BA%A7%E8%81%94%E5%B1%9E%E6%80%A7%E6%A8%A1%E5%BC%8F/">级联属性模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-11T15:56:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.5.11</p>
+
+
+<p>注意：本篇所谈的这种模式是通用的，<br/>
+例子用的C#，穿插一些C++，<br/>
+但在很多语言中都可以构造类似的东西。</p>
+
+
+<p><font color="#0000ff">一。需求</font></p>
+
+
+<p>在做接口的时候，调用端往往要向被调用端传递若干信息。<br/>
+通常情况下，接口本身用函数来做；<br/>
+信息通过参数进行传递；<br/>
+如果有语言支持默认参数，那么可以有默认值。</p>
+
+
+<p>很多时候，我们发掘自己被代码奴役。<br/>
+要么不断做着一些本可抽象的重复工作，<br/>
+要么拿着一大堆接口，痛苦地记忆着用法。</p>
+
+
+<p>下面将列举比较常见的接口模型，然后给出一种级联属性模式。</p>
+
+
+<p>（这种模式之前应该有人做过了，<br/>
+而且可能已经有比较标准的名字，<br/>
+不过我土鳖，没听说过，就叫级联属性模式了）</p>
+
+
+<p>我们现在实现这样一个功能，<br/>
+用户输入密码之后，我们检查一下，<br/>
+是否不少于3个字符，是否不多于20个字符。<br/>
+如果是的话，验证通过，否则不通过，并且进行报告。</p>
+
+
+<p><font color="#0000ff">二。直接实现</font></p>
+
+
+<p>既然是判断，那么就用if实现，可能是这个样子：</p>
+
+
+<p>string password = &#8220;1234&#8221;;<br/>
+bool valid;<br/>
+if (password.Length &gt;= 3 &amp;&amp; password.Length &lt;= 20)<br/>
+{<br/>
+     valid = true;<br/>
+}<br/>
+else<br/>
+{<br/>
+     valid = false;<br/>
+     MessageBox.Show(&#8220;密码的长度必须大于等于3，小于等于20&#8221;);<br/>
+}</p>
+
+
+<p>这个时候，如果我对用户名的长度要进行判断，<br/>
+还得写一块类似的代码，<br/>
+如果还有其他字符串，代码块会更多。</p>
+
+
+<p>假设我突然接到一个需求，<br/>
+说要把提示框里的“必须”去掉，<br/>
+全部替换成“应该”。。。</p>
+
+
+<p>先不考虑各种辅助生成代码的工具，<br/>
+可以想象我需要改很多地方。</p>
+
+
+<p>于是我可能需要某种抽象。</p>
+
+
+<p><font color="#0000ff">三。函数式抽象</font></p>
+
+
+<p>最直观想到的函数可能是这样子的：</p>
+
+
+<p>private bool check(string data, string name, int min, int max)<br/>
+{<br/>
+     if (data.Length &gt;= min &amp;&amp; data.Length &lt;= max)<br/>
+     {<br/>
+         return true;<br/>
+     }<br/>
+     else<br/>
+     {<br/>
+         MessageBox.Show(name + &#8221; 的长度必须小于等于&#8221; + max + &#8220;，大于等于&#8221; + min);<br/>
+         return false;<br/>
+     }<br/>
+}</p>
+
+
+<p>通过这个函数，把原始数据传入，把该数据的名字传入，<br/>
+最后传入最大和最小的允许范围。<br/>
+函数进行判断，返回是否合理，并且有根据name定制的提示信息。</p>
+
+
+<p><font color="#0000ff">四。默认参数的尴尬</font></p>
+
+
+<p>现在一个新的需求又来了。<br/>
+我有这么个字符串，名字叫xx，<br/>
+我不想限定他的最小长度。</p>
+
+
+<p>首先我想到.Length返回的值肯定是&gt;=0的，<br/>
+于是我这样一传：<br/>
+check(data , &#8220;xx&#8221; , 0 , max)</p>
+
+
+<p>每次我们为自己耍点小聪明而高兴的时候，<br/>
+不妨停下来多想一下。<br/>
+如果现在我需要一个长度至少为1的xx，我该怎么写呢。<br/>
+也许下面这个解决方案还不错：<br/>
+check(data , &#8220;xx&#8221; , 1 , 0x7fffffff)</p>
+
+
+<p>虽然不能说完全正确，<br/>
+但在应用上还是基本可行的，<br/>
+我们可以假定用户不会BT到输入那么长的字符串。</p>
+
+
+<p>不过这里有个小毛病，<br/>
+既然我们不限定最大长度，<br/>
+那么在check中直接不判断 &lt;= ？？ 即可，<br/>
+为什么非要进行判断，然后逼自己传一个大值进去呢？？<br/>
+其实最别扭的地方在于，<br/>
+当min不满足条件的时候，<br/>
+会有一段提示告诉你“xx的长度必须小于等于0x7fffffff”</p>
+
+
+<p>在C++中，可能我们会给个默认参数：<br/>
+int max = 0x7fffffff ;<br/>
+这样我程序员就可以省点事了：<br/>
+check(data , &#8220;xx&#8221; , 1)</p>
+
+
+<p>C＃中没有默认参数，于是我们利用函数多态（重载？）实现：<br/>
+private bool check(string data, string name, int min)<br/>
+{<br/>
+     if (data.Length &gt;= min )<br/>
+     {<br/>
+         return true;<br/>
+     }<br/>
+     else<br/>
+     {<br/>
+         MessageBox.Show(name + &#8221; 的长度必须大于等于&#8221; + min);<br/>
+         return false;<br/>
+     }<br/>
+}</p>
+
+
+<p>到目前为止，一切看起来很合理。<br/>
+问题又来了，我们期望能有一句类似这样的话：<br/>
+check(data , &#8220;xx&#8221; , 10)<br/>
+他的作用是判断xx必须不超过10字符，但不设下限。</p>
+
+
+<p>有人要叫，说就用上面那个版本，给min传个0不就对了。<br/>
+问题是我们给max开特权了，为什么不能省去min呢？？</p>
+
+
+<p>很容易，我们想到这样的接口：<br/>
+private bool check(string data, string name, int max)</p>
+
+
+<p>问题在于，我见过的编程语言都不允许这样，<br/>
+因为参数列表的内容一模一样，<br/>
+编译器无法区分应该调用哪一个函数。</p>
+
+
+<p>相当尴尬。</p>
+
+
+<p><font color="#0000ff">五。前后缀实现的参数定制化</font></p>
+
+
+<p>其实在C的年代，这类问题就有比较通用的方法了。<br/>
+我们只需要给函数加上前缀，或者后缀就行了。<br/>
+如<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/ede99845db316435869473c9.html">CLAPACK</a>之类的库，就是利用这种方式来区分接口的。</p>
+
+
+<p>针对上面的例子，我们想到几个函数的名字：<br/>
+CheckMin<br/>
+CheckMax<br/>
+CheckMinMax</p>
+
+
+<p>我们先不考虑多写几个函数所引入的工作量。<br/>
+因为我们逐层封装的基本理由就是，<br/>
+我们让下层更稳定，更好用，好为上层服务。<br/>
+只要一想到，之后程序员将不断重用这几个函数，<br/>
+这会节省他们不少时间，就会觉得很鼓舞。<br/>
+并且，当出现如修改提示信息这类的需求时，<br/>
+我打开这套函数所在的文件，<br/>
+所有修改可以在一处完成，这也是很方便的。</p>
+
+
+<p>单纯就手工多态这一问题，到此算是差不多了。</p>
+
+
+<p><font color="#0000ff">六。函数名字的记忆，参数的记忆</font></p>
+
+
+<p>CheckMin和CheckMax这两个函数，<br/>
+他们检查的内容只包含一半，所以没有歧义。<br/>
+但是如果我要检查最小和最大长度，<br/>
+那么某天，我可能忘了，我的函数叫<br/>
+CheckMinMax还是CheckMaxMin。</p>
+
+
+<p>暂且不考虑IDE的补全功能，<br/>
+我们觉得这场景很尴尬，<br/>
+每次用到的时候，我得翻下之前的手册。</p>
+
+
+<p>另外，假设用C++的时候，<br/>
+我的.h文件是这样声明的:<br/>
+bool CheckMinMax(string , string , int , int)<br/>
+实现是在某个已经编好的库中，<br/>
+我当然无法打开去查看每个参数的变量名是什么。</p>
+
+
+<p>这时候，我会疑惑最后的两个int。<br/>
+究竟前面的是max还是后面的是max？？<br/>
+IDE最多也只能根据头文件，给出这个列表而已。<br/>
+这种情况在比较老的C库的.h文件中频繁出现。<br/>
+如果我还得记住哪个参数在前，哪个在后，<br/>
+这实在是一件很囧的事情。</p>
+
+
+<p>然后我们耍点小聪明：<br/>
+private bool CheckMaxMin(string data, string name, int max, int min)<br/>
+private bool CheckMinMax(string data, string name, int min, int max)</p>
+
+
+<p>这样一来，我们不仅不用记忆函数名的顺序，<br/>
+也免除了对参数顺序的记忆。<br/>
+因为两种名字我们都认可，<br/>
+参数顺序严格符合函数名字。</p>
+
+
+<p>单纯使用函数，大致上也就做到这个级别了。</p>
+
+
+<p><font color="#0000ff">七。类级抽象，将参数属性化</font></p>
+
+
+<p>现在我们构造一个CValidation类，<br/>
+它有Name,Data,Min,Max这几个成员变量，<br/>
+另外有一个bool Valid()函数。</p>
+
+
+<p>比如我要做上面对密码长度的验证：<br/>
+CValidation v = new CValidation()<br/>
+v.Name = &#8220;密码&#8221; ;<br/>
+v.Data = password ;<br/>
+v.Min = 3 ;<br/>
+v.Max = 20 ;<br/>
+if ( v.Valid() ) &#8230;.</p>
+
+
+<p>不用我多说，大家都知道Valid()函数应该怎么写。<br/>
+先判断一下各个属性的设置情况，<br/>
+然后可以定制化地进行最小判断，最大判断，<br/>
+或者两者都判断，然后给出的消息也是定制化的。</p>
+
+
+<p>这样的好处在于，程序员的记忆负担降低了。<br/>
+首先我们不需要各种加上后缀的函数，<br/>
+我们需要的仅仅是一个类，记住他就够了。<br/>
+另外，我们不用记忆参数的传递顺序，<br/>
+只需要在调用Valid()之前对各个属性赋值即可。<br/>
+如果我不做最小验证，我直接不给Min赋值就搞定了。</p>
+
+
+<p><font color="#0000ff">八。普通属性赋值的弊端</font></p>
+
+
+<p>最容易想到的就是变量名超长的问题，<br/>
+比如我上面的变量不叫v，叫vxxxxx（100个字符）。<br/>
+那么我每次都要输<br/>
+vxxxxx（100个字符）.??? = <br/>
+vxxxxx（100个字符）.??? = <br/>
+这个假设BT了点，并且我们假装IDE不会补全。</p>
+
+
+<p>实际上CValidation的创建可能并不是本地的，<br/>
+我们可能把他保存在程序中的其他某个位置，比如：<br/>
+Global.DataProcessors.Validators.Valnchar<br/>
+这样做只是为了整个程序中的验证都引用同一处而已。</p>
+
+
+<p>于是每个属性赋值都得书写这么长的一串。</p>
+
+
+<p>像PASCAL或者VB这种有with语句块的就很方便：<br/>
+with Global.DataProcessors.Validators.Valnchar begin<br/>
+.xxx = ??<br/>
+.xxx = ??<br/>
+end</p>
+
+
+<p>如果是C++的话，可以使用引用，换一个本地的短名。</p>
+
+
+<p>第二个弊端是上面这些语言都没法避免的，<br/>
+就是整套赋值很分散，占用多行。<br/>
+（在VB中加入冒号来缩行这种行为就不讨论了，<br/>
+其实质仍然是多条语句，没有本质变化）</p>
+
+
+<p><font color="#0000ff">九。级联属性赋值</font></p>
+
+
+<p>先来看一下效果，还是用上面那个例子：</p>
+
+
+<p>CVnchar cvpass = new CVnchar();<br/>
+cvpass.SetMin(3).SetMax(20).SetData(NewPassword).SetName(&#8220;密码&#8221;);<br/>
+if (cvpass.Valid())&#8230;..</p>
+
+
+<p>第一行创建一个类，必要。<br/>
+第二行进行各个属性的设置（类比传入各种参数）。<br/>
+第三行调用验证函数。</p>
+
+
+<p>基本上就这个结构，好处在于Setxxx是可以交换的，于是不用记忆顺序。</p>
+
+
+<p>关键点就在于每个函数调用过后都返回this。</p>
+
+
+<p>关于该类，一个可能的写法像这样：</p>
+
+
+<p>     class CVnchar : CValidation<br/>
+     {<br/>
+         private int _max;<br/>
+         private bool _set_max;<br/>
+         private int _min;<br/>
+         private bool _set_min;</p>
+
+
+<p>         public CVnchar()<br/>
+         {<br/>
+             _set_max = false;<br/>
+             _set_min = false;<br/>
+         }</p>
+
+
+<p>         public CVnchar SetMax(int iMax)<br/>
+         {<br/>
+             _set_max = true;<br/>
+             _max = iMax;<br/>
+             return this;<br/>
+         }<br/>
+         public CVnchar SetMin(int iMin)<br/>
+         {<br/>
+             _set_min = true;<br/>
+             _min = iMin;<br/>
+             return this;<br/>
+         }<br/>
+         public new CVnchar SetName(string strName)<br/>
+         {<br/>
+             _name = strName;<br/>
+             return this;<br/>
+         }<br/>
+         public new CVnchar SetData(string strData)<br/>
+         {<br/>
+             _data = strData;<br/>
+             return this;<br/>
+         }</p>
+
+
+<p>         public override bool Valid()<br/>
+         {<br/>
+             if (_set_max &amp;&amp; _data.Length &gt; _max)<br/>
+             {<br/>
+                 CMsg.AddMessage(&#8220;&#8217;&#8221; + _name + &#8220;&#8217;的长度必须小于等于&#8221; + _max.ToString());<br/>
+                 return false;<br/>
+             }</p>
+
+
+<p>             if (_set_min &amp;&amp; _data.Length &lt; _min)<br/>
+             {<br/>
+                 CMsg.AddMessage(&#8220;&#8217;&#8221; + _name + &#8220;&#8217;的长度必须大于等于&#8221; + _min.ToString());<br/>
+                 return false;<br/>
+             }</p>
+
+
+<p>             return true;<br/>
+         }<br/>
+     }</p>
+
+
+<p><font color="#0000ff">十。扩展</font></p>
+
+
+<p>其实级联属性模式做到这里已经基本好用了，<br/>
+不过看上去比较别扭，不完美。</p>
+
+
+<p>高层代码书写的时候，<br/>
+我们很明确的提示自己，<br/>
+先建一个类，然后级联设置，然后验证。<br/>
+但一回想最初的做法，<br/>
+我们需要的仅仅是一个简单的函数（一行），<br/>
+现在却搞得这么复杂？</p>
+
+
+<p>其实顺延上面的思路，我们可以做成下面这个样子：</p>
+
+
+<p><font color="#ff0000">bool result = Check(NewPassword).Min(3).Max(20).Name(&#8220;密码&#8221;);</font></p>
+
+
+<p>1.一行搞定，<br/>
+2.主体部分是个函数Check(NewPassword)<br/>
+3.参数顺序无关</p>
+
+
+<p>让Check返回之前做好的Validation类就可以了。<br/>
+最后对Validation类的operator bool进行重载。</p>
+
+
+<p>暂时无时间做实例，望做了的同学分享一下。</p>
+
+
+<p> </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/05/09/%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E6%9B%BF%E6%8D%A2%E8%87%AA%E8%BA%AB%28C%23%29/">可执行文件替换自身(C#)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-09T16:06:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.5.9</p>
+
+
+<p>给程序编写自动更新模块。</p>
+
+
+<p>对于比较大的软件，可能按组件开发。<br/>
+于是在非大改的情况下，<br/>
+可以卸载相关DLL，然后用新文件覆盖即可。<br/>
+如果要替换主程序，<br/>
+很多软件的做法是另外做一个update.exe，<br/>
+让这个程序来完成更新这套功能。</p>
+
+
+<p>作为一个小软件，<br/>
+用户肯定不喜欢看到一个RAR，<br/>
+解开后一堆文档、dll、exe这样。<br/>
+于是把所有功能都装进一个可执行文件，<br/>
+从网站下载最新版之后，<br/>
+就涉及到用下载文件替换自身的问题了。</p>
+
+
+<p><font color="#0000ff">原理：</font></p>
+
+
+<p>通过.bat可以方便地dos命令，达到替换的效果。</p>
+
+
+<p>.bat文件可以删除自身，这是一个很牛X的性质。。<br/>
+在替换完后自己也走掉，可以不留下垃圾。</p>
+
+
+<p>在.bat中首先延迟一下，等待原程序自己退出。<br/>
+这主要是处于数据完整性的考虑。<br/>
+timeout /T 1 /NOBREAK<br/>
+（更多延迟方法见<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/b528771ecf13abf81bd5769a.html">上一篇</a>）</p>
+
+
+<p>程序有可能各种原因没退出，所以强制结束：<br/>
+Taskkill /f /im</p>
+
+
+<p>copy /Y 命令可以强制进行文件覆盖。</p>
+
+
+<p>start xxxx 可以新打开一个cmd来执行程序。<br/>
+如果直接xxxx，那么前面是xxxx在执行，<br/>
+后面的cmd会等到该程序结束才退出，视觉极差。</p>
+
+
+<p><br/><font color="#0000ff">该类的相关部分：</font></p>
+
+
+<p>     class CUpdate<br/>
+     {<br/>
+         static string _toNull = &#8221; &gt; nul&#8221;;<br/>
+         static string _Delay = &#8220;timeout /T 1 /NOBREAK&#8221;;</p>
+
+
+<p>         // Explanation:<br/>
+         // When CUpdate module do a substitution,<br/>
+         // it will create a batch file first.<br/>
+         // The batch kill process with image name &#8216;_ImageName&#8217;.<br/>
+         // Then, it copy new application to cover the old one.<br/>
+         // At last, the batch delete itself<br/>
+         static string _ImageName = &#8220;updatetest.exe&#8221;; //the image name when program runs <br/>
+         static string _Suffix = &#8220;update&#8221;; // suffix for newly downloaded application<br/>
+         static string _Bat = &#8220;substitute.bat&#8221;; // the bat file name, which used to do substitution<br/>
+         <br/>
+         public static void Substitute()<br/>
+         {<br/>
+             string dest_path = Application.ExecutablePath; //&#8221;Taskkill /f /im&#8221;;<br/>
+             string src_path = dest_path + &#8220;.&#8221; + _Suffix;</p>
+
+
+<p>             StreamWriter sw; <br/>
+             if (File.Exists(_Bat))<br/>
+             {<br/>
+                 File.Delete(_Bat);<br/>
+             }<br/>
+             sw = File.CreateText(_Bat);<br/>
+             sw.WriteLine(&#8220;@echo off&#8221;);<br/>
+             sw.WriteLine(&#8220;echo updating, please wait&#8230;&#8221;);<br/>
+             sw.WriteLine(_Delay + _toNull);<br/>
+             sw.WriteLine(&#8220;Taskkill /f /im &#8221; + _ImageName + _toNull);<br/>
+             sw.WriteLine(&#8220;copy /Y &#8221; + src_path + &#8221; &#8221; + dest_path + _toNull);<br/>
+             sw.WriteLine(&#8220;del &#8221; + src_path + _toNull);<br/>
+             sw.WriteLine(&#8220;start &#8221; + dest_path + _toNull);<br/>
+             sw.WriteLine(&#8220;del &#8221; + _Bat + _toNull);<br/>
+             //sw.WriteLine(&#8220;pause&#8221;);<br/>
+             sw.Close();</p>
+
+
+<p>             System.Diagnostics.Process.Start(_Bat);<br/>
+             Application.Exit();</p>
+
+
+<p>         }<br/>
+     }</p>
+
+
+<p>如下几行需要根据程序情况进行修改：<br/><font color="#ff9900">        static string _ImageName = &#8220;updatetest.exe&#8221;; //the image name when program runs <br/>
+         static string _Suffix = &#8220;update&#8221;; // suffix for newly downloaded application<br/>
+         static string _Bat = &#8220;substitute.bat&#8221;; // the bat file name, which used to do substitution</font></p>
+
+
+<p>比如我的程序就叫“updatetest.exe”，<br/>
+我下载的更新程序放当前目录“updatetest.exe.update”，<br/>
+用于做该替换的批处理文件“substitute.bat”。</p>
+
+
+<p> </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/05/08/%E7%94%A8XML%E6%96%87%E4%BB%B6%E4%BF%9D%E5%AD%98%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF%E7%9A%84%E4%B8%80%E4%B8%AA%E7%B1%BB%28C%23%29/">用XML文件保存配置信息的一个类(C#)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-08T17:08:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.5.8</p>
+
+
+<p>貌似没有找到直接支持读写INI文件的类，<br/>
+虽然网上也有不少草根版的类可用，<br/>
+很多人还是建议使用XML来做。</p>
+
+
+<p>XML一套的东西实在是太多，<br/>
+各种名字搞得眼花缭乱，<br/>
+只选了两个常用方法，<br/>
+封装一个类，对程序配置信息进行Get和Set即可。</p>
+
+
+<p>SelectSingleNode返回的是XmlNode的对象，<br/>
+该对象还可以继续SelectSingleNode，用于索引其下的子对象。<br/>
+它的InnerText即代表的里面的文本内容，<br/>
+是个string型的，直接进行读写即可。</p>
+
+
+<p>另外考虑到客户（程序员）可能直接Set一个不存在的节点，<br/>
+于是当SelectSingleNode返回null的时候，<br/>
+使用CreateElement创建一个该名字的节点即可。</p>
+
+
+<p>最后，第一次使用程序的时候，<br/>
+可能该配置文件都不存在。<br/>
+于是先尝试打开文件，<br/>
+发生IO错误的时候新建一个，<br/>
+填上基本的XML信息，添加一个Root节点。<br/>
+（这节代码copy的网上某处，搞忘地方了）</p>
+
+
+<p><font color="#0000ff">一。CConfig类的代码：</font></p>
+
+
+<p>     class CConfig<br/>
+     {<br/>
+         private string _FileName;<br/>
+         private XmlDocument _xmlDocument;</p>
+
+
+<p>         public string FileName<br/>
+         {<br/>
+             get<br/>
+             {<br/>
+                 return _FileName;<br/>
+             }<br/>
+             set<br/>
+             {<br/>
+                 _FileName = value;<br/>
+             }<br/>
+         }</p>
+
+
+<p>         // return :<br/>
+         // true : the file exist and we open it <br/>
+         // false : the file doesn&#8217;t exist and we create it <br/>
+         public bool Open()<br/>
+         {<br/>
+             try<br/>
+             {<br/>
+                 _xmlDocument.Load(_FileName);<br/>
+             }<br/>
+             catch (System.IO.FileNotFoundException)<br/>
+             {<br/>
+                 //if file is not found, create a new xml file<br/>
+                 XmlTextWriter xmlWriter = new XmlTextWriter(_FileName, System.Text.Encoding.UTF8);<br/>
+                 xmlWriter.Formatting = Formatting.Indented;<br/>
+                 xmlWriter.WriteProcessingInstruction(&#8220;xml&#8221;, &#8220;version=&#8217;1.0&#8217; encoding=&#8217;UTF-8&#8217;&#8221;);<br/>
+                 xmlWriter.WriteStartElement(&#8220;Root&#8221;);<br/>
+                 //If WriteProcessingInstruction is used as above,<br/>
+                 //Do not use WriteEndElement() here<br/>
+                 //xmlWriter.WriteEndElement();<br/>
+                 //it will cause the &lt;Root&gt;&lt;/Root&gt; to be &lt;Root /&gt;<br/>
+                 xmlWriter.Close();<br/>
+                 _xmlDocument.Load(_FileName);<br/>
+                 return false;<br/>
+             }<br/>
+             return true;<br/>
+         }</p>
+
+
+<p>         public CConfig(string strFileName)<br/>
+         {<br/>
+             FileName = strFileName;<br/>
+             _xmlDocument = new XmlDocument();<br/>
+             this.Open();<br/>
+         }</p>
+
+
+<p>         ~CConfig()<br/>
+         {<br/>
+             Save();<br/>
+         }</p>
+
+
+<p>         public void Save()<br/>
+         {<br/>
+             _xmlDocument.Save(_FileName);<br/>
+         }</p>
+
+
+<p>         public string Get(string strName)<br/>
+         {<br/>
+             XmlNode node = _xmlDocument.SelectSingleNode(&#8220;Root&#8221;).SelectSingleNode(strName);<br/>
+             if (node == null)<br/>
+             {<br/>
+                 return &#8220;nonexist&#8221;;<br/>
+             }<br/>
+             else<br/>
+             {<br/>
+                 return node.InnerText;<br/>
+             }<br/>
+         }</p>
+
+
+<p>         public void Set(string strName, string strValue)<br/>
+         {<br/>
+             XmlNode root = _xmlDocument.SelectSingleNode(&#8220;Root&#8221;);<br/>
+             XmlNode node = root.SelectSingleNode(strName);</p>
+
+
+<p>             if (node != null)<br/>
+             {<br/>
+                 node.InnerText = strValue;<br/>
+             }<br/>
+             else<br/>
+             {<br/>
+                 XmlElement elem = _xmlDocument.CreateElement(strName);<br/>
+                 elem.InnerText = strValue;<br/>
+                 root.AppendChild(elem);<br/>
+             }<br/>
+         }</p>
+
+
+<p><font color="#0000ff">二。使用示例：</font></p>
+
+
+<p>创建访问XML配置文件的对象<br/>
+CConfig Config = new CConfig(&#8220;config.xml&#8221;);</p>
+
+
+<p>读取一个配置值<br/>
+_IPAddress = Config.Get(&#8220;IPAddress&#8221;);</p>
+
+
+<p>设置一个配置值并保存<br/>
+Config.Set(&#8220;IPAddress&#8221;, _IPAddress);<br/>
+Config.Save();</p>
+
+
+<p><font color="#0000ff">三。评价：</font></p>
+
+
+<p>跟XML相关的5个名字空间，<br/>
+提供了一整套解决方案，<br/>
+不过东西太多，初学比较繁琐。</p>
+
+
+<p>用XML来管理配置信息比较方便。<br/>
+比如设置一个配置信息：<br/>
+Config.Set(&#8220;IPAddress&#8221;, _IPAddress);<br/>
+不用关心在文件中各个条目的先后顺序。<br/>
+读取也是如此。<br/>
+另外XML的纯文本特性便于用户直接修改配置文件。</p>
+
+
+<p>配置信息多的时候，还可以多分几层，<br/>
+比如&lt;SystemConfig&gt;下放跟系统有关的配置，<br/>
+&lt;UserConfig&gt;下放跟用户偏好有关的配置。</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/05/06/Apache%2BAsp.Net%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Apache+Asp.Net的基本配置记录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-06T22:11:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.5.6<br/><br/><font color="#0000ff">一。下载</font><br/><br/>
+Apache下载：<a target="_blank" href="http://httpd.apache.org/download.cgi">http://httpd.apache.org/download.cgi</a><br/>
+（我下的是2.2.15）<br/><br/>
+Mod_AspdotNet下载：<a target="_blank" href="http://sourceforge.net/projects/mod-aspdotnet/">http://sourceforge.net/projects/mod-aspdotnet/</a><br/>
+（官方<a target="_blank" href="http://httpd.apache.org/modules/">表示</a>开发人员不够，停止对这个模块的开发，<br/>
+所以到原作者SourceForge的页面下载）<br/><br/><font color="#0000ff">二。安装</font><br/><br/>
+其实没啥好说的，<br/>
+不过在VISTA下面折腾UAC是一件囧事，<br/>
+反正害得我第一次安是失败的。<br/><br/>
+按照默认的参数安了，<br/>
+访问<a target="_blank" href="http://localhost/">http://localhost/</a>，<br/>
+应该可以看到<font color="#ff0000"> It works</font>的字样，就OK了。<br/><br/><font color="#0000ff">三。基本配置</font><br/><br/>
+我刚一装好，到处想找诸如IIS那样的界面，<br/>
+比如在什么地方填下目录，在什么地方配置下别名等。<br/>
+结果显然是没找到。<br/>
+唯一的一个GUI就是Monitor，<br/>
+其功能也就是开启/停止/重启服务器这些。。<br/><br/>
+其配置全部都浓缩在httpd.conf这个文件里了，<br/>
+默认的路径应该是：<br/><font color="#ff9900">C:\Program Files\Apache Software Foundation\Apache2.2\conf\httpd.conf</font><br/>
+用记事本打开即可，<br/>
+vista同样要注意UAC的问题，<br/>
+要不修改了保存不了。。<br/><br/>
+修改几个地方即可呈现基本的页面。<br/>
+设网站放在 d:\web，默认页面是index.htm。<br/><font color="#ff00ff">紫色</font>是原内容，可以先ctrl+f到，然后修改。<br/>
+每修改一处，可以用monitor restart一下server看效果。<br/><br/><font color="#ff00ff">DocumentRoot &#8220;C:/Program Files/Apache Software Foundation/Apache2.2/htdocs&#8221;</font><br/>
+DocumentRoot &#8220;d:/web&#8221;<br/><br/><font color="#ff00ff">&lt;Directory &#8220;C:/Program Files/Apache Software Foundation/Apache2.2/htdocs&#8221;&gt;</font><br/>
+&lt;Directory &#8220;d:/web&#8221;&gt;<br/><br/>
+在第二处的上面有句话：<br/><font color="#38761d"># This should be changed to whatever you set DocumentRoot to.</font><br/>
+所以很显然地把两个路径改成一样。。<br/><br/>
+有了这两个之后，输入完整路径，应该可以访问d:\web下的东西了。<br/><br/>
+紧接着第二处的地方：<br/><font color="#ff00ff">Options Indexes FollowSymLinks</font><br/>
+Options -Indexes FollowSymLinks<br/><br/>
+这样，服务器不会列出目录。<br/><br/>
+再往下走：<br/><font color="#ff00ff">DirectoryIndex index.html</font><br/>
+DirectoryIndex index.htm index.html <br/><br/>
+当访问目录的时候，自动导向的页面填在这里。<br/><br/>
+最后随便找个地方添句话：<br/><font color="#ff0000">AddDefaultCharset GB2312</font><br/><br/>
+否则，直接访问localhost而定向到的index.htm可能是乱码。<br/><br/><font color="#0000ff">四。Asp.Net</font><br/><br/><a target="_blank" href="http://weblogs.asp.net/israelio/archive/2005/09/11/424852.aspx">译自文章</a>。<br/><br/>
+在httpd.conf后面添加内容：<br/>
+&#8212;&#8212;&#8212;&#8212;-<br/><p class="MsoNormal" style="color: navy;"><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;"><font color="#009f00">#asp.net</font> <br/>
+LoadModule aspdotnet_module &#8220;modules/mod_aspdotnet.so&#8221; </span></font></p></p>
+
+<p class="MsoNormal" style="color: navy;"><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;">AddHandler asp.net asax ascx ashx asmx aspx axd config cs csproj licx rem resources resx soap vb vbproj vsdisco webinfo <br/></span></font><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;"><br/>
+&lt;IfModule mod_aspdotnet.cpp&gt; <br/></span></font><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;">  <font color="#009f00"># Mount the ASP.NET /asp application <br/></font>  AspNetMount /SampleASP &#8220;c:/SampleASP&#8221; <br/><font color="#009f00">#/SampleASP is the alias name for asp.net to execute <br/>
+#&#8221;c:/SampleASP&#8221; is the actual execution of files/folders  in that location </font></span></font></p>
+
+
+<p class="MsoNormal" style="color: navy;"><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;">  <font color="#009f00"># Map all requests for /asp to the application files <br/></font>  Alias /SampleASP &#8220;c:/SampleASP&#8221; <br/><font color="#009f00">#maps /SampleASP request to &#8220;c:/SampleASP&#8221; <br/>
+#now to get to the /SampleASP type </font><a href="http://localhost/SampleASP"><font color="#009f00">http://localhost/SampleASP</font></a><font color="#009f00"> <br/>
+#It&#8217;ll redirect </font><a href="http://localhost/SampleASP"><font color="#009f00">http://localhost/SampleASP</font></a><font color="#009f00"> to &#8220;c:/SampleASP&#8221;</font></span></font></p>
+
+
+<p class="MsoNormal" style="color: navy;"><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;"> <font color="#009f00"> # Allow asp.net scripts to be executed in the /SampleASP example <br/></font>  &lt;Directory &#8220;c:/SampleASP&#8221;&gt; <br/>
+Options FollowSymlinks ExecCGI <br/>
+Order allow,deny <br/>
+Allow from all <br/>
+DirectoryIndex index.htm index.aspx <br/><font color="#009f00">#default the index page to .htm and .aspx <br/></font>  &lt;/Directory&gt; </span></font></p>
+
+
+<p class="MsoNormal" style="color: navy;"><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;">  <font color="#009f00"># For all virtual ASP.NET webs, we need the aspnet_client files <br/>
+# to serve the client-side helper scripts. <br/></font>  AliasMatch /aspnet_client/system_web/(\d+)_(\d+)_(\d+)_(\d+)/(.*) &#8220;C:/Windows/Microsoft.NET/Framework/v$1.$2.$3/ASP.NETClientFiles/$4&#8221; <br/>
+&lt;Directory &#8220;C:/Windows/Microsoft.NET/Framework/v*/ASP.NETClientFiles&#8221;&gt; <br/>
+Options FollowSymlinks <br/>
+Order allow,deny <br/>
+Allow from all <br/>
+&lt;/Directory&gt; <br/></span></font><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;">&lt;/IfModule&gt; <br/></span></font><font face="Arial" color="navy" size="2"><span style="font-size: 10pt;"><font color="#009f00">#asp.net</font> </span></font></p>
+
+
+<p>&#8212;&#8212;&#8212;&#8212;<br/><br/>
+在C:\SampASP\ 下面创建index.aspx<br/><br/>
+&#8212;&#8212;&#8212;&#8212;<br/><br/>
+&lt;%@ Page Language=&#8221;VB&#8221; %&gt; <br/>
+&lt;html&gt; <br/>
+&lt;head&gt; <br/>
+&lt;link rel=&#8221;stylesheet&#8221;href=&#8221;intro.css&#8221;&gt; <br/>
+&lt;/head&gt; <br/>
+&lt;body&gt; <br/>
+&lt;center&gt; <br/>
+&lt;form action=&#8221;index.aspx&#8221; method=&#8221;post&#8221;&gt; <br/>
+&lt;h3&gt; Name: &lt;input id=&#8221;Name&#8221; type=text&gt; <br/>
+Category:  &lt;select id=&#8221;Category&#8221; size=1&gt; <br/>
+&lt;option&gt;One&lt;/option&gt; <br/>
+&lt;option&gt;Two&lt;/option&gt; <br/>
+&lt;option&gt;Three&lt;/option&gt; <br/>
+&lt;/select&gt; <br/>
+&lt;/h3&gt; <br/>
+&lt;input type=submit value=&#8221;Lookup&#8221;&gt; <br/>
+&lt;p&gt; <br/>
+&lt;% Dim I As Integer <br/>
+For I = 0 to 7 %&gt; <br/>
+&lt;font size=&#8221;&lt;%=I%&gt;&#8221;&gt; Sample ASP.NET TEST&lt;/font&gt; &lt;br&gt; <br/>
+&lt;% Next %&gt; <br/>
+&lt;/form&gt; <br/>
+&lt;/center&gt; <br/>
+&lt;/body&gt; <br/>
+&lt;/html&gt;<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;<br/><br/>
+重启服务器，访问地址：<strong><font face="Arial" color="navy" size="2"><a title="http://localhost/SmartASP/index.aspx" href="http://localhost/SampleASP/index.aspx"><strong>http://localhost/SampleASP/index.aspx</strong></a></font></strong><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a2f68d01f6cb2bef267fb500.jpg" small="0" class="blogimg"/></span><br/><br/><br/>
+这个路径居然是区分大小写的。。<br/><br/><font color="#0000ff">五。评论：</font><br/><br/>
+一开始摸不着头脑，<br/>
+一旦摸着了感觉很方便。<br/>
+在vista下折腾了很久的iis7，<br/>
+总是遇到各种诡异的问题。<br/><br/>
+纯文本的配置方式很不错，<br/>
+不管是修改起来还是备份配置都是很方便。<br/><br/>
+服务器主程序加ASP.NET模块总共不超过6M。<br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/04/27/%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90%EF%BC%88%E7%BB%93%E6%9E%84%E4%BD%93%E5%92%8C%E6%A0%88%E7%9A%84%E5%B7%AE%E5%BC%82%EF%BC%8C%E5%8F%96%E6%88%90%E5%91%98%E5%81%8F%E7%A7%BB%EF%BC%8C%E5%AF%B9%E9%BD%90%E5%9C%B0%E5%9D%80%E8%AE%A1%E7%AE%97%EF%BC%89/">内存对齐（结构体和栈的差异，取成员偏移，对齐地址计算）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-27T11:36:00+08:00" pubdate data-updated="true">Apr 27<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.4.27<br/><br/>
+印象中曾经记录过，不过居然找不到了。<br/>
+联系最近听课和给别人讲东西发现的问题，重新详记一次。<br/><br/>
+环境：vc6，.cpp文件，debug编译<br/><br/><font color="#0000ff">一。结构体对齐基本实验</font><br/><br/><font color="#ff00ff">程序：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>struct s1{<br/>
+char c1 ;<br/>
+short s ;<br/>
+char c2 ;<br/>
+} ;<br/><br/>
+struct s2{<br/>
+char c1 ;<br/>
+int i ;<br/>
+char c2 ;<br/>
+} ;<br/><br/></p>
+
+<h1>pragma pack(1)<br/></h1>
+
+<p>struct s3{<br/>
+char c1 ;<br/>
+short s ;<br/>
+char c2 ;<br/>
+} ;<br/></p>
+
+<h1>pragma pack()<br/><br/></h1>
+
+<h1>pragma pack(8)<br/></h1>
+
+<p>struct s4{<br/>
+char c1 ;<br/>
+short s ;<br/>
+char c2 ;<br/>
+} ;<br/></p>
+
+<h1>pragma pack()<br/><br/></h1>
+
+<p>struct s5{<br/>
+char c1 ;<br/>
+char c2 ;<br/>
+short s ;<br/>
+} ;<br/><br/>
+int main(){<br/>
+printf(&#8220;%d,%d,%d,%d,%d\n&#8221; , <br/>
+sizeof(struct s1) ,<br/>
+sizeof(struct s2) , <br/>
+sizeof(struct s3) ,<br/>
+sizeof(struct s4) ,<br/>
+sizeof(struct s5)) ;<br/><br/>
+return 0 ;<br/>
+}<br/><br/><font color="#ff00ff">结果：</font><br/><br/>
+6,12,4,6,4<br/><br/><font color="#ff00ff">分析：</font><br/><br/>
+s1的结果是用来说明有内存对齐这件事的。<br/>
+相信很多人还记得C语言课程考试上，<br/>
+问到结构体的大小时，会把它判为4。<br/><br/>
+s1和s2的对比得到一个结论：<br/><font color="#ff0000">对齐到的字节数与最大成员所占空间有关。</font><br/><br/>
+s3是说明可以用<font color="#ff0000">#pragma pack(xxx)</font>来改变对齐到的字节数。<br/>
+当然，用完了只有要用<font color="#ff0000">#pragma pack()</font>来还原，<br/>
+否则会对后面的结构造成影响。<br/><br/>
+s4是说，虽然用#pragma pack(8)了，但是依然按照两字节对齐。<br/><br/>
+从上面三条，可以得到的结论：<br/><font color="#ff0000">对齐到的字节数=min｛当前指定的pack值，最大成员大小｝</font><br/><br/>
+s5是用来和s1做对比的。<br/>
+可以看到，两个结构的内容一致，仅仅是摆放顺序不一样。<br/>
+这里的结论是：<br/><font color="#ff0000">x字节的成员需要对齐到x字节的偏移上。</font><br/>
+如果这句说起有点绕口，下面一节将有更深入的探究。<br/><br/><font color="#0000ff">二。结构体成员的偏移观察。</font><br/><br/>
+取得指定结构体某成员在结构体内部的偏移可以用一个宏：<br/><font color="#ff0000">#define OFFSETOF(st,mem) (size_t)(&amp;((st*)0)-&gt;mem)</font><br/><br/>
+貌似在好些地方看到有人这样用了，<br/>
+稍微想一下，原理也就那样，故不解释了。<br/><font color="#ff00ff"><br/>
+程序：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<h1>define OFFSETOF(st,mem) (size_t)(&amp;((st*)0)-&gt;mem)<br/><br/></h1>
+
+<p>struct s1{<br/>
+char c1 ;<br/>
+short s ;<br/>
+char c2 ;<br/>
+} ;<br/><br/>
+struct s2{<br/>
+char c1 ;<br/>
+char c2 ;<br/>
+short s ;<br/>
+} ;<br/><br/>
+int main(){<br/>
+printf(&#8220;%d,%d,%d\n%d,%d,%d\n&#8221; ,<br/>
+OFFSETOF(s1 , c1) ,<br/>
+OFFSETOF(s1 , s) ,<br/>
+OFFSETOF(s1 , c2) ,<br/>
+OFFSETOF(s2 , c1) ,<br/>
+OFFSETOF(s2 , c2) ,<br/>
+OFFSETOF(s2 , s) <br/>
+) ;<br/>
+return 0 ;<br/>
+}<br/><br/><font color="#ff00ff">结果：</font><br/><br/>
+0,2,4<br/>
+0,1,2<br/><br/><font color="#ff00ff">分析：</font><br/><br/>
+可以看到，在s1中，因为s是short型的，<br/>
+需要被对齐到两字节的偏移上面。<br/><br/><font color="#ff0000">内存对齐不仅仅考虑对齐到某个大小，<br/>
+也要考虑对齐到某个偏移。</font><br/><br/><font color="#0000ff">三。栈内容对齐</font><br/><br/><font color="#ff00ff">程序：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>int main(){<br/>
+char c ;<br/>
+short s ;<br/>
+int i ;<br/>
+float f ;<br/>
+double d ;<br/>
+printf(&#8220;%x,%x,%x,%x,%x\n&#8221; , &amp;c , &amp;s , &amp;i , &amp;f , &amp;d) ;<br/>
+return 0 ;<br/>
+}<br/><font color="#ff00ff"><br/>
+结果：</font><br/><br/>
+12ff44,12ff40,12ff3c,12ff38,12ff30<br/><br/>
+可以看出，都是对齐到4字节的。<br/>
+并且前面的char和short并没有被凑在一起，<br/>
+这和结构体内的处理是不同的。<br/><br/><font color="#ff0000">在栈上，不考虑变量本身的大小，统一对齐到4字节。</font><br/><font color="#ff0000">在结构体中，综合考虑变量本身和指定的对齐值。</font><br/><br/>
+至于为什么输出的值是变小的，<br/>
+属于另外的问题了，<br/>
+简要说就是这个平台上的栈是倒着长的。<br/><br/><font color="#0000ff">四。对齐地址的计算</font><br/><br/>
+之前记过比较有趣的<a href="http://hi.baidu.com/hplonline/blog/item/2831bcfd2058891e08244d54.html" target="_blank">向上取整</a>写法，可以参考。<br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/04/21/socket%E5%87%BD%E6%95%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF/">Socket函数的常见错误</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-21T22:44:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.4.21<br/><br/>
+其实这个是<font color="#0000ff">jsduan</font>老师网络软件设计课程中的实验项目。<br/>
+由于以前的实验项目有17个，现在大部分已经裁减掉了。<br/><br/>
+这个实验虽然没有做要求，但实际上是很有特色的。<br/><br/>
+我们从小学到大学，做了不少实验。<br/>
+基本上都是我们已经确定了结果，知道是对的，<br/>
+然后开始做，去印证某些原理。<br/>
+而<font color="#ff0000">这个实验是让我们主动去犯错，归纳现象，思考原理和解决方法</font>。<br/><br/>
+实验过程操作比较琐碎，<br/>
+我仅仅整理一下实验结果，<br/>
+便于以后遇到相关问题查询。<br/><br/><font color="#ff0000">操作难免失误，所以有些结论可能是巧合，<br/>
+望各种真相帝指出，以便我能重试一下。</font><br/><font color="#0000ff"><br/>
+平台：xp sp3+vc6。<br/><br/>
+测试方法：</font><br/><br/>
+retval = function(&#8230;.)<br/>
+if(retval == SOCKET_ERROR)<br/>
+r = WSAGetLastError();<br/><br/>
+各种情况下的返回值由retval取得。<br/>
+错误号由r取得。<br/>
+错误查询使用vc6自带的tool：“Error Lookup”<br/><br/><font color="#0000ff">1。socket</font><br/><br/><strong>SOCKET socket(</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">af</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">type</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">protocol</a></em> <strong>);</strong><br/><br/><font color="#ff9900"><font color="#ff00ff">》》af，通常为AF_INET</font><br/></font><br/>
+使用AF_ISO等其他地址族标识，而非AF_INET。<br/>
+返回：-1。<br/>
+错误：10047（使用了与请求的协议不兼容的地址）<br/><br/><font color="#ff00ff">》》type，通常为SOCK_STREAM或SOCK_DGRAM</font><br/><br/>
+头文件中定义的只有如下几种标准类型：<br/><font color="#ff9900">#define SOCK_STREAM     1               /<em> stream socket </em>/<br/></p>
+
+<h1>define SOCK_DGRAM      2               /<em> datagram socket </em>/<br/></h1>
+
+<h1>define SOCK_RAW        3               /<em> raw-protocol interface </em>/<br/></h1>
+
+<h1>define SOCK_RDM        4               /<em> reliably-delivered message </em>/<br/></h1>
+
+<h1>define SOCK_SEQPACKET  5               /<em> sequenced packet stream </em>/</font><br/><br/></h1>
+
+<p>使用非如上定义的类型。<br/>
+返回：-1。<br/>
+错误：10044（在这个地址家族中不存在对指定的插槽类型的支持）<br/><br/><font color="#ff00ff">》》protocol，通常为0</font><br/><br/>
+type = SOCK_STREAM，protocol = 6<br/><font color="#ff0000">正常</font><br/><br/>
+type = SOCK_STREAM，protocol = 7<br/>
+返回：-1 <br/>
+错误号：10043（请求的协议还没有在系统中配置，或者没有它存在的迹象）<br/><br/>
+type = SOCK_DGRAM，protocol = 17<br/><font color="#ff0000">正常</font><br/><br/>
+type = SOCK_DGRAM，protocol = 19<br/>
+返回：-1<br/>
+错误号：10043（请求的协议还没有在系统中配置，或者没有它存在的迹象）<br/><br/><font color="#ff00ff">》》结论</font><br/><br/>
+Socket暂时只支持AF_INET协议族。<br/><br/>
+对非标准的套接字类型不支持。<br/><br/>
+协议号参数可以为0，则使用与套接字类型相应的协议号；<br/>
+否则，协议号参数必须与相应的套接字类型相同。<br/><br/><font color="#0000ff">2。bind</font><br/><br/><strong>int bind(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>const struct sockaddr FAR<em> </strong><em><a onxxxxx="showTip(this)" class="synParam">name</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">namelen</a></em> <strong>);</strong><br/><br/><font color="#ff00ff">》》s</font><br/><br/>
+在没有用socket申请资源的套接字上操作。<br/>
+返回：-1<br/>
+错误号：10038（在一个非套接字上尝试了一个操作）<br/><br/><font color="#ff00ff">》》name，通常使用AF_INET地址族、INADDR_ANY（0）地址</font><br/><br/>
+a、在local结构中，sin_family成员赋值为AF_OSI，<br/>
+返回： -1<br/>
+错误码：10047（使用了与请求的协议不兼容的地址）<br/><br/>
+b、在local结构中，sin_addr成员赋值为本计算机的IP地址，<br/><font color="#ff0000">正常</font><br/><br/>
+c、在local结构中，sin_addr成员赋值为非本计算机的IP地址，如同小组的另一个同学的IP地址；<br/>
+返回： -1<br/>
+错误码：10049（ 在其上下文中，该请求的地址无效）<br/><br/>
+d、在local结构中，sin_port成员赋值为135；<br/>
+返回：  -1<br/>
+错误码：10048（通常每个套接字地址(协议/网络地址/端口)只允许使用一次）<br/><font color="#ff00ff"><br/>
+》》namelen，通常为name所指的结构的大小，如sizeof(SOCKADDR_IN)</font><br/><br/>
+namelen = 10<br/>
+返回： -1<br/>
+错误码：10014（系统检测到在一个调用中尝试使用指针参数时的无效指针地址）<br/><br/>
+namelen = 16<br/>
+返回： 0<br/><font color="#ff0000">正常</font><br/><br/>
+namelen = 40<br/>
+返回：  0<br/><font color="#ff0000">正常</font><br/><br/><font color="#ff00ff">》》结论</font><br/><br/>
+可以bind本机拥有的地址（或INADDR_ANY），非本机拥有的地址出错。<br/><br/>
+bind已经被占用的端口值会出错。<br/><br/>
+len参数要<font color="#ff0000">大于等于</font>地址结构实际上所占的长度。<br/><br/><font color="#ff00ff">》》思考</font><br/><br/>
+因为本机可以有多个IP，所以需要有方法指出从哪个实体接收数据。<br/>
+当然，提供一种表达“从所有实体接收”的方法是必要的。<br/>
+在头文件中INADDR_ANY被明确定义为0。<br/><br/>
+关于bind<font color="#ff0000">已占用的端口</font>。<br/>
+是指端口被bind，并且上层还是活的。（不设置复用）<br/>
+处于TIME-WAIT状态的端口表面上是被占用，<br/>
+实际上是可以bind成功的，但connect会失败。<br/>
+详见关于<a href="http://hi.baidu.com/hplonline/blog/item/1b3b68d911cf652010df9b77.html" target="_blank">TIME-WAIT的笔记</a>，第六条。<br/><br/><font color="#0000ff">3。listen</font><br/><br/><strong>int listen(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">backlog</a></em> <strong>);</strong><br/><br/><font color="#ff00ff">》》s</font><br/><br/>
+使用尚未半相关的套接字。（未成功bind的）<br/>
+返回：-1<br/>
+错误号：10022（提供了一个无效的参数）<br/><font color="#ff00ff"><br/>
+》》backlog</font><br/><br/>
+纯引用一段：（无出处）<br/>
+“windows套接字实现中最多只允许服务器同时监听5个套接字。<br/>
+使用参数0，则系统将把该参数改为1，而使用超过5的值，系统将自动把该参数改为5。”<br/><br/>
+设置参数值为0，有       1        个客户机可同时与服务器连接<br/>
+（在ｖｉｓｔａ下有时有２个可以连接，有时有３个可以连接，-_0//）<br/>
+设置参数值为1，有       1        个客户机可同时与服务器连接<br/>
+设置参数值为10，有       10        个客户机可同时与服务器连接<br/><font color="#ff00ff"><br/>
+》》结论</font><br/><br/>
+第一个参数的套接字必须是成功bind过后的。<br/><br/>
+监听个数为0的话，会自动设置为1。<br/>
+最大监听个数在XP SP3下可以超过5。<br/><br/><font color="#ff00ff">》》问题</font><br/><br/>
+如何获得实际的backlog值？<br/>
+MSDN： There is no standard provision to obtain the actual backlog value. <br/><br/><font color="#ff0000">如何结束套接字的监听状态？</font><br/>
+首先，close掉是可以的。如果不close呢？<br/>
+最初猜想backlog为0，-1等特殊值可以达到此效果，结果失败。<br/><font color="#ff0000">求解。</font><br/><br/><font color="#0000ff">4。accept</font><br/><br/><strong>SOCKET accept(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>struct sockaddr FAR</em> </strong><em><a onxxxxx="showTip(this)" class="synParam">addr</a></em><strong>,</strong>   <strong>int FAR<em> </strong><em><a onxxxxx="showTip(this)" class="synParam">addrlen</a></em> <strong>);</strong><br/><br/><font color="#ff00ff">》》s</font><br/><br/>
+在没有listen的套接字上面。<br/>
+返回：-1<br/>
+错误号：10022（提供了一个无效的参数）<br/><br/><font color="#ff00ff">》》addr，输出参数，一般不填</font><br/><br/>
+单机测试，填上本机的IP和某个端口号。<br/>
+结果：无法限制所接收的地址，执行完后addr中存放实际的地址。<br/><br/><font color="#ff00ff">》》addrlen</font><br/><br/>
+同bind<br/><br/><font color="#ff00ff">》》结论</font><br/><br/>
+主套接字必须处于监听状态。<br/><br/>
+在地址字段填上任何值不能限制接受的连接。<br/><br/>
+len参数要求所携带的值大于等于16。（AF_INET地址结构的长度）<br/><font color="#0000ff"><br/>
+5。recv</font><br/><br/><strong>int recv(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>char FAR</em> </strong><em><a onxxxxx="showTip(this)" class="synParam">buf</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">len</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">flags</a></em> <strong>);</strong><br/><br/>
+对于服务器，一般是<font color="#ff00ff">ns = accept(s , &amp;addr , &amp;len) </font>;<br/><br/><font color="#ff00ff">》》s，一般是用上面accept正常返回的值</font><br/><br/>
+在没有accept的从套接字上操作。（上面的ns）<br/>
+返回：-1<br/>
+错误号：10038（在一个非套接字上尝试了一个操作）<br/><br/>
+在主套接字上操作。（上面的s）<br/>
+返回：-1<br/>
+错误号：10057（由于套接字没有连接并且<br/>
+(当使用一个 sendto 调用发送数据报套接字时)没有提供地址，<br/>
+发送或接收数据的请求没有被接受。 ）<br/><br/><font color="#ff00ff">》》buf，要求指向一个有效的缓冲区</font><br/><br/>
+如果指向的无效的内存区域<br/>
+返回： -1<br/>
+错误号：10014（系统检测到在一个调用中尝试使用指针参数时的无效指针地址）  <br/><br/><font color="#ff00ff">》》len，发送的字节数</font><br/><br/>
+len过长可能造成缓冲区溢出。<br/>
+这个属于编程中的普遍考虑问题，不是socket函数特有。<br/><br/><font color="#ff00ff">》》flags，一般用0</font><br/><br/>
+设置MSG_PEEK标志后，接收但不移除数据。<br/>
+（再次接收可得到相同的数据）<br/><br/><font color="#ff00ff">》》结论<br/></font><br/>
+对服务器来说，必须传递成功accept之后返回的套接字。<br/><br/>
+缓冲区指针所指位置必须有效。<br/><br/>
+缓冲区长度参数不可超过实际准备的缓冲区长度。<br/><br/>
+MSG_PEEK标志在接收的时候将保留数据。<br/><br/><font color="#0000ff">6。send</font><br/><br/><strong>int send(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>const char FAR<em> </strong><em><a onxxxxx="showTip(this)" class="synParam">buf</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">len</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">flags</a></em> <strong>);</strong><br/><br/><font color="#ff00ff">》》s，同recv</font><br/><br/>
+在没有accept的从套接字上操作。（上面的ns）<br/>
+返回：-1<br/>
+错误号：10038（在一个非套接字上尝试了一个操作）<br/><br/>
+在主套接字上操作。（上面的s）<br/>
+返回：-1<br/>
+错误号：10057（由于套接字没有连接并且<br/>
+(当使用一个 sendto 调用发送数据报套接字时)没有提供地址，<br/>
+发送或接收数据的请求没有被接受。 ）<br/><font color="#ff00ff"><br/>
+》》buf</font><br/><br/>
+必须指向有效缓冲区，同recv<br/><br/><font color="#ff00ff">》》len</font><br/><br/>
+必须和要发送的数据长度一致。<br/><br/><font color="#ff00ff">》》结论</font><br/><br/>
+除flag可选项不同外，和recv一致。<br/><br/><font color="#0000ff">7。closesocket</font><br/><br/><strong>int closesocket(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em> <strong>);</strong><br/><br/><font color="#ff00ff">》》s</font><br/><br/>
+在申请套接字资源（调用socket）之前closesocket<br/>
+返回： -1<br/>
+错误号：10038(在一个非套接字上尝试了一个操作)<br/><br/>
+再已经closesocket的套接字上closesocket<br/>
+返回： -1<br/>
+错误号：10038(在一个非套接字上尝试了一个操作)<br/><br/><font color="#ff00ff">》》结论</font><br/><br/>
+s必须是有效打开的套接字。<br/>
+不得重复关闭。<br/><br/><font color="#0000ff">8。connect</font><br/><br/><strong>int connect(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>const struct sockaddr FAR</em> </strong><em><a onxxxxx="showTip(this)" class="synParam">name</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">namelen</a></em> <strong>);</strong><br/><font color="#ff00ff"><br/>
+》》没有对端响应的情况</font><br/><br/>
+在没有运行服务器的情况下，connect是否会一直阻塞？<br/>
+结果：等待一定时间后返回错误。<br/>
+返回： -1 <br/>
+错误码：10061（由于目标机器积极拒绝，无法连接）<br/><br/><font color="#ff00ff">》》s</font><br/><br/>
+没有使用过bind的套接字。<br/><font color="#ff0000">成功连接。</font><br/>
+产生隐式绑定，<a href="http://hi.baidu.com/hplonline/blog/item/314e4c23e25fd05e9922edfb.html" target="_blank">相关应用的详细资料</a>。<br/><br/><font color="#ff00ff">》》name</font><br/><br/>
+使用一些特殊的地址来测试。<br/><br/>
+a、    使用远端点IP地址为INADDR_ANY测试。<br/>
+返回：-1 <br/>
+错误号：10049（在其上下文中，该请求的地址无效）<br/><br/>
+b、    使用远端点IP地址为10.1.1.255广播地址。<br/>
+返回： -1<br/>
+错误号：10060（由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败）<br/><font color="#ff00ff"><br/>
+》》namelen</font><br/><br/>
+同bind等需要传递地址结构长度的函数<br/><font color="#ff00ff"><br/>
+》》结论</font><br/><br/>
+服务器必须启动listen。<br/><br/>
+可以不建立本地半相关，则进行隐式绑定。<br/><br/>
+客户不可以与INADDR_ANY主动相连，立即返回报错。<br/><br/>
+客户不可以与广播地址连接，会等待很久，返回失败。<br/><br/><font color="#ff00ff">》》讨论</font><br/><br/>
+10060和10061两种错误不同。<br/>
+其中10061解释为目标机器积极拒绝，返回错误很快（秒级）。<br/>
+10060的情况，返回错误需要很长时间（几十秒级）。<br/><br/>
+此处值得深入研究，两种情况下的抓包应该不一样。<br/><font color="#0000ff"><br/>
+9。recvfrom</font><br/><br/><strong>int recvfrom(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>char FAR<em> </strong><em><a onxxxxx="showTip(this)" class="synParam">buf</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">len</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">flags</a></em><strong>,</strong>   <strong>struct sockaddr FAR</em> </strong><em><a onxxxxx="showTip(this)" class="synParam">from</a></em><strong>,</strong>   <strong>int FAR<em> </strong><em><a onxxxxx="showTip(this)" class="synParam">fromlen</a></em> <strong>);</strong><br/><br/><font color="#ff00ff">》》缺少半相关</font><br/><br/>
+在没有bind的套接字上面，直接recvfrom。<br/>
+返回：-1<br/>
+错误号：10022（提供了一个无效的参数）<br/><br/><font color="#ff00ff">》》填写from结构</font><br/><br/>
+向其中填入非对端使用的地址或端口。<br/>
+正常接收，并且from内置对端地址信息。<br/><br/><font color="#ff00ff">》》结论</font><br/><br/>
+必须先进行本地半相关，指定端口，才能够接收。<br/>
+无法通过recvfrom的地址结构限制接收的地址和端口。<br/><br/><font color="#0000ff">10。sendto</font><br/><br/><strong>int sendto(</strong>   <strong>SOCKET </strong><em><a onxxxxx="showTip(this)" class="synParam">s</a></em><strong>,</strong>   <strong>const char FAR</em> </strong><em><a onxxxxx="showTip(this)" class="synParam">buf</a></em><strong>, </strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">len</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">flags</a></em><strong>,</strong>   <strong>const struct sockaddr FAR* </strong><em><a onxxxxx="showTip(this)" class="synParam">to</a></em><strong>,</strong>   <strong>int </strong><em><a onxxxxx="showTip(this)" class="synParam">tolen</a></em> <strong>);</strong><br/><br/><font color="#ff00ff">》》缺少半相关</font><br/><br/>
+在没有bind的套接字上面，直接sendto。<br/><font color="#ff0000">成功。</font>返回发送的数据个数。<br/><br/><font color="#ff00ff">》》不存在的对端实体</font><br/><br/>
+sendto到一个不存在的实体（to结构）<br/>
+返回：发送的字符数<br/>
+错误号：无<br/><br/>
+紧接着调用recvfrom<br/>
+结果：没有阻塞，直接返回<br/>
+返回：-1<br/>
+错误号：10054 （远程主机强迫关闭了一个现有的连接。）<br/><br/><font color="#ff00ff">》》结论</font><br/><br/>
+可以在未本地半相关的情况下发送数据。<br/>
+由系统随机选择端口。<br/><br/>
+可以向不存在的远端点发送数据，<br/>
+本地仍然报告发送的字节数（<font color="#ff0000">不管有没有人接收</font>）。<br/><br/>
+一般情况下，没有数据的时候recvfrom会阻塞。<br/>
+但是当给不存在的对端发送过数据后，会收到错误报告，<br/>
+紧接着的一次recvfrom会立即返回失败。（后面的仍然阻塞）<br/><br/><font color="#ff00ff">》》思考</font><br/><br/>
+SOCK_DGRAM类型的服务，<br/>
+无法为用户确保数据的正常交付。<br/>
+但是通过recvfrom返回的错误，<br/>
+可以对发送情况作出一定的判断。<br/><br/>
+这也启示在使用SOCK_DGRAM时候的编程框架要考虑下，<br/>
+当recvfrom错误的时候，判断一下错误号，再进一步处理。<br/><br/><font color="#ff0000">猜测</font>当对端没有bind的时候，使用icmp的端口不可达通知。<br/>
+需要进一步验证。<br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/04/16/PPPoE%E7%9A%84%E5%B0%81%E8%A3%85%E7%BB%93%E6%9E%84/">PPPoE的封装结构</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-16T22:55:00+08:00" pubdate data-updated="true">Apr 16<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.4.16<br/><br/><font color="#0000ff">起因：</font><br/><br/>
+昨天跟几个研究生调接入网实验室的设备，<br/>
+完了后抓了下PPPoE的包，<br/>
+发现封装很奇特，类似如下：<br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1dd98d44a409f17b530ffe77.jpg"/></span><br/><br/>
+172.16.1.118和172.16.1.116是两台机器PPPoE拨号后服务器分给的地址。<br/><br/>
+从理论上来讲，ping一下，抓到的帧的封装应该是这样的：<br/>
+icmp<br/>
+ip<br/>
+ppp<br/>
+pppoe<br/>
+mac<br/><br/>
+感觉这个事情和原理不符合。<br/><br/>
+又因为之前无意抓过一次，看到了ppp的层。<br/>
+那次得到的两个地址是不同子网的，<br/>
+于是得到了一个结论，<br/><font color="#ff0000">说在同一子网的数据包不经过ppp封装。（错）</font><br/><br/><font color="#0000ff">原理探讨：</font><br/><br/>
+ppp拨号前应该有一个地址IP，<br/>
+拨号有一个地址IP(PPP)。<br/><br/>
+如果是使用前者通信，<br/>
+则应该是IP之后直接走到MAC层。<br/>
+同一内网用户就是这样干的，<br/>
+所以PPPoE对内网用户缺乏有力的控制。<br/><br/>
+如果是使用后者通信，<br/>
+那么不管两台机器的物理位置如何，<br/>
+都得和服务器建立虚连接，<br/>
+从服务器那里绕一圈回来通信。<br/><br/>
+在上面的例子中，<br/>
+用的是PPPoE服务器给的两个地址来ping。<br/>
+所以应该是具有PPP封装的才对。<br/><br/>
+上午和老师讨论过，<br/>
+认为现象上确实存在问题，<br/>
+于是下午重新抓了下包。<br/><font color="#0000ff"><br/>
+抓包的操作问题：</font><br/><br/>
+这里非常感谢cong哥犀利的眼光，<br/>
+一来就发现了是选择网卡的问题。<br/>
+原来选择物理网卡可以抓出这样的包：<br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/9361ac1e1e2416284334177d.jpg"/></span><br/><br/>
+注意Wireshark这个是低层次放在上面。<br/>
+这样出来的结果就是和理论完全符合的了。<br/><br/>
+&#8211;<br/><font color="#ff0000"><br/>
+所以可见昨天的现象纯属巧合了。<br/>
+当抓不同子网的时候，恰好选到了物理网卡。<br/>
+当抓同一子网的时候，选到了ppp的虚拟网卡。</font><br/>
+这就出现了前面那个别扭的错误结论。<br/><br/><font color="#0000ff">深层次的问题：</font><br/><br/>
+在拨号之后，会出现一个ppp的虚拟网卡。<br/>
+这应该算是系统实现上的巧妙之处吧。<br/><br/>
+默认路由指向ppp网卡出去的网关，<br/>
+那么当用户在内网交互的时候，<br/>
+可以直接走MAC，<br/>
+除此之外，都从ppp这边交出去。<br/><br/><font color="#ff0000">而实际实现中，并不是像我们想象的，<br/>
+各个实体从上倒下依次堆叠。</font><br/>
+依次堆叠出来的效果将是，<br/>
+IP实体需要知道某个包应该由哪个下层去交付，<br/>
+才能够决定给MAC还是ppp。<br/>
+这样会涉及到改变IP实体的实现，不是很科学。<br/><br/>
+系统的解决办法是出现一个新的网卡，<br/>
+从IP的角度来看，他还是交给了一个MAC实体。<br/>
+就像第一幅抓包出来的图一样，<br/>
+这里一样看得到一对MAC地址。<br/><br/>
+该网卡是ppp虚拟出来的网卡，<br/>
+它很清楚应该怎样封装ppp和pppoe，<br/>
+然后填上自己的mac和服务器的mac。<br/>
+所以都准备好后，<br/>
+这时才交给物理网卡处理。<br/><br/>
+这样就很好地解释为什么两个网卡上抓出来的不一样了。<br/><br/>
+这种并列的结构应该是一种巧妙的实现，<br/>
+相比堆叠的结构，不会导致上层的改变。<br/><br/><br/><a href="http://www.box.net/shared/tqcmas9rag" target="_blank">cap文件下载</a>。<br/>
+两种网卡下抓的包，<br/>
+附带PPPoE连接和断开过程。<br/><br/><br/><br/><br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/04/06/BosonNetSim%E4%BB%BF%E7%9C%9FRIP%E7%9A%84%E4%B8%80%E6%AE%B5DEBUG%E5%88%86%E6%9E%90/">Boson NetSim仿真RIP的一段DEBUG分析</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-06T18:32:00+08:00" pubdate data-updated="true">Apr 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.4.6<br/><br/>
+在用Boson Netsim仿真配置rip的时候，遇到比较奇怪的现象。<br/>
+命令就是按照他的<font color="#ff0000">sequential lab</font>敲的，但是到后面没有完全通。<br/><br/>
+在各个设备上检查了一遍之后，发现其中一台的debug信息比较奇怪。<br/>
+下面是截取的一次周期到时，s0和s1口收发的rip报文情况。<br/><br/><font color="#ff0000">从这段DEBUG信息，<br/>
+应该可以在不知道具体拓扑的情况下推出不少东西。</font><br/><br/>
+=========<br/>
+RIP: received update from 175.10.1.1 on Serial0<br/>
+160.10.1.0 in 1 hops<br/><br/>
+RIP: received update from 180.10.1.2 on Serial1<br/><span style="color: rgb(0, 128, 0);">     195.10.1.0 in 1 hops</span><br/><br/>
+RIP: sending update to 255.255.255.255 via Serial0 (175.10.1.2)<br/><span style="color: rgb(255, 0, 255);"> subnet 180.10.1.0, metric 1</span><br/><span style="color: rgb(255, 0, 0);"> subnet 197.10.1.0, metric 1</span><br/><span style="color: rgb(0, 128, 0);"> subnet 195.10.1.0, metric 2</span><br style="color: rgb(0, 128, 0);"/><br/>
+RIP: sending update to 255.255.255.255 via Serial1 (180.10.1.1)<br/><span style="color: rgb(255, 0, 255);"> subnet 175.10.1.0, metric 1</span><br/><span style="color: rgb(255, 0, 0);"> subnet 197.10.1.0, metric 1</span><br/>
+===========<br/><br/><font color="#0000ff">下面是分析：</font><br/><br/>
+红色的是两个接口发出都有的报文，并且metric为1，可以判断是该路由直连的一个子网。<br/>
+紫色分别是s1和s0接口所在的子网，也是直连。<br/>
+绿色是从s1口收到的条目，可以看到更新路由表之后从s0发出去了。<br/>
+剩下一个从s0收到的条目，并没有从s1发出去。<br/><br/>
+show ip route可以看到160.10.1.0已经添加到路由表了。<br/>
+rip的过滤表也没有设置。<br/><br/><font color="#0000ff">结论：</font><br/><br/>
+根据以上现象，个人认为是该模拟软件的问题。<br/><br/>
+mail了老师一下，也是这个意思。<br/><br/>
+（<br/><font color="#ff0000">如果有同学知道出现这种现象可能的原因，<br/>
+麻烦跟我说一下，好检查检查</font><br/>
+）<br/><br/><font color="#0000ff">感受：</font><br/><br/>
+其实在这些网络设备上，<br/>
+debug可以看到很多信息的，<br/>
+善于观察，可以黑箱出不少有价值的东西。<br/><br/><font color="#ff0000">并且debug不是在有bug的时候才用的，<br/>
+恰恰是在一切都正常时候用。</font><br/><br/>
+当一切正常的时候，常常瞟一下debug会是什么样，<br/>
+那么当不正常的时候，才能很快反映过来是什么问题。<br/>
+否则，当这正bug出现的时候，<br/>
+面对刷版似的debug信息，直接就懵了。<br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/04/06/%E8%A7%A3%E5%86%B3TCP%E7%9A%84TIME-WAIT%E7%8A%B6%E6%80%81%E5%AF%BC%E8%87%B4%E7%9A%84%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%EF%BC%88%E5%9B%9B%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%89/">解决TCP的TIME-WAIT状态导致的端口占用（四种方法）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-06T15:18:00+08:00" pubdate data-updated="true">Apr 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.4.6<br/><br/>
+之前讨论了一下<a href="http://hi.baidu.com/hplonline/blog/item/1b3b68d911cf652010df9b77.html" target="_blank">TCP的TIME-WAIT状态</a>，<br/>
+主要是分析了原理，给出了两种解决方案。<br/><br/>
+后面又搜集到了另外两种方案，<br/>
+这篇对四种方法仅做简要描述，给点自己的评价。<br/><br/><font color="#0000ff">1。隐式绑定</font><br/><br/><font color="#ff9900">》》方法</font><br/><br/>
+客户机不调用bind，交给系统分配端口。<br/><br/><font color="#ff9900">》》好处</font><br/><br/>
+这是通常的做法，并且还可以少写几行代码。<br/>
+这样的出来的交互不仅从高层看来是完善的，<br/>
+（<br/>
+上一篇分析过，<br/>
+认为去掉TIME-WAIT对高层的本次通信是完善的，<br/>
+并且影响下次通信的概率非常小<br/>
+）<br/>
+在TCP层看起来也是完善的。<br/><br/><font color="#ff9900">》》不足</font><br/><br/>
+这里提到的其实不是什么真正的缺陷，<br/>
+仅仅是一个比较BT的需求：<br/>
+比如我的服务器只对确定的客户进行交流，<br/>
+于是我要求指定IP和PORT。<br/><br/>
+既然是隐式绑定，端口就无法确定了。<br/><br/><font color="#0000ff">2。重置连接（RST）</font><br/><br/><font color="#ff9900">》》方法</font><br/><br/>
+TCP实体可以在任何状态通过RST到达CLOSED状态。<br/>
+所以，只要客户端发RST就行了，<br/>
+这样自己就不会进入TIME-WAIT状态。<br/><br/>
+当然，通过socket提供的接口直接设置RST很不方便。<br/>
+（用RAW SOCKET应该可以搞）<br/>
+所以可以不用closesocket而直接退出程序，<br/>
+这样，系统自行回收资源并发RST给对方。<br/><br/><font color="#ff9900">》》好处</font><br/><br/>
+很快。RST重置连接只需要一个报文，<br/>
+没有四次握手的正常关闭那么麻烦。<br/><br/>
+另外GFW和IE中，RST都有不错的应用。<br/><font color="#ff9900"><br/>
+》》不足</font><br/><br/>
+服务器需要一定的检查机制，<br/>
+异常结束的客户机可能有些数据还没发完。<br/>
+如果像我上篇的例程，<br/>
+服务器可能只收到个“e”就被RST了，<br/>
+于是会一直阻塞在等待用户输入的地方。<br/><br/>
+不过对服务器进行编程的时候，<br/>
+考虑各种异常状况本来就是份内的事情。<br/><br/>
+不过用RST，对完美主义者始终不爽。<br/><br/><font color="#0000ff">3。被动关闭</font><br/><br/><font color="#ff9900">》》方法</font><br/><br/>
+让服务器主动关闭。<br/><br/>
+上篇是实验性的，只给了一个延迟的方案。<br/>
+在实际的网络中，延迟多久又会成为一个问题。<br/><br/>
+严格一点的流程应该是：<br/>
+客户机检测exit，进入退出状态；<br/>
+服务器收到exit，立即closesocket；<br/>
+客户机在退出状态不断recv，<br/>
+通过返回值判断是否已经收到对方的FIN；<br/>
+客户机检测到FIN已收，则自己也closesocket。<br/><br/><font color="#ff9900">》》好处</font><br/><br/>
+这样的动作，是符合雅致关闭的。<br/>
+也成功解决了端口占用的问题。<br/>
+同时，还能满足上面提到的比较BT的需求。<br/>
+（<br/>
+实际中应该很难遇到这样的需求，<br/>
+即使要求对客户身份进行验证，<br/>
+可以在高层再交互一些信息来做。<br/>
+）<br/><br/><font color="#ff9900">》》不足</font><br/><br/>
+应该说除了客户端多写点代码，<br/>
+貌似没有什么坏处。<br/><br/><font color="#0000ff">4。LINGER选项</font><br/><br/><font color="#ff9900">》》方法</font><br/><br/>
+LINGER linger ;<br/>
+linger.l_linger = 5 ;<br/>
+linger.l_onoff = TRUE ;<br/>
+setsockopt(clientSock , SOL_SOCKET , SO_LINGER , (const char <em>)&amp;linger , sizeof(linger)) ;<br/><br/>
+onoff为非0，表示开启逗留。<br/>
+linger值为超时时间。<br/><br/><font color="#ff9900">》》好处</font><br/><br/>
+可以抓包看下，设置了这个选项之后，<br/>
+是服务器先发的FIN，然后客户机才跟进。<br/>
+其效果和第3个方法实际上是一样的。<br/><br/>
+好处在于把等待这个动作交给下层完成，<br/>
+客户调用了closesocket之后可以立即干别的事情。<br/><br/><font color="#ff9900">》》不足</font><br/><br/>
+linger.l_linger = 5 ;<br/>
+如果手抖把这个成员设成了0，<br/>
+那么可以抓包看下，客户会发RST。<br/>
+也就是退化成了第2种方法了。<br/><br/><font color="#0000ff">5。设置端口复用</font><font color="#ff0000">（？？）</font><br/><br/><font color="#ff9900">》》方法</font><br/><br/>
+BOOL opt = TRUE ;<br/>
+int optlen = sizeof(opt) ;<br/>
+setsockopt(s , SOL_SOCKET , SO_REUSEADDR , (char</em>)&amp;opt , optlen) ;<br/><br/><font color="#ff9900">》》讨论</font><br/><br/>
+记录这点的原因主要是看到网上很多人都在说，<br/>
+不过经过试验，没有解决TIME-WAIT的问题。<br/><br/>
+上一篇中，讨论过<font color="#ff0000">为什么是connect失败而非bind</font>。<br/><br/>
+当两个程序bind同一端口时，会失败，<br/>
+通过SO_REUSEADDR选项可以使得两者都成功绑定，<br/>
+所以给很多人留下个印象说REUSEADDR可以解决端口占用问题。<br/><br/>
+而当某个端口位于TIME-WAIT状态时，<br/>
+其bind一般都是会成功的，<br/>
+问题在于connect的时候失败，<br/>
+这应该不是REUSEADDR能够管得到的事情。<br/><br/>
+（<br/><font color="#ff0000">如果有用这个方法成功的同学，<br/>
+麻烦给下例程，我好跑来试验下。<br/>
+我在VISTA和VM.XP下都不行。</font><br/>
+）<br/><br/><a target="_blank" href="../../hplonline/blog/item/3f37a9ccc1a8261100e92839.html">关于转载（第三、四条）</a><br/><br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/04/01/TCP%E7%9A%84TIME-WAIT%E7%8A%B6%E6%80%81/">TCP的TIME-WAIT状态</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-04-01T13:19:00+08:00" pubdate data-updated="true">Apr 1<span>st</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.4.1<br/><br/>
+以前也用过SOCKET编程，<br/>
+不过拖拖控件，或者只用点简单的功能，<br/>
+并没注意过这个状态的问题。<br/><br/>
+前天水个课程实验，被一个现象囧了一下。<br/><br/><span style="color: rgb(255, 153, 0);">环境：VISTA+VC6+VM（XP SP2）</span><br/>
+程序是在主机上编的，然后拖到虚拟机里面测试。<br/>
+（因为在VISTA下面现象不一样）<br/>
+虚拟机使用bridge模式联网，replicate选项勾上了的。<br/><br/><span style="color: rgb(0, 0, 255);">一。原任务</span><br/><br/>
+做个C/S的一问一答式聊天，<br/>
+客户输入“exit”的时候，退出。<br/><br/>
+服务器的基本流程：<br/>
+WSAStartup-&gt;socket-&gt;bind-&gt;listen-&gt;{accept-&gt;{recv-&gt;send}-&gt;close}-&gt;close-&gt;WSACleanup<br/><br/>
+客户机的基本流程：<br/>
+WSAStartup-&gt;socket-&gt;bind-&gt;connect-&gt;{send-&gt;recv}-&gt;close-&gt;WSACleanup<br/><br/>
+{}表示循环动作。<br/><br/><span style="color: rgb(0, 0, 255);">二。现象</span><br/><br/>
+要求的功能其实很简单就达到了，<br/>
+而且客户输入“exit”从两边的回显信息来看，<br/>
+都应该是正常结束了的。<br/><br/>
+不过客户端再次连接服务器端的时候会出问题，<br/>
+由connect函数返回失败信息。<br/><br/>
+debug服务器，可以发现上一轮循环正常结束，<br/>
+并且服务器已经阻塞在了新一轮的accept上面。<br/><br/>
+然后过一定的时间（没有具体测，至少有好几十秒），<br/>
+就又可以正常通信了。<br/><br/>
+这个期间，服务器端程序并没有退出，一直在listen。<br/><br/>
+（用vista无这现象，直接重连即可）<br/><br/><span style="color: rgb(0, 0, 255);">三。分析</span><br/><br/>
+根据上面的现象，基本确定问题出在客户端。<br/><br/>
+在客户端，netstat -a 查看连接，<br/>
+可以看到相应的连接处于TIME-WAIT状态。<br/><br/>
+在服务端，同样查看，<br/>
+可以看到，相关的端口是在正常listen的。<br/><br/>
+这个时候，还是把TCP的状态转移图翻出来<br/><br/><span><img src="http://hiphotos.baidu.com/hplonline/pic/item/d97fdb4396f7712572f05db8.jpg" small="0" class="blogimg" border="0"/></span><br/><br/>
+可以看到，这是主动关闭连接方，回到CLOSE之前的最后一个状态。<br/>
+同时，这个状态转移过去的唯一条件为time-out。<br/>
+（<span style="color: rgb(255, 0, 0);">RST也可以，不过图上没有标出来；<br/>
+RFC1337中详细分析了这个问题，<br/>
+并建议在该状态下忽略RST，【Page 7】；<br/>
+RFC1122也提到可以直接接收SYN建立新连接</span>）<br/><br/>
+正因为这个time-out的存在，<br/>
+所以会有一定的时间，无法使用这个端口重连。<br/><br/><span style="color: rgb(0, 0, 255);">四。解决方案（一）被动关闭</span><br/><br/>
+从TCP状态转移图上已经看得很明显了，<br/>
+主动关闭方才会存在等这个时间。<br/><br/>
+于是改下程序：<br/>
+服务器仍然在收到“exit”的时候立即closesocket，<br/>
+客户机在用户输入“exit”的时候等上一点时间。<br/>
+（在同一台机器上测试，毫秒级的时间就够了）<br/><br/>
+这样测试一下，<br/>
+客户exit之后，马上重连，正常。<br/><br/>
+（<span style="color: rgb(255, 0, 0);">为什么服务器主动关闭，但重连的时候，还是可以？</span><br/><span style="color: rgb(255, 0, 0);">服务器主动的话，应该仍然有个TIME-WAIT状态啊</span>）<br/><br/><span style="color: rgb(255, 153, 0);">》》》rfc1122,Page88</span><br/><br/>
+When a connection is closed actively, it MUST linger in<br/>
+TIME-WAIT state for a time 2xMSL (Maximum Segment Lifetime).<br/>
+However,<span style="color: rgb(255, 0, 0);">it MAY accept a new SYN</span> from the remote TCP to<br/>
+reopen the connection directly from TIME-WAIT state, if it:<br/><br/>
+(1) assigns its initial sequence number for the new<br/>
+connection to be larger than the largest sequence<br/>
+number it used on the previous connection incarnation,<br/>
+and<br/>
+(2) returns to TIME-WAIT state if the SYN turns out to be<br/>
+an old duplicate.<br/><br/>
+虽然服务器在TIME-WAIT状态，<br/>
+他此时发起连接应该也会像客户那样失败，<br/>
+但连接都是由客户发起的，<br/>
+所以从现象上看，<br/><span style="color: rgb(255, 0, 0);">让服务器主动关闭连接，<br/>
+可以解决客户端由于TIME-WAIT导致端口占用的问题。</span><br/><br/><span style="color: rgb(0, 0, 255);">五。解决方案（二）隐式绑定</span><br/><br/>
+既然主动关闭方不得不等这个时间，<br/>
+那么就是惹不起但躲得起的问题，<br/>
+这个端口不能用，就换一个来用。<br/><br/>
+再看一下之前的流程：<br/>
+客户机的基本流程：<br/>
+WSAStartup-&gt;socket-&gt;<span style="color: rgb(255, 0, 0);">bind</span>-&gt;connect-&gt;{send-&gt;recv}-&gt;close-&gt;WSACleanup<br/><br/>
+问题就出在bind上，这里使用了显式绑定。<br/><br/>
+把相关的语句注释掉，测试，正常。<br/><br/>
+这时，由于没有指定端口 ，<br/>
+那么每次系统随机给一个没有占用的端口，<br/>
+当然，一切都正常了。<br/><br/><span style="color: rgb(0, 0, 255);">六。为什么客户机是connect出错而不是bind？</span><br/><br/>
+当客户机处于TIME-WAIT状态的时候，<br/>
+实际上，最明显的反映是用netstat -a 看到相应端口是这状态。<br/><br/>
+既然该端口不可用，那么bind该端口的时候就应该出错吧。<br/>
+但我们可以看到bind正常了，而connect出错了。<br/><br/><span style="color: rgb(255, 153, 0);">猜测如下：</span><br/><br/>
+bind仅仅是给socket提供本地端口的一些信息，<br/>
+并没有涉及到与TCP实体的交互。<br/>
+（因为在SOCK_DGRAM的套接字上仍然可以bind，<br/>
+而且几套收发函数都可以混合使用。）<br/>
+所以bind仅仅是告诉socket，我准备用这个端口，<br/>
+并不是告诉TCP实体，我准备用这个端口。<br/><br/>
+而connect不一样，将产生三次握手的动作，<br/>
+socket是个接口，只有交给TCP实体完成，<br/>
+这个时候TCP实体发现该端口还在TIME_WAIT状态，不让使用。<br/><br/><span style="color: rgb(0, 0, 255);">七。为什么要有TIME-WAIT状态？</span><br/><br/>
+从TCP的状态转移图可以看到，<br/><span style="color: rgb(255, 0, 0);">不管经过哪条途径到达TIME-WAIT状态，<br/>
+都是己方已经发送FIN和ACK，<br/>
+并且收到对方ACK和FIN的时候</span>。<br/><br/>
+也就是说从自己这边看起来，<br/>
+关闭连接的四次握手已经完成了。<br/>
+那么为什么要等，就是个很困惑的问题。<br/><br/><span style="color: rgb(255, 153, 0);">UNIX.Network.Programming.Volume.1</span> 的<span style="color: rgb(255, 153, 0);">2.7节</span>有描述，<br/>
+摘抄并翻译几句：<br/><br/><span style="color: rgb(255, 153, 0);">There are two reasons for the TIME_WAIT state:<br/><br/>
+To implement TCP&#8217;s full-duplex connection termination reliably<br/>
+To allow old duplicate segments to expire in the network</span><br/><br/>
+一个为了可靠地实现TCP的全双工连接终止，<br/>
+二是使得旧的重复分组能够在网络中超时。<br/><br/><span style="color: rgb(255, 153, 0);">The first reason can be explained by looking at Figure 2.5 and assuming that the final ACK is lost. The server will resend its final FIN, so the client must maintain state information, allowing it to resend the final ACK. If it did not maintain this information, it would respond with an RST (a different type of TCP segment), which would be interpreted by the server as an error. If TCP is performing all the work necessary to terminate both directions of data flow cleanly for a connection (its full-duplex close), then it must correctly handle the loss of any of these four segments. This example also shows why the end that performs the active close is the end that remains in the TIME_WAIT state: because that end is the one that might have to retransmit the final ACK.</span><br/><br/>
+简述：<br/><br/>
+主动关闭方（称客户）的最后一个ACK可能丢失，<br/>
+被动关闭方（称服务器）会尝试重发FIN。<br/>
+如果这时客户位于CLOSED状态，<br/>
+根据状态转移图，是不应该收到FIN的，<br/>
+于是TCP实体判断异常发生，回一个RST。<br/>
+本来连接已经正常结束，服务器收到RST会也认为连接异常。<br/><br/>
+总得来说就是没有做到雅致关闭。<br/><br/>
+讨论：<br/><br/>
+我认为，这里所谓的异常，其实并不影响高层。<br/>
+当客户到达TIME-WAIT的时候，<br/>
+实际上双方的高层都已经确认了不再交互。<br/>
+（两边的FIN都是在Close事件触发下的动作）<br/>
+仅仅是TCP实体还有一些扫尾的工作没有完成。<br/>
+即使TCP实体进行RST，这种异常也不会干扰到高层。<br/><br/>
+就好比我最开始的例子，<br/>
+如果我把服务器也改成收到“exit”立即退出。<br/>
+那么将看到客户和服务器最后都退出了。<br/>
+从应用的逻辑来看，整个交互已经正确完成了。<br/><br/>
+不过下面这个情况倒是会影响到高层的。<br/>
+（因为涉及到数据的混乱）<br/><br/><span style="color: rgb(255, 153, 0);">To understand the second reason for the TIME_WAIT state, assume we have a TCP connection between 12.106.32.254 port 1500 and 206.168.112.219 port 21. This connection is closed and then sometime later, we establish another connection between the same IP addresses and ports: 12.106.32.254 port 1500 and 206.168.112.219 port 21. This latter connection is called an incarnation of the previous connection since the IP addresses and ports are the same. TCP must prevent old duplicates from a connection from reappearing at some later time and being misinterpreted as belonging to a new incarnation of the same connection. To do this, TCP will not initiate a new incarnation of a connection that is currently in the TIME_WAIT state. Since the duration of the TIME_WAIT state is twice the MSL, this allows MSL seconds for a packet in one direction to be lost, and another MSL seconds for the reply to be lost. By enforcing this rule, we are guaranteed that when we successfully establish a TCP connection, all old duplicates from previous incarnations of the connection have expired in the network</span>.<br/><br/>
+简述：<br/><br/>
+就是说防止旧的重复分组被认为是新的分组中的数据。<br/><br/>
+讨论：<br/><br/>
+我觉得这种现象要发生，很依赖于人为制造。<br/>
+首先TCP接收数据的时候是看窗口的，<br/>
+由起点（SEQ）和长度（RECV.WND）决定。<br/>
+旧有包要落在这个范围内才会被接收。<br/><br/>
+同时，因为是网络中延迟的旧包，<br/>
+对端肯定会发本次新连接应有的数据。<br/>
+所以<span style="color: rgb(255, 0, 0);">取决于具体实现</span>时是丢弃老的还是丢弃新的，<br/>
+当区间交叉时，使用何种聚合策略。<br/><br/>
+然后，每次建立连接的时候SEQ都是重新随机的，<br/>
+SEQ有4G的变动空间，而RECV.WND比起这个数字一般很小，<br/>
+要想两次的窗口有重叠部分，应该是很困难的事。<br/>
+（<span style="color: rgb(255, 0, 0);">在RFC1337,Page8,3.F3中提到了一个建议，<br/>
+就是64-bit的SEQ值，这样的话，撞车就更难了</span>）<br/><br/>
+======<br/><br/>
+除了上面讨论的两点，在网上也看到了各种说法，<br/>
+其实意思大同小异，也有部分说得很混乱的。<br/><br/>
+我觉得这就是个在实际中虽然问题不大，<br/>
+但从理论上分析，是存在的情况。<br/>
+出于严谨的考虑，前人发明了TIME-WAIT。<br/>
+这也算是设计协议有意思的地方吧，<br/>
+越是基础，越是底层，则越要严谨。<br/><br/>
+况且TCP出现的年代，硬件设施与现在完全无法相比。<br/>
+那时经常性断线，丢包，延迟，乱序，等等。<br/>
+而现在，用UDP都很可靠。。<br/><br/><span style="color: rgb(0, 0, 255);">八。扩展阅读</span><br/><br/>
+shallway关于TCP连接关闭的两篇文章：<br/><span style="color: rgb(255, 0, 0);">（20110301,update，已内容死链，移除链接）</span><br/>
+http://shallway.net/?p=157<br/>
+http://shallway.net/?p=192<br/><br/><span style="color: rgb(255, 0, 0);">RFC793<br/>
+RFC1122<br/>
+RFC1337</span><br/><br/>
+相关测试程序<a href="http://www.box.net/shared/o0bftubirn" target="_blank">下载</a><br/><br/><span style="color: rgb(255, 0, 0);">由于阅读量有限，没有充足时间做所有试验，<br/>
+欢迎对文中YY的和理论分析的部分进行指正。</span><br/><br/><a href="http://hi.baidu.com/hplonline/blog/item/3f37a9ccc1a8261100e92839.html" target="_blank">关于转载（第三、四条）</a><br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/backup-hplonline/blog/page/5/">&larr; Older</a>
+    
+    <a href="/backup-hplonline/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/backup-hplonline/blog/page/3/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

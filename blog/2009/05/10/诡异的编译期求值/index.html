@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>诡异的编译期求值 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.10
+int main()
+{
+    int val ;
+    val = 2147483647 &gt; -2147483648;
+    cout&lt;&lt;val&lt;&lt;endl;
+    val = 2147483647 &gt; - &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/10/%E8%AF%A1%E5%BC%82%E7%9A%84%E7%BC%96%E8%AF%91%E6%9C%9F%E6%B1%82%E5%80%BC">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">诡异的编译期求值</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-10T16:41:00+08:00" pubdate data-updated="true">May 10<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.10<br/><br/>
+int main()<br/>
+{<br/>
+     int val ;<br/>
+     val = 2147483647 &gt; -2147483648;<br/>
+     cout&lt;&lt;val&lt;&lt;endl;<br/>
+     val = 2147483647 &gt; -2147483647 - 1 ;<br/>
+     cout&lt;&lt;val&lt;&lt;endl;<br/>
+     return 0;<br/>
+}<br/><br/>
+结果：<br/><br/>
+0<br/>
+1<br/><br/>
+就是这样。。。试了VC6,DEV结果都是。<br/><br/>
+而val的值是在编译期就算好了的。比如：<br/>
+00401798    mov      dword ptr [ebp-4], 0<br/><br/>
+怀疑编译器默认是用无符号比较的。<br/><br/>
+试一下转换：<br/><br/>
+val = 2147483647 &gt; <font color="#ff0000">(signed)</font>-2147483648;<br/><br/>
+出来的就是1了。。。<br/><br/>
+而对后面一个式子的正确结果的解释是，<br/>
+ -2147483647 - 1 <br/>
+作为一个符号数的表达式，按照符号数运算。<br/>
+同时做 &gt; 的时候也按照符号数比较，所以结果正确。<br/><br/>
+看来使用常量const是一个好习惯。<br/>
+可以尽量得到期望的值。<br/><br/>
+比如：<br/>
+const int a = 2147483647 ;<br/>
+const int b = -2147483648 ;<br/><br/>
+&#8230;<br/><br/>
+val = a &gt; b ; <br/><br/>
+这样通过const给相关的数据确定了是否带符号。<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-10T16:41:00+08:00" pubdate data-updated="true">May 10<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/10/%E8%AF%A1%E5%BC%82%E7%9A%84%E7%BC%96%E8%AF%91%E6%9C%9F%E6%B1%82%E5%80%BC/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/10/%E8%AF%A1%E5%BC%82%E7%9A%84%E7%BC%96%E8%AF%91%E6%9C%9F%E6%B1%82%E5%80%BC/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/09/VB%E5%AF%BC%E5%85%A5%E7%A9%BA%E6%A0%BC%E5%88%86%E5%89%B2%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%B0EXCEL/" title="Previous Post: VB导入空格分割的数据到EXCEL">&laquo; VB导入空格分割的数据到EXCEL</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/11/%E8%B4%B4%E4%B8%80%E4%B8%AABST%EF%BC%88BinarySearchTree%EF%BC%89/" title="Next Post: 贴一个BST（BinarySearchTree）">贴一个BST（BinarySearchTree） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

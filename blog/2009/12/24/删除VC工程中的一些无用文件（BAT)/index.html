@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>删除VC工程中的一些无用文件（BAT) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.12.24
+由于存在就是合理，
+所以每个文件都是有用的。
+所谓无用，只是指可以由编译器根据仅存文件再次生成的那些东西。
+当然，有人要说给他一个编译器和notepad，
+他可以重新把所有东西搞出来。
+这是显然的，只是时间的问题。
+要不给人一堆晶体管， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/12/24/%E5%88%A0%E9%99%A4VC%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%97%A0%E7%94%A8%E6%96%87%E4%BB%B6%EF%BC%88BAT%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">删除VC工程中的一些无用文件（BAT)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-24T10:22:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.12.24<br/><br/>
+由于存在就是合理，<br/>
+所以每个文件都是有用的。<br/><br/>
+所谓无用，只是指可以由编译器根据仅存文件再次生成的那些东西。<br/><br/>
+当然，有人要说给他一个编译器和notepad，<br/>
+他可以重新把所有东西搞出来。<br/>
+这是显然的，只是时间的问题。<br/>
+要不给人一堆晶体管，把windows用硬件实现也是逻辑可能的。<br/><br/>
+不确定除了这些文件外还有哪些，<br/>
+不过可以自己添加，就在for的括号里面。<br/><br/><font color="#0000ff">BAT文件：</font><br/><br/>
+@echo off<br/>
+for /r . %%f in (<em>.ncb </em>.obj <em>.pch </em>.pdb <em>.lik </em>.res *.ilb) <br/>
+do (<br/>
+del /f /q %%f<br/>
+echo &#8220;%%f&#8221; deleted<br/>
+)<br/>
+echo done!<br/>
+pause<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-24T10:22:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/12/24/%E5%88%A0%E9%99%A4VC%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%97%A0%E7%94%A8%E6%96%87%E4%BB%B6%EF%BC%88BAT%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/12/24/%E5%88%A0%E9%99%A4VC%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%97%A0%E7%94%A8%E6%96%87%E4%BB%B6%EF%BC%88BAT%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/12/20/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88DIT2%2CDIF2%E7%9A%84%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%EF%BC%8C%E5%AE%9E%E5%BA%8F%E5%88%97fft%E8%AE%A1%E7%AE%97%29/" title="Previous Post: FFT相关（一）（MATLAB）（DIT2,DIF2的递归实现，实序列fft计算)">&laquo; FFT相关（一）（MATLAB）（DIT2,DIF2的递归实现，实序列fft计算)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/12/27/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88DIT4%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%29/" title="Next Post: FFT相关（二）（MATLAB）（DIT4递归实现)">FFT相关（二）（MATLAB）（DIT4递归实现) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

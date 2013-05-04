@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>关于排序的一点事情 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.31
+被有道的一道题囧起了。
+=====group8的500。
+双倍超立方数是指一个正整数可以正好被拆分为两种不同的a3+b3的方式，其中a,b均为整数且0&lt;a&lt;=b。对于任何一个指定的 int n, 返回所有的小于等于n的双倍超立方数的个数 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/02/%E5%85%B3%E4%BA%8E%E6%8E%92%E5%BA%8F%E7%9A%84%E4%B8%80%E7%82%B9%E4%BA%8B%E6%83%85">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">关于排序的一点事情</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-02T14:35:00+08:00" pubdate data-updated="true">Jun 2<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.31<br/><br/>
+被有道的一道题囧起了。<br/><br/>
+=====group8的500。<br/><br/>
+双倍超立方数是指一个正整数可以正好被拆分为两种不同的a<sup>3+b<sup>3的方式，其中a,b均为整数且0&lt;a&lt;=b。对于任何一个指定的</sup></sup> int n, 返回所有的小于等于n的双倍超立方数的个数。 <br/><br/>
+=====<br/><br/>
+开始想了想这东西难道有啥公式，于是推啊推。。但是完全没有头绪。<br/><br/>
+再一想，a,b最大就1000，于是可以暴力a，b，求出所以的组合。<br/>
+最多10<sup>6个数，然后统计这些数里面出现刚好两次的数。<br/><br/></sup>
+问题在于统计这里，我的第一反映就是map。<br/>
+于是拿map去记某个数出现的次数。<br/>
+最后在map里面扫一遍，找个数为2的。<br/><br/>
+这个办法在本机上跑了下最大的数据。<br/>
+居然要3s的样子。。看来不行。<br/><br/>
+只有拿hash去处理某个数和组成他的次数之间的关系。<br/>
+发现很快，最大的数据也可以秒过。。<br/><br/>
+下来一交流。。才意识到这个题可以排序的。。<br/>
+把不超过10<sup>6个数都算出来后，排一下，<br/></sup>
+然后顺次检验就可以得到出现次数为2的数的个数了。。<br/><br/>
+囧，为啥老是想不到排序呢。。<br/><br/>
+同理的还有另外一道题。<br/><br/>
+去年暑假刚开始训练的时候，那个POJ3630。<br/>
+就是给一堆电话号码，判断有没有出现前缀的情况。<br/><br/>
+我当时第一反映居然是TRIE，但是又写不来TRIE。结果纠结了一下午没搞出来。<br/><br/>
+而当天的很多人都是拿到排序一下，于是只用检验相邻的两个是否为前缀就可以了。<br/><br/>
+虽然从速度上说，排序可能不能刷到最快。<br/>
+但是从编码上来说，有完全的优势。。<br/><br/>
+再早一点，到去年暑假前校内赛的某题。<br/>
+就是一堆数里面找出出现了奇数次次的那个。<br/><br/>
+后来倒是知道了，可以用XOR来完成，简洁高效。<br/><br/>
+出于通用的考虑，比如出现k次的数有哪些？用XOR就不行了。<br/><br/>
+这个时候，依然可以用排序！排好后顺次检查就可以。<br/><br/>
+当时比较雷人，没想到排序，又写不来hash，<br/>
+而32bit-signed int范围的数据又不可能直接开数组统计。。<br/>
+于是同样在那纠结了一下午。<br/><br/>
+排序真的是个好东西啊，但是想不到呢。。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-02T14:35:00+08:00" pubdate data-updated="true">Jun 2<span>nd</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/02/%E5%85%B3%E4%BA%8E%E6%8E%92%E5%BA%8F%E7%9A%84%E4%B8%80%E7%82%B9%E4%BA%8B%E6%83%85/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/02/%E5%85%B3%E4%BA%8E%E6%8E%92%E5%BA%8F%E7%9A%84%E4%B8%80%E7%82%B9%E4%BA%8B%E6%83%85/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/01/SplayTree%28%E4%BC%B8%E5%B1%95%E6%93%8D%E4%BD%9C%E7%9A%84%E4%B8%80%E4%B8%AA%E6%BC%94%E7%A4%BA%EF%BC%89/" title="Previous Post: SplayTree(伸展操作的一个演示）">&laquo; SplayTree(伸展操作的一个演示）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/02/%E5%B7%A6%E5%81%8F%E6%A0%91%EF%BC%88%E9%A1%BA%E4%BE%BF%E5%88%B7%E4%B8%AAHDU1512%EF%BC%89/" title="Next Post: 左偏树（顺便刷个HDU1512）">左偏树（顺便刷个HDU1512） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

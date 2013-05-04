@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>DFT实现简单的语音压缩（一） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.12.9
+DFT实现简单的语音压缩
+compress将声音文件origin.wav压缩为data.bin
+decompress从data.bin中解压声音文件并播放原理：
+使用fft变换，保留低频部分到数据文件。
+通过保留更窄的频段，获得高的压缩比；
+通过间隔保留， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/12/09/DFT%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%AD%E9%9F%B3%E5%8E%8B%E7%BC%A9%EF%BC%88%E4%B8%80%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">DFT实现简单的语音压缩（一）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-09T20:51:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.12.9<br/><br/>
+DFT实现简单的语音压缩<br/><br/>
+compress将声音文件origin.wav压缩为data.bin<br/>
+decompress从data.bin中解压声音文件并播放<br/><br/><font color="#0000ff">原理：</font><br/>
+使用fft变换，保留低频部分到数据文件。<br/>
+通过保留更窄的频段，获得高的压缩比；<br/>
+通过间隔保留，获得成倍数提高的压缩比；<br/>
+通过将数据保留为更小的存储单元，获得更高的压缩比。<br/><br/>
+本程序中，保留10到3000Hz的频段，<br/>
+每间隔1个点进行保留，使用single存储。<br/><br/><font color="#0000ff">待完成的其他工作：</font><br/>
+1.既然是实信号，可以用N/2长度的复信号fft进行运算，获得更高效率<br/>
+2.自动寻找能量较高的频段，进行保留<br/>
+3.对保留的频谱再次量化，使用huffman编码等进一步压缩<br/>
+4.将原序列分段fft，再进行频谱搬移，叠加之后ifft，得到更短的声音序列<br/>
+（此法不仅可以压缩，同时只需传送普通wav文件，但播放出无意义的声音）<br/><br/><font color="#0000ff">程序和样例下载：</font><br/><br/><a href="http://www.box.net/shared/yhbd59jpij" target="_blank">here</a><br/><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-09T20:51:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/12/09/DFT%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%AD%E9%9F%B3%E5%8E%8B%E7%BC%A9%EF%BC%88%E4%B8%80%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/12/09/DFT%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%AD%E9%9F%B3%E5%8E%8B%E7%BC%A9%EF%BC%88%E4%B8%80%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/11/27/rip%E4%B8%AD%E8%A7%A6%E5%8F%91%E6%9B%B4%E6%96%B0%E7%9A%84%E4%B8%80%E7%82%B9%E7%BB%86%E8%8A%82/" title="Previous Post: rip中触发更新的一点细节">&laquo; rip中触发更新的一点细节</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/12/11/%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%E5%AE%9E%E9%AA%8C%E6%9D%82%E8%AE%B0%E4%B8%89%E5%88%99%EF%BC%88MATLAB%29%EF%BC%88freqz%E6%B1%82%E6%97%B6%E5%9F%9F%E5%BA%8F%E5%88%97%E7%9A%84%E9%A2%91%E5%93%8D%EF%BC%8C%E4%B8%8B%E6%A0%87%EF%BC%8Cfdatool%E5%AF%BC%E5%87%BA%E7%9A%84IIR%E6%BB%A4%E6%B3%A2%E5%99%A8%E7%9A%84SOS%29/" title="Next Post: 信号处理实验杂记三则（MATLAB)（freqz求时域序列的频响，下标，fdatool导出的IIR滤波器的SOS)">信号处理实验杂记三则（MATLAB)（freqz求时域序列的频响，下标，fdatool导出的IIR滤波器的SOS) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

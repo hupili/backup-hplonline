@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>第一个DirectX程序 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.7.17
+其实几年前就找过相关的东西看了。
+楞是看不懂啊。。
+不过倒是一直对一些词汇有点映象，
+什么表面啊，翻转啊。。。
+也不算坏。
+今天终于憋出来了第一个DirectDraw的练习。
+做的就是一堆“hplonline”，有不同的颜色，
+以不同的方向和速度， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/07/17/%E7%AC%AC%E4%B8%80%E4%B8%AADirectX%E7%A8%8B%E5%BA%8F">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">第一个DirectX程序</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-17T17:55:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.7.17<br/><br/>
+其实几年前就找过相关的东西看了。<br/>
+楞是看不懂啊。。<br/>
+不过倒是一直对一些词汇有点映象，<br/>
+什么表面啊，翻转啊。。。<br/>
+也不算坏。<br/><br/>
+今天终于憋出来了第一个DirectDraw的练习。<br/>
+做的就是一堆“hplonline”，有不同的颜色，<br/>
+以不同的方向和速度，从屏幕左上角的点往其他方向跑。<br/>
+这个东西我试了下没法截图，囧。<br/>
+貌似听说有可以搞定的软件，不过难得去找了。<br/><br/><font color="#0000ff">流程：</font><br/><br/>
+网上有个被转载了好多份的代码，<br/>
+大致上是看得很清楚的了。<br/><br/><font color="#ff6600">前期准备：</font><br/>
+创建DirectDraw对象<br/>
+设置合作模式<br/>
+设置显示模式<br/>
+创建主DirectSurface<br/>
+取得关联的从DirectSurface（后台表面）<br/><br/><font color="#ff6600">刷新：</font><br/>
+在后台表面上绘图<br/>
+翻转直到成功<br/><br/>
+通过Surface 的GetDC方法，<br/>
+可以取得一个与之相关的DC。<br/>
+就可以用通常用的GDI函数来绘制了。<br/><br/><font color="#0000ff">几点很重要的小事：</font><br/><br/>
+刚开始，以为把DX SDK下下来，安好，就万事大吉。<br/>
+于是去找些别人写好的源码，发现不能编译啊。。囧。。<br/><br/>
+首先tool-&gt;options-&gt;directories里面，<br/>
+设置好相关的include和lib文件夹的位置。<br/><br/>
+然后，包含相关的头文件，<br/>
+这个一般找到的源码都是做了的。<br/><br/>
+最后就是把lib添加进去，<br/>
+可以用#pragma comment，<br/>
+也可以在<br/>
+project-&gt;settings-&gt;link<br/>
+的object/library里面添加上。<br/><br/>
+个人倾向的还是用#pragma的方式。<br/>
+这样，当发出去的源码被copy到了N多地方之后，<br/>
+还可以直接编译，不用去改工程的设置。<br/><br/>
+还有个注意的就是，创建窗口的时候。<br/>
+至少给dwStyle指定一个WS_POPUP。<br/>
+如果是NULL的话，创建出来的默认造型里面，<br/>
+又有边框，又有标题栏。<br/>
+于是画图的时候闪烁很厉害。<br/><br/><font color="#0000ff">代码：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/><font color="#ff0000">#include &lt;ddraw.h&gt;</font><br/></h1>
+
+<h1>include &lt;list&gt;<br/></h1>
+
+<h1>include &lt;stdlib.h&gt;<br/></h1>
+
+<h1>include &lt;time.h&gt;<br/><br/></h1>
+
+<p>using namespace std ;<br/><br/><font color="#ff0000">#pragma comment(lib , &#8220;ddraw.lib&#8221;)</font><br/><br/>
+const int wndWidth = 640 ;<br/>
+const int wndHeight = 480 ;<br/><br/>
+typedef struct label_type{<br/>
+     int x , y ;<br/>
+     int dx , dy ;<br/>
+     COLORREF color ;<br/>
+     HFONT hfont ;<br/>
+}LABEL ;<br/><br/>
+HWND g_hWnd ;<br/>
+LPDIRECTDRAW g_lpDD ;<br/>
+LPDIRECTDRAWSURFACE g_lpDDSPrimary ;<br/>
+LPDIRECTDRAWSURFACE g_lpDDSBack ;<br/>
+RECT scrRect ;<br/><br/>
+BOOL g_bActive = TRUE;<br/><br/>
+list&lt;LABEL&gt; lLabel ;<br/><br/>
+//here:sample of message handling function<br/>
+LRESULT OnKeyDown(WPARAM wParam , LPARAM lParam){<br/>
+     if ( wParam == VK_ESCAPE ) PostQuitMessage(0) ;<br/>
+     return 0 ;//An application should return zero if it processes this message<br/>
+}<br/><br/>
+LRESULT OnQuit(WPARAM wParam ,LPARAM lParam){<br/>
+     if ( g_lpDDSPrimary != NULL ) {<br/>
+          g_lpDDSPrimary-&gt;Release() ;<br/>
+          g_lpDDSPrimary = NULL ;<br/>
+     }<br/>
+     if ( g_lpDD != NULL ){<br/>
+          g_lpDD-&gt;Release() ;<br/>
+          g_lpDD = NULL ;<br/>
+     } <br/>
+     return 0 ;//<br/>
+}<br/><br/>
+LRESULT OnActivate(WPARAM wParam ,LPARAM lParam){<br/>
+     g_bActive = LOWORD(wParam) ;<br/>
+     return 0 ;//<br/>
+}<br/><br/>
+LRESULT OnSetCursor(WPARAM wParam ,LPARAM lParam){<br/>
+     SetCursor(NULL) ;<br/>
+     return 0 ;//<br/>
+}<br/><br/>
+LRESULT CALLBACK myWindowProc(<br/>
+  HWND hwnd,       // handle to window<br/>
+  UINT uMsg,       // message identifier<br/>
+  WPARAM wParam,  // first message parameter<br/>
+  LPARAM lParam    // second message parameter<br/>
+  ){<br/>
+     switch(uMsg){<br/>
+     case WM_KEYDOWN : return OnKeyDown(wParam , lParam) ; break ;<br/>
+     case WM_QUIT: return OnQuit(wParam , lParam) ; break ;<br/>
+     case WM_ACTIVATE: return OnActivate(wParam , lParam) ; break ;<br/>
+     case WM_SETCURSOR:return OnSetCursor(wParam , lParam) ;break ;<br/>
+          //here:add more message routing<br/>
+     default:return DefWindowProc(hwnd , uMsg , wParam , lParam) ;     <br/>
+     }<br/>
+}<br/><br/>
+BOOL myCreateWindow(HINSTANCE hInstance){<br/>
+     //here:design your window<br/>
+     WNDCLASS myCls ;<br/>
+     myCls.cbClsExtra = NULL ;<br/>
+     myCls.cbWndExtra = NULL ;<br/>
+     myCls.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH) ;<br/>
+     myCls.hCursor = LoadCursor(NULL , IDC_ARROW) ;<br/>
+     myCls.hIcon = LoadIcon(NULL , IDI_APPLICATION) ;<br/>
+     myCls.hInstance = hInstance ;<br/>
+     myCls.lpfnWndProc = myWindowProc ;<br/>
+     myCls.lpszClassName = &#8220;mywndclass&#8221; ;<br/>
+     myCls.lpszMenuName = NULL ;<br/>
+     myCls.style = NULL ; //CS_HREDRAW | CS_VREDRAW ;<br/><br/>
+     RegisterClass(&amp;myCls) ;<br/><br/>
+     int scrWidth = GetSystemMetrics(SM_CXSCREEN) ;<br/>
+     int scrHeight = GetSystemMetrics(SM_CYSCREEN) ;<br/><br/>
+     //WS_POPUP的指定十分有必要，否则会创建出普通窗体，<br/>
+     //即含有边框和标题栏。<br/>
+     g_hWnd = CreateWindow(&#8220;mywndclass&#8221; , &#8220;my window(esc for quit)&#8221; ,<font color="#ff0000"> WS_POPUP , </font><br/>
+          (scrWidth - wndWidth) / 2 , (scrHeight - wndHeight) / 2 , <br/>
+          wndWidth , wndHeight , NULL , NULL , hInstance , NULL) ;<br/><br/>
+     ShowWindow(g_hWnd , SW_SHOW) ;<br/><br/>
+     return TRUE ;<br/>
+}<br/><br/>
+void ReportError(char <em>msg){<br/>
+     MessageBox(NULL , msg , &#8220;error&#8221; , MB_OK) ;<br/>
+}<br/><br/>
+void InitLabel(){<br/>
+     lLabel.clear() ;<br/>
+}<br/><br/>
+void RefreshLabel(){<br/>
+     list&lt;LABEL&gt;::iterator it ;<br/>
+     for ( it = lLabel.begin() ; it != lLabel.end() ; ){<br/>
+          LABEL &amp;tmpl = </em>it ;<br/>
+          tmpl.x += tmpl.dx ;<br/>
+          tmpl.y += tmpl.dy ;<br/>
+          if ( tmpl.x &gt; wndWidth || tmpl.y &gt; wndHeight ) {<br/>
+               DeleteObject((<em>it).hfont) ;<br/>
+               it = lLabel.erase(it) ;<br/>
+          }else {<br/>
+               ++ it ;<br/>
+          }<br/>
+     }<br/><br/>
+}<br/><br/>
+//CALLBACK of timer<br/>
+VOID CALLBACK AddLabel(HWND hwnd, UINT a, UINT b, DWORD c){<br/>
+     LABEL tmpl ;<br/>
+     tmpl.x = 0 ;<br/>
+     tmpl.y = 0 ;<br/>
+     tmpl.color = RGB(rand() % 200 + 56 , rand() % 200 + 56 , rand() % 200 + 56) ;<br/>
+     tmpl.dx = rand() % 40 ;<br/>
+     tmpl.dy = rand() % 40 ;<br/>
+     LOGFONT logfont ;<br/>
+     memset(&amp;logfont , 0 , sizeof(logfont)) ;<br/>
+     logfont.lfHeight = rand() % 30 + 10 ;<br/>
+     logfont.lfWidth = rand() % 30 + 10 ;<br/>
+     tmpl.hfont = CreateFontIndirect(&amp;logfont) ;<br/>
+     lLabel.push_back(tmpl) ;<br/>
+}<br/><br/>
+BOOL myDraw(){<br/>
+     HDC hdc ;<br/><br/>
+     if ( g_lpDDSBack-&gt;GetDC(&amp;hdc) != DD_OK ){<br/>
+     //     ReportError(&#8220;get dc error&#8221;) ;<br/>
+          return FALSE ;<br/>
+     }<br/><br/>
+     FillRect(hdc , &amp;scrRect , (HBRUSH)GetStockObject(BLACK_BRUSH)) ;<br/><br/>
+     RefreshLabel() ;<br/>
+     list&lt;LABEL&gt;::iterator it ;<br/>
+     SetBkMode(hdc , TRANSPARENT) ;<br/>
+     for ( it = lLabel.begin() ; it != lLabel.end() ; it ++ ){<br/>
+          SetTextColor(hdc , (</em>it).color) ;<br/>
+          SelectObject(hdc , (<em>it).hfont) ;<br/>
+          TextOut(hdc , (</em>it).x , (*it).y , &#8220;hplonline&#8221; , 9) ;<br/>
+     }<br/><br/>
+     g_lpDDSBack-&gt;ReleaseDC(hdc) ;<br/><br/>
+     while ( g_lpDDSPrimary-&gt;Flip(NULL , 0 ) == DDERR_WASSTILLDRAWING ){<br/>
+          Sleep(10) ;<br/>
+     }<br/><br/>
+     return TRUE ;<br/>
+}<br/><br/>
+BOOL myInitDX(){<br/>
+     HRESULT ret ;<br/>
+     <br/>
+     ret = DirectDrawCreate(NULL , &amp;g_lpDD , NULL) ;<br/>
+     if ( ret != DD_OK ) {<br/>
+          ReportError(&#8220;can&#8217;t create directdraw object&#8221;) ;<br/>
+          return FALSE ;<br/>
+     }<br/><br/>
+     ret = g_lpDD-&gt;SetCooperativeLevel(g_hWnd , DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN ) ;<br/>
+     if ( ret != DD_OK ){<br/>
+          ReportError(&#8220;set cooperative failed!&#8221;) ;<br/>
+          return FALSE ;<br/>
+     }<br/><br/>
+     ret = g_lpDD-&gt;SetDisplayMode(640 , 480 , 8) ;<br/>
+     scrRect.left = 0 ;<br/>
+     scrRect.right = wndWidth ;<br/>
+     scrRect.top = 0 ;<br/>
+     scrRect.bottom = wndHeight ;<br/>
+     if ( ret != DD_OK ){<br/>
+          ReportError(&#8220;set display mode failed!&#8221;) ;<br/>
+          return FALSE ;<br/>
+     }<br/>
+     <br/>
+     DDSURFACEDESC ddsd ;<br/>
+     ddsd.dwSize = sizeof(ddsd) ;<br/>
+     ddsd.dwFlags = DDSD_BACKBUFFERCOUNT ;<br/>
+     ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX ;<br/>
+     ddsd.dwBackBufferCount = 1 ;<br/>
+     ret = g_lpDD-&gt;CreateSurface(&amp;ddsd , &amp;g_lpDDSPrimary , NULL) ;<br/>
+     if ( ret != DD_OK ){<br/>
+          ReportError(&#8220;create primary surface failed&#8221;) ;<br/>
+          return FALSE ;<br/>
+     }<br/><br/>
+     DDSCAPS ddscaps ;<br/>
+     ddscaps.dwCaps = DDSCAPS_BACKBUFFER ;<br/>
+     ret = g_lpDDSPrimary-&gt;GetAttachedSurface(&amp;ddscaps , &amp;g_lpDDSBack) ;<br/>
+     if ( ret != DD_OK ){<br/>
+          ReportError(&#8220;create back surface failed&#8221;) ;<br/>
+          return FALSE ;<br/>
+     }<br/><br/>
+     return TRUE ;<br/>
+}<br/><br/>
+int WINAPI WinMain(<br/>
+  HINSTANCE hInstance,  // handle to current instance<br/>
+  HINSTANCE hPrevInstance,  // handle to previous instance<br/>
+  LPSTR lpCmdLine,       // pointer to command line<br/>
+  int nCmdShow           // show state of window<br/>
+  ){     <br/>
+     MSG msg ;<br/>
+     <br/>
+     myCreateWindow(hInstance) ;<br/>
+     <br/>
+     srand(time(NULL)) ;<br/><br/>
+     if ( !myInitDX()){<br/>
+          ReportError(&#8220;failed init DX&#8221;) ;<br/>
+          return -1 ;<br/>
+     }<br/><br/>
+     InitLabel() ;<br/>
+     SetTimer(g_hWnd , 0 , 500 , AddLabel) ;<br/><br/>
+     while (1){<br/>
+          if ( PeekMessage(&amp;msg , NULL , NULL , NULL , PM_NOREMOVE)){<br/>
+               if ( !GetMessage(&amp;msg , NULL , NULL , NULL) ) {<br/>
+                    return msg.wParam ;<br/>
+               }<br/>
+               TranslateMessage(&amp;msg) ;<br/>
+               DispatchMessage(&amp;msg) ;<br/>
+          }else{<br/>
+               if ( g_bActive ){<br/>
+                    myDraw() ;<br/>
+                    Sleep(100) ;<br/>
+               }<br/>
+          }<br/>
+     }<br/><br/>
+     KillTimer(g_hWnd , 0) ;<br/><br/>
+     return msg.wParam ;<br/>
+}</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-17T17:55:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/07/17/%E7%AC%AC%E4%B8%80%E4%B8%AADirectX%E7%A8%8B%E5%BA%8F/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/07/17/%E7%AC%AC%E4%B8%80%E4%B8%AADirectX%E7%A8%8B%E5%BA%8F/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/07/17/%E8%B4%B4%E4%B8%AAwin32%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%9C%80%E5%B0%8F%E6%A1%86%E6%9E%B6%EF%BC%88VC6%29/" title="Previous Post: 贴个win32程序的最小框架（VC6)">&laquo; 贴个win32程序的最小框架（VC6)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/07/19/scanf%E7%9A%84%E4%B8%89%E7%82%B9%E4%B8%8D%E5%B8%B8%E8%A7%81%E4%BD%86%E5%BE%88%E5%AE%9E%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%EF%BC%88%E5%BF%BD%E7%95%A5%E5%8F%98%E9%87%8F%EF%BC%8C%E6%89%AB%E6%8F%8F%E5%AD%97%E7%AC%A6%EF%BC%8C%E8%AF%BB%E5%85%A5%E5%AD%97%E7%AC%A6%E4%B8%AA%E6%95%B0%EF%BC%89/" title="Next Post: scanf的三点不常见但很实用的方法（忽略变量，扫描字符，读入字符个数）">scanf的三点不常见但很实用的方法（忽略变量，扫描字符，读入字符个数） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

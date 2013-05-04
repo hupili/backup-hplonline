@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>FFT相关（一）（MATLAB）（DIT2,DIF2的递归实现，实序列fft计算) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.12.20
+虽然之前用C写过，
+不过一直没有对原理进行比较好的把握，
+正好最近的实验指导书上写得还行，
+于是用递归实现了一下基2的运算。
+关于基2时间抽取和频率抽取在指导书里面讲得比较详细了。指导书和m文件下载
+这里讨论另外两个主题：递归实现和实序列计算。
+递归实现 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/12/20/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88DIT2%2CDIF2%E7%9A%84%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%EF%BC%8C%E5%AE%9E%E5%BA%8F%E5%88%97fft%E8%AE%A1%E7%AE%97%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">FFT相关（一）（MATLAB）（DIT2,DIF2的递归实现，实序列fft计算)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-20T13:30:00+08:00" pubdate data-updated="true">Dec 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.12.20<br/><br/>
+虽然之前用C写过，<br/>
+不过一直没有对原理进行比较好的把握，<br/>
+正好最近的实验指导书上写得还行，<br/>
+于是用递归实现了一下基2的运算。<br/><br/>
+关于基2时间抽取和频率抽取在指导书里面讲得比较详细了。<br/><a href="http://www.box.net/shared/cleppvpyx2" target="_blank">指导书和m文件下载</a><br/><br/>
+这里讨论另外两个主题：递归实现和实序列计算。<br/><font color="#0000ff"><br/>
+递归实现：</font><br/><br/>
+使用递归实现的话，只需要把原理部分读懂就行了，<br/>
+至于蝶形运算，同址运算，位反序等高级操作则不用管了。<br/>
+毕竟用matlab写东西往往关注的是一个算法的正确性，<br/>
+需要大量使用之前再用C写出来 ，并大加优化。<br/><br/>
+既然是递归，则有一个终止条件的问题，<br/>
+实际上，可以递归到序列长度为1的时候：<br/>
+X = x;则可<br/>
+但不知道为啥看到好几个人写的都是递归到长度为2的时候。。<br/>
+难道是老师这么说的。。<br/><br/>
+用递归写出来了之后，<br/>
+我也觉得很惊悚，<br/>
+没想到用matlab可以做得这么短。。。<br/>
+（代码见后，<font color="#ff0000">只能对2的次方的长度计算）</font><br/><br/><font color="#0000ff">实序列DFT：</font><br/><br/>
+上面讨论的dit，dif都是处理复序列的。<br/>
+而实序列本身就少一半的信息，<br/>
+居然还要用同样多的运算量，<br/>
+这就有点不合理了。<br/><br/>
+关于DFT有如下结论：<br/><font color="#ff0000">x的实部的DFT是X的共轭对称部分(Xcs)<br/>
+x的虚部的DFT是X的共轭反称部分(Xca)</font><br/><br/>
+对于实序列来说，共轭反称部分为0，这就是很大的浪费。<br/><br/>
+计算两个实序列的话，都知道可以组装起来。<br/>
+x = x1 + 1i * x2；<br/>
+得到X后再分离出Xcs和Xca，则对应X1和X2。<br/><br/>
+计算一个实序列的话，方法类似。<br/><font color="#ff0000">唯一要考虑的是怎样拆成两个序列，<br/>
+又怎样组装回原序列。</font><br/><br/>
+答案也很显然，借用DIT或者DIF的思想就可以了。<br/>
+比如我下面的实现中，按奇偶分裂原序列。<br/>
+组装成新序列，并且调用任何一种DFT算法得到频域的序列。<br/>
+根据共轭对称和反称关系得到奇偶序列对应的变换，<br/>
+再用类似DIT的方法组装起来就行了。<br/><br/>
+（代码见后，<font color="#ff0000">只能处理原序列是偶数的情况）</font><br/><br/><font color="#0000ff">代码：</font>（如果缩进有问题，那肯定是百度的问题。。）<br/><br/>
+function test<br/>
+x = rand(1 , 2 .^ 13) ;<br/>
+tic<br/>
+X1 = fft(x) ;<br/>
+toc<br/>
+tic<br/>
+X2 = dit2(x) ;<br/>
+toc<br/>
+tic<br/>
+X3 = dif2(x) ;<br/>
+toc<br/>
+tic<br/>
+X4 = real_fft(x) ;<br/>
+toc<br/>
+max(abs(X1 - X2)) <br/>
+max(abs(X1 - X3))<br/>
+max(abs(X1 - X4))<br/>
+return ;<br/><br/>
+function X = dit2(x)<br/>
+N = length(x) ;<br/>
+if N == 1<br/>
+X = x ;<br/>
+else <br/>
+X1 = dit2(x(1:2:(N-1))) ;<br/>
+X2 = dit2(x(2:2:N)) ;<br/>
+W = exp(-1i * 2 * pi / N * (0:(N/2-1))) ;<br/>
+X = [X1 + W .<em> X2 , X1 - W .</em> X2] ;<br/>
+end<br/>
+return ;<br/><br/>
+function X = dif2(x)<br/>
+N = length(x) ;<br/>
+if N == 1<br/>
+X = x ;<br/>
+else<br/>
+x1 = x(1:N/2) ;<br/>
+x2 = x(N/2+1:N) ;<br/>
+W = exp(-1i * 2 * pi / N * (0:(N/2-1))) ;<br/>
+X = zeros(1 , N) ;<br/>
+X(1:2:N-1) = dif2(x1 + x2) ;<br/>
+X(2:2:N) = dif2((x1 - x2) .<em> W) ;<br/>
+end<br/>
+return ;<br/><br/>
+function X = real_fft(x)<br/>
+N = length(x) ;<br/>
+xx = x(1:2:N) + 1j * x(2:2:N) ;<br/>
+XX = dit2(xx) ; %can be changed to other realization of fft<br/>
+XX_conj_rev = conj([XX(1) , fliplr(XX(2:end))]);<br/>
+Xcs = (XX + XX_conj_rev) / 2 ;<br/>
+Xca = (XX - XX_conj_rev) / 2 ;<br/>
+W = exp(-1i * 2 * pi / N * (0:(N/2-1))) ;<br/>
+X = [Xcs + W .</em> Xca / 1j , Xcs - W .* Xca / 1j] ;<br/>
+return ;<br/><br/><font color="#0000ff">结果：</font><br/><br/>
+Elapsed time is 0.000225 seconds.<br/>
+Elapsed time is 0.349320 seconds.<br/>
+Elapsed time is 0.326117 seconds.<br/>
+Elapsed time is 0.154730 seconds.<br/><br/>
+ans =<br/>
+6.7032e-014<br/>
+ans =<br/>
+5.5153e-014<br/>
+ans =<br/>
+6.0396e-014<br/><br/>
+1.可以看到字节写的和内置的fft时效相差很大，<br/>
+不过作为原理模拟，这不是主要问题<br/>
+2.通过实序列算法计算，效率是基础算法（这里用的dit2）的两倍<br/>
+3.计算出的序列和内置fft有一定的误差，<br/>
+这时由于不同路径产生的，<br/>
+不过其量值很小，可以忽略。<br/><br/><font color="#0000ff">下一步：</font><br/><br/>
+1.基4的算法<br/>
+2.任意基的算法<br/>
+3.质数长度的序列计算<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-20T13:30:00+08:00" pubdate data-updated="true">Dec 20<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/12/20/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88DIT2%2CDIF2%E7%9A%84%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%EF%BC%8C%E5%AE%9E%E5%BA%8F%E5%88%97fft%E8%AE%A1%E7%AE%97%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/12/20/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88DIT2%2CDIF2%E7%9A%84%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%EF%BC%8C%E5%AE%9E%E5%BA%8F%E5%88%97fft%E8%AE%A1%E7%AE%97%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/12/20/MATLAB%E7%AC%A6%E5%8F%B7%E8%BF%90%E7%AE%97%E6%B1%82%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2%EF%BC%88%E5%8F%8D%E5%8F%98%E6%8D%A2%EF%BC%89/" title="Previous Post: MATLAB符号运算求傅立叶变换（反变换）">&laquo; MATLAB符号运算求傅立叶变换（反变换）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/12/24/%E5%88%A0%E9%99%A4VC%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%97%A0%E7%94%A8%E6%96%87%E4%BB%B6%EF%BC%88BAT%29/" title="Next Post: 删除VC工程中的一些无用文件（BAT)">删除VC工程中的一些无用文件（BAT) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

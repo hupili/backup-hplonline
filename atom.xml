@@ -4,7 +4,7 @@
   <title><![CDATA[hplonline]]></title>
   <link href="http://hupili.github.io/backup-hplonline/atom.xml" rel="self"/>
   <link href="http://hupili.github.io/backup-hplonline/"/>
-  <updated>2013-05-04T16:15:23+08:00</updated>
+  <updated>2013-05-04T16:48:34+08:00</updated>
   <id>http://hupili.github.io/backup-hplonline/</id>
   <author>
     <name><![CDATA[hplonline]]></name>
@@ -25,329 +25,2278 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[可变参数（C,C++,stdarg.h,全可变参数实现)]]></title>
-    <link href="http://hupili.github.io/backup-hplonline/blog/2010/01/20/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%EF%BC%88C%2CC%2B%2B%2Cstdarg.h%2C%E5%85%A8%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E5%AE%9E%E7%8E%B0%29/"/>
-    <updated>2010-01-20T14:09:00+08:00</updated>
-    <id>http://hupili.github.io/backup-hplonline/blog/2010/01/20/可变参数（C,C++,stdarg.h,全可变参数实现)</id>
-    <content type="html"><![CDATA[<p>(hplonline)2010.1.20</p>
+    <title type="html"><![CDATA[再谈stl的rotate]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/"/>
+    <updated>2011-04-09T14:07:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2011/04/09/再谈stl的rotate</id>
+    <content type="html"><![CDATA[<p>(hplonline)2011.4.9</p>
 
 
-<p>今天看到湖哥在校内上讨论技术问题。<br/>
-隐约对三个点有点印象，于是又细看了一遍。<br/>
-简单记几个例子，以后翻来瞟一下就知道啥意思了。</p>
+<p> </p>
 
 
-<p>以下都是VC6的结论。<br/>
-C表示后缀以.c存储代码，<br/>
-C++表示后缀以.cpp存储代码。<br/>
-IDE根据后缀来决定调用哪种编译器。</p>
+<p>两年前写了这篇：<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/ecf54b34b9e94646241f14b1.html">http://hi.baidu.com/hplonline/blog/item/ecf54b34b9e94646241f14b1.html</a></p>
 
 
-<p><br/><font color="#0000ff">一。C和C++里的可变参数：</font></p>
+<p>主要是为了测试stl的萃取机制，即根据不同的迭代器tag，来选择不同的函数版本。</p>
 
 
-<p>#include &lt;stdio.h&gt;</p>
+<p>留言非常有价值，建议感兴趣的同学围观。</p>
 
 
-<p>void print(int n , &#8230;){<br/>
-     int i ;<br/>
-     int *p = &amp;n ;<br/>
-     p ++ ;<br/>
-     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
-         printf(&#8220;%d\n&#8221; , *p) ;<br/>
-         p ++ ;<br/>
-     }<br/>
-}</p>
+<p> </p>
 
 
-<p>int main(){<br/>
-     print(3 , 1 , 2 , 3) ;<br/>
-     return 0 ;<br/>
-}</p>
+<p>其中，<span style="color: rgb(255, 0, 0);">random_access_iterator</span>的实现非常精辟，当时想记下，似乎搞忘了，没见到下文。</p>
 
 
-<p>这里至少有一个参数，<br/><font color="#ff0000">主要是从这个参数，可以推知后面参数的地址。</font></p>
+<p> </p>
 
 
-<p><font color="#0000ff">二。C++支持的写法：</font></p>
+<p><span style="color: rgb(0, 85, 255);">》》rotate函数</span></p>
 
 
-<p>void print(&#8230;)<br/>
-这样所有参数都是可有可无的了，<br/>
-可以通过编译，<br/>
-至于怎么索引参数后面再说。</p>
+<p>可以抽象成这种模型rotate(int *a, int k, int n)，</p>
 
 
-<p>C直接三个点的话，不让编译。</p>
+<p>对于传入的数组a，有n个元素，要求循环向前移动k次。</p>
 
 
-<p><font color="#0000ff">三。C支持的写法：</font></p>
+<p>每次循环移动的意思是，a[i]=a[i + 1]，而a[n-1] = a[0]。</p>
 
 
-<p>void print(int n){<br/>
-     int i ;<br/>
-     int *p = &amp;n ;<br/>
-     p ++ ;<br/>
-     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
-         printf(&#8220;%d\n&#8221; , *p) ;<br/>
-         p ++ ;<br/>
-     }<br/>
-}</p>
+<p> </p>
 
 
-<p>int main(){<br/>
-     print(3 , 1 , 2 , 3) ;<br/>
-     return 0 ;<br/>
-}</p>
+<p>stl里面，为了与其他用迭代器描述的接口吻合，</p>
 
 
-<p>和前面相比，就是把后面三个点给去掉了。<br/>
-C是允许函数没有定义就使用的，<br/>
-他会假装是个返回int的函数。<br/>
-而调用方式和现有定义不一致的时候，<br/>
-也是会通过的，比如下面这样都行：<br/>
-     print((float)(3) , 1 , 2 , 3) ;</p>
+<p>使用迭代器来给出k和n等价的信息，对于int*型的迭代器，接口如下：</p>
 
 
-<p>不过上面那段程序编译后，<br/>
-编译器会给出警告：<br/>
- warning C4020: &#8216;print&#8217; : too many actual parameters</p>
+<p>rotate(int *begin, int *mid, int *end)</p>
 
 
-<p>而实际上，C可以把所有东西都省掉：<br/>
-void print()<br/>
-至于这样该怎么获得参数，也放在后面说。</p>
+<p> </p>
 
 
-<p><font color="#0000ff">四。使用&lt;stdarg.h&gt;来标准化可变参数的操作：</font></p>
+<p>从rotate函数的描述中，我们可以瞬间得到一个简单的算法，</p>
 
 
-<p>#include &lt;stdio.h&gt;<br/>
-//#include &lt;varargs.h&gt;<br/>
-#include &lt;stdarg.h&gt;</p>
+<p>就是循环向前移动k次，那么时间消耗是 k*n。</p>
 
 
-<p>void print(int n , &#8230;){<br/>
-     va_list l ;<br/>
-     va_start(l , n) ;<br/>
-     while ( n &#8211; ){<br/>
-         int num = va_arg(l , int) ;<br/>
-         printf(&#8220;%d\n&#8221; , num) ;<br/>
-     }<br/>
-     va_end(l) ;<br/>
-}</p>
+<p>对于k比较大的时候（大于n/2），可以做个优化，</p>
 
 
-<p>int main(){<br/>
-     print(5 , 1 , 2 , 3 , 4 , 5) ;<br/>
-     return 0 ;<br/>
-}</p>
+<p>改为循环后移n-k位，时间消耗(n-k)*n。</p>
 
 
-<p><font color="#ff9900">va_list是参数列表定义。<br/>
-va_start（参数列表，最后一个固定参数）<br/>
-&#8211;在开始的时候调用<br/>
-va_arg（参数列表，类型）<br/>
-&#8211;将参数列表移动向下一个参数位置，并返回“类型”所指定的参数<br/>
-va_end（参数列表）<br/>
-&#8211;在结束的时候调用</font></p>
+<p>这个算法的时间上界是n^2的，空间消耗是常数的。</p>
 
 
-<p>其中，varargs.h里面也有几个名字相同的宏。<br/>
-不过他的va_start没第二个参数，感觉很奇怪，<br/>
-暂时没有时间深入研究，以后再看。</p>
+<p> </p>
 
 
-<p><font color="#0000ff">五。stdarg中宏的定义：</font></p>
+<p>另外一个简单算法是通过空间换时间。</p>
 
 
-<p>这个头文件中有若干条件编译，<br/>
-跟我平台上对应的是：</p>
+<p>如果rotate的接口不要求in-place，或者给了等长的buffer，可以这样搞：</p>
 
 
-<p>#define _INTSIZEOF(n)    ( (sizeof(n) + sizeof(int) - 1) &amp; ~(sizeof(int) - 1) )<br/>
-#define va_start(ap,v)  ( ap = (va_list)&amp;v + _INTSIZEOF(v) )<br/>
-#define va_arg(ap,t)     ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )<br/>
-#define va_end(ap)       ( ap = (va_list)0 )</p>
+<p>（1）将a[k ~ n-1]复制到buffer[0 ~ n-k]<br/>（2）将a[0 ~ k-1]复制到buffer[k ~ n-1]</p>
 
 
-<p>_INTSIZEOF这个宏用来取得某个类型按照int对齐后的尺寸。<br/>
-由于在各个平台上int的定义有所不同，<br/>
-另外一般对栈的push和pop操作都是以CPU字长为单位的，<br/>
-所以需要这样一个宏，来取得该类型实际所占的空间。<br/>
-仔细体会一下他是怎么办到的，其实很有意思。</p>
+<p>这个算法的时间和空间都是n了。</p>
 
 
-<p>n按照m向上取整的一般写法为：<br/><font color="#ff0000">(n+m-1) / m * n</font> <br/>
-而当m是二的方冪的时候，可以直接把低位清零而得到，<br/>
-就形成了这个宏的写法。其实这样是等效的：<br/>
--sizeof(int)<br/>
-“-”在补码中的定义本身就是取反加1.</p>
+<p> </p>
 
 
-<p>va_start(ap,v)  ( ap = (va_list)&amp;v + _INTSIZEOF(v) )<br/>
-v是最后一个固定参数，<br/>
-那么将参数列表指针ap赋为他的下一个位置即可。</p>
+<p>这个rotate函数在面试题里面经常出现，</p>
 
 
-<p>va_arg(ap,t)     ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )<br/>
-这个比较普通，把指针向后移了再返回来取这个出类型为t的一个参数。</p>
+<p>一般要求的是时间O(n)，空间O(1)，而且是in-place的。</p>
 
 
-<p>我一开始有个问题就是，<br/>
-为什么不一开始就让表指针指向参数前一个单元，<br/>
-每次取参数的时候，先移动指针，再返回那个位置上的值。<br/>
-类似于这样：<br/>
-*(t*)(ap += ???)</p>
+<p> </p>
 
 
-<p>这里的毛病就在于，<br/>
-移动指针需要知道前一个元素的类型，<br/>
-这样才能确定需要动多少；<br/>
-而返回参数需要知道当前元素的类型。<br/>
-于是一个可能的宏会这样定义：<br/>
-va_arg(ap , prev_t , cur_t)</p>
+<p><span style="color: rgb(0, 85, 255);">》》三种tag</span></p>
 
 
-<p>这样写起来显然不是很爽。<br/>
-程序员需要记忆前一个和当前元素的类型。<br/>
-后面将实现消耗一定存储空间，<br/>
-让电脑来记忆的写法。</p>
+<br/>我看的是g++下的代码，在 stl_algo.h 文件中。<br/><br/><span style="color: rgb(170, 0, 255);">forward_iterator_tag</span><br/>这种类型的迭代器只能像前移动，所以算法实现上很纠结。<br/>大体过程是不断交换[first, mid) 和 [mid, last) 两个区间的元素。<br/>没有多少复杂的数学推导，想清楚过程就行了，故不赘述。<br/>以<span style="color: rgb(255, 0, 0);">交换</span>作为<span style="color: rgb(255, 0, 0);">单位操作</span>，时间消耗是n。<br/>（注意，这三个算法的空间复杂度都是O(1)，时间O(n)。<br/>所以不谈复杂度，谈具体消耗，并且要指明单位操作。）<br/><br/><span style="color: rgb(170, 0, 255);">bidirectional_iterator_tag</span><br/>这种类型的迭代器可以双向移动，于是它是支持reverse操作的。<br/>估计大部分人在网上看到的面试题，都是讲的这套算法，如下：<br/>reverse(begin, mid)<br/>reverse(mid, end)<br/>reverse(begin, end)<br/>以<span style="color: rgb(255, 0, 0);">交换</span>作为<span style="color: rgb(255, 0, 0);">单位操作</span>，时间消耗是2*n。<br/><br/><span style="color: rgb(170, 0, 255);">random_access_iterator_tag</span><br/>以<strong><span style="color: rgb(255, 0, 0);">赋值</span></strong>作为单位操作，时间消耗是 d + n，<br/>其中，d=gcd(n, k)。<br/><br/>关于时间消耗的实测印证，在前面的文章中能找到：<br/><a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/ecf54b34b9e94646241f14b1.html">http://hi.baidu.com/hplonline/blog/item/ecf54b34b9e94646241f14b1.html</a><br/><br/>可以知道，bidirectional版本最耗时，是forward版本的两倍。<br/>random版本与n和k的具体值有关，但是d不会超过n，且一般都非常小。<br/>random版本用的不是<span style="color: rgb(255, 0, 0);">交换</span>，而是<span style="color: rgb(255, 0, 0);">轮换</span>，所以单位操作是幅值。<br/>从实测可以看到，耗时大约为forward版本的1/3。<br/><br/><span style="color: rgb(0, 85, 255);">》》random_access_iterator</span><br/><br/>stl的这段代码太飘逸了，下划线不说，还全用指针优化。<br/>感觉不适合阅读，所以就贴在本篇最后了，下面分析一个我改写的简化版。<br/><br/>void my_rotate(int *begin, int *mid, int *end){<br/>    int n = end - begin ;<br/>    int k = mid - begin ;<br/>    int d = __gcd(n, k) ;<br/>    int i, j ;<br/>    <span style="color: rgb(255, 0, 0);">// (i + k * j) % n % d == i % d</span><br/>    for ( i = 0 ; i &lt; d ; i ++ ){<br/>        int tmp = begin[i] ;<br/>        int last = i ;<br/>        for ( j = (i + k) % n ; j != i ; j = (j + k) % n){<br/>            begin[last] = begin[j] ;    <br/>            last = j ;<br/>        }    <br/>        begin[last] = tmp ;<br/>    }<br/>}<br/><br/>先举个例子，取n=5，k=2。原序列：<br/>0 1 2 3 4 <br/>rotate过后的序列：<br/>2 3 4 0 1<br/>这里，原序列中的某个元素，rotate后的位置是可以直接确定的。<br/>注意到我们只有O(1)的空间可以用，所以从0号元素开始，做下列操作：<br/>（1）备份0号元素<br/>（2）2 &#8211;&gt; 0<br/>（3）4 &#8211;&gt; 2<br/>（4）1 &#8211;&gt; 4<br/>（5）3 &#8211;&gt; 1<br/>（6）将备份的0号元素放到3<br/><br/>这个例子中，只用了一次轮换，就完了，但并非所有的输入都可以在一次轮换做完。<br/>比如可以试下n=4，k=2。<br/>第一次轮换从0开始，<br/>0 1 2 3 &#8211;&gt; 2 1 0 3<br/>第二次轮换从1开始，<br/>2 1 0 3 &#8211;&gt; 2 3 0 1<br/><br/>我的简化版本中，有两重循环。<br/>内层对应的就是单次轮换，外层对应的就是第i轮，i是起点。<br/><br/><span style="color: rgb(0, 85, 255);">》》证明</span><br/><br/>现在需要证明这个算法是完备的，关键的结论就是代码中飘红的这句注释：<br/><span style="color: rgb(255, 0, 0);">// (i + k * j) % n % d == i % d</span><br/>由于d=gdc(n, k)，这个结论比较容易证明。<br/><br/>左边的<span style="color: rgb(255, 0, 0);">(i + k * j) % n</span>，反映的就是内层循环。<br/>每个元素被它后面（模n）的第k个元素替换。<br/>从前面举的例子来看，这样一轮替换有时候会完，有时候有剩。<br/>现在就是推出剩了多少，并且怎么把剩的轮换也做了。<br/>对lhs模d，可以发现得到了一个与j无关的式子，<span style="color: rgb(255, 0, 0);">i%d</span>。<br/>相当于把n个元素划分成了d组，一次轮换只使得i这组换到了rotate之后的位置。<br/>所以需且只需选择d个不同的起点，做多次轮换就行了。<br/><br/><span style="color: rgb(0, 85, 255);">》》from stl_algo.h</span><br/><br/>  /**<br/>   *  @if maint<br/>   *  This is a helper function for the rotate algorithm.<br/>   *  @endif<br/>  */<br/>  template&lt;typename _RandomAccessIterator&gt;<br/>    void<br/>    __rotate(_RandomAccessIterator __first,<br/>         _RandomAccessIterator __middle,<br/>         _RandomAccessIterator __last,<br/>         random_access_iterator_tag)<br/>    {<br/>      // concept requirements<br/>      __glibcxx_function_requires(_Mutable_RandomAccessIteratorConcept&lt;<br/>        _RandomAccessIterator&gt;)<br/><br/>      if ((__first == __middle) || (__last  == __middle))<br/>    return;<br/><br/>      typedef typename iterator_traits&lt;_RandomAccessIterator&gt;::difference_type<br/>    _Distance;<br/>      typedef typename iterator_traits&lt;_RandomAccessIterator&gt;::value_type<br/>    _ValueType;<br/><br/>      const _Distance __n = __last   - __first;<br/>      const _Distance __k = __middle - __first;<br/>      const _Distance __l = __n - __k;<br/><br/>      if (__k == __l)<br/>    {<br/>      std::swap_ranges(__first, __middle, __middle);<br/>      return;<br/>    }<br/><br/>      const _Distance __d = __gcd(__n, __k);<br/><br/>      for (_Distance __i = 0; __i &lt; __d; __i++)<br/>    {<br/>      const _ValueType __tmp = *__first;<br/>      _RandomAccessIterator __p = __first;<br/><br/>      if (__k &lt; __l)<br/>        {<br/>          for (_Distance __j = 0; __j &lt; __l / __d; __j++)<br/>        {<br/>          if (__p &gt; __first + __l)<br/>            {<br/>              *__p = *(__p - __l);<br/>              __p -= __l;<br/>            }<br/><br/>          *__p = *(__p + __k);<br/>          __p += __k;<br/>        }<br/>        }<br/>      else<br/>        {<br/>          for (_Distance __j = 0; __j &lt; __k / __d - 1; __j ++)<br/>        {<br/>          if (__p &lt; __last - __k)<br/>            {<br/>              *__p = *(__p + __k);<br/>              __p += __k;<br/>            }<br/>          *__p = * (__p - __l);<br/>          __p -= __l;<br/>        }<br/>        }<br/><br/>      *__p = __tmp;<br/>      ++__first;<br/>    }<br/>    }<br/><br/>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/"/>
+    <updated>2011-02-01T00:24:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2011/02/01/[paper]XORsinTheAir:PracticalWirelessNetworkCoding（翻译、二）</id>
+    <content type="html"><![CDATA[<p>(hplonline)2011.1.31</p>
 
-<p><font color="#0000ff">六。全可变参数的写法（C内联汇编)：</font></p>
 
+<h1><span><span>3<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">综述</span></h1>
 
-<p>上面的stdarg给出的解决方案，<br/>
-从几个宏就可以明显地看出，<br/>
-必须得有至少一个固定参数，<br/>
-否则va_start就没法调用。</p>
 
 
-<p>又如，我想实现这样的功能，<br/>
-把传进去的参数都累加起来，<br/>
-参数以0表示结束。<br/>
-（类似C字符串的思想）<br/>
-因为当数很多的时候，<br/>
-我不想去数我要加多少个数。<br/>
-或者当加数个数改变的时候，<br/>
-我直接插到中间就行了，<br/>
-只要保证最后一个0。</p>
 
+<p class="MsoNormal"><span style="font-family: 宋体;">术语表：</span></p>
 
-<p>这两点都刺激我们寻找一种全可变参数的写法。<br/>
-在前面的例子中，已经手动遍历过参数列表了，<br/>
-但这里的问题在于如何得到第一个参数的位置：</p>
 
 
-<p>#include &lt;stdio.h&gt;<br/>
-int add(){<br/>
-     int sum = 0 ;</p>
 
+<table class="MsoTableGrid" style="border-collapse: collapse; border: medium none;" border="1" cellpadding="0" cellspacing="0"><tbody><tr><td style="width: 122.4pt; border: 1pt solid windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">术语</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">定义</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">本地包</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">没有编码的包（来自上层交付、从邻居收到、从介质偷听到）</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">编码包、</span><span>XOR</span><span style="font-family: 宋体;">包</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">将多个本地包</span><span>XOR</span><span style="font-family: 宋体;">在一起形成</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">下一跳集</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">一个编码包中，所有本地包的下一跳节点组成的集合。</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">包编号</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">一个包的</span><span>IP</span><span style="font-family: 宋体;">源地址和</span><span>IP</span><span style="font-family: 宋体;">序列号的</span><span>32</span><span style="font-family: 宋体;">位</span><span>hash</span><span style="font-family: 宋体;">值</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">输出队列</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">每个节点有一个</span><span>FIFO</span><span style="font-family: 宋体;">队列，用于保存所有待转发的包</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">存储池</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">存储在过去的</span><span>T</span><span style="font-family: 宋体;">分钟内，听到的所有包</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">编码增益</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">不编码所需的传输次数，比上编码后所需的传输次数</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">编码</span><span>+MAC</span><span style="font-family: 宋体;">增益</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">当</span><span>COPE</span><span style="font-family: 宋体;">使用</span><span>802.11</span><span style="font-family: 宋体;">作为</span><span>MAC</span><span style="font-family: 宋体;">协议，并且所有节点都积压的时候，所得的收益</span></p>
+  </td>
+ </tr></tbody></table>
 
-<p>     int *p ;<br/>
-     __asm{<br/>
-         lea eax , [ebp + 08h] ;<br/>
-         mov p , eax ;<br/>
-     }</p>
 
+<p class="MsoNormal"><span> </span></p>
 
-<p>     while ( *p ){<br/>
-         sum += *p ;<br/>
-         p ++ ;<br/>
-     }</p>
 
 
-<p>     return sum ;<br/>
-}</p>
 
+<p class="MsoNormal"><span><span>       </span>COPE</span><span style="font-family: 宋体;">就是在</span><span>MAC</span><span style="font-family: 宋体;">和</span><span>IP</span><span style="font-family: 宋体;">间插入一个编码层，利用各种信息尽可能地在一次传输中混合多个包。主要技术有三：</span></p>
 
-<p>int main(){<br/>
-     printf(&#8220;%d&#8221; , add(7 , 2 , 1 , 3 , 4 , 0)) ;<br/>
-     return 0 ;<br/>
-}</p>
 
 
-<p>这段代码显然不是各种环境通用的。<br/>
-只要知道了VC编译出来的函数怎么布局内存，<br/>
-自然就能想到该怎么办。<br/>
-栈中的结构一般来说是<br/>
-[ebp + ???h]&#8211;参数n<br/>
-[ebp + ???h]&#8211;参数n-1<br/>
-[ebp + ???h]&#8211;。。。<br/>
-[ebp + 008h]&#8211;参数0<br/>
-[ebp + 004h]&#8211;返回地址<br/>
-[ebp + 000h]&#8211;ebp<br/>
-[ebp - 004h]&#8211;局部变量0<br/>
-[ebp - 008h]&#8211;局部变量1<br/>
-[ebp + ???h]&#8211;。。。<br/>
-[ebp + ???h]&#8211;局部变量n<br/>
-[ebp + ???h]&#8211;保护寄存器</p>
 
+<h2><span><span>3.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">机遇侦听（</span><span>opportunistic
+listening</span><span style="font-family: 黑体;">）。</span></h2>
 
-<p>（有时候好像还会保存一个框架下界的指针，<br/>
-与保存的ebp对应，便于退出函数时进行检查。<br/>
-这时候的参数0位置是[ebp + 0ch]，<br/>
-具体情况看就行了。）</p>
 
 
-<p><font color="#0000ff">七。全可变参数（纯C)：</font></p>
 
+<p class="MsoNormal" style="text-indent: 21pt;"><span>COPE</span><span style="font-family: 宋体;">将所有节点的网卡设会混杂模式，存储在</span><span>T</span><span style="font-family: 宋体;">时间（默认</span><span>0.5s</span><span style="font-family: 宋体;">）内偷听到的所有包。</span></p>
 
-<p>有了上面对栈结构的认识之后，<br/>
-不用内联汇编，也可以找到这个地址。<br/>
-只是这个时候需要借助至少一个局部变量进行界定。</p>
 
 
-<p>int add(){<br/>
-     int sum = 0 ;<br/>
-     <br/>
-     int *p ;<br/>
-     p = &amp;sum + 3 ;</p>
 
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">所有节点会广播自己的接收报告（</span><span>reception reports</span><span style="font-family: 宋体;">），告诉邻居自己自己所存的包有哪些。接收报告一般是附属在数据包上的，如果没有数据发送，也会周期性地广播控制包。</span></p>
 
-<p>     while ( *p ){<br/>
-         sum += *p ;<br/>
-         p ++ ;<br/>
-     }</p>
 
 
-<p>     return sum ;<br/>
-}</p>
 
+<h2><span><span>3.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">机遇编码（</span><span>opportunistic
+coding</span><span style="font-family: 黑体;">）</span></h2>
 
-<p><font color="#0000ff">八。stdarg宏的变换写法：</font></p>
 
 
-<p>int __prev_length ;<br/>
-#define _INTSIZEOF(n)    ( (sizeof(n) + sizeof(int) - 1) &amp; ~(sizeof(int) - 1) )<br/>
-#define va_start(ap,v)  ( ap = (va_list)&amp;v + _INTSIZEOF(v) ) , __prev_length = 0 <br/>
-#define va_arg(ap,t)     ((ap += __prev_length) , __prev_length = _INTSIZEOF(t) , *(t *)ap)<br/>
-#define va_cur(ap,t)     (*(t *)ap)<br/>
-#define va_end(ap)       ( ap = (va_list)0 )</p>
 
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">关键问题是，把哪些包</span><span>XOR</span><span style="font-family: 宋体;">到一起可以达到最大的吞吐。一个节点在发送的时候，需要最大化一次传输中本地包的数量（从后面的工程上的种种近似可以看到，作者并没有达到这个准则），并且要保证下一跳集中的每个节点都能够解码。</span></p>
 
-<p>首先开一个变量记录上一个参数的尺寸。<br/>
-在初始化的时候给这个参数置零。<br/>
-每次取参数可以先移动，<br/>
-再保存当前变量的尺寸，<br/>
-最后再返回当前参数。</p>
 
 
-<p>以前有很长段时间觉得逗号表达式没什么用。<br/>
-因为一般用逗号表达式的地方，<br/>
-直接用分号都可以拆开成好几个表达式。<br/>
-但是在这种类似的单行宏里面就有用了，<br/>
-语句可以依次执行，并且最后一个表示为整个逗号表达式的返回值。<br/>
-当va_arg(ap,t)单独成一句话的时候，<br/>
-用分号和逗号分割倒是问题不大。<br/>
-但是可能出现 if ( va_arg(ap , t) ){&#8230;}<br/>
-如果是分号的话，就会把客户端的语句给切开，<br/>
-最后导致编译错误。</p>
 
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">一个例子，（看图不说话）：</span></p>
 
-<p><br/></p>
 
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">当前网络的状况：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/f6fb9aefa74c0ebecf1b3ea2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>B</span><span style="font-family: 宋体;">的输出队列中，每个包的下一跳：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/e234be8f55de3dbff11f36a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">可选的编码方案：（</span><span>1</span><span style="font-family: 宋体;">、无法解码，直接</span><span>pass</span><span style="font-family: 宋体;">；</span><span>2</span><span style="font-family: 宋体;">、均可解码，但不是最优；</span><span>3</span><span style="font-family: 宋体;">、最优的）</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/88cfb631bdea9df95fdf0ea2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">一个简单的法则：一个节点要将</span><span>p1,p2…pn</span><span style="font-family: 宋体;">，</span><span>n</span><span style="font-family: 宋体;">个本地混在起，传给</span><span>r1,r2…rn</span><span style="font-family: 宋体;">，</span><span>n</span><span style="font-family: 宋体;">个下一跳，当且仅当</span><span>ri</span><span style="font-family: 宋体;">有</span><span>n-1</span><span style="font-family: 宋体;">个</span><span>pj(j!=i)</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这个法则保证了，每个下一跳集中的节点都能解码。当一个节点有机会发送的时候，它选择满足上述法则的最大的</span><span>n</span><span style="font-family: 宋体;">，进而最大化编码的收益。（实际上，只有当上层协议认为下层是可靠的时候，并且流量对延迟不敏感的时候，这才有可能最大化。以</span><span>TCP</span><span style="font-family: 宋体;">为例，如果每次选出的</span><span>n</span><span style="font-family: 宋体;">个包，使得</span><span>n</span><span style="font-family: 宋体;">最大，但却不一定包含输出队列前面的包，这将导致</span><span>TCP</span><span style="font-family: 宋体;">的超时。或者上层协议并不关心包的交付，如</span><span>UDP</span><span style="font-family: 宋体;">）</span></p>
+
+
+
+
+<h2><span><span>3.3<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">获得邻居信息</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">如前所述，通过接收报告，可以通知邻居自己拥有的本地包信息。在严重拥塞的时候，接收报告也可能丢失；在流量很小的时候，接收报告的到来可能很迟，以至于附近的节点已经进行了次优的编码选择。所以一个节点不能仅依赖于接收报告，而要猜测邻居所拥有的包。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">有些无线路由协议会计算每个节点对之间的投递概率（</span><span>delivery
+probability</span><span style="font-family: 宋体;">），并用该值来决定好的传送路径。</span><span>ETX</span><span style="font-family: 宋体;">（</span><span>expected
+transmission count</span><span style="font-family: 宋体;">）周期性地计算投递概率，并把投递概率的倒数作为每条链路的权值，广播出去，用链路状态协议计算出最短路径。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">（投递概率的计算方法是，每个节点以</span><span>t</span><span style="font-family: 宋体;">为周期广播探针包，并维护一个计数器，统计过去</span><span>w</span><span style="font-family: 宋体;">时间内收到的探针包的数量，设当前时间为</span><span>T</span><span style="font-family: 宋体;">，</span><span>counter(T-w,T)/(w/t)</span><span style="font-family: 宋体;">即是投递概率</span><span>p</span><span style="font-family: 宋体;">。这意味着，某条链路上发送包成功的事件服从</span><span>B(n,p)</span><span style="font-family: 宋体;">，那么平均发送次数为</span><span>1/p</span><span style="font-family: 宋体;">，该值即为这条链路的</span><span>ETX</span><span style="font-family: 宋体;">。一个路径上，所有链路的</span><span>ETX</span><span style="font-family: 宋体;">之和，即是这个路径的</span><span>ETX</span><span style="font-family: 宋体;">）。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">当</span><span>COPE</span><span style="font-family: 宋体;">缺乏绝对信息的时候（指收到邻居的接收报告），它使用上一跳和下一跳之间的投递概率来作为该邻居拥有这个包的概率。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">当</span><span>COPE</span><span style="font-family: 宋体;">猜测失败的时候，会导致一些下一跳无法解码。相应的包会被重传，并且可能和另外一组包编码到一起。</span></p>
+
+
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+
+
+<h1><span><span>4<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">带来的增益</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">吞吐量的增益来自编码机会，而编码机会又由流量模式决定。这节深入剖析预期的吞吐量增益，以及影响它的因素。</span></p>
+
+
+
+
+<h2><span><span>4.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">编码增益</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">定义：无编码时的传输次数，比上有编码时最少的传输次数。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">在</span><span>Alic-Bob</span><span style="font-family: 宋体;">的例子中，编码增益是</span><span>4/3</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>COPE</span><span style="font-family: 宋体;">的最大编码增益是多少？任意图下，普通网络编码对单播流量的增益上界目前还是未决问题，见</span><span>[36]</span><span style="font-family: 宋体;">、</span><span>[16]</span><span style="font-family: 宋体;">。尽管如此，可以分析一些简单的拓扑，来发掘影响</span><span>COPE</span><span style="font-family: 宋体;">编码增益的因素。基本假设：完全相同的节点；全向无线信号；在信号半径内可以完美侦听；在信号半径外则无法被听到；如果两个节点可以相互听到，路由协议会使用直接链路。此外，下面的分析假设了无限的流量，并且只考虑稳定状态。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">定理</span><span>4.1</span></b><b><span style="font-family: 宋体;">，在没有机遇侦听的情况下，最大的编码增益是</span><span>2</span></b><b><span style="font-family: 宋体;">，并且是可达的。</span><span/></b></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这个定理可以通过下图的构造来证明，详见附录</span><span>A</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/47a498583a831a8f9d8204a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">我们并不知道在有机遇侦听的情况下，最大的编码增益是怎样的，但我们知道</span><span>COPE</span><span style="font-family: 宋体;">至少是有收益的。如下图例：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/91e013d84fb4186432fa1ca2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这个是</span><span>Alic-Bob</span><span style="font-family: 宋体;">例子的一个扩展。两组流量在链路上是不相交的。编码增益很容易得到，</span><span>4/3</span><span style="font-family: 宋体;">。这个结论很重要，因为在实际的网络中，只能找到很少的一些流量，他们拥有相同的路径，但方向不同；而许多不链路不相交的流量，在一个中继节点相交确是很容易发生的情况，于是可以把这些包通过机遇侦听和猜测编码到一起。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">下图（</span><span>c</span><span style="font-family: 宋体;">）是上面（</span><span>b</span><span style="font-family: 宋体;">）的一个扩展，编码增益达到</span><span>8/5</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/ecf54b346c80991f241f14a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">实际中观测到的收益比理论的要小，原因有编码机会的缺失、包头开销（</span><span>COPE</span><span style="font-family: 宋体;">要在</span><span>IP</span><span style="font-family: 宋体;">前面加上许多自己的信息）、介质中的损失率。尽管如此，</span><span>COPE</span><span style="font-family: 宋体;">可以将传输的信息率增加到大于介质的比特率，这使得即使当介质被充分使用的时候，</span><span>COPE</span><span style="font-family: 宋体;">依然带来收益。这与其他提升无线网吞吐量的方式不同，比如</span><span>[6]</span><span style="font-family: 宋体;">的机遇路由（</span><span>opportunistic
+routing</span><span style="font-family: 宋体;">），当网络不完全的拥塞的时候，可以更好地利用介质，但不会增加网络容量。</span></p>
+
+
+
+
+<h2><span><span>4.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">编码</span><span>+MAC</span><span style="font-family: 黑体;">增益</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">实际实验中，会发现增益超过了理论上的编码增益。这是因为</span><span>COPE</span><span style="font-family: 宋体;">编码和</span><span>MAC</span><span style="font-family: 宋体;">之间的交互，产生了有益的副作用，所以叫做编码</span><span>+MAC</span><span style="font-family: 宋体;">增益。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">以</span><span>Alice-Bob</span><span style="font-family: 宋体;">的图为例。在没有编码的情况下，要使网络达到最大的吞吐，</span><span>Relay</span><span style="font-family: 宋体;">的发送速率（发送机会）需要是</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">两倍。但</span><span>802.11</span><span style="font-family: 宋体;">的</span><span>MAC</span><span style="font-family: 宋体;">协议为了保证公平性，三个节点的发送机会是相等的。这就使得在</span><span>Relay</span><span style="font-family: 宋体;">中，有一半的包无法发出去。在使用</span><span>COPE</span><span style="font-family: 宋体;">的情况下，</span><span>Relay</span><span style="font-family: 宋体;">可以同时发送来自</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">的包，相比没有</span><span>COPE</span><span style="font-family: 宋体;">的时候，吞吐量变成了</span><span>2</span><span style="font-family: 宋体;">倍。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">编码</span><span>+MAC</span><span style="font-family: 宋体;">增益假设所有节点都持续有数据发送，但受</span><span>MAC</span><span style="font-family: 宋体;">分配的带宽所限制。在存在单点瓶颈的时候，编码</span><span>+MAC</span><span style="font-family: 宋体;">增益可以由该节点带</span><span>COPE</span><span style="font-family: 宋体;">的排出率（</span><span>draining rate</span><span style="font-family: 宋体;">，指一个中继节点，把输出队列中的包发送出去的速率），比上不带</span><span>COPE</span><span style="font-family: 宋体;">的排出率来计算。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">“</span><span>X</span><span style="font-family: 宋体;">”拓扑中编码</span><span>+MAC</span><span style="font-family: 宋体;">增益是</span><span>2</span><span style="font-family: 宋体;">，“十字”拓扑中，编码</span><span>+MAC</span><span style="font-family: 宋体;">增益是</span><span>4</span><span style="font-family: 宋体;">。编码</span><span>+MAC</span><span style="font-family: 宋体;">增益的理论上界为：</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">定理</span><span>4.2</span></b><b><span style="font-family: 宋体;">，在没有机遇侦听的情况下，</span><span>COPE</span></b><b><span style="font-family: 宋体;">的编码</span><span>+MAC</span></b><b><span style="font-family: 宋体;">增益是</span><span>2</span></b><b><span style="font-family: 宋体;">，并且可达到。</span><span/></b></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">证明见附录</span><span>B</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">定理</span><span>4.3</span></b><b><span style="font-family: 宋体;">，在有机遇侦听的情况下，</span><span>COPE</span></b><b><span style="font-family: 宋体;">的编码</span><span>+MAC</span></b><b><span style="font-family: 宋体;">增益是无穷。</span><span/></b></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">可以通过构造的有无穷边的“轮”拓扑来证明，如下：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/8ed7f2dcd88b13f0cc1166a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">下表对</span><span>COPE</span><span style="font-family: 宋体;">的增益做一个总结：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/d217f60381ce7fd9d53f7ca2.jpg" border="0"/></span></span></p>
+
+
+<h1><span><span>5<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span><span>    </span></span><span style="font-family: 宋体;">实现</span><span>COPE</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">因为要把</span><span>COPE</span><span style="font-family: 宋体;">集成到现有的协议栈中，下面主要是一些系统级的问题。</span></p>
+
+
+
+
+<h2><span><span>5.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">包编码算法</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">原则</span><span>1</span></b><b><span style="font-family: 宋体;">：不延迟本应该发送的包。</span></b><span style="font-family: 宋体;">当无线信道空闲的时候，取出输出队列中的第一个包，检查是否有其他可以</span><span>XOR</span><span style="font-family: 宋体;">在一起的包。如果没有编码机会，</span><span>COPE</span><span style="font-family: 宋体;">不会等待可能的匹配包，而是直接发送。（实际上这个原则和前面“最大化编码的本地包数量”是不兼容的，但这里的原则是更好的工程上的方案）</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">原则</span><span>2</span></b><b><span style="font-family: 宋体;">：尽量将长度相近的包</span><span>XOR</span></b><b><span style="font-family: 宋体;">在一起。</span></b><span style="font-family: 宋体;">因为把短包</span><span>XOR</span><span style="font-family: 宋体;">到长包中的时候，会额外补零，导致带宽利用率不高。经验研究表明，网络中的包长度成双模态分布，在</span><span>40</span><span style="font-family: 宋体;">和</span><span>1500</span><span style="font-family: 宋体;">有两个峰。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">原则</span><span>3</span></b><b><span style="font-family: 宋体;">：</span><span>COPE</span></b><b><span style="font-family: 宋体;">不会把同样下一跳的包</span><span>XOR</span></b><b><span style="font-family: 宋体;">在一起</span></b><span style="font-family: 宋体;">。否则，下一跳无法解码。这样，</span><span>COPE</span><span style="font-family: 宋体;">只需要给每个邻居维护两个虚队列，分别对应大包和小包就行了（默认一</span><span>100bytes</span><span style="font-family: 宋体;">做阈值）。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">编码算法：先从输出队列中取出队头的包，判断是大包还是小包。在相同尺寸的虚队列中去搜索可以</span><span>XOR</span><span style="font-family: 宋体;">在一起的包。为防止乱序，</span><span>COPE</span><span style="font-family: 宋体;">只考察每个虚队列的队头。当一种尺寸的队列都搜索完的时候，才会搜索另一种尺寸的队列。在这些限制条件下，</span><span>COPE</span><span style="font-family: 宋体;">只用考察</span><span>2M</span><span style="font-family: 宋体;">个包头就行了（</span><span>M</span><span style="font-family: 宋体;">是邻居的数量）。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">另一个主要问题是乱序。</span><span>TCP</span><span style="font-family: 宋体;">会把乱序当作是网络拥塞的信号。</span><span>COPE</span><span style="font-family: 宋体;">按照输出队列的顺序发包，并且搜索虚队列的时候，只考察队首，这极大程度地规避了乱序的问题。尽管如此，由于</span><span>COPE</span><span style="font-family: 宋体;">分了大小包队列，所以乱序仍然可能发生。比如，当需要重传的时候，可能是由于组装</span><span>XOR</span><span style="font-family: 宋体;">包的时候进行了错误的猜测，导致某节点无法解码。</span><span>COPE</span><span style="font-family: 宋体;">有一个重排模块可以把</span><span>TCP</span><span style="font-family: 宋体;">分组排序后再递交上层。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">最后，要使得编码包所到达的节点有最大的解码可能性。</span><span>COPE</span><span style="font-family: 宋体;">必须要决定某个本地包是否可以被邻居解码。当该邻居是这个本地包的上一跳，或者收到了从该邻居发来的接收报告时，答案是肯定的。当上述条件不成立的时候，</span><span>COPE</span><span style="font-family: 宋体;">利用路由协议计算出的投递概率来估计某下一跳含有一个本地包的概率。</span><span>COPE</span><span style="font-family: 宋体;">确保下一跳集中每个节点都能解码的概率足够大。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">某下一跳能解码的概率是，它含有除它所需本地包外其他所有包的概率乘积：</span><span>PD=P1*P2…*P(n-1)</span><span style="font-family: 宋体;">。假设</span><span>COPE</span><span style="font-family: 宋体;">已经决定了编码</span><span>n-1</span><span style="font-family: 宋体;">个包，当决定第</span><span>n</span><span style="font-family: 宋体;">个包的时候，它考察</span><span>n</span><span style="font-family: 宋体;">个下一跳的</span><span>PD</span><span style="font-family: 宋体;">，是否都大于一个阈值</span><span>G</span><span style="font-family: 宋体;">（默认</span><span>0.8</span><span style="font-family: 宋体;">）。这样保证了所有下一跳节点都有至少</span><span>G</span><span style="font-family: 宋体;">的概率解码。最后，为了公平性，在虚队列间循环的时候使用随机顺序。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">每个节点的数据结构如下：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">输出队列。</span><span>FIFO</span><span style="font-family: 宋体;">的队列，包含了所有待转发的包。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">对每个邻居维护两个虚队列，对应大包和小包。虚队列中是一堆指针，指向输出队列的元素。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">包信息表。是一个以包编号为</span><span>key</span><span style="font-family: 宋体;">的</span><span>hash</span><span style="font-family: 宋体;">表，对输出队列中的每个包，它记录了该节点邻居拥有该包的可能性。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 20.75pt;"><span style="font-family: 宋体;">当</span><span>MAC</span><span style="font-family: 宋体;">层表示可以发包的时候，</span><span>COPE</span><span style="font-family: 宋体;">执行的算法如下：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 20.75pt; text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/c5ed3ffacf46d2d89f5146a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">（循环部分用红框标出，注意并非是按照顺序迭代，前面已经说过了，是根据</span><span>[1,M]</span><span style="font-family: 宋体;">的随机排列来迭代的）</span></p>
+
+
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<br/><p class="MsoNormal"><span> </span></p><br/>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/"/>
+    <updated>2011-02-01T00:24:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2011/02/01/[paper]XORsinTheAir:PracticalWirelessNetworkCoding（翻译、三）</id>
+    <content type="html"><![CDATA[<p>(hplonline)2011.2.1</p>
+
+
+<h2><span><span>5.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">包解码算法</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">解码算法比较简单。每个节点都维护有一个存储池，拥有所侦听到的包的拷贝，并且以包编号为</span><span>key</span><span style="font-family: 宋体;">组织成一个</span><span>hash</span><span style="font-family: 宋体;">表。收到编码包的时候，只需要在存储池中搜索</span><span>n-1</span><span style="font-family: 宋体;">个已经侦听到的包，即可完成解码。存储池会周期地（几秒）做垃圾回收。</span></p>
+
+
+
+
+<h2><span><span>5.3<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">伪广播</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">有两种工作模式：单播和广播。</span><span>COPE</span><span style="font-family: 宋体;">需要将包广播到附近的节点，所以很自然地想到使用广播模式。但广播模式有两个问题：低可靠；缺乏回退机制。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">工作在单播模式时，会立即</span><span>ack</span><span style="font-family: 宋体;">一个已经收到的包。</span><span>802.11</span><span style="font-family: 宋体;">通过</span><span>MAC</span><span style="font-family: 宋体;">层的重传机制保证可靠性。没有收到</span><span>ack</span><span style="font-family: 宋体;">会被当作拥塞的信号，发送方会使用指数的随机回退，这样使得多个节点可以共享介质。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">的广播模式，接收方是有多个，所以无法确定谁应该</span><span>ack</span><span style="font-family: 宋体;">。没有</span><span>ack</span><span style="font-family: 宋体;">，故无法重传和保证可靠性。同时，也无法侦测到冲突。如果有大量积压的节点，共享广播信道，它们会持续地用最高速率发送分组，导致非常高的冲突率。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">伪广播的实质是在</span><span>802.11</span><span style="font-family: 宋体;">单播包上捎带一个</span><span>XOR</span><span style="font-family: 宋体;">头，里面指明了该编码包的所有下一跳节点，而该单播包的</span><span>MAC</span><span style="font-family: 宋体;">目的地设为下一跳集中的一个即可。由于所有节点都是混杂模式，他们可以听到</span><span>MAC</span><span style="font-family: 宋体;">地址不属于自己的包。当收到包的时候，该节点检查</span><span>XOR</span><span style="font-family: 宋体;">头，如果自己在下一跳集中，则处理该包；否则将该包放入存储池中，当作机遇侦听得到的包。由于所有的包都是单播，可以利用</span><span>802.11</span><span style="font-family: 宋体;">的冲突检测和回退机制。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">伪广播比广播更可靠。因为一个单播包被重传的时候，增大了周围节点偷听到它的概率。</span></p>
+
+
+
+
+<h2><span><span>5.4<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">每跳</span><span>ack</span><span style="font-family: 黑体;">和重传</span></h2>
+
+
+
+
+<h3><span><span>5.4.1<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">原因？</span></h3>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">编码包要求下一跳集中的节点都发送</span><span>ack</span><span style="font-family: 宋体;">，有两个原因：发送放只能得到一个</span><span>MAC</span><span style="font-family: 宋体;">层的</span><span>ack</span><span style="font-family: 宋体;">，就是实际上设置为</span><span>MAC</span><span style="font-family: 宋体;">目的地址的那个节点，其他节点可能没有收到编码包；即使各节点收到编码包，可能由于发送节点的错误猜测，导致无法解码。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">标准解法是进行局部的</span><span>ack</span><span style="font-family: 宋体;">和重传。如果某编码包中的本地包没有收到</span><span>ack</span><span style="font-family: 宋体;">，</span><span>COPE</span><span style="font-family: 宋体;">会在超时后进行重传，很可能和其他的本地包一起编码。</span></p>
+
+
+
+
+<h3><span><span>5.4.2<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">异步</span><span>ack</span><span style="font-family: 宋体;">和重传</span></h3>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">在</span><span>MAC</span><span style="font-family: 宋体;">层实现了同步的</span><span>ack</span><span style="font-family: 宋体;">。如果对于每个</span><span>COPE</span><span style="font-family: 宋体;">编码的本地包，都进行同步的</span><span>ack</span><span style="font-family: 宋体;">的话，效率会非常低（需要额外的介质争用）。主要思想还是做捎带。接收节点可以将</span><span>ack</span><span style="font-family: 宋体;">累积起来，然后捎带在自己后续发出的编码包中。如果没有数据发送，那么节点会在控制包中周期地送出</span><span>ack</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<h2><span><span>5.5<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">防止</span><span>TCP</span><span style="font-family: 黑体;">乱序</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">由于异步</span><span>ack</span><span style="font-family: 宋体;">，还有之前叙述的重传等原因，乱序是无法完全规避的。</span><span>COPE</span><span style="font-family: 宋体;">做了一个排序模块。但自己是收到包的目的，并且上层协议是</span><span>TCP</span><span style="font-family: 宋体;">的时候，会将包排序了再上交。这个需要利用到</span><span>TCP</span><span style="font-family: 宋体;">的序列号。如果收到的包并不会导致一个空洞，则直接交给上层，否则，进行积累，直到空洞被补上或者超时。</span></p>
+
+
+<h1><span><span>6<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">实现细节</span></h1>
+
+
+
+
+<h2><span><span>6.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">包格式</span></h2>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/e3f5b409e7e85f756a60fba3.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">图已经很详细了，主要就是三个部分：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">该编码包中，各本地包的信息，（包编号，下一跳）。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">接收报告，（源</span><span>IP</span><span style="font-family: 宋体;">，上一个</span><span>IP</span><span style="font-family: 宋体;">序列号，位图）</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span>Ack</span><span style="font-family: 宋体;">捎带。包含一个局部的</span><span>SEQ</span><span style="font-family: 宋体;">，用于局部</span><span>ack</span><span style="font-family: 宋体;">和重传。每个</span><span>ack</span><span style="font-family: 宋体;">条目包含，（邻居标识，上一个局部</span><span>ack</span><span style="font-family: 宋体;">编号，位图）</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">比较有意思的是，</span><span>COPE</span><span style="font-family: 宋体;">如何在一个条目中，实现多个序列号（</span><span>IP</span><span style="font-family: 宋体;">序列号或者</span><span>ack</span><span style="font-family: 宋体;">号）。</span><span>COPE</span><span style="font-family: 宋体;">使用（上一编号，位图）的表达方式。由于存储池中包的序列号和</span><span>ack</span><span style="font-family: 宋体;">的序列号都有数据局部性，所以使用上一编号</span><span>+</span><span style="font-family: 宋体;">位图可以压缩信息。以</span><span>ack</span><span style="font-family: 宋体;">的一个条目为例：</span><span>{A,50,01111111}</span><span style="font-family: 宋体;">，这个</span><span>ack</span><span style="font-family: 宋体;">表示该节点从</span><span>A</span><span style="font-family: 宋体;">收到了</span><span>50</span><span style="font-family: 宋体;">号，以及</span><span>43-49</span><span style="font-family: 宋体;">号，但</span><span>42</span><span style="font-family: 宋体;">号还是缺失的。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span><span>       </span></span><span style="font-family: 宋体;">虽然</span><span>COPE</span><span style="font-family: 宋体;">有累积</span><span>ack</span><span style="font-family: 宋体;">的机制，但并不保证链路级的可靠性。每个节点都只重传少数几次（默认为</span><span>2</span><span style="font-family: 宋体;">），然后放弃。</span></p>
+
+
+
+
+<h2><span><span>6.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">控制流程</span></h2>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/2790d0b41f6687228ad4b2a3.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">如图，看就明白。</span></p>
+
+
+
+
+<h1><span><span>7<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">实验结论</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">（很多数据和图，太啰嗦，需要的时候查阅原文即可）</span></p>
+
+
+
+
+<h1><span><span>8<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">讨论和总结</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这篇文章的</span><span>COPE</span><span style="font-family: 宋体;">主要是用于固定的无线</span><span>mesh</span><span style="font-family: 宋体;">网，所有节点并不是资源有限的。更普遍地，</span><span>COPE</span><span style="font-family: 宋体;">可以用于满足下列条件的无线多跳网：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">内存。</span><span>COPE</span><span style="font-family: 宋体;">需要当前正在网络中传输的包，已经到达目的的包没有必要存储。存储容量的计算方法是：带宽</span><span>*</span><span style="font-family: 宋体;">延迟。比如</span><span>11Mb/s</span><span style="font-family: 宋体;">的环境下，当往返时间</span><span>50ms</span><span style="font-family: 宋体;">时（</span><span>RTT</span><span style="font-family: 宋体;">，</span><span>Round-Trip Time</span><span style="font-family: 宋体;">），大约需要</span><span>70kB</span><span style="font-family: 宋体;">的存储空间。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">全向天线。这是为了机遇侦听的顺利进行。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">功率需求。当前的</span><span>COPE</span><span style="font-family: 宋体;">实现，并不优化节点的功率使用，并且假设节点的能量是无限制的。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span>COPE</span><span style="font-family: 宋体;">不仅使用与</span><span>Wifi</span><span style="font-family: 宋体;">的网络，还可以和其他</span><span>MAC</span><span style="font-family: 宋体;">协议一起使用，如</span><span>WiMax</span><span style="font-family: 宋体;">和</span><span>TDMA</span><span style="font-family: 宋体;">。将</span><span>COPE</span><span style="font-family: 宋体;">改造适应传感器网络也是可行的，不过有一些小问题。首先，在任意时间，传感器网络中只有一个子集的传感器处于唤醒状态。传感器网络可能更倾向于节能，而不是吞吐量提高。</span><span>COPE</span><span style="font-family: 宋体;">还可以用于蜂窝中继技术，在基站和移动设备中间建立中继站，形成多跳蜂窝中继网。实际上，爱立信已经动手了</span><span>~</span><span style="font-family: 宋体;">不过他们的中继站只会把双工流量混在一起，和</span><span>Alice-Bob</span><span style="font-family: 宋体;">那个例子一样。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">学术界有若干方法增加无线网的吞吐，包括更精确的拥塞控制、更好的路由、有效的</span><span>MAC</span><span style="font-family: 宋体;">协议。</span><span>COPE</span><span style="font-family: 宋体;">是非常重要的一步，可以帮助我们认识到无线网的承载能力；即，如何最大化单次传输中的信息量。编码机制，通常用在应用层和物理层。</span><span>COPE</span><span style="font-family: 宋体;">和其他一些项目，</span><span>[7][21]</span><span style="font-family: 宋体;">，将编码引入网络中，并且可以和转发、路由、可靠交付等集成在一起。</span></p>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/"/>
+    <updated>2011-02-01T00:22:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2011/02/01/[paper]XORsinTheAir:PracticalWirelessNetworkCoding（翻译、一）</id>
+    <content type="html"><![CDATA[<p>(hplonline)2011.1.31</p>
+
+
+<p>偶然读到的一篇网络编码方面文章，作为这个领域的入门材料，应该是很赞的。正好又做了翻译，不share出来就可惜了。这个领域的许多研究，正如这篇文章所说，主要是集中在理论和多播。一方面，理论让人感觉到生涩；另一方面，多播的应用环境本来就不是很显然，有点人工制造的味道。比如网络编码的经典蝶形图，一个宿从多个源收数据在大多数时候应该是没这需求的。我们能想到的多播应用环境，应该也就是类似vod之类的，当多个用户点播不同片源的时候，中间节点可以从编码上得到收益。然而在无线网中，网络编码很自然的有了需求。无线网本身有广播的特点，而大部分MAC协议，比如802.11，却利用比较复杂的规则，使得上层能拿到一个单播、“可靠”的接口。在大多数研究中， 也会把无线网抽象成点对点的形式，再套上有线网中成熟的方案。问题是解决了，但不一定拿到了最高的收益。这篇文章从无线切入，是一个很好的点。另外，关于Network Coding，这篇文章只用到了简单的XOR，这就使得我们这样的数学盲也能够理解。更令我眼前一亮的是许多工程上的考究。以前感觉学术界做事情，总是理论上非常好，实际应用的时候，受种种限制，结果没用。这篇文章提供了完整的解决方案，可以把COPE集成进现有协议栈。如果对802.11的MAC、无线路由协议（非IP的路由）、TCP等的细节比较了解的话，会有豁然开朗的感觉。即使忘干净了， 也正好可以复习一下，发现当年课堂上应付考试背的条条框框居然在这里被巧妙地用上了。</p>
+
+
+<p>下面的部分也不是严格意义上的翻译，算是意译吧。专有名词不一定翻得准，就把原文中的term括在后面了。有些地方做了扩充，是根据自己的理解来的，在括号里面。像ETX等，原文只是简单提出，并给出参考文献。作者认为ETX就像TCP一样，对读者来说是个常识。。于是我又被赤裸裸地鄙视了，然后去找了相关资料，在相关部分做了下简述。</p>
+
+
+<p>===================================（<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/3f37a9ccc1a8261100e92839.html">转载提示</a>，第四条）</p>
+
+
+<p>
+
+</p>
+
+
+<h1 style="margin-left: 0cm; text-indent: 0cm;"><span style="font-family: 宋体;">摘要</span></h1>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span>COPE</span><span style="font-family: 宋体;">，一种新的无线</span><span>mesh</span><span style="font-family: 宋体;">网架构。主要是建立在网络编码理论上，让中间节点在存储转发之外，还可以把多个包混在一起，从而增加吞吐量。网络编码先前的工作主要集中在理论推导和多播流量。这篇文章主要的工作是把理论带入实践，处理通常情况下的单播、动态和突发流量、以及把</span><span>COPE</span><span style="font-family: 宋体;">集成到现有协议栈中的其他问题。在</span><span>20</span><span style="font-family: 宋体;">节点的网络中测试了</span><span>COPE</span><span style="font-family: 宋体;">的性能，网络吞吐量有极大的增加。根据流量模式、拥塞程度、传送层协议不同，获得的在增益从百分之几到几倍不等。</span></p>
+
+
+
+
+<h1><span><span>1<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">简介</span></h1>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">无线网不可或缺，（一堆废话）。当前无线网的主要问题是吞吐量有限，并且不可扩展到高密度的大型网络。（主要还是无线介质共享，带来的冲突问题）</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span>COPE</span><span style="font-family: 宋体;">在</span><span>MAC</span><span style="font-family: 宋体;">和</span><span>IP</span><span style="font-family: 宋体;">中间插入一个编码层，发掘编码机会，并试图在一次传输中转发多个包。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/5adca6af93570a9d7dd92aa2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">用这个图来解释下</span><span>COPE</span><span style="font-family: 宋体;">的基本原理。当前方法（</span><span>a</span><span style="font-family: 宋体;">），</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">各向对方发送一个包，总共需要</span><span>4</span><span style="font-family: 宋体;">次传输。由于</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">都知道自己发出去的包是什么，所以</span><span>Relay</span><span style="font-family: 宋体;">可以将两个包</span><span>XOR</span><span style="font-family: 宋体;">在一起。接收方将</span><span>Relay</span><span style="font-family: 宋体;">发来的包与自己本地的包</span><span>XOR</span><span style="font-family: 宋体;">之后，即可得到发送方的包。这样传输次数只有</span><span>3</span><span style="font-family: 宋体;">次。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">实际上，</span><span>COPE</span><span style="font-family: 宋体;">带来的收益远比上面这个例子要大。利用无线介质本身广播的特点，让传输路径周围的节点都能侦听到该包。每个节点都将听到的包存储一段时间，并且向自己周围的节点报告。节点在发送包的时候，可以利用周围节点报告的信息，来实现<b>机遇编码</b>（</span><span>opportunistic
+coding</span><span style="font-family: 宋体;">）。在所有下一跳节点均能解码的情况下，</span><span>COPE</span><span style="font-family: 宋体;">会尽可能地混合多个包。这让</span><span>COPE</span><span style="font-family: 宋体;">可以在发送包的时候，带上反方向的流量，如</span><span>Alice-Bob</span><span style="font-family: 宋体;">的例子所示，并且可以混上更多的包。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>COPE</span><span style="font-family: 宋体;">的两个基本原则：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">不使用点对点的无线网抽象方式，而是利用无线网的广播特性。网络设计者通常是将无线网抽象成点对点的方式，然后讲有线网的转发、路由技术应用于无线网。</span><span>COPE</span><span style="font-family: 宋体;">需要利用无线网的广播特性，而不是通过人工抽象去隐藏它。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">利用网络编码。以往这方面的工作主要是理论和多播流量的，</span><span>COPE</span><span style="font-family: 宋体;">会解决单播、动态突发流量，还有其他实践问题。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span> </span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">他们</span><span>05</span><span style="font-family: 宋体;">年发表了</span><span>opportunistic
+wireless network coding</span><span style="font-family: 宋体;">的文章，参考文献</span><span>[23]</span><span style="font-family: 宋体;">。这篇文章的不同点在</span><span>3</span><span style="font-family: 宋体;">个方面</span><span>:</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">这是无线网络编码的第一个实现，将</span><span>COPE</span><span style="font-family: 宋体;">无缝集成到现有的协议栈中，支持</span><span>TCP</span><span style="font-family: 宋体;">和</span><span>UDP</span><span style="font-family: 宋体;">，并且运行了真实的应用程序来试验。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">在</span><span>linux</span><span style="font-family: 宋体;">内核和</span><span>Roofnet</span><span style="font-family: 宋体;">平台上实现了</span><span>COPE</span><span style="font-family: 宋体;">，第一次在无线网环境中部署网络编码。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">研究了</span><span>COPE</span><span style="font-family: 宋体;">的性能，揭示了</span><span>COPE</span><span style="font-family: 宋体;">和无线信道、路由协议、高层应用的交互。研究结果总结如下：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">网络编码有实践收益，可以极大增加无线网的吞吐量。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">实验中，当无线信道拥塞、伴有大量随机的</span><span>UDP</span><span style="font-family: 宋体;">包的时候，增益大概</span><span>3-4</span><span style="font-family: 宋体;">倍。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">如果上层流量没有拥塞控制，比如</span><span>UDP</span><span style="font-family: 宋体;">，</span><span>COPE</span><span style="font-family: 宋体;">的增益比理论还大。这个额外增益主要是因为编码使得路由的发送队列更短，减小了拥塞的下行链路上丢包的可能性。（被丢弃的实际上包已经消耗了部分网络资源）</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">在通过一个</span><span>AP</span><span style="font-family: 宋体;">连接到</span><span>Internet</span><span style="font-family: 宋体;">的无线</span><span>mesh</span><span style="font-family: 宋体;">网上，吞吐量增益根据上下行流量比例不同，从</span><span>5%</span><span style="font-family: 宋体;">到</span><span>70%</span><span style="font-family: 宋体;">不等。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 62.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>n<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">隐藏终端将导致很高的冲突率，即使配置成</span><span>802.11</span><span style="font-family: 宋体;">的最大重传次数也无法掩盖。这种情况下，</span><span>TCP</span><span style="font-family: 宋体;">的发送速率不足以产生足够的编码机会。（因为</span><span>TCP</span><span style="font-family: 宋体;">在流控上的特点是，线性增加，乘法减少。当冲突发生的时候，发送窗口会折半。发送的包骤降，导致编码机会变得更少）。当没有隐藏终端问题的时候，</span><span>TCP</span><span style="font-family: 宋体;">的吞吐量平均增加</span><span>38%</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+
+
+<h1><span><span>2<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">背景和相关工作</span></h1>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a8d2915084487c33843524a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">上一幅网络编码方面经典的蝶状图。这个演示的是</span><span>S1</span><span style="font-family: 宋体;">向</span><span>R1</span><span style="font-family: 宋体;">和</span><span>R2</span><span style="font-family: 宋体;">发送的多播流量</span><span>a</span><span style="font-family: 宋体;">，</span><span>S2</span><span style="font-family: 宋体;">向</span><span>R1</span><span style="font-family: 宋体;">和</span><span>R2</span><span style="font-family: 宋体;">发送的多播流量</span><span>b</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">网络编码方面最早的工作是</span><span>Ahiswede</span><span style="font-family: 宋体;">做的</span><span>[2]</span><span style="font-family: 宋体;">，他展示了允许路由混合多个包中的信息，可以达到多播的容量。紧接着是</span><span>Li</span><span style="font-family: 宋体;">的工作，</span><span>[26]</span><span style="font-family: 宋体;">，他证明了线性编码就可以达到容量上界。</span><span style="font-size: 9pt;">Koetter and M´edard</span><span style="font-family: 宋体;">提出了多项式复杂度的编解码算法，</span><span>[24]</span><span style="font-family: 宋体;">，</span><span style="font-size: 9pt;">Ho et al.</span><span style="font-family: 宋体;">把他们的结论扩展到了随机编码，</span><span>[17]</span><span style="font-family: 宋体;">。</span><span>[11]</span><span style="font-family: 宋体;">、</span><span>[31]</span><span style="font-family: 宋体;">，是最近研究无线网络编码的文献。</span><span style="font-size: 9pt;">Lun et al.</span><span style="font-family: 宋体;">，研究了全向天线情况下的无线网络编码，指出最小化通信开销的问题可以被表达为一个线性规划问题，并且可以分布式求解。前面这些文章都是理论的，并且研究多播流量。</span><span>[39]</span><span style="font-family: 宋体;">，</span><span>[16]</span><span style="font-family: 宋体;">，</span><span>[37]</span><span style="font-family: 宋体;">研究了单播拓扑，并且正式网络编码比纯粹转发的吞吐量要高。这篇文章就是要将理论运用于实践，并提供一个为通用单播流量实现的协议。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">为了提高无线网的吞吐量，在系统级优化上，也有许多研究。</span><span>[10]</span><span style="font-family: 宋体;">、</span><span>[5]</span><span style="font-family: 宋体;">、</span><span>[12]</span><span style="font-family: 宋体;">寻找更好的路由度量（</span><span>routing
+metric</span><span style="font-family: 宋体;">）。</span><span>[33]</span><span style="font-family: 宋体;">微调</span><span>TCP</span><span style="font-family: 宋体;">协议。</span><span>[6]</span><span style="font-family: 宋体;">、</span><span>[22]</span><span style="font-family: 宋体;">、</span><span>[15]</span><span style="font-family: 宋体;">改进路由和</span><span>MAC</span><span style="font-family: 宋体;">协议。</span></p>
+
+
+<p><span/><br/><p class="MsoNormal" style="text-align: center;" align="center"><span><br/></span></p><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[用Makefile来拓扑排序]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2011/01/15/%E7%94%A8Makefile%E6%9D%A5%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F/"/>
+    <updated>2011-01-15T13:53:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2011/01/15/用Makefile来拓扑排序</id>
+    <content type="html"><![CDATA[<p>(hplonline)2011.1.15</p>
+
+
+<p> </p>
+
+
+<p>我，其实是来灌水的。</p>
+
+
+<p> </p>
+
+
+<p>只要知道什么是拓扑排序，什么是makefile，那看下面代码就成了：</p>
+
+
+<p>#!/bin/bash<br/># all goals<br/>echo &#8220;all:&#92;&#8221; &gt; Makefile<br/>awk &#8216;{print $1; print $2}&#8217; input | sort -u | awk &#8216;{print $0,&#8221; &#92;&#8221;}&#8217; &gt;&gt; Makefile<br/>echo &#8220;&#8221; &gt;&gt; Makefile<br/># single solution<br/>awk &#8216;{print $1; print $2}&#8217; input | sort -u | awk &#8216;{print $0,&#8221;:\n\techo&#8221;,$0}&#8217; &gt;&gt; Makefile<br/># dependency <br/>sed &#8216;s/ /:/g&#8217; input &gt;&gt; Makefile<br/>make -s</p>
+
+
+<p> </p>
+
+
+<p>输入文件：<span style="color: rgb(15, 153, 50);">$ cat input</span><br/>1 2<br/>1 3<br/>2 4<br/>4 3<br/>5 2</p>
+
+
+<p>测试输出：<span style="color: rgb(15, 153, 50);">$ ./topo.sh </span><br/>3<br/>4<br/>2<br/>1<br/>5</p>
+
+
+<p> </p>
+
+
+<p>如果有循环依赖，make会自己报出来，像这样：</p>
+
+
+<p>make: Circular 4 &lt;- 3 dependency dropped.</p>
+
+
+<p> </p>
+
+
+<p> </p>
+
+
+<p> </p>
+
+
+<p> </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[MapReduce下的分布式排序]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2011/01/08/MapReduce%E4%B8%8B%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F/"/>
+    <updated>2011-01-08T00:46:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2011/01/08/MapReduce下的分布式排序</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.11.8<br/><br/>几个月前，粗略学了下<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/addb5660b04359d28cb10d86.html">MapReduce</a>的原理。<br/>一直都是理论，没有动过手，最近尝试了一下。<br/><br/>以前见到有人是这样讲MR的分布式排序的：<br/><span style="color: rgb(255, 153, 0);">mapper把输入直接cat进系统当key，reducer的数量设置成一个</span>。<br/>这样得到的结果当然是有序，依赖MR系统本身，<br/>因为reducer接收到的&lt;key,value&gt;对是按照key排序的。<br/><br/>MR的这个特性很好，可以将同一个key的所有数据归到一起处理。<br/>不过需要注意的是：<span style="color: rgb(255, 0, 0);">reducer收到的同一个key的各个value之间，非发射顺序</span>。<br/>在这点上我就吃过亏。估计是由于使用不稳定排序造成的。<br/>当时是实现一个分布式处理日志的脚本，输入数据已经按照query分块过了，<br/>由于mapper的输入和输出都是按照日志顺序的，于是觉得reducer得到的也是有序的。<br/>而实际上，reducer得到的只保证同一个query的各行任在一起，之间却不有序，<br/>这样就会导致有前后依赖关系的处理失败。<br/><br/>最囧的是这样造成的是<span style="color: rgb(255, 0, 0);">逻辑失败</span>，很难查发觉。<br/>我们单机测试小数据的时候，一般都用下面的简单命令：<br/><span style="color: rgb(255, 0, 0);">cat input | mapper | sort -k1 | reducer &gt; output</span><br/>中间这个发射过程是伪的，<br/>很多时候reducer收到的刚好就是mapper发射的顺序。<br/>看着没什么问题后，一到hadoop上面，就是超大数据了。<br/>这时候统计出的东西要没对，也不会发现了。。<br/><br/><span style="color: rgb(0, 0, 255);">》》&#8221;伪分布式排序&#8221;</span><br/><br/>那么再说开篇这个“分布式排序”的问题，其实很明显的。<br/>在这个过程中，mapper和reducer实际上都是不作为，<br/>那么时间消耗肯定还是在系统的内部。<br/>如果是单点的master分发，最快也是nlogn的下界，还考虑存储问题。<br/>如果是mapper和reducer之间直接交互，能实现的最好局面应该是：<br/>系统在mapper端对key进行排序，reducer端使用多路归并。<br/>两个阶段的时间应该是：<span style="color: rgb(255, 0, 0);">n/k * log(n/k) + n * logk &#8230; (1)</span>，k是map的数量。<br/>在这种实现下，能够做到与k有关的复杂度，方能显示出“分布式”的一点作用。<br/><br/>但我们在设计算法的时候，应该是依赖模型而不是依赖实现的。<br/>所以之前提到的用cat做mapper，设一个reducer的方法还不算用到了分布式的特点。<br/><br/><span style="color: rgb(0, 0, 255);">》》法1-直接转化，手动实现</span><br/><br/>mapper和reducer都直接使用cat，<br/>与上面不同的是，reducer的数量不止一个。<br/>这样各个reducer出来的显然不全局有序，<br/>于是需要一个single阶段，来做多路归并。<br/>用km和kr分别代表mapper和reducer的数量，整体的复杂度为：<br/><span style="color: rgb(255, 0, 0);">n/km<em>log(n/km) + n/kr</em>log(km) + n * log(kr)  &#8230; (2)</span><br/>这里的假设是数据均匀，前两项与（1）的计算是一样的，最后是单击归并的复杂度。<br/><br/><span style="color: rgb(0, 85, 255);">》》法2-利用先验知识</span><br/><br/>前面的想法都有一个局限，<br/>就是认为多个worker分别排出来的数据不全局有序。<br/>这种障碍下，我们就得想办法做多路归并。<br/><br/>其实可以跳出来，设计一个方案，让多个worker出来的直接全局有序就行了。<br/>要办到的话，其实很简单，让reducer编号小的拿到小的数据，编号大的反之。<br/>粗听起来似乎是不可能的，既然任务就是排序，怎么可能先知道大小呢？<br/><br/>这里就需要引入<span style="color: rgb(255, 0, 0);">先验知识</span>了。<br/>比如我们已经拿到了待排数据的分布F(x)（累加概率密度），有k个reducer。<br/>对于某个x0，如果有 1/k * (i-1) &lt;= F(x0) &lt; 1/k * i，就把x0发射给第i个reducer处理。<br/><br/>实现上有两个问题，第一个是怎么计算F(x0)，第二个是怎么定向发射。<br/>第一个问题一般是反过来实现的，通过统计，<br/>可以得到k个区间，端点为：x_min, x(1), x(2) &#8230;x(k-1), x_max ，<br/>使得 F(x(i)) = 1/k * i，F(x_min)=0，F(x_max)=1，相当于是求到了F(x)反函数在某些位置的值。<br/>在mapper分发的时候，二分比较这一系列端点，就可以确定reducer的编号了。<br/>第二个问题需要引入一个partitioner的概念，hadoop的实现中已经包括了。<br/>partitioner的作用就是，根据key，来确定该中间数据应该交给的reducer。<br/>这里需要实现一个partitioner，将中间数据交给key编号相同的reducer。<br/>这里，mapper发射出来的数据为&lt;i, x0&gt;。<br/><br/>mapper和partitioner的分工不是绝对的。<br/>完全可以用一个cat去替换map，然后在partitioner中实现按区间发射的逻辑。<br/>在hadoop中，已经有内嵌的<a target="_blank" href="http://hadoop.apache.org/mapreduce/docs/current/api/org/apache/hadoop/mapreduce/lib/partition/TotalOrderPartitioner.html">TotalOrderPartitioner</a>，可以满足要求，<br/>这个partitioner可以根据一个外部可配的列表，来分发数据。<br/><br/>至于先验知识如何得到，第一次只好懵了，<br/>从第二次开始，可以利用上一次的排序结果进行统计。<br/><br/>这个方法实现的复杂度为：<br/><span style="color: rgb(255, 0, 0);">n/km * log(kr) + n/kr * log (n/kr)  &#8230; (3)</span><br/><br/><span style="color: rgb(0, 85, 255);">》》比较</span><br/><br/>排序的下界是没有改变的，但可以通过分布式取得常数上的收益。<br/>三个式子中，可以看到（3）是最优的。<br/>这说明合理先验知识的引入是十分有意义的。<br/><br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[点着色的判定问题和优化问题]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/12/31/%E7%82%B9%E7%9D%80%E8%89%B2%E7%9A%84%E5%88%A4%E5%AE%9A%E9%97%AE%E9%A2%98%E5%92%8C%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98/"/>
+    <updated>2010-12-31T00:26:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/12/31/点着色的判定问题和优化问题</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.12.29</p>
+
+
+<p> </p>
+
+
+<p>最近整理资料，发现了一个去年就遇到，但一直没有解决的问题。即点着色的判定问题和优化问题，分别属于NPC还是NPH。当时盯着老师的课件，觉得没有分对，就从约化的角度给了一些理由。后来看到<a target="_blank" href="http://en.wikipedia.org/wiki/Graph_coloring">wiki</a>上，也是这样同样的分类法，看来在学术界是有公认的。</p>
+
+
+<p> </p>
+
+
+<p><span style="color: rgb(0, 85, 255);">》》基本概念</span></p>
+
+
+<p> </p>
+
+
+<p>P：P问题是可以在多项式时间内解决的。比如数组求和，n长的数组花O(n)的时间就可以完成。</p>
+
+
+<p> </p>
+
+
+<p>NP：NP并非从可解的时间复杂度来定义，而是说在多项式时间内可以验证。还是说数组求和，你告诉我一个结果。我要验证答案很简单，花O(n)的时间也去求一次，就知道你算对没有。这里的关键在于，既然多项式时间可解 ，那多项式时间必然可验证。换句话说，就是P属于NP。但是NP里面，有更多的是多项式时间不可解，却可以验证。<a target="_blank" href="http://en.wikipedia.org/wiki/Hamiltonian_path_problem">hamilton cycle</a>，就是经常举的一个例子。直接解是很困难的，但是某天你在纸上胡乱一画，rp特好，一个hamilton cycle就出来了。这个时候，我看一下就可以验证你的解答，验证算法可以在多项式时间内完成。</p>
+
+
+<p> </p>
+
+
+<p>NPC：当然不是non-player character。就是说，如果有一个NPC问题，那所有的NP都可以约化到它。至于约化，后面再看下是怎么回事。</p>
+
+
+<p> </p>
+
+
+<p>NPH：这个就是非常hard了，连验证都没法在多项式时间内做完。比如问一个图是否不存在hamilton cycle。你说“不存在”，于是我就卡壳了。除非我把所有回路都考察完，否则我无法验证你这个“不存在”是不是对的。虽然有些时候，rp一爆发，立马找到一条，发现你错了。但总得来说，这个上界是无法改变的，最倒霉的情况下，就是得把所有路看完。</p>
+
+
+<p> </p>
+
+
+<p>约化：通常是指，在多项式时间内，把问题A转化成问题B。这就意味着，一旦问题B解决，那么问题A就解决了。所以地球人很热衷证明一个问题是NPC，这样，一旦在多项式时间内解决该问题，其他NP问题都可以多项式时间解决了。不过现实是我们有一大堆的NPC了，但都只有近似方法。这个定义下NPC之间都是互相可约的。NPC可以约到NPH也不奇怪，相当于用高射炮打蚊子，解决了一个更复杂的版本，从而得到简单问题的答案。但是NPH不能约到NPC，否则，就违背定义。</p>
+
+
+<p> </p>
+
+
+<p><span style="color: rgb(0, 85, 255);">》》点着色的迷惑</span></p>
+
+
+<p> </p>
+
+
+<p>点着色：给图中的每个点一个颜色，有公共边的点不能同色。</p>
+
+
+<p> </p>
+
+
+<p>判定问题：给定图G，用k种颜色（有的地方会定义成&lt;=k种颜色），能否点着色？通常认为是NPC的。</p>
+
+
+<p> </p>
+
+
+<p>优化问题：给定图G，最少用多少种颜色可以点着色？通常认为是NPH的。</p>
+
+
+<p> </p>
+
+
+<p>至于这两个问题的复杂度是怎样被分别证明的，还没去深究。现在仅仅从约化这个角度，来看下这里的矛盾。</p>
+
+
+<p> </p>
+
+
+<p>如果解决了优化问题，我们就知道了最少所需的颜色数X(G) ，那么直接比较k和X(G)的大小，就可以解决判定问题了。也就是说判定问题在O(1)的时间内可以约到优化问题。这个当然不奇怪，前面都说了，一个NPC可以约到NPH。</p>
+
+
+<p> </p>
+
+
+<p>如果解决了判定问题呢？于是我可以一直尝试用i种颜色的判定问题。直到找到一个i-1判定不成功，但i判定成功的地方，这个i就是X(G)了。这样的尝试显然是可穷的，一个n点的图，最多用n种颜色，必然可以着色。换句话说，这里提到的优化问题可以在O(n)的时间内约到判定问题。</p>
+
+
+<p> </p>
+
+
+<p>于是矛盾就出现了。。如果他们相互可约的话，那应该同属NPC或者同属NPH。。这个问题还是很扰人的，求正解。我觉得再深挖下去，应该是语词方面出了bug，根本到定义的时候才能够明晰。短期内看样子是不会解决这个问题了，记之。</p>
+
+
+<p> </p>
+
+
+<p> </p>
+
+
+<p> </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[条件编译解决/**/注释嵌套的问题(#if 0 #endif)]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/12/25/%E6%9D%A1%E4%BB%B6%E7%BC%96%E8%AF%91%E8%A7%A3%E5%86%B3%2A%2A%E6%B3%A8%E9%87%8A%E5%B5%8C%E5%A5%97%E7%9A%84%E9%97%AE%E9%A2%98%28%23if0%23endif%29/"/>
+    <updated>2010-12-25T18:54:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/12/25/条件编译解决**注释嵌套的问题(#if0#endif)</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.12.25</p>
+
+
+<br/><a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/d224c9fd0705524cd6887d9e.html">《C陷阱与缺陷》</a>里面有一个例子，ex1-2，谈到了注释嵌套的问题。<br/>不过这个excercise讲的只是怎么通过写一段代码来检验编译器，并没有给出解决的方法。<br/>就我所看到的C/C++编译器，比较常用的应该还是不支持/**/形式嵌套的。<br/><br/><span style="color: rgb(0, 85, 255);">》》嵌套的意义</span><br/><br/>先说一下嵌套的意义吧。如果不是动那些比较大的代码，可能也没有这个需求。<br/><br/>比如曾经你有一些代码：<br/>code1 ;<br/>code2 ;<br/>code3 ;<br/><br/>某天，你发现code2的功能不用了，当然，从小我们就被教育，养成了注释的好习惯：<br/>code1 ;<br/>/* code2 ; */<br/>code3 ;<br/>因为有些暂时不用的东西以后可能又会想用了，重写一遍不如直接解除注释方便。<br/><br/>又某天，你发现这一大段都不想要了，那么？<br/><span style="color: rgb(255, 0, 0);">/*</span>code1 ;<br/>/* code2 ;<span style="color: rgb(255, 0, 0);">*/</span><br/>
+
+
+<p>code3 ; <em>/<br/>这样吗？可惜最常见的情况是编译器报一个错。。。<br/>真正匹配起的是标红的两个注释。<br/><br/>所以，支持嵌套注释是非常有必要的。<br/>在一个硕大的工程里面，code[1-3]可能是很长的一块，<br/>更恶心的是，里面有很多别人写的东西，<br/>你不会知道你的 &#8220;/</em>&#8220;符号会被哪里的&#8221;<em>/&#8221;给截止掉。<br/><br/><span style="color: rgb(0, 85, 255);">》》土办法和洋办法</span><br/><br/>我最早学会的是土办法，因为很多C++的教条都告诉我们尽量使用 &#8220;//&#8221;，少用/<strong>/。<br/>这样至少有一个好处，就是你用/</strong>/去包含//的时候不会有问题。<br/>但如果要再包含一次，结果还是会被囧掉。<br/><br/>还有另外一个原因，就是我们可能会需要使用不能贯穿一行的注释。<br/><span style="color: rgb(255, 169, 0);">int myfunc(int n <span style="color: rgb(255, 0, 0);">/</em>number of elements<em>/</span>, int </em>a <span style="color: rgb(255, 0, 0);">/<em>pointer to the first element</em>/</span>)</span><br/>这个时候，//的用户者又跳出来了，发明一种新格式，并且写如规范：<br/><span style="color: rgb(255, 169, 0);">int myfunc(</span><br/><span style="color: rgb(255, 169, 0);">    int n, <span style="color: rgb(255, 0, 0);">// number of elements</span></span><br/><span style="color: rgb(255, 169, 0);">    int <em>a <span style="color: rgb(255, 0, 0);">// pointer to the first element</span></span><br/><span style="color: rgb(255, 169, 0);">) ;</span><br/>这样不就解决了注释符号的选择问题，而且看起来似乎可读性还变高了。<br/>前人很happy地把这个写入规范中，后人当然不知道，这个“可读性变高”是土办法的副作用。<br/><br/>其实这些之所以为土办法，是因为他们还是没有解决注释嵌套的问题。<br/>只是在通过种种书写上的方式，来尽量降低这个局限性带来的影响。<br/><br/>后来，无意中看到一个洋办法，真的很洋气啊。。。<br/>其实我们都知道可以用 #if #endif 来条件编译，自己却没想到可以做嵌套用。<br/>比如，前面的code，直接这样就行了：<br/><span style="color: rgb(255, 0, 0);">#if 0</span><br/><span style="color: rgb(255, 169, 0);">code1 ;</span><br/><span style="color: rgb(255, 169, 0);">/</em> code2 ; */</span><br/><span style="color: rgb(255, 169, 0);">code3 ;</span><br/><span style="color: rgb(255, 0, 0);">#endif</span><br/>这两个标记当然是可以嵌套的，因为预处理器会按照if的结构去解析它。<br/>gcc 3.4.5的gcc和g++都测试过了，可行。<br/><br/>现在大多不建议用宏定义常量或者函数，因为有const和inline可以使用。<br/>顺便小节一下，用预处理命令的主要几个地方：<br/>1、 include guards。就是 #ifndef xx #define xx  &#8230;.. #endif这个，用在头文件中。<br/>2、 本篇提到的嵌套注释。#if 0 &#8230; #endif<br/>3、 debug信息的开启开关。 #ifdef _DEBUG &#8230; #endif<br/><br/>至于用条件编译来解决什么跨平台的问题，我们大多数人都很少用到。<br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[网络应用框架的连接模型（xpool，cpool，epool，apool）]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/11/19/%E7%BD%91%E7%BB%9C%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6%E7%9A%84%E8%BF%9E%E6%8E%A5%E6%A8%A1%E5%9E%8B%EF%BC%88xpool%EF%BC%8Ccpool%EF%BC%8Cepool%EF%BC%8Capool%EF%BC%89/"/>
+    <updated>2010-11-19T00:30:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/11/19/网络应用框架的连接模型（xpool，cpool，epool，apool）</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.11.18<br/><br/>
+这几个pool的名称貌似是公司里面人做框架时候取的，<br/>
+不过不管姓谁名啥，有些考虑点倒是通的。<br/>
+这周听课就只对这几个pool有点印象，简记之。<br/><br/><font color="#0000ff">》》xpool</font><br/><br/>
+使用的是leader-follower的模型。<br/>
+就是多个线程本来都是leader，共同竞争建立状态的连接。<br/>
+一旦竞争成功，则进入follower状态，<br/>
+不断处理其所follow的客户的所有请求，直到结束。<br/><br/>
+这样的模型有个问题，就是一个线程和一个连接实时对应。<br/>
+这样，当上有模块发起的连接数大于该服务模块的工作线程数时，就会产生服务拒绝。<br/>
+这个模型适合于连接特别少，持续时间长，CPU消耗密集型的服务。<br/><br/>
+在这个模型下，几乎看不到“框架”的影子。<br/>
+各个工作线程能够处理从accept到close的所有过程。<br/><font color="#0000ff"><br/>
+》》cpool/epool<br/></font><br/>
+两者都是pendingpool模型，<br/>
+只不过cpool用select实现，而epool用epoll实现而已。<br/>
+从这个模型开始，框架的影子逐渐显现了。<br/><br/>
+维护pendingpool输入端的是一个主线程，<br/>
+当socket的accept队列上有新建立的连接时，<br/>
+就从系统取出这个fd，放进pendingpool中。<br/><br/>
+多个worker线程竞争pendingpool的输出端。<br/>
+这里的pendingpool使用“生产-消费”机制实现，<br/>
+由“框架”提供加锁的功能。<br/><br/>
+在这个连接模型下，框架接管了accept之前的操作。<br/>
+但read和write仍然是在worker中处理的。<br/>
+可以看到，这种模型解决了前一种的最大同时连接问题。<br/>
+只要pendingpool开得够大， 可以“同时”维护许多连接。<br/>
+但真正同时服务的worker数量是固定的，多余的连接也处于等待状态。<br/>
+另一角度看来，此模型似乎只是扩充了系统accept队列的长度而已。<br/><br/><font color="#0000ff">》》xpool，cpool，epool的问题</font><br/><br/>
+在前面的模型中，一旦一个worker拿到某个连接，<br/>
+就会一直与连接对端交互，直到完成服务。<br/>
+这里可能的问题是，<br/>
+某worker发给上游一个PDU，然后一直等待客户的下一个请求。<br/>
+在这个过程中，worker可能阻塞在read等操作上。<br/>
+与此同时，却有大量的连接在pendingpool中等待服务。<br/>
+总的效果就是，服务器并没有达到最大的吞吐。<br/><br/>
+如果使用epool模型，常用解决方案是改为无状态协议，选择短连接。<br/>
+即上游每来一个请求PDU，服务器都能独立解释，并返回应答PDU。<br/>
+这样的“一问一答”模式，不依赖之前交互过的任何PDU。<br/>
+好处就是，处理完一个请求后，worker可以立即close掉fd，<br/>
+然后立马从pendingpool接管下一个连接。<br/>
+注意，这里worker触发close后，网络IO的任务就交给系统了。<br/>
+雅致关闭模式下，系统会发完发送缓冲的内容，再FIN。<br/>
+（<br/>
+摘段MSDN上关于graceful disconnect的阐述。<br/>
+If the <strong>l_onoff</strong> member of the <a href="linger_2.htm"><strong>LINGER</strong></a>  structure is zero on a stream socket, the <strong>closesocket</strong> call will return  immediately and does not receive <a href="windows_sockets_error_codes_2.htm#winsock.wsaewouldblock_2">WSAEWOULDBLOCK</a>  whether the socket is blocking or nonblocking. However, any data queued for  transmission will be sent, if possible, before the underlying socket is closed.  This is also called a graceful disconnect or close. In this case, the Windows  Sockets provider cannot release the socket and other resources for an arbitrary  period, thus affecting applications that expect to use all available sockets.  This is the default behavior for a socket.<br/>
+）<br/>
+短连接化后，上游模块的请求就在pendingpool中轮转，<br/>
+看上去似乎是没有间断地在服务，这个和CPU调度挺像的。<br/>
+宏观来看，服务器能同时处理的远超过worker数量的连接。<br/><br/><font color="#0000ff">》》apool<br/></font><br/>
+apool的a是异步的意思。<br/>
+形容的对象是CPU和网络IO。<br/>
+就是说框架接管了网络IO的全部任务，<br/>
+worker只关心自己的业务逻辑。<br/><br/>
+这样，长短连接都无所谓了，因为只有框架知道。<br/>
+对于worker来说一切都是透明的，他们只能收到<br/>
+“谁发了什么东西给我”这样的数据，<br/>
+并且告诉框架，“给谁发什么东西”。<br/><br/>
+一般的实现可能是注册个回调函数，<br/>
+一旦框架组合好PDU，就调用之。<br/>
+并且框架提供接口，可以返回数据用。<br/><br/>
+不过这里又有一个设计上纠结的问题：<br/>
+框架究竟应该做到多少才合适？？<br/>
+比如，框架可以在read到一片数据后就直接交给一个worker处理。<br/>
+这样，由于TCP的分片/重组问题，可能这片数据不是完整的语义单元。<br/>
+这就导致worker需要另外的结构来维护交互的信息，客户编程很不方便。<br/>
+此外，框架也可以完成PDU的定界和拆分操作，<br/>
+让worker看到的都是完整，可解释的PDU。<br/>
+从二次开发的方便性角度来说，最好是后者；<br/>
+但前者提供的灵活性也是在某些场合正好需要的。<br/><br/><font color="#0000ff">》》总结<br/></font><br/>
+其实不管这些名字多样的pool是怎么定义的，<br/>
+关键区别也就是frame和worker的切分点，<br/>
+把一般的网络交互抽象成下面几个阶段的话，<br/>
+其中的数字就分别对应上面三中模型的切分位置：<br/>
+&#8230;network&#8230;(1)&#8230;accept&#8230;(2)&#8230;read/wrte&#8230;(3)&#8230;<br/><br/>
+从这个维度来看，上学期写的那个<a href="http://hi.baidu.com/hplonline/blog/item/a23496824285c8b26d8119b0.html" target="_blank">字符串PDU的C/S框架</a>很像所谓apool。<br/>
+稍微欠点火候的就是，没有使用到多线程。<br/>
+当时做这个框架，假定了工作逻辑是瞬时的，<br/>
+所以框架在组合好PDU后直接阻塞式调用了应用端的回调函数。<br/>
+实际上，正确的做法应该是，把组合好的PDU交给其中一个worker，<br/>
+这样，框架可以继续处理其他的连接。<br/><br/>
+突然还想到点关于paper的问题。<br/>
+如果像上段所引这篇，写那么个东东，代码+文档，<br/>
+最后的结果顶多也就是个实验报告或者课程设计。<br/>
+如果先综述一下各个模型，优缺点各是什么，<br/>
+为什么要选这个，这就仿佛到了另外一个高度。<br/>
+至于实现，可以蜻蜓点水一下，就很像paper了。<br/><br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[SYN Cookies]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/11/11/SYNCookies/"/>
+    <updated>2010-11-11T23:57:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/11/11/SYNCookies</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.11.11<br/><br/>
+前天上课的时候听到了这个东西，还是有点意思。<br/><font color="#0000ff"><br/>
+》》相关知识回顾</font><br/><br/>
+SOCKET中有两个队列，<br/>
+姑且一个叫syn队列，一个叫accept队列。<br/>
+对于TCP来说，对方发起连接的时候，会建立一个SOCKET放到syn队列里面。<br/>
+当连接建立好的时候，就从syn队列到accept队列。<br/>
+当然，syn“队列”这个叫法不一定科学，<br/>
+因为有网络延迟的差异，连接不总是先到的就先建立好。<br/>
+当我们调用SOCKET的accept接口时，<br/>
+实际上连接早已建立好，并且放在accept队列中了。<br/><br/>
+这两个队列都有最大的长度。<br/>
+在服务器调用listen的时候可以设定一个backlog值，<br/>
+但该值具体对应的是哪个队列还需要再考察，和实现有关。<br/>
+另外，除了backlog之外，系统本身也会加上限。<br/><br/><font color="#ff0000">(update,2010.11.15)<br/>
+在linux下，accept队列的最大长度由/proc/sys/net/core/somaxconn指定。<br/>
+listen参数的backlog对应的也是该队列，调用listen的时候系统会检查。<br/>
+默认的accept队列最大长度是128，许多服务器需要修改增大。<br/>
+syn队列的最大长度由/proc/sys/net/ipv4/tcp_max_syn_backlog指定。<br/>
+没有用户接口去设定，其默认值是1024。</font><br/><br/>
+既然是队列，那就有充满的那么一天。<br/>
+这样新的连接无法进来，造成服务的拒绝。<br/><br/>
+对于accept队列，一般有三种处理：<br/>
+增大backlog，修改系统上限，提高accept的处理速度。<br/>
+由于这个队列只依赖本地的处理，<br/>
+我们可以尽量快地从系统接管其中的SOCKET资源，<br/>
+这样，就可以最大可能地保证其非满。<br/><br/>
+但syn队列会依赖网络对端，很容易被半开的连接充满。<br/>
+特别是当syn flood发生的时候，服务器会维护一大堆没有用的连接信息。<br/>
+正常的连接过来的时候，会由于syn队列满而无法建立。<br/>
+此时，就算服务器还有很多闲散资源，也无法为客户提供服务。<br/>
+SYN Cookies即可解决这种问题。<br/><br/><font color="#0000ff">》》SYN Cookies</font><br/><br/>
+在我们设计程序的过程中，经常考虑的就是时间和空间的折衷。<br/>
+syn队列本质消耗的是空间，而拒绝服务也是由于队列空间耗尽所致。<br/>
+这样，可以想一种办法，把本来需要存储的信息进行“编码”，<br/>
+交给客户端，下次返回的时候，花点时间“解码”即可。<br/>
+这个思路很像服务器和浏览器之间交换的cookies。<br/><br/>
+但最早的TCP协议并没有作出类似的规范，<br/>
+所以我们无法在DATA域中放入这些信息，并让客户端乖乖传回。<br/>
+好在TCP有规定一个SEQ值，初始的时候可以由服务器选定，<br/>
+但客户在回送的时候，其ACK_client=SEQ_server+1。<br/>
+服务器设计一种只有自己能读懂的SEQ值就行了。<br/><br/>
+一般的实现会考虑这几个部分：<br/>
+timestamp，用于判断连接是否超时。<br/>
+sign = f(time, ip_src, port_src, ip_dst, port_dst)，用于签名防伪。<br/><br/>
+f()的实现是服务器保密的，并且只要bit数足够，多个客户撞车的可能性也很小。<br/>
+timestamp需要选取一个较大的粒度，以便能在32-bit的SEQ中的一部分中存下。<br/>
+很不幸的是，为了保证签名的安全，留给timestamp的bit数量肯定很少。<br/>
+一个可选的实现是：timestamp=(time()&gt;&gt;6)&amp;0x1f<br/>
+这样，服务器对时间的分辨率可以达到64秒，数值循环周期大概半小时。<br/><br/>
+到目前为止，一个SYN Cookies已经可用了，但还有个细节：<br/>
+TCP有个MSS的选项，该选项只能在初始的数据包中设定。<br/>
+如果客户发送了MSS，而我们不在syn队列中维护这个信息，就直接搞丢了。<br/>
+所以还有个需求，就是把MSS也编码进SYN Cookies中。。。<br/>
+真是艰苦卓绝，原先的timestamp和sign还得匀出点空间给MSS。<br/><br/>
+由于MSS只能用少数几个bit表达，所以支持的种类是很少的。<br/>
+好在目前基本是ethernet+ip一统天下，大部分的MSS都是经典的1460。<br/>
+根据不同的环境，配置几种MSS也就够应付大部分需求了。<br/>
+而一个正常的客户，应该不大可能手动设定一个非主流的MSS。<br/><br/>
+除了MSS之外，TCP还有其他的选项，就姑且不考虑了，<br/>
+毕竟这些选项在之后的交互中还可以再协商。<br/>
+总得来说，回送的SEQ中有下面三个必要的部分：<br/>
+timestamp,sign,MSS<br/>
+可以自行设计分配他们的空间和签名的算法。<br/><br/>
+参考资料：<a target="_blank" href="http://en.wikipedia.org/wiki/SYN_cookies">http://en.wikipedia.org/wiki/SYN_cookies</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[perl中的引号]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/11/06/perl%E4%B8%AD%E7%9A%84%E5%BC%95%E5%8F%B7/"/>
+    <updated>2010-11-06T14:26:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/11/06/perl中的引号</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.11.6<br/><font color="#0000ff"><br/>
+一。一段测试代码</font><br/><br/>
+应该是涵盖了常见的知识点了。<br/><font color="#ff0000">(1)单引号和双引号，在转义和变量内插方面不同<br/>
+(2)q，qq，qw，这几个元词在使用字符串和字符串数组的时候比较方便。<br/>
+(3)直接print数组和内插到双引号中数组的区别<br/>
+(4)多行文本块</font><br/><br/></p>
+
+<h1>!/usr/bin/perl -w <br/><br/></h1>
+
+<p>$me = &#8220;hpl&#8221; ;<br/></p>
+
+<h1>the basic difference between single and double quotes<br/></h1>
+
+<p>print &#8220;test\t$me&#8221; ; print &#8220;\n&#8221; ;<br/>
+print &#8216;test\t$me&#8217; ; print &#8220;\n&#8221; ;<br/></p>
+
+<h1>the nesting of quotes <br/></h1>
+
+<p>print &#8216;&#8220;test&#8221; $me&#8217; ; print &#8220;\n&#8221; ;<br/>
+print &#8220;&#8216;test&#8217; $me&#8221; ; print &#8220;\n&#8221; ;<br/></p>
+
+<h1>the following two lines don&#8217;t work<br/></h1>
+
+<h1>print &#8221;test&#8217; $me&#8217; ; print &#8220;\n&#8221; ;<br/></h1>
+
+<h1>print &#8220;&#8221;test&#8221; $me&#8221; ; print &#8220;\n&#8221; ;<br/></h1>
+
+<h1>test the meta word q and qq<br/></h1>
+
+<p>print q(&#8216;&#8220;test $me) ;  print &#8220;\n&#8221; ;<br/>
+print qq(&#8216;&#8220;test $me) ;  print &#8220;\n&#8221; ;<br/></p>
+
+<h1>the bracket should be escaped<br/></h1>
+
+<p>print qq(&#8216;(test $me) ;  print &#8220;\n&#8221; ;<br/></p>
+
+<h1>other escape char can be used<br/></h1>
+
+<p>print q[(&#8216;&#8220;test $me)] ;  print &#8220;\n\n&#8221; ;<br/><br/></p>
+
+<h1>test array<br/><br/></h1>
+
+<h1>the obsolete way you see in other languages<br/></h1>
+
+<h1>@arr = (&#8220;one&#8221;, &#8220;two&#8221;, &#8220;three&#8221;) ; <br/></h1>
+
+<p>@arr = qw(one two three) ;<br/>
+print @arr ; print &#8220;\n&#8221; ;<br/>
+print &#8220;@arr&#8221; ; print &#8220;\n\n&#8221; ;<br/><br/>
+$multi_line = &lt;&lt;&#8221;END&#8221; ;<br/>
+this is to show you the scheme of multiline strings,<br/>
+where &#8216;&lt;&lt;&#8221;END&#8221;&#8217; specifies the end of the string.<br/>
+you can change the end tag to any other strings you like.<br/>
+test $me .<br/>
+END<br/>
+print $multi_line ; print &#8220;\n&#8221; ;<br/><br/>
+$multi_line2 = &lt;&lt;&#8217;END&#8217; ;<br/>
+let&#8217;s try single-quote here.<br/>
+see what happens to $me?<br/>
+END<br/>
+print $multi_line2 ; print &#8220;\n&#8221; ;<br/><br/>
+结果就不贴了，一跑便知，当个速记。<br/><br/>
+参考资料：<a href="http://www.perlmonks.org/?node_id=401006" target="_blank">http://www.perlmonks.org/?node_id=401006</a><br/><br/><font color="#0000ff">二。用处</font><br/><br/>
+单双引号的区别是基本，<br/>
+能够互相嵌套，但不能同型号嵌套，<br/>
+这个需要区分一下，看字符串中的需求。<br/>
+变量内插上的特性也很有用，<br/>
+特别是双引号对数组，可以在中间加入空格。<br/><br/>
+一个把字符串按单词逆序的例子。（很多面试题喜欢考的哇）<br/>
+$str = &#8220;a1 b2 c3&#8221; ;<br/>
+@arr = reverse(split &#8221; &#8220;, $str) ; <br/>
+print &#8220;@arr\n&#8221; ;<br/>
+不过这里不是演示算法，就是解决打印数组加空格的问题。<br/><br/>
+多行文本块也比较有用，<br/>
+比如打印usage信息、打印其他语言的块。<br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[一套win下的perl工作环境（cygwin，e-texteditor，参数解决方案）]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/10/17/%E4%B8%80%E5%A5%97win%E4%B8%8B%E7%9A%84perl%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%EF%BC%88cygwin%EF%BC%8Ce-texteditor%EF%BC%8C%E5%8F%82%E6%95%B0%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%89/"/>
+    <updated>2010-10-17T23:37:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/10/17/一套win下的perl工作环境（cygwin，e-texteditor，参数解决方案）</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.10.17<br/><br/><font color="#0000ff">》》背景</font><br/><br/>
+自从在公司被逼着用了perl之后，就有点习惯了。<br/>
+有时候想处理点小东西，第一反映居然是用perl。<br/>
+处理点字符串和简单的统计确实比较方便，<br/>
+以前做mcm的时候如果会这东西，<br/>
+在数据的搜集和预处理上，应该要提高不少效率。<br/><br/>
+今天在xq和auxten的帮助下，搞了套perl的工作环境。<br/>
+以后要用ruby、python什么的，也比较类似。<br/><br/><font color="#0000ff">》》下载</font><br/><br/>
+e:<br/><br/><a target="_blank" href="http://www.cehx.com/portal.php?mod=view&amp;aid=12205">E-TextEditor v1.0.39(crack)</a><br/><br/>
+cygwin:<br/><br/><a target="_blank" href="http://cygwin.com/win-9x.html">CygWin-legacy</a> 里面的setup-legacy.exe下下来配置。<br/>
+（e需要旧的cygwin支持）<br/><br/><font color="#0000ff">》》cygwin</font><br/><br/>
+一路默认下去，直到选择要安装的组件。<br/>
+中间镜像可以添个，<br/>
+http://mirrors.sohu.com/cygwin<br/><br/>
+可以安装的组件比较多，除了默认的，<br/>
+把gcc，perl，还有其他一些小工具安上。<br/>
+反正后面用到缺少哪个命令的时候，<br/>
+随时回头来安装就行了。<br/><br/><font color="#0000ff">》》e-texteditor</font><br/><br/>
+这编辑器做得不错，就是名字太短，“e”。<br/>
+名字短本身也不是什么大的缺陷，<br/>
+但是在各个地方搜索的时候，经常无法召回。<br/>
+毕竟TFIDF还是IR这方面的基础，<br/>
+e貌似又是英文中出现频率最高的字母，囧。<br/><br/>
+界面就下面这样子：<br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0f979f095919de7a50f52a1.jpg"/></span><br/><span><br/>
+一般编辑器该有的功能都有，像tab，普通快捷键这些。<br/>
+最大的这块是编辑区域，下面是脚本执行后的输出。<br/>
+e的撤销确实比较nb，保存文件重启e之后，还可以进行撤销操作。<br/><br/>
+左边是Bundle的编辑。<br/>
+Bundle就是一些模版(snippet)或者命令(command)的集合，<br/>
+可以对应上相应的触发词或者快捷键。<br/>
+通过编辑bundle可以扩充这个编辑器的功能。<br/>
+扩充snippet是编辑器本身支持的，但要用comman的需要cygwin的支持。<br/>
+测试cygwin是否有效：edit-&gt;settings-&gt;UNIX-&gt;show version information<br/><br/>
+下面看下bundle的样子，<br/>
+左边是bundle浏览器，展开了perl的if..elsif..else模版。<br/>
+右边就是这个模版的内容。<br/><br/>
+里面的$1-9是几个编辑位置。<br/>
+snippet展开后，首先到$1，<br/>
+编辑完第一个位置，直接tab就可以到$2。<br/>
+这样可以大大缩短打括号再方向键切回来的时间。<br/><br/><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/4f3587b10c818e1c082302a1.jpg"/></span><br/><br/>
+在代码中输入触发词，“ifee”，按下tab，<br/>
+展开上面所示的那个模版如下：<br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/dff197164a686819f2de32a1.jpg"/></span><br/><br/>
+其中#号后面的只是提示词，输入任意字符后就消失。<br/>
+you needn&#8217;t bother to delete them manually..<br/><br/>
+再看下command的样子，<br/>
+下面这个就是perl下面的run script命令。<br/>
+不过不是原版的，是我修改过后的样子。<br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/63614d1049800fb4c2ce79a1.jpg"/></span><br/><br/>
+scope selector是指定作用域，比如目前这个就是在perl源码里面都有效。<br/>
+command本质是一个shell脚本，里面可以引用很多环境变量，和linux命令。<br/>
+TM_SCOPE 常量中记载了光标目前所处的作用域，<br/>
+可以识别出函数名、行首tab等等语法上的关键位置。<br/>
+编辑高级功能的时候，自己把这个常量打出来就知道可以用的有哪些了。<br/><br/>
+另外一个可以关注的output这里，指定命令执行后输出的方式。<br/>
+可以把输出直接插入到到文本中，或者替换一段文本。<br/>
+这样就给了很大的发挥空间，用command做出更复杂的编辑。<br/>
+但像run script这样的功能，我们就是想看下标准输出。<br/>
+可惜的是，e没有提供output as plaintext的方式，<br/>
+所以在输出成html之前要做处理，后面详述。<br/><br/>
+关于bundle更多的信息，可以参考<a target="_blank" href="http://www.e-texteditor.com/wiki/index.php/Bundles">官方帮助页</a>。<br/>
+很短，读完差不多就可以个性化自己的编辑器了。<br/><br/><font color="#0000ff">》》perl解释设置</font><br/><br/>
+安装好后，perl默认的run script是这样的：<br/><br/><font color="#ff9900">export TM_RUBY=$(type -p &#8220;${TM_RUBY:-ruby}&#8221;)<br/>
+&#8221;${TM_RUBY}&#8221; &#8211; &#8220;$TM_BUNDLE_SUPPORT/PerlMate/perlmate.rb&#8221;</font><br/><br/>
+如果cygwin也ok，把ruby安装好，可以直接运行。<br/><br/>
+不过这样一个中转之后，实在是太慢，<br/>
+并且ruby中转过的输出页面很丑陋。<br/><br/>
+其实在command的Evironment中选择Cygwin(generic)之后，直接下面就行了：<br/><font color="#ff9900">/usr/bin/perl ${TM_FILEPATH}</font><br/>
+后面这个环境变量是被调用文件的绝对路径。<br/>
+这个用法与在实际linux中无异。<br/><br/>
+其实我倾向更简洁一点的写法：<br/><font color="#ff9900">${TM_FILEPATH}</font><br/>
+在perl脚本的首行，加上解释器路径即可：<br/><font color="#ff9900">#!/usr/bin/perl -w</font><br/><br/>
+这样弄好后，运行没问题了，不过输出会没有换行。<br/>
+因为这个版本的e只提供了输出为html的方式，<br/>
+所以必须手动使用&lt;br /&gt;标签去换行；<br/>
+或者也可以试试&lt;pre&gt;&lt;/pre&gt;标签。<br/><br/>
+我这里直接把\r\n或者\n替换为&lt;br /&gt;，<br/>
+那么run script命令就是这样了：<br/><font color="#ff9900">${TM_FILEPATH} | perl -npe&#8217;s/\r?\n/&lt;br \/&gt;/g&#8217; </font><br/><br/>
+把输出解决之后，基本上就可以用了。<br/>
+剩下一个问题，就是要传入参数怎么办。<br/>
+实际用的时候可以手动输入，<br/>
+但在编辑+调试阶段，每次都去命令行也不方便。<br/><br/>
+想了个变相的方法。<br/>
+如果决定给自己的脚本带参数，<br/>
+就在同目录下写个&lt;filename&gt;.args的文件，<br/>
+把要带的参数写在这个文件里面即可。<br/>
+这样，run script脚本就先判断一下，是否有args这个文件。<br/>
+最终的代码如下：<br/><br/><font color="#ff9900">if [[ -e ${TM_FILEPATH}.args ]] ; then<br/>
+perl_arg_line=<code>head -n1 ${TM_FILEPATH}.args</code><br/>
+${TM_FILEPATH} ${perl_arg_line} | perl -npe&#8217;s/\r?\n/&lt;br \/&gt;/g&#8217; <br/>
+else <br/>
+${TM_FILEPATH} | perl -npe&#8217;s/\r?\n/&lt;br \/&gt;/g&#8217; <br/>
+fi </font><br/><br/><font color="#ff0000">(2010.10.22,update)</font><br/><br/>
+前面的虽然对于换行没有问题了，但是中文支持上不好。<br/>
+即使用run script默认的ruby脚本，output出来的中文还是有问题。<br/>
+经过测试，应该是e的那个输出显示窗口的毛病，<br/>
+直接输出到文件的结果是对的。<br/>
+所以改一下，重定向脚本输出到<em>.stdout,</em>.stderr，<br/>
+最后调用e自己打开这两个文件就是了。<br/><br/>
+先在cygwin下面ln -s给e的可执行文件建一个软连接，<br/>
+我这里是/bin/e-texteditor，<br/><br/>
+echo &#8220;begin running script&lt;/br&gt;&#8221;<br/>
+if [[ -e ${TM_FILENAME}.args ]] ; then<br/>
+perl_arg_line=<code>head -n1 ${TM_FILENAME}.args</code><br/>
+./${TM_FILENAME} ${perl_arg_line} 1&gt;${TM_FILENAME}.stdout 2&gt;${TM_FILENAME}.stderr<br/>
+else <br/>
+./${TM_FILENAME} 1&gt;${TM_FILENAME}.stdout 2&gt;${TM_FILENAME}.stderr<br/>
+fi <br/>
+e-texteditor ${TM_FILENAME}.stderr<br/>
+e-texteditor ${TM_FILENAME}.stdout<br/>
+echo &#8220;running script complete&lt;/br&gt;&#8221;<br/><br/><br/><font color="#0000ff">》》cygwin shell</font><br/><br/>
+用cygwin.bat打开的shell比较丑，<br/>
+疼哥给了个很暴力的方法：<br/>
+在cygwin中安上sshd，然后securecrt去连自己机器。<br/><br/>
+先还是用setup-legacy.exe装上sshd这个组件。<br/>
+配置方法，就按照<a target="_blank" href="http://www.baidu.com/baidu?wd=cygwin+sshd&amp;tn=monline_dg">网上讲的</a>即可。<br/>
+sshd会开启成为windows的系统服务，<br/>
+还会添加上一个特殊的用户。<br/><br/>
+登陆的时候用的是自己的windows账户。<br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[为什么要求printf的参数大于等于两个？？]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/09/24/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%B1%82printf%E7%9A%84%E5%8F%82%E6%95%B0%E5%A4%A7%E4%BA%8E%E7%AD%89%E4%BA%8E%E4%B8%A4%E4%B8%AA%EF%BC%9F%EF%BC%9F/"/>
+    <updated>2010-09-24T22:13:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/09/24/为什么要求printf的参数大于等于两个？？</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.9.24<br/><br/>
+之前用某代码检测工具的时候，被扣分了。<br/>
+查看错误log发现是printf的参数只有一个。<br/><br/>
+其实我只是简单地用printf打印一些信息到console，<br/>
+中间也不涉及格式化其他变量，<br/>
+故一直没有想明白这样做的意义何在。<br/>
+大致就像这样吧：printf(&#8220;something&#8221;) ;<br/><br/>
+printf确实有些危险的地方，<br/>
+比如格式字符和后面的压栈的变量不匹配。<br/>
+这样，在有指针操作的时候可能出问题，比如%s，<br/>
+如果后面没有对应有效的指针，就可能打出一些古怪的东西。<br/><br/>
+今天跟jingmi吃饭，说到了这个问题，原来主要是考虑到“%”的转义问题。<br/><br/>
+比如传给printf的可能并非一个字符常量，而是一个变量。<br/>
+直接 printf(s); 最大的问题就是s[]里面可能有“%”。<br/>
+而s处于格式化字符串的位置，所以解析上会有问题。<br/>
+而客户代码在调用的时候，没有理由用两个%去先做一次替换，<br/>
+总不能假定我传过去的东西总是放在格式字符串的位置吧。<br/>
+所以该代码检测工具也是有理的，提醒大家注意一下仅打印纯字符信息的情况。<br/>
+最好是稍作修改：printf(&#8220;%s&#8221;,s); 这样会规避掉许多问题。<br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[pthread对多线程访问全局数据结构的支持]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/09/20/pthread%E5%AF%B9%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%AE%BF%E9%97%AE%E5%85%A8%E5%B1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%9A%84%E6%94%AF%E6%8C%81/"/>
+    <updated>2010-09-20T22:03:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/09/20/pthread对多线程访问全局数据结构的支持</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.9.20<br/><br/>
+pthread库里有两个函数，<br/>
+对多线程访问全局数据结构提供了比较简易的解决方案：<br/>
+pthread<em><font color="#ff0000">set</font>specific(key,value)<br/>
+pthread</em><font color="#ff0000">get</font>specific(key)<br/>
+使用之前得再man一下，需要create了key才能在这两个函数中使用。<br/>
+后面就用set和get来代替他们了。<br/>
+set可以将一个线程相关的value绑定到一个全局的key上面；<br/>
+get可以从这个全局的key中取得线程相关的value。<br/><br/><font color="#0000ff">》》一个单线程示例</font><br/><br/>
+global_data ; // in global scope<br/>
+&#8230;<br/>
+init(){ initialize global_data; }<br/>
+&#8230;<br/>
+op1(){ do something with global_data; }<br/>
+op2(){ do something with global_data; }<br/>
+&#8230;<br/>
+opn(){ do something with global_data; }<br/>
+&#8230;<br/>
+work(){<br/>
+init();<br/>
+op1();<br/>
+op2();<br/>
+&#8230;<br/>
+opn();<br/>
+}<br/><br/>
+比较常见的就是，在init里面，使用malloc之类的分配空间，<br/>
+而这个所谓的global_data，就是分配空间后返回的指针。<br/>
+在后续的各个操作函数中，通过这个指针去引用一些全局的数据。<br/><br/>
+不要问我为什么不封装一下之类的，这个的原因可能很多。<br/>
+比如，当年写这段代码的人没这个意识。<br/>
+比如，为了少敲点键盘。如果放在参数里的话，每一处都会带上这么个指针。<br/>
+反正各种原因和可能性，就不多说了。<br/><br/>
+现在的问题是，由于时代发展了，我们想把这样一套东西多线程化。<br/>
+但是这样一个global_data并非线程间共享的，<br/>
+而是每个线程应该独有的数据结构，就是thread specific。<br/><br/><font color="#0000ff">》》一般的解决方案</font><br/><br/>
+arr_global_data[N] ; // in global scope<br/>
+&#8230;<br/>
+init(data){ initialize data; }<br/>
+&#8230;<br/>
+op1(data){ do something with global_data; }<br/>
+op2(data){ do something with global_data; }<br/>
+&#8230;<br/>
+opn(data){ do something with global_data; }<br/>
+&#8230;<br/>
+work(data){<br/>
+init(data);<br/>
+op1(data);<br/>
+op2(data);<br/>
+&#8230;<br/>
+opn(data);<br/>
+}<br/><br/>
+main(){<br/>
+create_thread(th0,work,arr_global_data[0]);<br/>
+create_thread(th1,work,arr_global_data[1]);<br/>
+&#8230;<br/>
+create_thread(thn,work,arr_global_data[n]);<br/>
+}<br/><br/>
+这个方法倒是比较通用，<br/>
+在各个系统下，创建线程的结构一般都允许传入工作函数和参数。<br/>
+不管有多少参数，打包成一个结构，然后传入指针总是可以的。<br/>
+之前只有单个的全局变量，现在开成数组即可。<br/><br/>
+问题虽然解决了，但是有一点不方便的就是，我们大量修改了接口。<br/>
+首先，各个操作函数需要传入参数，标识自己该用哪一块数据。<br/>
+然后，可以预见到会有一定量的名称替换。<br/>
+不过好处是，这样的写法在各个平台下都行，<br/>
+不用依赖某些特殊的线程库的实现。<br/><br/><font color="#0000ff">》》pthread支持的解决方案</font><br/><br/><font color="#ff0000">global_data_key</font> ; // in global scope<br/>
+&#8230;<br/>
+init(){ initialize <font color="#ff00ff">data</font>; set(<font color="#ff0000">global_data_key</font>,<font color="#ff00ff">data</font>)}<br/>
+&#8230;<br/>
+op1(){ <font color="#ff00ff">data</font>=get(<font color="#ff0000">global_data_key</font>) ; do something with <font color="#ff00ff">data</font>; }<br/>
+op2(){ <font color="#ff00ff">data</font>=get(<font color="#ff0000">global_data_key</font>) ; do something with <font color="#ff00ff">data</font>; }<br/>
+&#8230;<br/>
+opn(){ <font color="#ff00ff">data</font>=get(<font color="#ff0000">global_data_key</font>) ; do something with <font color="#ff00ff">data</font>; }<br/>
+&#8230;<br/>
+work(){<br/>
+init() ;<br/>
+op1();<br/>
+op2();<br/>
+&#8230;<br/>
+opn();<br/>
+}<br/><br/>
+main(){<br/><font color="#ff0000">global_data_key </font>= create_key() ;<br/>
+create_thread(th0,work,NULL);<br/>
+create_thread(th1,work,NULL);<br/>
+&#8230;<br/>
+create_thread(thn,work,NULL);<br/>
+}<br/><br/>
+可以看到，这套解决方案在全局的位置，只是把data本身替换成了一个key。<br/>
+在main函数中，对这个key进行初始化即可。<br/>
+各个线程调用init后，可以将自身相关的data绑定到key上。<br/>
+后面虽然各个op函数是相同的，但在get操作的时候，<br/>
+pthread库帮忙判定是从哪个线程调用该op的，得到的就是对应的data。<br/><br/><font color="#0000ff">》》简评</font><br/><br/>
+特别适合用在那种刚开始不是按照多线程进行设计的地方。<br/>
+单线程程序work得很好后，通过这套接口来多线程化。<br/>
+实际中遇到的项目可能并不像我这里一个work，里面几个op这么简单。<br/>
+很可能是各种函数调用，到处都会引用到这样一个<font color="#ff0000">线程全局</font>的结构。<br/>
+这时，逐一修改接口的成本是很大的，比较麻烦。<br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[n系列函数究竟安全在哪里？(snprintf,strncpy,fgets)]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/08/16/n%E7%B3%BB%E5%88%97%E5%87%BD%E6%95%B0%E7%A9%B6%E7%AB%9F%E5%AE%89%E5%85%A8%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F%28snprintf%2Cstrncpy%2Cfgets%29/"/>
+    <updated>2010-08-16T22:15:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/08/16/n系列函数究竟安全在哪里？(snprintf,strncpy,fgets)</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.8.16<br/><br/>
+最早建立起缓冲区长度这个意识是几年前参加astar的时候。<br/>
+当时记得要求我们不能用gets进行输入，<br/>
+即使是从标准输入来读，也要用fgets来传入stdin。<br/>
+刚开始只是从官网上看到说这个函数不安全，<br/>
+但究竟哪里不安全，没想明白，也没看到说清楚的。<br/><br/>
+可能有人很直观地从技术上解释这个问题，<br/>
+毕竟没有len就无法限制向缓冲区写入的数量。<br/>
+这个确实到点子上了， 而我打一开始也知道这个。<br/>
+但我一直存在的问题是，有len就安全了吗。。？<br/>
+假设一个人很2，缓冲区只有1，他给len传了个10。<br/>
+这种情况下，fgets也是逃不了厄运的。<br/><br/>
+然后有人就说了，虽然不安全，但总归减少了一些隐患。<br/>
+但我想大家都认同C的设计哲学：<br/><font color="#ff0000">程序员有最大的自由，并且充分知道每个动作的后果。</font><br/>
+在这样的哲学下，多个len绝对是个50步与100步的问题。<br/>
+所以，单纯从技术上来解释这个问题是不完善的。<br/><br/>
+这几天，阅读了公司的内部编码规范，<br/>
+又开始接手一个模块，看了很多历史遗留代码。<br/>
+最后，突然意识到了答案：<br/><font color="#ff0000">n系列函数的安全实质上是责任的安全。</font><br/>
+一开始来听这句话很别扭，<br/>
+但仔细从工程的角度考量，<br/>
+会发现说的确实是那么一回事。<br/><br/>
+先来说说n系列函数，这个是我自己的叫法。<br/>
+主要原因在于它们往往比我们常用的版本名字里面多了个n，<br/>
+像snprintf、strncpy这些，同时参数里面多个len。<br/>
+如果该函数需要产生的输出信息大于了这个len，<br/>
+它不会傻傻地一直写缓冲，而是立刻停止。<br/><br/>
+为什么说是责任安全呢？这个主要在于工程的合作性。<br/>
+写C程序很容易会由于指针的问题，导致出core。<br/>
+出core了第一时间当然是修复bug，<br/>
+第二件事，很难免要追究某人的责任。<br/>
+我们来看下，假设gets是你写的，而我是调用者。<br/>
+这个时候，我只给开了1个字节的缓冲区，传给你。<br/>
+因为没有len的参数，你不知道，就一直写，搞溢出了。<br/>
+要是正好在你写的时候出core了，<br/>
+那我们一追查，发现是gets把程序搞挂的。<br/>
+这个时候你一定叫苦，以前的人都把缓冲区传够的， <br/>
+就我这个2B开1字节就传了，明显是陷害的。<br/>
+这个时候，虽然我自己很理亏，我确实手抖少打了两个0，<br/>
+但我绝对会死不认账，反正不是core在我的代码上。<br/><br/>
+对于gets和sprintf这种函数还好，<br/>
+因为他们是标准的库函数，<br/>
+我们会假定程序员一定是对他们了解透彻了的。<br/>
+这就包括我们能够预估出一个最大的缓冲区长度，<br/>
+一律开够了空间才进行调用。<br/>
+这种假定下，责任当然是很好仲裁的。<br/>
+但在一些大工程里面，如果出现类似的缓冲区操作，<br/>
+我们总不能假定每个新加入的成员都知道前面的人写了个啥。<br/>
+而函数的说明文档，不可能详细到教你怎么计算要多少缓冲。。<br/>
+如果一定要细到这个程度，那客户自己就可以进行实现了。<br/><font color="#ff0000">合作的意义就在于不用了解细节，通过接口完成任务</font>。<br/>
+如果一定要先计算好的话，那客户代码的信息量是可以赶上被调代码了。<br/>
+比如，我可以给你封装一个函数，去计算sprintf要多大缓冲区：<br/>
+&#8230;.<br/>
+char buf[very_very_very_big] ;// global variable to avoid stack overflow<br/>
+&#8230;.<br/>
+int n = srpintf(buf, &#8220;xxxx&#8221;, &#8220;yy&#8221;, &#8220;zz&#8221;, &#8230;) ;<br/>
+return n ;<br/>
+&#8230;.<br/>
+之所以这样写，是因为从格式字符串和参数计算缓冲大小太啰嗦了。<br/>
+但像上面这样一写，就是明显的脱了裤子放屁。<br/><br/>
+n系列函数就可以很好解决信息量不全的问题。<br/>
+调用者只需要预估一个大小，传给被调者。<br/>
+被调者是不允许操作限定外的空间，<br/>
+并且从道德上讲，被调者应该返回执行状态。<br/>
+这样调用者能够判断是否缓冲区过小，<br/>
+决定是再开大点或者干脆就打条log撒手不干了。<br/><br/>
+出core了当然很好判断。<br/>
+如果调用者开了个小缓冲，传了个大的len，就打他屁股。<br/>
+此外，被调者是不应该发生缓冲操作上的问题。<br/>
+通过这么一个len，一下就实现了责任级的安全。<br/><br/><font color="#0000ff">》》外记</font><br/><br/>
+像clapack这样的库，<br/>
+新手拿到很痛苦的就是参数太多。<br/>
+一看，很多接口上都要传缓冲和长度信息。<br/>
+这个就是做事的一个极端，<br/>
+clapack自己是不动态分配空间的，<br/>
+完全让调用者来做好一些准备。<br/>
+除了像我们平时传的，输入和输出缓冲，<br/>
+它还有种中间运算的缓冲。<br/>
+根据你给的缓冲大小，选择不同时空复杂度的算法。。<br/>
+如果中间运算缓冲不够，有详细的返回值来帮助纠错。<br/>
+这应该算是缓冲区处理上的一个极致：<br/>
+不仅要你声明给我的缓冲区有多大，<br/>
+甚至运算空间都让你开，省的我malloc出错了挂在这里。。<br/><br/>
+还有一些函数，像SOCKET里的inet_ntoa。<br/>
+一个IP转换后会有多少个字符是不定的，<br/>
+所以也需要考虑究竟给多少缓冲的问题。<br/>
+这个例子还好，因为我们知道IP的点分十进制的最大长度。<br/>
+不过SOCKET给了另外一个接口，直接返回结果缓冲的指针。<br/>
+通过静态分配支持最大长度的缓冲，<br/>
+避免了与调用者交互相关信息。<br/>
+在最初设计的时候，这个接口做到了方便和安全（对这里的缓冲区长度问题安全）。<br/>
+不过在多线程的时候，问题就出来了。<br/>
+静态分配的地址都是同一块，<br/>
+大家一起调用inet_ntoa就会导致数据不同步。<br/>
+解决办法可以是重写个动态分配的版本，<br/>
+于是又要面临本篇提及和没提及的相关琐碎。<br/>
+还有种方法就是直接加锁，<br/>
+用系统级的mutex来同步即可。<br/>
+这样可以做到接口不变，不影响既有代码。<br/><br/><font color="#0000ff">》》后记</font><br/><br/>
+现在混江湖了，好不容易有点时间。<br/>
+有时间的时候，有些事情又不能说得太细。。<br/>
+放屁前也要先包装一下，不能把原始信息透露了。<br/>
+讲问题只能讲原理，要不重写一份不一样的实现。<br/><br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[离校前酱油最后一个比赛（数独游戏）]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/07/10/%E7%A6%BB%E6%A0%A1%E5%89%8D%E9%85%B1%E6%B2%B9%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%AF%94%E8%B5%9B%EF%BC%88%E6%95%B0%E7%8B%AC%E6%B8%B8%E6%88%8F%EF%BC%89/"/>
+    <updated>2010-07-10T17:44:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/07/10/离校前酱油最后一个比赛（数独游戏）</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.7.9<br/><br/>
+游戏，源码，工程，文档：<a href="http://www.box.net/shared/cqvr7du92i" target="_blank">下载</a><br/>
+（比赛提交的原样内容）<br/><br/><font color="#0000ff">》》背景：</font><br/><br/>
+华为这次也是拖了够久了，都要吐血了。<br/>
+这效率。。。唉。。只能说唉。。<br/><br/>
+比赛从早上9点一直刚到下午5点，<br/>
+中午管饭的，但饮水机缺水好几次。。<br/>
+找的房间没空调，急得人直冒汗。<br/>
+比到半截，刚不起了，下楼找实验室，<br/>
+自带了一个风扇，继续写。。<br/><br/>
+说来也是奇怪，<br/>
+一个号称的程序设计大赛居然和通信合作。<br/>
+这种事情再怎么也要找计算机的专业点吧。<br/>
+通信的机房倒是安了一堆CCS这样我们不用的东西，<br/>
+结果连最基本的MSDN都没有。<br/>
+于是最初为了绘那几个界面，<br/>
+折腾了半天，连猜带懵加看头文件。<br/><br/>
+这学期毕设一直是用C#酱油界面，<br/>
+搞得VC的一套都很生疏了。<br/>
+最后利用的强大的windows画图板，<br/>
+把题目说明中的图样修改了下，<br/>
+弄成了背景，和鼠标悬停高亮的样子。<br/><br/>
+不过VC就是好，虽然记不清楚细节，<br/>
+但只要有点想法，总有变通解决方案。<br/>
+如果是C#就惨了，很多东西不知道就没法用，<br/>
+真正做的时候，也是需要什么搜什么。<br/><br/>
+算法方面就更酱油了，<br/>
+按理说一天纯写算法的话也够多种优化了。<br/>
+记得以前看过<a href="http://blog.csdn.net/mathe/archive/2007/08/23/1755672.aspx" target="_blank">mathe总结的数独</a>，<br/>
+大概有10来种直接推法。<br/>
+大部分的数独都可以直接用这些方法推出，<br/>
+只用进行一点点的枚举就行了，<br/>
+真是总结得很到位，太强大了。<br/>
+上面链接过去能找到他做的程序，<br/>
+操作很方便，而且附带提示功能，<br/>
+用于学习数独技巧也是很好的。<br/><br/>
+最初没有想到是做这样的东西，<br/>
+时间分配很不均匀。<br/>
+前面基本上是学习绘图，做UI，<br/>
+最后个多小时写的算法和文档。。<br/>
+所以成品中的算法异常简陋，<br/>
+只是有考虑候选数的回溯，<br/>
+连唯一数和隐含唯一数两种最简单的判断都没写。<br/>
+跑了下，题目附带的前20号游戏都能出结果，<br/>
+时间耗得最长的也就是秒级，于是接受了。<br/><br/>
+生成局面的算法，下来后才反应过来。<br/>
+其实最简单的就是直接拿那20个有解的做种子，<br/>
+从中间随机去掉一些数字就行了，<br/>
+这样可以避免有解的判断。<br/>
+当时是直接向上面填数字，<br/>
+虽然是从候选数中填上的，<br/>
+从直接局面看是无冲突的，<br/>
+但最后也可能填到无解的情况。<br/><br/><font color="#0000ff">》》效果：</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c762de3f91e20dfd7c1e71fb.jpg" small="0" class="blogimg"/></span><br/><br/>
+点击左键弹出这样一个面板，可以输入数字或者候选数字。<br/>
+感觉这个弹框比较丑，没时间做美化了。。<br/>
+如果要删除某个输入的数字或者候选数字，在上面右击即可。<br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1e5905246cd1700cc99559fb.jpg" small="0" class="blogimg"/></span><br/><br/>
+一个放大的细节。<br/>
+橘黄色的是高亮当前格，<br/>
+这个黄框也是从题目的word文档中改造过来的，<br/>
+看起来总觉得不行。。<br/>
+蓝色是原有的数字，红色是填入的数字，<br/>
+小的斜体“3、5、4”是用户输入的可能候选数。<br/>
+这个候选数只是辅助用户思考所用。<br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1bbfb919a9b21e7a42a9adc4.jpg" small="0" class="blogimg"/></span><br/><br/>
+这是随手写的一个最简单的单格提示功能，<br/>
+把每个格子用行列宫的规则判断后，<br/>
+剩下能填的数都列在里面，帮助用户思考。<br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/56fab312c78a6af1c2fd78fb.jpg" small="0" class="blogimg"/></span><br/><br/>
+选择全部解答后，自动填上的数字。<br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a973a301287ec7391c9583c4.jpg" small="0" class="blogimg"/></span><br/><br/><font color="#0000ff">》》改进：</font><br/><br/>
+UI需要统一一下风格：<br/>
+输入数字的弹窗，<br/>
+载入游戏的弹窗，<br/>
+生成新游戏的弹窗。<br/>
+都弄成主界面这个样子的。<br/><br/>
+增加撤销和重复操作的功能。<br/>
+现在程序里面有的是删除数字的功能。<br/>
+而撤销是带有顺序的，<br/>
+可以删除一连串的填入。<br/>
+这个很有必要，<br/>
+因为前后数字的填入是有相关性的。<br/>
+简单删除可能会由于误操作而形成混乱。<br/><br/>
+高亮效果还是用DC直接画吧，<br/>
+贴图的太不逼真了。。<br/>
+而且还是mspaint修饰出来。。<br/>
+特别是如果后面要加其他演示效果，<br/>
+贴图叠在一起的样子可能更不好控制。<br/><br/>
+算法上，确实差得比较远，<br/>
+可以考虑向mathe谈到的几种靠近。<br/>
+可以把各种提示的演示都加出来。<br/><br/>
+不过说归说，这些都不打算做了，记下而已。<br/>
+没想到酱油这么个小东西都折腾了一天。。<br/><font color="#0000ff"><br/>
+》》关于绘图</font><br/><br/>
+一般的小游戏，刷新不频繁，用DC就够了。<br/>
+代码构造一般是：<br/>
+输入事件的处理中，改变游戏状态，<br/>
+必要的时候触发绘图事件。<br/>
+绘图事件中，根据游戏状态依次绘制各个元素。<br/><br/>
+触发绘图事件一般用Invalidate。<br/><br/>
+如果绘图有闪烁，可以Invalidate(false)。<br/>
+这样可以不用系统擦除背景，提高点效率。<br/><br/>
+如果还是比较闪烁，可以考虑双缓冲。<br/>
+先在一个兼容的内存DC里面画图，<br/>
+画完后再一次性地bitblt到屏幕上面。<br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[解析IP头的demo]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/06/20/%E8%A7%A3%E6%9E%90IP%E5%A4%B4%E7%9A%84demo/"/>
+    <updated>2010-06-20T21:35:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/06/20/解析IP头的demo</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.6.20<br/><br/>
+以前应付作业，抓抓包，抄几个数据，<br/>
+并没有发现这里面太多的猫腻。<br/>
+今天看课件的时候，发现一处错误。<br/>
+课件上对IP头的结构体定义为：<br/><br/>
+typedef struct _iphdr1{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    unsigned int congest:1;/<em> Congestion experienced bit (exp) </em>/<br/>
+unsigned int df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+unsigned int mf:1;        /<em> More Fragments flag </em>/<br/>
+USHORT Offset:13;        /<em> Fragment offset in bytes </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/>
+} iphdr1;<br/><br/>
+标红的这段在顺序上应该是有问题的。<br/><br/>
+关于IP头的格式详细定义：<a href="http://hi.baidu.com/hplonline/blog/item/6a639451076bc22e43a75ba8.html" target="_blank">这里</a>。<br/>
+关于位域细节的说明：<a href="http://hi.baidu.com/hplonline/blog/item/4411b8fba8d9562f4e4aeaa3.html" target="_blank">这里</a>。<br/><br/>
+有了以上认识之后，就可以知道标红的段有两个错误：<br/><font color="#ff0000">1。顺序与IP头的定义不一致。<br/>
+2。会造成对齐上的错误。</font><br/><br/>
+另外，这个定义把VERSION和HLEN合成了一个VERSION字段。<br/>
+这个也不算错误，只能说是一种工程上的简化。<br/>
+在大多数情况下，第一个字节都是0x45。（IPv4，5*4=20的头长）<br/>
+这样，我们直接定义成一个整字节就行了，<br/>
+然后在收到数据包的时候，提取低4位看下是多少。<br/><br/><font color="#0000ff">》》实验程序</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;string.h&gt;<br/></h1>
+
+<h1>include &lt;winsock.h&gt;<br/><br/></h1>
+
+<h1>pragma comment(lib, &#8220;ws2_32.lib&#8221;)<br/><br/></h1>
+
+<p>typedef unsigned char UCHAR ;<br/>
+typedef unsigned short USHORT ;<br/>
+typedef unsigned int UINT ;<br/>
+typedef unsigned long ULONG ;<br/><br/></p>
+
+<h1>define IP_MAXOPT 20 <br/><br/></h1>
+
+<p>typedef struct <em>iphdr1{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    unsigned int congest:1;/<em> Congestion experienced bit (exp) </em>/<br/>
+unsigned int df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+unsigned int mf:1;        /<em> More Fragments flag </em>/<br/>
+USHORT Offset:13;        /<em> Fragment offset in bytes </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/><font color="#ff0000">} iphdr1;</font><br/><br/>
+typedef struct </em>iphdr2{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    USHORT Offset:13;        /<em> Fragment offset in bytes </em>/<br/>
+unsigned int mf:1;        /<em> More Fragments flag </em>/<br/>
+unsigned int df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+unsigned int congest:1;/<em> Congestion experienced bit (exp) </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/><font color="#ff0000">} iphdr2;</font><br/><br/>
+typedef struct _iphdr3{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    USHORT Offset:13;        /<em> Fragment offset in bytes </em>/<br/>
+USHORT mf:1;        /<em> More Fragments flag </em>/<br/>
+USHORT df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+USHORT congest:1;/<em> Congestion experienced bit (exp) </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/>
+}<font color="#ff0000"> iphdr;</font><br/><br/>
+char buf1[] = {0x45 ,0x00 ,0x05 ,0xdc ,0x00 ,0x26 ,0x20 ,0x00 ,0x80 <br/>
+,0x01 ,0x72 ,0xa5 ,0xc0 ,0xa8 ,0x0b ,0x02 ,0xc0 ,0xa8 ,0x16 ,0x03} ;<br/><br/>
+char buf2[] = {0x45 ,0x00 ,0x00 ,0x30 ,0x00 ,0x26 ,0x00 ,0xb9 ,0x80 <br/>
+,0x01 ,0x97 ,0x98 ,0xc0 ,0xa8 ,0x0b ,0x02 ,0xc0 ,0xa8 ,0x16 ,0x03} ;<br/><br/>
+void analyze(char <em>bufin , int len){<br/>
+char buf[512] ;<br/>
+memcpy(buf , bufin , len) ;<br/>
+static count = 0 ;<br/>
+printf(&#8220;IP HEADER: %d\n&#8221; , ++count) ;<br/>
+puts(&#8220;=============&#8221;) ;<br/>
+iphdr </em>p = (iphdr<em>)buf ;<br/>
+printf(&#8220;version:0x%x\n&#8221; , p-&gt;version) ;<br/>
+printf(&#8220;tos:0x%x\n&#8221; , p-&gt;tos) ;<br/>
+printf(&#8220;length:%d\n&#8221; , ntohs(p-&gt;length)) ;<br/>
+printf(&#8220;identifier:0x%x\n&#8221; , ntohs(p-&gt;id)) ;<br/>
+USHORT </em>pu = (USHORT<em>)&amp;p-&gt;id + 1 ;<br/>
+//printf(&#8220;%x\n&#8221; , </em>pu) ;<br/>
+<em>pu = ntohs(</em>pu) ;<br/>
+//printf(&#8220;%x\n&#8221; , <em>pu) ;<br/>
+printf(&#8220;congest?:%d\n&#8221; , p-&gt;congest) ;<br/>
+printf(&#8220;don&#8217;t fragment?:%d\n&#8221; , p-&gt;df) ;<br/>
+printf(&#8220;more gragment?:%d\n&#8221; , p-&gt;mf) ;<br/>
+printf(&#8220;offset:0x%x , (%d Bytes)\n&#8221; , p-&gt;Offset , p-&gt;Offset * 8) ;<br/>
+printf(&#8220;ttl:%d\n&#8221; , p-&gt;ttl) ;<br/>
+printf(&#8220;protocol:%d\n&#8221; , p-&gt;protocol) ;<br/>
+printf(&#8220;checksum:0x%x\n&#8221; , ntohs(p-&gt;checksum)) ;<br/>
+SOCKADDR_IN addr ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;source ;<br/>
+printf(&#8220;source ip:%s\n&#8221; , inet_ntoa(addr.sin_addr)) ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;dest ;<br/>
+printf(&#8220;destination ip:%s\n&#8221; , inet_ntoa(addr.sin_addr)) ;    <br/>
+puts(&#8220;=============&#8221;) ;<br/>
+putchar(&#8216;\n&#8217;) ;<br/>
+}<br/><br/>
+int main(){<br/>
+analyze(buf1 , sizeof(buf1)) ;<br/>
+analyze(buf2 , sizeof(buf2)) ;<br/>
+return 0 ; <br/>
+}<br/><br/>
+程序里面，将需要测试的结构typedef为iphdr，<br/>
+另外的typedef为其他名字即可，<br/>
+这样，可以依次测试三种写法的效果。<br/><br/>
+buf1和buf2是实际ping的时候，<br/>
+抓出来的IP头部分的字节流。<br/><br/><font color="#0000ff">》》实验结果</font><br/><br/>
+以WireShark的输出为标准，先来看下：<br/><br/>
+第一个报文：<br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/28eb2b3f18a8b6d155e723aa.jpg" small="0" class="blogimg"/></span><br/><span><br/>
+第二个报文：<br/><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/34c7de2a5d92f9a6023bf6aa.jpg" small="0" class="blogimg"/></span><br/><br/><font color="#ff00ff">结构体1的输出：</font><br/><br/>
+IP HEADER: 1<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:1500<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0x8c0 , (17920 Bytes)<br/>
+ttl:11<br/>
+protocol:2<br/>
+checksum:0xc0a8<br/>
+source ip:204.204.204.204<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/>
+IP HEADER: 2<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:48<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0x8c0 , (17920 Bytes)<br/>
+ttl:11<br/>
+protocol:2<br/>
+checksum:0xc0a8<br/>
+source ip:204.204.204.204<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/><font color="#ff00ff">结构体2的输出：</font><br/><br/>
+IP HEADER: 1<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:1500<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0x0 , (0 Bytes)<br/>
+ttl:192<br/>
+protocol:168<br/>
+checksum:0xb02<br/>
+source ip:192.168.22.3<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/>
+IP HEADER: 2<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:48<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0xb9 , (1480 Bytes)<br/>
+ttl:192<br/>
+protocol:168<br/>
+checksum:0xb02<br/>
+source ip:192.168.22.3<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/><font color="#ff00ff">结构体3的输出：</font><br/><br/>
+IP HEADER: 1<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:1500<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:1<br/>
+offset:0x0 , (0 Bytes)<br/>
+ttl:128<br/>
+protocol:1<br/>
+checksum:0x72a5<br/>
+source ip:192.168.11.2<br/>
+destination ip:192.168.22.3<br/>
+=============<br/><br/>
+IP HEADER: 2<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:48<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0xb9 , (1480 Bytes)<br/>
+ttl:128<br/>
+protocol:1<br/>
+checksum:0x9798<br/>
+source ip:192.168.11.2<br/>
+destination ip:192.168.22.3<br/>
+=============<br/><br/><font color="#0000ff">》》结论</font><br/><br/>
+很显然，第三种写法才是对的。<br/><br/>
+但重要的不是什么对，而是前两个错在哪里。<br/>
+从代码可以看到，第二个在第一个的基础上交换了conget，df，mf，offset的顺序。<br/>
+在输出结果中，可以看到，程序打印出了正确的offset。<br/>
+但由于“对齐”的问题，另外三个flag被放到下一个int里面去了。<br/>
+这也导致后面的数据域被推后了，所以均产生错误。<br/>
+第三个在第二个的基础上用USHORT统一了定义。<br/>
+上篇对<a href="http://hi.baidu.com/hplonline/blog/item/4411b8fba8d9562f4e4aeaa3.html" target="_blank">位域</a>详细分析过了，<br/>
+只有都用USHORT，临近的成员才能放在一起。<br/><br/><font color="#0000ff">》》关于analyze函数</font><br/><br/>
+其实这个demo的关键在于记录了一种方法：<br/><font color="#ff0000">通过结构体来对缓冲区进行格式化。</font><br/><br/>
+再摘抄一下：<br/><br/>
+void analyze(char </em>bufin , int len){<br/>
+char buf[512] ;<br/>
+memcpy(buf , bufin , len) ;<br/>
+static count = 0 ;<br/>
+printf(&#8220;IP HEADER: %d\n&#8221; , ++count) ;<br/>
+puts(&#8220;=============&#8221;) ;<br/>
+iphdr <em>p = (iphdr</em>)buf ;<br/>
+printf(&#8220;version:0x%x\n&#8221; , p-&gt;version) ;<br/>
+printf(&#8220;tos:0x%x\n&#8221; , p-&gt;tos) ;<br/>
+printf(&#8220;length:%d\n&#8221; , <font color="#ff0000">ntohs(</font>p-&gt;length)) ;<br/>
+printf(&#8220;identifier:0x%x\n&#8221; , <font color="#ff0000">ntohs(</font>p-&gt;id)) ;<br/><font color="#ff0000">   USHORT <em>pu = (USHORT</em>)&amp;p-&gt;id + 1 ;<br/>
+//printf(&#8220;%x\n&#8221; , <em>pu) ;<br/>
+</em>pu = ntohs(<em>pu) ;<br/>
+//printf(&#8220;%x\n&#8221; , </em>pu) ;</font><br/>
+printf(&#8220;congest?:%d\n&#8221; , p-&gt;congest) ;<br/>
+printf(&#8220;don&#8217;t fragment?:%d\n&#8221; , p-&gt;df) ;<br/>
+printf(&#8220;more gragment?:%d\n&#8221; , p-&gt;mf) ;<br/>
+printf(&#8220;offset:0x%x , (%d Bytes)\n&#8221; , p-&gt;Offset , p-&gt;Offset * 8) ;<br/>
+printf(&#8220;ttl:%d\n&#8221; , p-&gt;ttl) ;<br/>
+printf(&#8220;protocol:%d\n&#8221; , p-&gt;protocol) ;<br/>
+printf(&#8220;checksum:0x%x\n&#8221; , <font color="#ff0000">ntohs(</font>p-&gt;checksum)) ;<br/>
+SOCKADDR_IN addr ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;source ;<br/>
+printf(&#8220;source ip:%s\n&#8221; ,<font color="#ff0000"> inet_ntoa(</font>addr.sin_addr)) ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;dest ;<br/>
+printf(&#8220;destination ip:%s\n&#8221; , <font color="#ff0000">inet_ntoa(</font>addr.sin_addr)) ;    <br/>
+puts(&#8220;=============&#8221;) ;<br/>
+putchar(&#8216;\n&#8217;) ;<br/>
+}<br/><br/>
+以前，对<a href="http://hi.baidu.com/hplonline/blog/item/6a639451076bc22e43a75ba8.html" target="_blank">IP和TCP格式的记录</a>中有一段十分生涩的话。<br/>
+虽然有点朦胧的感觉，还是硬性记录了下来，<br/>
+但在多次跟别人交流的时候，总是无法把这个问题说清楚。<br/>
+如果一个人不进行实际的编程，就无法意识到这中间的猫腻，<br/>
+脑袋里的唯一印象就是：“这东西我看着很自然的啊，你搞复杂了吧“。<br/><br/>
+这个analyze函数所展示的，主要是<font color="#ff0000">网络字节序</font>的问题。<br/><br/>
+先来看下IP头的定义：<br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/4868b8b7d14f52db33add162.jpg" small="0" class="blogimg"/></span><br/><br/>
+对于整字节的元素（8bit，16bit，32bit），我们可以直接操作。<br/>
+比如TOTAL LENGTH，直接按照USHORT读出来即可。<br/>
+在代码中，使用ntohs进行转化，就得到了以主机字节序表示的总长。<br/><br/>
+但是注意第二个红框（flags，offset），这里就比较麻烦了。<br/>
+对于这种非整字节组合的域，不能直接读取。<br/>
+首先应该按照基础存储类型取出（就是结构定义中的USHORT），<br/>
+使用ntohs转化为主机字节序，再写回到缓冲区中的原位置。<br/>
+（不写也可以，那么就需要自行提取高3位和低13位，<br/>
+这失去了<font color="#ff0000">定义结构体的意义</font>）<br/>
+（定义结构体，就是为了不用通过指针和偏移访问缓冲，<br/>
+直接引用结构体的成员就行了）<br/>
+而<a href="http://hi.baidu.com/hplonline/blog/item/4411b8fba8d9562f4e4aeaa3.html" target="_blank">上篇</a>提到过，不能取位域的地址，<br/>
+这个定义非常的不爽，于是只有手动获得指针：<br/><font color="#ff0000">   USHORT <em>pu = (USHORT</em>)&amp;p-&gt;id + 1 ;</font><br/>
+而这个动作，一瞬间就把结构体的优美特性抹杀了。。<br/><br/>
+那么能不能通过比较好的定义flags和offset，<br/>
+以达到不需要通过指针偏移和ntohs来交换，直接解析呢？？<br/><font color="#ff0000">在小尾机上我是真没啥好办法，有好办法的同学麻烦通知一下。</font><br/>
+在大尾机上当然就不用题了，因为ntohs就是一个空壳函数，<br/>
+于是我们正确定义了结构后（比如上面的第三个结构），直接读出来就行了。。。<br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[有关C位域使用的细节]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/06/20/%E6%9C%89%E5%85%B3C%E4%BD%8D%E5%9F%9F%E4%BD%BF%E7%94%A8%E7%9A%84%E7%BB%86%E8%8A%82/"/>
+    <updated>2010-06-20T20:43:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/06/20/有关C位域使用的细节</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.6.20<br/><br/><font color="#0000ff">》》位域</font><br/><br/>
+位域就是这样的东西：<br/><br/>
+struct _mystr{<br/>
+int b:<font color="#ff0000">1 </font>;<br/>
+}<br/><br/>
+一般写上层程序的时候很少使用，<br/>
+毕竟最初发明它主要是出于存储开销的考虑。<br/>
+随便一想，就知道这东西其实并不能给执行效率带来什么好处。<br/>
+既然是处理位域，那么一个通用的赋值显然有三个部分组成：<br/><font color="#ff0000">1。原变量and上一个掩码，清空要赋值的部分<br/>
+2。把要赋的值进行移位，以对齐到位域的最低位<br/>
+3。用一个or把值赋上去。</font><br/><br/>
+当然，这几个部分可能由编译器进行一定量的合并，<br/>
+但这并不能从本质上改进什么东西。<br/><br/>
+在很早很早的时候，计算机的容量又小，网络环境又差。<br/>
+于是在不少协议中，位域得到了比较广泛的应用。<br/><br/>
+关于位域，至少可以想到两个问题：<br/><font color="#ff9900">1。定义顺序和存储顺序？<br/>
+2。如何进行内存对齐？</font><br/><br/><font color="#0000ff">》》实验</font><br/><br/><font color="#ff0000">环境：小尾机，VC6.DEBUG，.cpp编译</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;string.h&gt;<br/><br/></h1>
+
+<p>typedef struct <em>str1{<br/>
+unsigned int b1:1 ;<br/>
+unsigned int b2:1 ;<br/>
+unsigned int b3:1 ;<br/>
+unsigned int rest:13 ;<br/>
+}STR1 ;<br/><br/>
+typedef struct </em>str2{<br/>
+unsigned int b1:1 ;<br/>
+unsigned int b2:1 ;<br/>
+unsigned int b3:1 ;<br/><font color="#ff0000">unsigned short</font> rest:13 ;<br/>
+}STR2 ;<br/><br/>
+typedef struct <em>str3{<br/>
+unsigned short b1:1 ;<br/>
+unsigned short b2:1 ;<br/>
+unsigned short b3:1 ;<br/>
+unsigned short rest:13 ;<br/>
+}STR3 ;<br/><br/><font color="#ff0000">#pragma pack(1)</font><br/>
+typedef struct </em>str4{<br/>
+unsigned int b1:1 ;<br/>
+unsigned int b2:1 ;<br/>
+unsigned int b3:1 ;<br/>
+unsigned short rest:13 ;<br/>
+}STR4 ;<br/><font color="#ff0000">#pragma pack()</font><br/><br/>
+int main(){<br/>
+printf(&#8220;%d,%d,%d,%d\n&#8221; , sizeof(STR1) , sizeof(STR2) , sizeof(STR3) , sizeof(STR4)) ;<br/><br/>
+STR1 str ;<br/>
+memset(&amp;str , 0 , sizeof(str)) ;<br/>
+str.b1 = 1 ;<br/>
+printf(&#8220;%x\n&#8221; , (unsigned int)<em>(unsigned int</em>)&amp;str) ;<br/>
+str.b3 = 1 ;<br/>
+printf(&#8220;%x\n&#8221; , (unsigned int)<em>(unsigned int</em>)&amp;str) ;<br/>
+str.rest = 7 ;<br/>
+return 0 ;<br/>
+}<br/><br/>
+输出：<br/><br/>
+4,8,2,6<br/>
+1<br/>
+5<br/><br/><font color="#0000ff">》》结论</font><br/><br/>
+定义顺序和存储顺序与一般的结构成员是一致的：<br/><font color="#ff0000">定义在前面（上面）的元素会放在低位。</font><br/><br/>
+内存对齐的原则是，以pack的设置和基类型为标准。（STR1和STR3）<br/>
+STR2告诉我们，如果前后的基类型不同，<br/>
+不会按照位域进行合并，头一个基类型会直接填充满。<br/>
+STR4告诉我们，即使用pack也无法缩减掉基类型中的空白。<br/><br/>
+这几个结论，对于刚刚看完百科式C语言教材的人来说，<br/>
+也许是显然的，但实验的方法让我们可以应对不同环境。<br/>
+并且，这种显然的结论，当自己手写程序的时候，往往就不那么显然了。<br/>
+比如，上面定义的几个结构体，其实就是模仿看到的某段IP头结构体的定义。<br/>
+congest,df,mf三个1bit的位，加上13bit的offset。<br/><br/>
+另外有一点很不爽的是，<br/><font color="#ff0000">C不允许我们对位域取地址（用&amp;操作符）。</font><br/>
+在实践中，这实际上会引起一些不方便，<br/><font color="#ff0000">我觉得</font>更合适的定义是：<br/><font color="#ff0000">对位域取地址得到的是其基础类型所在的地址。</font><br/><br/></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[C中的Trigraphs]]></title>
+    <link href="http://hupili.github.io/backup-hplonline/blog/2010/06/18/C%E4%B8%AD%E7%9A%84Trigraphs/"/>
+    <updated>2010-06-18T21:12:00+08:00</updated>
+    <id>http://hupili.github.io/backup-hplonline/blog/2010/06/18/C中的Trigraphs</id>
+    <content type="html"><![CDATA[<p>(hplonline)2010.6.18<br/><br/>
+今天又在论坛火星地发现一个东西了。。<br/>
+先来个加强版的demo：<br/><font color="#ff00ff"><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>int main()??&lt;<br/>
+printf(&#8220;??!&#8221;) ;<br/>
+printf(&#8220;%d&#8221; ,  1 ??&#8217; 0) ;<br/>
+return 0 ;<br/>
+??&gt;</font><br/><br/><font color="#0000ff">》》转：关于Trigraphs</font><br/><br/>
+Trigraphs<br/>
+The source character set of C source programs is contained within the 7-bit ASCII character set but is a superset of the ISO 646-1983 Invariant Code Set. Trigraph sequences allow C programs to be written using only the ISO (International Standards Organization) Invariant Code Set. Trigraphs are sequences of three characters (introduced by two consecutive question marks) that the compiler replaces with their corresponding punctuation characters. You can use trigraphs in C source files with a character set that does not contain convenient graphic representations for some punctuation characters.<br/><br/>
+Table 1.1 shows the nine trigraph sequences. All occurrences in a source file of the punctuation characters in the first column are replaced with the corresponding character in the second column.<br/><br/>
+Table 1.1   Trigraph Sequences<br/><br/>
+Trigraph Punctuation Character<br/>
+??= #<br/>
+??( [<br/>
+??/ &lt;br/>
+??) ]<br/>
+??’ ^<br/>
+??&lt; {<br/>
+??!  |<br/>
+??&gt; }<br/>
+??-  ~<br/><br/><br/>
+A trigraph is always treated as a single source character. <font color="#ff0000">The translation of trigraphs takes place in the firsttranslation phase</font>, before the recognition of escape characters in string literals and character constants. Only the nine trigraphs shown in Table 1.1 are recognized. All other character sequences are left untranslated.<br/><br/>
+The character escape sequence, \?, prevents the misinterpretation of trigraph-like character sequences. (For information about escape sequences, see Escape Sequences.) For example, if you attempt to print the string What??! with this printf statement<br/><br/>
+printf( &#8220;What??!\n&#8221; );<br/><br/>
+the string printed is What| because ??! is a trigraph sequence that is replaced with the | character. Write the statement as follows to correctly print the string:<br/><br/>
+printf( &#8220;What?\?!\n&#8221; );<br/><br/>
+In this printf statement, a backslash escape character in front of the second question mark prevents the misinterpretation of ??! as a trigraph.<br/><br/><br/>
+上面标红的这个first translation phase很关键！<br/>
+编译器对trigraphs的解析是在所有动作之前的，<br/>
+甚至在对转义字符“\“的前面。<br/>
+所以转文附带了一个在问号前加转义的例子。<br/>
+又正由于这个特性，<br/>
+连前后大小括号也可以这么替代。。。<br/>
+于是就出现了上面这个长的很别扭的程序。<br/><br/>
+据说是因为以前有些键盘没有这些符号才这样搞的，<br/>
+但这应该是很早很早以前的事了吧。。</p>
 ]]></content>
   </entry>
   

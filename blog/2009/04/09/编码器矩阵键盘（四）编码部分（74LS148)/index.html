@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>编码器矩阵键盘（四）编码部分（74LS148) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.4.9编码电路： 74LS148在之前也用过。 简单说一下就是，优先编码，EI使能，7到0，优先降低，A2A1A0输出。
+当编码工作的时候GS有效，当编码未工作的时候EO有效。
+熟悉这个芯片的同学，一定很快发现我在设计上的一点缺陷了。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/09/%E7%BC%96%E7%A0%81%E5%99%A8%E7%9F%A9%E9%98%B5%E9%94%AE%E7%9B%98%EF%BC%88%E5%9B%9B%EF%BC%89%E7%BC%96%E7%A0%81%E9%83%A8%E5%88%86%EF%BC%8874LS148%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">编码器矩阵键盘（四）编码部分（74LS148)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-09T20:04:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.4.9<br/><br/><font color="#0000ff">编码电路：</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/6a065ee7ce73570cb83820cb.jpg" small="0" class="blogimg"/></div></p>
+
+<br/><a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/2210888be48af6dbfc1f10e2.html">74LS148</a>在之前也用过。<br/><br/>
+
+
+<p>简单说一下就是，优先编码，EI使能，7到0，优先降低，A2A1A0输出。<br/>
+当编码工作的时候GS有效，当编码未工作的时候EO有效。<br/><br/>
+熟悉这个芯片的同学，一定很快发现我在设计上的一点缺陷了。<br/><font color="#ff0000">前面我用两个列线的或来表示有没有键按下。<br/>
+其实用跟列相关的148（U5)的GS就可以表示。</font><br/>
+为低的时候表示有键按下，为高的时候表示没有。<br/>
+由于在proteus仿真的时候，老是没有反映，所以放弃这一方法。<br/><br/>
+由于优先编码的问题，所以，把148没有用的输入端全部接高。<br/><br/>
+编码出来的rowo0和rowo1等都是低有效，当未编码的时候，输出全1。<br/>
+所以把行和列的编码输出相与并取反，就可以获得高有效的码了。<br/><br/>
+这时，直接从P1口相应位读出来就是按下的键所在列（行）：<br/>
+col = (P1 &amp; 0x01 ) + 1;      //获得列值<br/>
+这里只用了1位，如果是4*4的就P1 &amp; 0x03就行了。<br/>
+后面加1是我对行列从1编号的缘故。<br/><font color="#ff0000">这里要注意的就是&amp;比+的优先级低。</font><br/>
+（地球人都知道？确实。。。不过地球人大多爱犯这错。。。）<br/><br/>
+再看左端。行线和列线row0,row1,col0,col1都是接下拉电阻到地的。<br/>
+所以常态下为低。<br/>
+如果我们对row0,row1置高，那么有键按下的那一列就被拉高。<br/>
+经过反向后为低有效，对其编码。<br/>
+（并且可以知道，多键同时按下的时候，标号大的优先译码）<br/><br/>
+还有一点，就是行赋全1的时候，列编码工作，列赋全1的时候，行编码工作。<br/><br/>
+所以，留下两个erow和ecol信号来使能两片编码器。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-09T20:04:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/09/%E7%BC%96%E7%A0%81%E5%99%A8%E7%9F%A9%E9%98%B5%E9%94%AE%E7%9B%98%EF%BC%88%E5%9B%9B%EF%BC%89%E7%BC%96%E7%A0%81%E9%83%A8%E5%88%86%EF%BC%8874LS148%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/09/%E7%BC%96%E7%A0%81%E5%99%A8%E7%9F%A9%E9%98%B5%E9%94%AE%E7%9B%98%EF%BC%88%E5%9B%9B%EF%BC%89%E7%BC%96%E7%A0%81%E9%83%A8%E5%88%86%EF%BC%8874LS148%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/09/%E7%BC%96%E7%A0%81%E5%99%A8%E7%9F%A9%E9%98%B5%E9%94%AE%E7%9B%98%EF%BC%88%E4%B8%89%EF%BC%89%E9%94%AE%E7%9B%98%E9%83%A8%E5%88%86%E5%92%8C%E5%8E%9F%E7%90%86%E8%AF%B4%E6%98%8E/" title="Previous Post: 编码器矩阵键盘（三）键盘部分和原理说明">&laquo; 编码器矩阵键盘（三）键盘部分和原理说明</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/09/%E7%BC%96%E7%A0%81%E5%99%A8%E7%9F%A9%E9%98%B5%E9%94%AE%E7%9B%98%EF%BC%88%E4%BA%94%EF%BC%89%E6%B5%8B%E8%AF%95%E4%BF%A1%E5%8F%B7%E7%9A%84%E4%BA%A7%E7%94%9F%EF%BC%8874LS373%29%EF%BC%88%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84hazard%2Cglitch%2Cracecondition%29/" title="Next Post: 编码器矩阵键盘（五）测试信号的产生（74LS373)（要注意的hazard,glitch,race condition)">编码器矩阵键盘（五）测试信号的产生（74LS373)（要注意的hazard,glitch,race condition) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

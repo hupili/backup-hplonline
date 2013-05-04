@@ -1,0 +1,1123 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.3.26系列链接
+关于实验本身，HEXEC的这篇文章已经写得很清晰了。
+这周二中午，我也在网上碰到了有关EZVPN的资料，
+不过敲了很久，可能是敲晕了，怎么都不通。
+前天看同学敲出来了，想必是能行的通的。
+先照着敲了一遍，发现可以跑，
+于是把之前的失败文件拿出来， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/page/5">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/26/%E3%80%90PacketTracer%E3%80%91IPsec%E5%AE%9E%E9%AA%8C%EF%BC%8C%E4%B8%BB%E6%9C%BA%E5%88%B0%E5%AD%90%E7%BD%91%E7%9A%84VPN%EF%BC%8Cdebug%E8%AE%B0%E5%BD%95%28ezvpn%29/">【PacketTracer】IPsec实验，主机到子网的VPN，debug记录(ezvpn)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-26T12:23:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.26<br/><br/><a href="../../sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer" target="_blank">系列链接</a><br/><br/>
+关于实验本身，HEXEC的<a href="http://www.chenhuan.net/pt-easyvpn-simulation.html" target="_blank">这篇文章</a>已经写得很清晰了。<br/><br/>
+这周二中午，我也在网上碰到了有关EZVPN的资料，<br/>
+不过敲了很久，可能是敲晕了，怎么都不通。<br/><br/>
+前天看同学敲出来了，想必是能行的通的。<br/>
+先照着敲了一遍，发现可以跑，<br/>
+于是把之前的失败文件拿出来，一点点debug。<br/>
+折腾了一天之后，发现连有哪些命令都差不多记住了。。。。<br/><br/><font color="#0000ff">一。大致过程</font><br/><br/>
+配置aaa新模式，创建本地认证和授权的list。(aaa new, aaa authen, aaa autho)<br/><br/>
+在本地添加若干账户（用户名和密码）。(user xxx pass xxx)<br/><br/>
+配置本地地址池。(ip local pool)<br/><br/>
+创建isakmp的组。<br/>
+组中指明地址池，和组密码。<br/><font color="#ff9900">（还可以指定掩码，见诸网上的资料一般都没做这一步了）</font><br/><br/>
+创建isakmp的策略。<br/>
+指明hash算法，和认证方式(pre-share)。<br/><br/>
+创建变换集，transform-set。<br/><br/>
+创建动态加密图(dynamic-map)，<br/>
+选择变换集，开启反向路由注入。<br/><br/>
+创建静态加密图，<br/>
+把前面aaa的认证和授权list配上去，<br/>
+开启地址响应，<br/>
+与动态加密图绑定。<br/><br/>
+将静态图应用到出口接口上。<br/><br/><font color="#0000ff">二。配置完全正确不通</font><br/><br/>
+据说是模拟ARP的问题，<br/>
+就像平时ping的时候，<br/>
+可能第一个不通，后面的就通了。<br/><br/>
+可以先用PC ping 下网关，确保网络是通的。<br/>
+如果配置都正确，应该就行了。<br/><br/><font color="#0000ff">三 。connect之后，PC会卡住，也不报告timeout。</font><br/><br/><font color="#ff0000">使用PT的Simulation模式，<br/>
+每个包在端点的处理都会显示出来。</font><br/><br/>
+直接查看最上层isakmp的信息如下：<br/><br/>
+===<br/><br/>
+1. Server received first aggressive mode message.<br/>
+2. ISAKMP matching policy found.<br/>
+3. Group and key match found on server.<br/>
+1. Server sends second message of aggressive mode<br/><br/>
+1. Client received second message of aggressive mode from server.<br/>
+1. Client sends configuration request PDU.<br/><br/>
+1. IKE PDU received. Client needs configuration information from server.<br/>
+2. User authentication is required.<br/>
+1. Server sends request for username and password.<br/><br/>
+1. Client process receives username and password query by server.<br/>
+1. Client process sends username and password response packet.<br/><br/>
+1. Username and password packet received on server. Server requests authentication from AAA server<br/><br/>
+1. Client receives configuration packet which has IP/Subnet for its Tunnel. It processes the packet.<br/><br/>
+=====<br/><br/>
+后检查为ip local pool 配置的问题，改正确就行了。<br/><br/>
+可能isakmp的组中，指定了一个就不存在的地址池。<br/><br/>
+PS一句，在PT里面想查看一下本地地址池，猜想的命令是：<br/><font color="#ff0000">show ip local pool </font><br/>
+没有用起，跑<a href="https://supportforums.cisco.com" target="_blank">Cisco网站</a>上去问了下，<br/>
+说<font color="#ff0000">实体机上是可以的，PT没有模拟完</font>。<br/><br/>
+那边回答问题的速度还是比较快的，毕竟是面向全球的。<br/>
+所以当你身边人打dota，睡午觉，睡晚觉的时候，<br/>
+网上总有人是醒着的，而且老外用英语很流利。<br/><br/><font color="#0000ff">四。输入信息完全正确，点connect，立即显示disconnect。</font><br/><br/>
+输入信息完全正确的意思是：<br/>
+服务器地址错，会报timeout；<br/>
+组名或组密码错，也会针对性地报；<br/>
+用户名或密码错，也会针对性的报。<br/>
+所以当这些都没报，表示这些信息应该是正确提供的。<br/><br/>
+包跟踪过程：<br/><br/>
+==========<br/><br/>
+1. Server received first aggressive mode message.<br/>
+2. ISAKMP matching policy found.<br/>
+3. Group and key match found on server.<br/>
+1. Server sends second message of aggressive mode<br/><br/>
+1. Client received second message of aggressive mode from server.<br/>
+1. Client sends configuration request PDU.<br/><br/>
+1. IKE PDU received. Client needs configuration information from server.<br/>
+2. User authentication is required.<br/>
+1. Server sends request for username and password.<br/><br/>
+1. Client process receives username and password query by server.<br/>
+1. Client process sends username and password response packet.<br/><br/>
+1. Username and password packet received on server. Server requests authentication from AAA server<br/><br/>
+1. Client receives configuration packet which has IP/Subnet for its Tunnel. It processes the packet.<br/>
+2. Client sets its Tunnel interface IP and Mask.<br/>
+1. Client sends Acknowledgement to the server.<br/><br/>
+1. Server received acknowledgement from the client.<br/><font color="#ff0000">2. Server is not configured to respond</font>. It drops the received PDU.<br/><br/>
+1. Client VPN is disconnected.<br/><br/>
+===<br/><br/>
+倒数第二条已经说得很明确了，服务器不对地址进行响应。<br/>
+相应的配置命令为：<br/><br/>
+cry map <font color="#ff9900">&lt;mymap&gt;</font> isa client conf add res<br/><br/><font color="#0000ff">五。加密图名字空间的问题</font><br/><br/>
+动态图和静态图是分开的，<br/>
+所以当已经配置mymap为动态图的时候，<br/>
+下面这些命令还是被全部接收了。<br/><br/>
+crypto map mymap client authentication list eza<br/>
+crypto map mymap isakmp authorization list ezo<br/>
+crypto map mymap client configuration address respond<br/>
+crypto map mymap 1 ipsec-isakmp dynamic mymap<br/><br/>
+没有具体的负面影响，就是多了个图。<br/>
+不过很可能由于手抖，用了之前配的动态图的名字，<br/>
+于是后来加在端口上的静态图就缺少配置了。<br/><br/>
+像第四点估计就是这样弄出来的连锁问题。。<br/><br/><font color="#0000ff">六。登陆的观察</font><br/><br/>
+多台主机可以用同一个帐号登陆。<br/><br/>
+连接成功之后，使用<br/>
+sh cry map<br/>
+可以看到若干<font color="#ff9900">peer=xxxx</font>的条目，xxxx为客户机的地址。<br/><br/><br/>
+==================<br/><br/>
+整个过程感觉对PT提供的包跟踪特性依赖比较大，<br/>
+主要是debug开启isakmp和ipsec，会显示太多的信息。<br/>
+在并不熟悉整个流程的情况下，找不到是哪里的问题。<br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91dhcp%E4%B8%AD%E7%BB%A7/">【PacketTracer】dhcp中继</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T20:50:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.24<br/><br/><a target="_blank" href="../../sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer">系列链接</a><br/><br/>
+dhcp中继适用的是dhcp服务器和客户机不在一个IP子网情况。<br/>
+因为是在第三层做中继，所以是可以跨越多个IP子网的。<br/><br/>
+在cisco路由上，进入接口模式，可以配置一个 ip help-address。<br/>
+打问号后面也说明了，是 转发UDP广播报文的目的。<br/>
+(DHCP的广播都是封在UDP里面的）<br/><br/><font color="#0000ff">练习点：</font><br/><br/>
+dhcp<br/>
+dhcp中继<br/>
+子接口（见“单臂路由”）<br/><br/><font color="#0000ff">拓扑：</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/0edae32452d488374d088d0a.jpg" small="0" class="blogimg"/></span><br/>
+三层交换配置dhcp的地址池，<br/>
+试验由路由和三层交换做dhcp中继。<br/><br/>
+三层交换机的f0/2为三层口，<br/>
+下接一个子网（.3)。<br/><br/>
+路由下接两个vlan，分属两个子网。<br/><br/><font color="#0000ff">实验步骤：</font><br/><font color="#ff9900"><br/>
+1.开启各接口，配置三层交换机和路由的IP。</font><br/><br/>
+MS0:<br/>
+f0/1:172.16.0.1/30<br/>
+f0/2:172.16.0.5/30<br/><br/>
+MS1:<br/>
+f0/1:172.16.0.6/30<br/>
+f0/2:172.16.3.1/24<br/><br/>
+R0:<br/>
+f0/0:172.16.0.2/30<br/>
+f0/1.1:172.16.1.1/24 (vlan2)<br/>
+f0/1.2:172.16.2.1/24 (vlan3)<br/><br/><font color="#ff9900">2.在MS0上配置dhcp地址池，</font><br/><br/>
+与普通dhcp的配置一样。<br/><br/><font color="#ff9900">3.</font><br/><br/>
+交换机S0上划分vlan，<br/>
+应用到接口，并且设置到R0的trunk。<br/><br/><font color="#ff9900">4.添加各路由设备的路由。</font><br/><br/>
+其中R0和MS1只需一条默认路由即可，<br/>
+MS0可以手动添加三条路由。<br/><br/><font color="#ff9900">5.在R0上配置dhcp中继</font><br/><br/>
+int f0/1.1 <br/>
+ip helper-address 172.16.0.1<br/>
+exit<br/><br/>
+int f0/1.2<br/>
+ip helper-address 172.16.0.1<br/>
+exit<br/><br/><font color="#ff9900">6.在MS1上配置dhcp中继</font><br/><br/>
+与路由类似<br/><font color="#ff9900"><br/>
+7.检验<br/></font><br/>
+各主机renew一下ip，相互ping下。<br/><br/>
+&#8212;&#8212;<br/><br/>
+实际上MS1有更方便的解决方案，<br/>
+就是把相关端口都用在2层。<br/>
+MS0-MS1的链路设为一个trunk。<br/>
+类似“<a href="http://hi.baidu.com/hplonline/blog/item/2410eccdc21d845d0eb345ee.html" target="_blank">三层交换dhcp</a>”。<br/><br/><a href="http://www.box.net/shared/ymry0ocx1h" target="_blank">pkt下载</a><br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E4%B8%89%E5%B1%82%E4%BA%A4%E6%8D%A2dhcp%EF%BC%8Cvtp/">【PacketTracer】三层交换dhcp，vtp</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T12:34:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.24<br/><br/><a href="../../sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer" target="_blank">系列链接</a><br/><br/>
+vtp，vlan trunk protocol。<br/>
+可以传递vlan编号和名字的信息，<br/>
+感觉在实践上好像省不了多少操作。<br/><br/>
+首先，开通vtp，需要各种配置。<br/>
+然后，开通vtp之后，只能在各个交换机间统一vlan的编号和名字。<br/>
+具体的哪些端口属于哪些vlan还是需要手动配置的。<br/><br/>
+有人说，当vlan数量多的时候有用。<br/>
+确实，当vlan有100个的时候，一条一条手敲vlan是个很痛苦的事。<br/>
+不过要把各种端口一个个弄到100个vlan里面显然更痛苦，<br/>
+相比之下，trunk这些vlan所减省的工作量并不多。<br/><br/>
+况且，有时候，并不是每个交换机都下接有所有的vlan。<br/>
+用vtp之后，会在全网进行统一，造成一些冗余。<br/><br/><font color="#0000ff">拓扑：</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1d3d9b23d5a5b972ac34defc.jpg"/></span><br/>
+三层交换用于dhcp，和vtp的server。<br/>
+交换机间用交叉线连接的为trunk链路，<br/>
+可以传递vtp的信息和trunk各个vlan的信息。<br/>
+三个二层交换机为vtp的client。<br/><br/><font color="#0000ff">基本设定：</font><br/><br/>
+PC0:VLAN2,192.168.2.0/24<br/>
+PC2:VLAN3,192.168.3.0/24<br/>
+PC1:VLAN4,192.168.4.0/24<br/><br/><font color="#0000ff">实验步骤：</font><br/><br/><font color="#ff9900">1.vtp的设置</font><br/><br/>
+三层交换机：<br/><br/>
+vtp domain mydomain<br/>
+vtp mode server<br/><br/>
+其他二层交换机：<br/><br/>
+vtp domain mydomain<br/>
+vtp mode client<br/><br/>
+把交换机间连接的线路设置成trunk模式。<br/><br/><font color="#ff9900">2.vlan的设置</font><br/><br/>
+三层交换机上建立vlan2，vlan3，vlan4<br/><br/>
+交换机间的trunk链路允许中继vlan2-4<br/><br/><font color="#ff9900">3.查看各路由器上的vlan，vtp的工作情况</font><br/><br/>
+sh vlan <br/><br/>
+sh vtp status<br/><br/><font color="#ff9900">4.将各access端口划到相应vlan</font><br/><br/>
+vtp只是在网络内传播vlan数据库，<br/>
+但相应的哪些端口属于哪个vlan是需要配置的。<br/><br/><font color="#ff9900">5.给三层交换机的各vlan配置地址。</font><br/><br/>
+交换机的vlan1的地址为其管理地址。<br/><br/>
+三层交换机其他vlan可以拥有IP地址，<br/>
+地位相当于该vlan的网关。<br/><br/><font color="#ff9900">6.针对三个子网，开启三个dhcp地址池</font><br/><br/><font color="#ff9900">7.PC使用dhcp获得地址</font><br/><br/>
+三个主机都得到了自己网段的ip地址。<br/><br/>
+&#8212;&#8212;-<br/><br/>
+三层交换机处理多地址池与路由类似。<br/>
+不同在于<font color="#ff0000">路由按照接口IP来区分该选用的pool</font>，<br/>
+而<font color="#ff0000">三层交换机使用vlan的IP来区分该选用的pool</font>。<br/><br/>
+另外，这篇兼耍一下vtp。<br/><br/><a href="http://www.box.net/shared/l67vjsfdl4" target="_blank">pkt下载</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%A4%9A%E5%9C%B0%E5%9D%80%E6%B1%A0dhcp/">【PacketTracer】多地址池dhcp</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T11:45:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.24<br/><br/><a href="http://hi.baidu.com/sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer" target="_blank">系列链接</a><br/><br/>
+以前只试过单地址池，<br/>
+不清楚多地址池会是什么状况。<br/><br/>
+这个小测试也算是最近一个大工程的building block。<br/><br/><font color="#0000ff">拓扑：<br/></font><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a8d2915013bacd54843524fc.jpg" small="0" class="blogimg"/></span><br/><br/><br/><font color="#0000ff">操作步骤：</font><br/><br/><font color="#ff9900">1.接口基本配置</font><br/><br/>
+将PC0和PC1划分到VLAN2和VLAN3中。<br/><br/>
+交换机f0/3开启对2和3的trunk。<br/><br/>
+路由配置子接口，对vlan2和vlan3，<br/>
+地址分别为192.168.1.1和192.168.2.1。<br/><br/>
+类似配置单臂路由。<br/><br/><font color="#ff9900">2.配置dhcp</font><br/><br/>
+ip dhcp pool pool1<br/>
+network 192.168.1.0 255.255.255.0<br/>
+default-router 192.168.1.1<br/><br/>
+ip dhcp pool pool2<br/>
+network 192.168.2.0 255.255.255.0<br/>
+default-router 192.168.2.1<br/><br/><font color="#ff9900">3.PC上申请地址</font><br/><br/>
+ipconfig /renew<br/><br/>
+=====<br/><br/><font color="#ff0000">目的只是验证一个路由是如何处理多地址池的情况。</font><br/><br/>
+结论是当某个接口（子接口）收到DHCP请求的时候，<br/>
+查找有无和该接口在同一子网的pool，有就分配。<br/><br/><a href="http://www.box.net/shared/t135a3rh8f" target="_blank">pkt下载</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%8D%95%E8%87%82%E8%B7%AF%E7%94%B1/">【PacketTracer】单臂路由</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T11:40:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.24<br/><br/><a href="http://hi.baidu.com/sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer" target="_blank">系列链接</a><br/><br/>
+去年夏天用<a href="http://hi.baidu.com/hplonline/blog/item/8cfcf7fa610942d7b58f3128.html" target="_blank">Boson把Stand Alone Lab敲完</a>了。<br/><br/>
+听说了单臂路由这个名字，也在网上搜了些东西，结果就是没整出来。<br/><br/>
+上学期上LAN/MAN，从把原理想清楚了，<br/>
+感觉其实是个比较清晰的事情，<br/>
+最近用PT模拟比较多，再试一下。<br/><br/><font color="#0000ff">拓扑：</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/6d33871053912137203f2efc.jpg" small="0" class="blogimg"/></span><br/><br/><font color="#0000ff">配置过程：</font><br/><br/><br/><font color="#ff9900">1.模拟用户擅自修改的IP地址</font><br/><br/>
+本来应该是255.255.255.128的掩码，<br/>
+由于用户擅自修改IP地址，使得可以通信。<br/><br/>
+pc0:<br/>
+ipconfig 192.168.1.2 255.255.255.0 192.168.1.1<br/><br/>
+pc1:<br/>
+ipconfig 192.168.1.130 255.255.255.0 192.168.1.129<br/><br/><font color="#ff9900">2.配置VLAN，使用户隔离</font><br/><br/>
+将PC0放到vlan2内<br/><br/>
+vlan 2<br/>
+int f1/0<br/>
+sw acc vlan 2<br/><br/>
+PC1放到vlan3内<br/><br/><font color="#ff9900">3.交换机端trunk链路</font><br/><br/>
+链路模式<br/>
+sw mode tr<br/>
+允许中继的vlan<br/>
+sw tr allowed vlan 2,3<br/><br/><font color="#ff9900">4.路由配置</font><br/><br/>
+开启端口<br/>
+int f0/0<br/>
+no shut<br/>
+ex<br/><br/>
+子接口1：<br/>
+int f0/0.1<br/>
+enc dot 2<br/>
+ip add 192.168.1.1 255.255.255.128<br/><br/>
+子接口2：<br/>
+int f0/0.2<br/>
+enc dot 3<br/>
+ip add 192.168.1.129 255.255.255.128<br/><br/><font color="#ff0000">给子接口配置IP地址前必须封装802.1Q或者ISL等加标协议。</font><br/>
+分析一下，还是很容易理解。<br/>
+所有的子接口在物理上都是同一个实体，<br/>
+如果没有加标的话，该实体收到了帧，无法判断是给哪一个子接口。<br/><br/><font color="#ff9900">5.测试</font><br/><br/>
+PC0可以ping通路由的两个子接口，<br/>
+但是无法ping通PC1。<br/><br/>
+原因是用户擅自修改了IP地址的掩码，<br/><font color="#ff0000">PC判断目的在同一子网内，<br/>
+于是直接进行arp，</font>显然是无法得到回应的。<br/><br/><font color="#ff9900">6.用户更改回网管员分配的IP</font><br/><br/>
+PC0:<br/>
+ipconfig 192.168.1.2 255.255.255.128 192.168.1.1<br/><br/>
+PC1:<br/>
+ipconfig 192.168.1.130 255.255.255.128 192.168.1.129<br/><br/><font color="#ff9900">7.测试</font><br/><br/>
+PC0和PC1可以ping通<br/><br/><br/>
+====<br/><br/>
+整个过程简单得让我都不知道以前是为啥没配通了。<br/><br/><font color="#ff0000">PS:在PT5.2中用三层交换机配子接口，提示不支持。</font><br/><br/>
+不过用三层交换机实现的时候，似乎更简洁，<br/>
+因为可以给vlan 2-1005配ip地址，已经不需要子接口这个东西了。<br/><br/><a target="_blank" href="http://www.box.net/shared/9yx617d6ip">pkt下载</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/20/%E3%80%90PacketTracer%E3%80%91IPsec%E5%AE%9E%E9%AA%8C%EF%BC%8C%E8%BF%9E%E6%8E%A5%E5%AD%90%E7%BD%91%E7%9A%84VPN/">【PacketTracer】IPsec实验，连接子网的VPN</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-20T21:11:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.20<br/><br/><a href="http://hi.baidu.com/sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer" target="_blank">系列链接</a><br/><br/>
+读了锐捷的手册，<br/>
+有些东西不一样，没试成功。<br/><br/>
+在网上找了份100+页的英文文档，<br/>
+讲得很详细，终于通了。<br/><br/>
+折腾了半天的东西，整理一下，结果就只有几句话。<br/><br/>
+PT在观察包的加封和解封方面是很方便的，<br/>
+所以可以直接在Simulation模式下观察IPsec是否成功。<br/><br/>
+我主要是为了寻求一种不依赖于模拟环境的测试方法，<br/>
+由于不了解一些细节，折腾了半天，后面会详细分析。<br/><br/><font color="#0000ff">拓扑图：</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/4d8a3ea8f1315084c9130c6a.jpg"/></span><br/>
+子网1，子网2：需要用VPN连接的两个私有网<br/>
+子网3，子网4：模拟的Internet<br/>
+R0，R1：两个私有网的边界路由，需要进行IPsec配置<br/>
+R2：Internet路由，使用ACL限制两个私有网地址的包通过<br/><br/><font color="#0000ff">实验步骤：</font><br/><br/>
+1.<br/><br/>
+配置设备地址，开启rip。<br/>
+第x个子网的网段为：192.168.x.0。<br/><br/>
+（属于基本配置，就不贴命令了）<br/><br/>
+2.<br/><br/>
+测试各设备连通性<br/><br/>
+3.<br/><br/>
+R2上配置ACL，将子网3,4模拟成Internet环境<br/><br/>
+Router2(config)#acc 1 permit 192.168.3.0 0.0.0.255<br/>
+Router2(config)#acc 1 deny any <br/>
+Router2(config)#acc 2 permit 192.168.4.0 0.0.0.255<br/>
+Router2(config)#acc 2 deny any <br/>
+Router2(config)#int f0/0<br/>
+Router2(config-if)#ip acc 1 in<br/>
+Router2(config-if)#exit<br/>
+Router2(config)#int f0/1<br/>
+Router2(config-if)#ip acc 2 in<br/>
+Router2(config-if)#exit<br/><br/>
+4.<br/><br/>
+测试PC0和PC1不可达性。<br/><br/>
+但是子网3和4之间的各接口都可以相互ping通。<br/><br/>
+5.<br/><br/>
+认证策略，预共享的密钥：<br/><br/>
+crypto isakmp policy 1<br/>
+authentication pre-share<br/>
+group 2<br/><br/>
+配置密钥：<br/><br/>
+crypto isakmp key mykey address 192.168.0.2<br/><br/>
+&lt;mykey&gt;：密钥<br/>
+&lt;192.168.0.2&gt;：对方实体地址<br/><br/>
+访问控制列表：<br/><br/>
+acc 101 permit ip 192.168.1.0 0.0.0.255 192.168.2.0 0.0.0.255<br/><br/>
+变换集：<br/><br/>
+crypto ipsec transform-set myset esp-3des esp-sha-hmac <br/><br/>
+创建加密图：<br/><br/>
+crypto map mymap 10 ipsec-isakmp <br/>
+match address 101<br/>
+set transform-set myset<br/>
+set peer 192.168.0.2<br/><br/>
+在接口上应用：<br/><br/>
+int f0/1<br/>
+crypto map mymap<br/><br/>
+5.<br/><br/>
+测试连通性。<br/>
+PC0和PC1能相互ping通。<br/><br/><font color="#0000ff">失败拓扑：</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/f437ed110c01abf3a5ef3f6a.jpg"/></span><br/>
+最初希望使用子网0来模拟Internet，<br/>
+具体方法为在R0和R1上用ACL来限制带私网地址的包通过。<br/><br/>
+结果不论是在接口上做in还是out的控制，都有问题。<br/><br/><font color="#0000ff">在R0和R1的Internet端配置in的ACL的问题</font><br/><br/><font color="#ff9900">配置为：允许地址为子网0的包，并且禁掉其他的包。</font><br/><br/>
+关于IPsec的解包，摘录PT自己Simulation给出的操作：<br/>
+（对方路由正确加封并发包，己方收到加封包的响应）<br/><br/>
+1. The receiving port has an inbound traffic access-list with an ID of 3. The router checks the packet against the access-list.<br/>
+2. The packet matches the criteria of the following statement: permit 192.168.0.0 0.0.0.255. <font color="#ff0000">The packet is permitted.</font><br/>
+3. The destination IP address matches the IP address of one of the interfaces. The router dispatches the packet to the <font color="#ff0000">upper layer.</font><br/>
+4. ESP receives a ESP PDU which requires to be authenticated and <font color="#ff0000">decrypted.</font><br/>
+5. ESP finds a matching SPI for the encrypted packet and decrypts it.<br/>
+6. The receiving port has an inbound traffic access-list with an ID of 3. The router checks the packet against the access-list.<br/>
+7. The packet matches the criteria of the following statement: deny any. The packet is <font color="#ff0000">denied and dropped.</font><br/><br/>
+IPsec包的形式：<br/><font color="#ff0000">IP(1)|IPsec|IP(2)</font><br/><br/>
+上面英文段所干的事情简述为：<br/>
+先脱去IP(1)，查ACL，放行。<br/>
+交ESP脱去IPsec的信息，<br/>
+ESP将IP(2)从相同接口“<font color="#ff0000">再次交入”</font>，<br/>
+查ACL，发现失败。<br/><br/>
+关键就在于“再次交入”这个动作。<br/>
+我最初的设想是，脱去IPsec的报头之后，直接查表转发。<br/><br/>
+想了一下，觉得这个动作其实也有道理：<br/><br/>
+1.简化程序设计，这样脱掉IPsec的普通IP包该怎么路由，和其他包一样<br/><br/>
+2.这个“再次交入”的动作并不在物理上存在，只是内部的一些调用，<br/>
+这样也不会将无保护的数据泄漏到外网上面。<br/><br/><font color="#0000ff">在R0和R1的Internet端配置out的ACL的问题</font><br/><br/><font color="#ff9900">配置为：不允许地址为私网的包出去，允许其他的</font><br/><br/>
+路由的处理过程：<br/><br/>
+1.入端口正确接收<br/>
+2.查路由表<br/>
+3.向出端口转发<br/>
+4.发现ACL匹配deny项，失败<br/><font color="#ff0000"><br/>
+可见IPsec过程是在决定向出端口转发后，<br/>
+交给ESP模块加封的</font>。<br/><br/>
+后来也想了一下，这个顺序是有道理的。。。<br/>
+主要在于，先IPsec再由出端口ACL判断，减弱控制粒度。<br/><br/>
+虽然在配置IPsec的过程中，需要设定一个ACL，<br/>
+但这个ACL其实只有第一个命中的permit是有效的。<br/>
+再进一步说，其实这个设计只是工程上的一个重用而已，<br/>
+因为扩展的ACL可以指定源和目的地址。<br/>
+如果是我来写这段程序，这个时候ACL已经在各设备上都有了，<br/>
+那么有两种选择，在用户看起来可能是这样两类命令：<br/><br/>
+a. <br/><br/>
+&#8230;&#8230;<br/>
+source 192.168.1.0 255.255.255.0<br/>
+destination 192.168.2.0 255.255.255.0<br/>
+&#8230;&#8230;<br/><br/>
+b.<br/><br/>
+access-list 101 &#8230;&#8230;<br/>
+&#8230;<br/>
+match address 101<br/><br/>
+我会比较倾向于后面这样，用户可以复用关于ACL的知识。<br/><br/>
+确定了IPsec配置过程中的ACL并非一个“控制”目的之后，<br/>
+当然就需要有额外的东西来进行控制。<br/>
+如果先IPsec加封，再ACL，则加封过后的包一定是符合出端口规则的。<br/>
+（否则IPsec本身就无法正常工作。。已经没有配置的意义）<br/>
+所以要先用ACL判断，准出了之后，再交由IPsec加封。<br/><br/><font color="#0000ff">收获：</font><br/><br/>
+在失败拓扑上折腾，得知了一些设备上的细节问题。<br/><br/>
+发现用PT来找问题确实很方便，他会列出路由处理的过程。<br/>
+不过用设备自己的debug和抓包来分析还需要练习，<br/>
+实际操作中，可不会有个东西这么详细还图形化地告诉你数据是怎样的。<br/><br/>
+阅读了一份英文文档。<font color="#0000ff"><br/><br/></font>下一次做主机到网络的VPN。<font color="#0000ff"><br/><br/>
+成品下载：</font><br/><br/><a target="_blank" href="http://www.box.net/shared/0npqs9lqds">这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/20/%E7%BA%A4%E7%A8%8B%28fiber%29%EF%BC%88%E5%8D%8F%E7%A8%8B%28coroutine%29%EF%BC%89%E6%8F%8F%E8%BF%B0%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">纤程(fiber)（协程(coroutine)）描述的生产者-消费者模型</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-20T11:48:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.20<br/><br/>
+貌似fiber出现也是很久以前的事情了，<br/>
+看的书实在太少，没遇到哪里提一下，<br/>
+最近听到了这个东西，试下。<br/><br/>
+我觉得fiber这个名字很形象，<br/>
+因为比它更重一点的解决方案是thread。<br/><br/>
+VC6的头文件和库都没有带上，用VS2008实验的。<br/><br/><font color="#0000ff">语言描述的模型：</font><br/><br/>
+1.生产者不断生产<br/>
+2.消费者不断消费<br/>
+3.仓库（队列）只有有限容量<br/>
+4.仓库满了生产者必须停止生产<br/>
+5.仓库空了消费者必须停止消费<br/>
+6.生产者的原材料用完了整个过程也结束<br/><br/><font color="#0000ff">程序描述：</font><br/><br/><br/>
+#include &#8220;stdafx.h&#8221;</p>
+
+
+<p>#include &lt;windows.h&gt;<br/>
+#include &lt;stdio.h&gt;</p>
+
+
+<p>LPVOID fProducer , fConsumer , fMain;</p>
+
+
+<p>int RawMaterial ;<br/>
+int Queue ;<br/>
+int MaxQueue ;</p>
+
+
+<p>VOID CALLBACK FiberProc_Producer( PVOID lpParameter ){<br/>
+     while ( RawMaterial &gt; 0 ){<br/>
+         while ( Queue &lt; MaxQueue &amp;&amp; RawMaterial &gt; 0 ) {<br/>
+             Queue ++ ;<br/>
+             RawMaterial &#8211; ;         <br/>
+             puts(&#8220;produce&#8221;) ;<br/>
+         }<br/>
+         SwitchToFiber(fConsumer) ;<br/>
+     }<br/>
+     puts(&#8220;raw material used up&#8221;) ;<br/>
+     SwitchToFiber(fMain) ;<br/>
+}</p>
+
+
+<p>VOID CALLBACK FiberProc_Consumer( PVOID lpParameter ){<br/>
+     while (1){<br/>
+         while ( Queue &gt; 0 ) {<br/>
+             Queue &#8211; ;<br/>
+             puts(&#8220;consume&#8221;) ;<br/>
+         }<br/>
+         SwitchToFiber(fProducer) ;<br/>
+     }<br/>
+}</p>
+
+
+<p><br/>
+int _tmain(int argc, _TCHAR* argv[])<br/>
+{<br/>
+     Queue = 0 ;<br/>
+     MaxQueue = 3 ;<br/>
+     RawMaterial = 10 ;</p>
+
+
+<p>     fProducer = CreateFiber(0 , FiberProc_Producer , NULL) ;<br/>
+     fConsumer = CreateFiber(0 , FiberProc_Consumer , NULL) ;</p>
+
+
+<p>     fMain = ConvertThreadToFiber(NULL) ;</p>
+
+
+<p>     SwitchToFiber(fConsumer) ;<br/>
+     <br/>
+     puts(&#8220;returned to main fiber&#8221;) ;</p>
+
+
+<p>     return 0;<br/>
+}<br/><br/><font color="#0000ff">fiber的特点：</font><br/><br/>
+1.fiber需要手动切换，而thread中不出现“切换”的动作<br/>
+2.fiber不需要做“等待-加锁-释放”这样一套动作<br/>
+3.各个fiber是串行的，无法利用多核的资源<br/><br/>
+从程序输出也可以明显看到，<br/>
+队列被消费者一次耗尽，<br/>
+然后交给生产者一次填满，<br/>
+如此来回，直到原材料耗尽。<br/>
+如果是thread来描述这个问题，<br/>
+可能生产两个，消耗一个，又生产一个，消耗两个。<br/><br/>
+根据这些特点，<br/>
+其实fiber并不是像thread那样用来改善性能的，<br/>
+最大的作用应该是提供一种描述逻辑的方法。<br/><br/>
+下次可以试下FSM。<br/>
+把每个fiber和一个state对应，<br/>
+接受输入（事件）之后，做相应的动作，<br/>
+然后SwitchToFiber到下一个state。<br/><br/><font color="#0000ff">相关函数：</font><br/><br/>
+ConvertThreadToFiber<br/>
+CreateFiber<br/>
+GetCurrentFiber<br/>
+GetFiberData<br/>
+SwitchToFiber</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/18/%E3%80%90PacketTracer%E3%80%91NAT%E9%85%8D%E7%BD%AE%E5%AE%9E%E9%AA%8C/">【PacketTracer】NAT配置实验</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-18T22:15:00+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.18<br/><br/>
+用PT来配了下NAT。<br/>
+关键的几个问题为：<br/><br/><font color="#0000ff">1.测试NAT起作用</font><br/><br/>
+网络连好之后，选一台路由开放virtual terminal，<br/>
+其他主机telnet进来，可以用show users查看用户地址。<br/><br/>
+根据用户地址就知道是NAT之前还是之后的了。<br/><br/><font color="#0000ff">2.模拟Internet环境</font><br/><br/>
+这里的模拟要达到的效果是，<br/>
+路由器对“Internet”方向的端口可以正常收发包，<br/>
+但带有路由器对“内网”方向地址的包无法通过。<br/><br/>
+可以配置ACL来模拟。<br/><br/><font color="#0000ff">拓扑</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/97f23c7a981df1d82f73b3ad.jpg" small="0" class="blogimg"/></span><br/>
+子网0：功能性子网，放台服务器和开了VT的路由，PC是用来测试保证本地正常访问的。<br/>
+子网1：假设的Internet环境<br/>
+子网2：用来实验静态NAT的子网<br/>
+子网3：用来实验动态NAT的子网<br/><font color="#0000ff"><br/>
+实验配置过程</font><br/><br/><br/><font color="#ff9900">1.各设备连接好，按设计分配IP</font><br/><br/><font color="#ff9900">2.启动路由协议</font><br/><br/>
+route rip<br/>
+net xxxxx<br/>
+net xxxxx<br/><br/><font color="#ff9900">3.测试连通</font><br/><br/>
+各设备之间都能ping通。<br/>
+由于PT模拟的问题，<br/>
+一般每截链路的第一个包会失败。<br/><br/><font color="#ff9900">4.配置R0的virtual terminal</font><br/><br/>
+line vty 0 15<br/>
+password 123<br/>
+login<br/><br/><font color="#ff9900">5.测试vt的正常</font><br/><br/>
+各设备<br/>
+telnet 192.168.0.4 <br/><br/>
+R0<br/>
+show users<br/>
+可以看到登陆的用户地址。<br/><br/><font color="#ff9900">6.用ACL来把子网1模拟成internet环境</font><br/><br/>
+R1：<br/>
+access-list 1 permit 192.168.1.0 0.0.0.255 <br/>
+access-list 1 deny any<br/><br/>
+int f0/1<br/>
+ip acc 1 in<br/><br/>
+只允许来自子网1的IP包通过。<br/><br/><font color="#ff9900">7.从子网2和子网3的主机测试连通性。</font><br/><br/>
+对于子网0不可达<br/><font color="#ff9900"><br/>
+8.静态NAT配置</font><br/><br/>
+配置映射表<br/>
+ip nat inside source static 192.168.2.2 192.168.1.102<br/><br/>
+配置内外接口<br/>
+int f0/0<br/>
+ip nat out<br/>
+exit<br/>
+int f1/0<br/>
+ip nat in <br/>
+exit<br/><br/><font color="#ff9900">9.测试静态NAT</font><br/><br/>
+PC1能够连上R0，<br/>
+在R0上show users可以看到<br/>
+192.168.1.102连接<br/>
+（地址已被转换）<br/><font color="#ff9900"><br/>
+10.动态NAT配置（multi-to-1 NAT)</font><br/><br/>
+access-list 1 permit 192.168.3.0 0.0.0.255 <br/>
+ip nat inside source list 1 interface fastEthernet 0/0 overload<br/><br/>
+int f0/0<br/>
+ip nat out<br/>
+exit<br/>
+int f1/0<br/>
+ip nat in<br/>
+exit<br/><br/><font color="#ff9900">11.动态NAT测试</font><br/><br/>
+用PC2和PC3同时连R0，成功。<br/><br/>
+从R0上show users，可以看到两个192.168.1.3（R3地址）<br/><br/><font color="#0000ff">成品下载：</font><br/><br/><a href="http://www.box.net/shared/8eseq8rrej" target="_blank">这里</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/13/AnInteresting%26%2334%3BHelloWorld%26%2334%3BinC%2B%2B/">An Interesting &#34;Hello World&#34; in C++</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-13T13:54:00+08:00" pubdate data-updated="true">Mar 13<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.13<br/><br/>
+given a piece of code :<br/><br/><font color="#ff9900">#include &#8221;stdio.h&#8221;<br/>
+void print()<br/>
+{<br/>
+<em><br/>
+}<br/><br/>
+void main()<br/>
+{<br/>
+}</font><br/><br/>
+place your code around the asterisk (</em>)<br/>
+to make the programme output &#8220;hello world&#8221;.<br/><br/>
+any idea ??<br/><br/>
+=move<br/>
+=downwards<br/><br/><br/>
+=and<br/><br/>
+=downwards<br/><br/><br/>
+=<br/><br/><br/><br/><br/>
+=<br/><br/><br/><br/><br/>
+=<br/><br/><br/><br/><br/><br/>
+=<br/><br/><br/><br/><br/><br/><br/><br/>
+=<br/><br/><br/><br/><br/><br/><br/><br/><br/>
+=<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+=<br/><br/><br/><br/><br/><br/><br/>
+I had no ideas until <a href="http://shallway.net/" target="_blank">Shallway</a> reminded me of constructor in C++.<br/>
+It&#8217;s a common sense that constructors of global objects are called before main().<br/>
+However, this is not always in our mind. <br/><br/>
+Knowing the concept of using constructors, things become easy.<br/>
+Substitute the asterisk by the following lines:<br/><br/><font color="#ff9900">}<br/>
+class cls{<br/>
+public:<br/>
+cls(){<br/>
+printf(&#8220;hello world\n&#8221;) ;<br/>
+}<br/>
+} ;<br/>
+cls mycls ;<br/>
+void fun(){</font><br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2010/03/06/%E6%B1%82%E5%A9%9A%E5%85%AC%E5%BC%8F/">求婚公式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-06T15:15:00+08:00" pubdate data-updated="true">Mar 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2010.3.6<br/><br/>
+从China Daily的<a href="http://www.chinadaily.com.cn/" target="_blank">这篇文章</a>看到个fiancee formula。<br/><br/>
+然后google了一下，找到这个公式。<br/>
+ABS-CBN NEWS：<br/>
+http://www.abs-cbnnews.com/lifestyle/02/11/10/math-professor-bares-formula-love<br/>
+研究报告的pdf：<br/>
+http://www.maths.unsw.edu.au/news/2010/marriageproblem.pdf<br/><br/>
+简述一下：<br/>
+最初考虑结婚的年龄p，<br/>
+能接受的最晚的年龄n。<br/>
+那么求婚的年龄为t = p + 0.368 * (n-p)。<br/><br/>
+据说这个预测有37%的准确率。<br/>
+不过是给男人用的，<br/>
+而且研究者应该是以澳大利亚的样本来统计的。<br/><br/>
+至于0.368是怎么来的，原报告中也提到了一个&#8217;long equation&#8217;。<br/>
+但是怎样从&#8217;long equation&#8217;到0.368，<br/>
+以及&#8217;long equation&#8217;本身是怎么来的，<br/>
+并没有做什么说明。<br/>
+我猜这属于 for more information 的范畴了，<br/>
+于是按照下面的提示给 Ivana写了封信。<br/><br/><font color="#0000ff">评论：</font><br/><br/><font color="#ff0000">这个公式的意义不在于其数学上的精准度，<br/>
+而在于我们怎么推广这个公式</font>。<br/>
+毕竟绝大多数受体是觉得好玩，看看而已，<br/>
+并不会去考究公式背后的一些东西。<br/><br/>
+成功推广这个公式，应该能产生不错的社会意义。<br/>
+首先，男女双方在一段时间的交往过程中，<br/>
+应该能够涉及p和n的问题，<br/>
+于是信息可以被潜意识地传播和接收。<br/>
+大家都相信这个公式的结果是，<br/>
+t的时候，男方会向女方求婚，<br/>
+女方知道，这个时候求婚肯定是“正确”的，<br/>
+于是女方接受了男方的请求。<br/><br/>
+所谓的成功率，特别是社会平均的，就这样被提高了。<br/><br/><font color="#ff0000">很多事情不在于他背后的原理本身是正确的，<br/>
+而在于当我们都相信他，并且按照同一模式行动的时候，<br/>
+所产生的结果是积极的。</font><br/>
+一个实际的例子就是炒房和炒股。<br/>
+当房价高达1000的时候，有人买了，<br/>
+为什么？因为专家说了房子要涨，而大家都相信专家。<br/>
+这一买，如果不卖当然也赚不到钱。<br/>
+你卖2000有人买吗？<br/>
+肯定，因为出2000买的人相信会涨到3000。。<br/>
+只要我们一直坚信，这个过程显然是可以维持下去的。<br/>
+于是我们身上背的数字就越来越大，<br/>
+每个人都很happy。<br/><br/>
+除了对于个体而言，能够有效提高成功率，<br/>
+这个公式会给政府带来更多的意义&#8212;-<font color="#ff0000">宏观调控人口</font>。<br/>
+只要注意到公式里面的0.368就行了。<br/>
+像加拿大这些人口稀少的地方，政府就要把该数字调小。<br/>
+向中国这样人口稠密的地方，政府就要把该数字调大。<br/>
+前提是人们相信政府，不过不相信也没关系。<br/>
+人们相信专家，专家可以为政府工作，<br/>
+当然，人们不知道专家是为政府工作的。<br/><br/>
+很显然，披上科学的牌子，会使一切都很自然，<br/>
+比各种禁令的政策更有效果。<br/>
+前提是大家都相信科学，但大多数人不能懂科学。<br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/backup-hplonline/blog/page/6/">&larr; Older</a>
+    
+    <a href="/backup-hplonline/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/backup-hplonline/blog/page/4/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

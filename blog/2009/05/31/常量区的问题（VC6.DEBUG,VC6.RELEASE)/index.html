@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>常量区的问题（VC6.DEBUG , VC6.RELEASE) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.31
+发现这个问题其实是在今年考二级前，
+当时一哥们写了一个很逼真的程序，
+最后调了一个晚上，我也去找了很久，
+才发现关键所在，可见总有点东西忽略。
+后来一忙又搞忘记了，直到今天又看到类似的例子：
+int main(){
+    char p = &#8220; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/31/%E5%B8%B8%E9%87%8F%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88VC6.DEBUG%2CVC6.RELEASE%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">常量区的问题（VC6.DEBUG , VC6.RELEASE)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-31T12:15:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.31<br/><br/>
+发现这个问题其实是在今年考二级前，<br/>
+当时一哥们写了一个很逼真的程序，<br/>
+最后调了一个晚上，我也去找了很久，<br/>
+才发现关键所在，可见总有点东西忽略。<br/><br/>
+后来一忙又搞忘记了，直到今天又看到类似的<font color="#0000ff">例子：</font><br/><br/>
+int main(){<br/>
+     char <em>p = &#8220;aaa&#8221; ;<br/>
+     char q[] = &#8220;bbb&#8221; ;<br/>
+     <br/>
+     cout&lt;&lt;p[0]&lt;&lt;endl;<br/>
+     cout&lt;&lt;q[0]&lt;&lt;endl;<br/>
+   <font color="#339966"> //p[0] = &#8216;1&#8217; ;//这里要挂</font><br/>
+     q[0] = &#8216;1&#8217; ;<br/><br/>
+     return 0 ;<br/>
+}<br/><br/>
+可以试试注释掉的一句。<br/>
+执行到那里程序就挂掉了。<br/><br/>
+在VISTA下好像直接出关闭程序的框框，<br/>
+在XP下好像有Access Violation。<br/><br/><font color="#0000ff">究其原因：</font><br/><br/>
+     char q[] = &#8220;bbb&#8221; ;<br/>
+这个是放在栈里面的。<br/>
+所以可以随便读取修改。<br/><br/>
+     char </em>p = &#8220;aaa&#8221; ;<br/>
+这个的&#8221;aaa&#8221; 是放在常量区里面。<br/>
+p只是个指针，存放了&#8221;aaa&#8221; 的地址。<br/><br/>
+p[0]这种表达式，如果用于右值的话，是没有问题的。<br/>
+但是用于左值，由于那块内存是只读的，于是就出问题了。<br/><br/>
+但是注意到现在是在debug下玩的。<br/>
+所以换到release下试试。<br/><br/><font color="#339966"><font color="#000000">p[0] = &#8216;1&#8217;<br/>
+就可以不报错执行了</font><br/></font><br/>
+可见，这种常量读写的检查是debug方式提供的特殊功能。<br/>
+有助于排除此类改写常量导致的错误。<br/><font color="#0000ff"><br/>
+其他关于Access Violation的琐碎：</font><br/><br/>
+一般发生这种错误的时候，直接F5运行，<br/>
+弹出的框里面确定，IDE会自动停到Access Violation的句子上。<br/>
+这个时候往往要检查的都是指针，数组下标一类的问题。<br/>
+比如指针为空，数组下标越界等等。<br/><br/>
+有个特点就是，往往越界出去的位置既不能读，也不能写。<br/><br/>
+而上面的这个问题，可以看到指针指向的是有效的数据区，<br/>
+并没有越界，明明是可以读取的，于是当他写入出错时，<br/>
+就有点摸不着头脑了。。。<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-31T12:15:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/31/%E5%B8%B8%E9%87%8F%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88VC6.DEBUG%2CVC6.RELEASE%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/31/%E5%B8%B8%E9%87%8F%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88VC6.DEBUG%2CVC6.RELEASE%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/30/Treap%EF%BC%88%E9%9A%8F%E6%9C%BA%E5%8C%96%E7%9A%84%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%EF%BC%89/" title="Previous Post: Treap（随机化的二叉搜索树）">&laquo; Treap（随机化的二叉搜索树）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/01/SplayTree%28%E4%BC%B8%E5%B1%95%E6%A0%91%EF%BC%8C%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%89/" title="Next Post: SplayTree(伸展树，自顶向下的实现）">SplayTree(伸展树，自顶向下的实现） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

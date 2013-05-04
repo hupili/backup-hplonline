@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>高精度类（C++）CBigInt - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.3.31
+高精度拿来干什么地球人都很清楚了。
+以前写就只顾着能出结果就行。
+后来发现要写个稍微通用点的还是挺麻烦。
+我这个显然就是不太通用的。
+有些细节需要说一下。
+1.只能应对数据不断增加的正整数。
+首先只考虑了正整数的加法和乘法。
+然后通过阅读相关实现就知道。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/31/%E9%AB%98%E7%B2%BE%E5%BA%A6%E7%B1%BB%EF%BC%88C%2B%2B%EF%BC%89CBigInt">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">高精度类（C++）CBigInt</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-31T09:05:00+08:00" pubdate data-updated="true">Mar 31<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.3.31<br/><br/>
+高精度拿来干什么地球人都很清楚了。<br/>
+以前写就只顾着能出结果就行。<br/>
+后来发现要写个稍微通用点的还是挺麻烦。<br/><br/>
+我这个显然就是不太通用的。<br/><br/>
+有些细节需要说一下。<br/><font color="#0000ff"><br/>
+1.只能应对数据不断增加的正整数。</font><br/><br/>
+首先只考虑了正整数的加法和乘法。<br/>
+然后通过阅读相关实现就知道。<br/>
+如果data[l]之后的数据不全为0，则会出差错。<br/><font color="#ff0000">其实我接触到的很多代码都有这毛病，只是没人说出来罢了</font>。<br/><br/>
+不说的原因也很好理解。偶尔在OJ上刷题，用不着考虑那么全面。<br/><font color="#ff0000">我们做高精度类题遇到的数据一般都是正整数。<br/>
+给的递推公式一般也只包含乘法和加法。</font><br/>
+自然就不用考虑那么多了。<br/><br/><font color="#0000ff">2.mul函数中开的tmp[]，在某些地方得new出来才行。</font><br/><br/>
+像TOJ，堆栈只给了<font color="#ff0000">8k</font>的样子。一调这函数就爆掉了。<br/><br/>
+而这里直接开在函数里面，也是为了适应小数据时对速度的需求。<br/>
+（<font color="#ff0000">new这个东西总得来说很慢。。delete[] 更慢</font>）<br/><br/>
+operator+(和operator<em>(就已经是new出临时变量了。<br/>
+因为他们用得很少，或者说可以不用。<br/><font color="#ff0000">刷题的时候完全可以把式子转换成 +=和</em>=系列。</font><br/>
+这两个系列省去了无聊的中间赋值，更快。<br/><br/><font color="#0000ff">3.输出</font><br/><br/>
+输出没有重载了。cout本身就一蜗牛。。给了个printf版和putchar版的。<br/><font color="#ff0000">G++下，getchar和putchar速度优势比较明显。</font><br/><br/><font color="#0000ff">4.扩展</font><br/><br/>
+这个类全部是一个字节对应一个10进制位的。<br/>
+要扩展成多位的也容易。输出要注意就是了。<br/><font color="#0000ff"><br/>
+代码：</font><br/><br/>
+/<em><br/>
+高精度类<br/>
+包含加法和乘法，<br/>
+乘法未用FFT优化。<br/>
+只能应对数据不断增加的正整数<br/>
+by hplonline<br/>
+</em>/<br/>
+const int MAXL = 30000 ;<br/><br/>
+class CBigInt{<br/>
+public:<br/>
+     char data[MAXL] ;<br/>
+     int l ;<br/>
+     CBigInt() ;<br/>
+     CBigInt(int i) ;<br/>
+     CBigInt(CBigInt &amp;bi);<br/>
+     CBigInt&amp; add(CBigInt &amp;bi) ;<br/>
+     CBigInt&amp; mul(CBigInt &amp;bi) ;<br/>
+     CBigInt&amp; operator+(CBigInt &amp;bi) ;<br/>
+     CBigInt&amp; operator<em>(CBigInt &amp;bi) ;<br/>
+     CBigInt&amp; operator+=(CBigInt &amp;bi) ;<br/>
+     CBigInt&amp; operator</em>=(CBigInt &amp;bi) ;<br/>
+     CBigInt&amp; operator=(CBigInt &amp;bi) ;<br/>
+     void init(int i);<br/>
+     void clear() ;<br/>
+     void output() ;<br/>
+};<br/><br/>
+void CBigInt::init(int i){<br/>
+     l = 0 ;<br/>
+     memset(data,0,sizeof(data)) ;<br/>
+     do{<br/>
+          data[l] = i % 10 ;<br/>
+          i /= 10 ;<br/>
+          l ++ ;<br/>
+     }while(i);<br/>
+}<br/><br/>
+void CBigInt::clear(){<br/>
+     l = 1 ;<br/>
+     memset(data,0,sizeof(data)) ;<br/>
+}<br/><br/>
+CBigInt::CBigInt(){<br/>
+     clear();<br/>
+}<br/><br/>
+CBigInt::CBigInt(int i){<br/>
+     init(i);<br/>
+}<br/><br/>
+CBigInt::CBigInt(CBigInt &amp;bi){<br/>
+     memset(data,0,sizeof(data));<br/>
+     int i ;<br/>
+     l = bi.l ;<br/>
+     for ( i = 0 ; i &lt; l ; i ++ ) data[i] = bi.data[i] ;<br/>
+}<br/><br/>
+CBigInt&amp; CBigInt::add(CBigInt &amp;bi){<br/>
+     int i = 0 ; <br/>
+     int p = 0 ;<br/>
+     while ( i &lt; l || i &lt; bi.l ){<br/>
+          p += data[i] + bi.data[i] ;<br/>
+          data[i] = p % 10 ;<br/>
+          p /= 10 ;<br/>
+          i ++ ;<br/>
+     }<br/>
+     if ( p ) {<br/>
+          data[i] = p ;<br/>
+          i ++ ;<br/>
+     }<br/>
+     l = i ;<br/>
+     return <em>this ;<br/>
+}<br/><br/>
+CBigInt&amp; CBigInt::mul(CBigInt &amp;bi){<br/>
+     int tmp[MAXL] ;<br/>
+     int i , j , p ;<br/>
+     memset(tmp,0,sizeof(tmp)) ;<br/>
+     for ( i = 0 ; i &lt; l ; i ++ ){<br/>
+          for ( j = 0 ; j &lt; bi.l ;j ++ ){<br/>
+               tmp[i + j] += data[i] * bi.data[j] ;<br/>
+          }<br/>
+     }<br/>
+     j = l + bi.l + 1;<br/>
+     p = 0 ;<br/>
+     for ( i = 0 ; i &lt; j ; i ++ ){<br/>
+          p += tmp[i] ;<br/>
+          data[i] = p % 10 ;<br/>
+          p /= 10 ;<br/>
+     }<br/>
+     if ( p ){<br/>
+          data[i] = p ;<br/>
+          i ++ ;<br/>
+     }<br/>
+     while ( !data[i] ) i &#8211; ;<br/>
+     l = i + 1 ;<br/>
+     return </em>this ;<br/>
+}<br/><br/>
+CBigInt&amp; CBigInt::operator+(CBigInt &amp;bi){<br/>
+     CBigInt <em>p = new CBigInt(</em>this) ;<br/>
+     return p-&gt;add(bi) ;<br/>
+}<br/><br/>
+CBigInt&amp; CBigInt::operator<em>(CBigInt &amp;bi){<br/>
+     CBigInt </em>p = new CBigInt(<em>this) ;<br/>
+     return p-&gt;mul(bi);<br/>
+}<br/><br/>
+CBigInt&amp; CBigInt::operator+=(CBigInt &amp;bi){<br/>
+     add(bi);<br/>
+     return </em>this ;<br/>
+}<br/><br/>
+CBigInt&amp; CBigInt::operator<em>=(CBigInt &amp;bi){<br/>
+     mul(bi);<br/>
+     return </em>this ;<br/>
+}<br/><br/>
+CBigInt&amp; CBigInt::operator=(CBigInt &amp;bi){<br/>
+     int i;<br/>
+     memset(data,0,sizeof(data));<br/>
+     l = bi.l ;<br/>
+     for ( i = 0 ; i &lt; l ; i ++ ) data[i] = bi.data[i] ;<br/>
+     return *this ;<br/>
+}<br/><br/>
+void CBigInt::output(){<br/>
+     int i;<br/>
+     for ( i = l - 1 ; i &gt;= 0 ; i &#8211; ) printf(&#8220;%d&#8221;,data[i]) ;<br/>
+     //for ( i = l - 1 ; i &gt;= 0 ; i &#8211; )putchar(&#8216;0&#8217; + data[i]);<br/>
+}<br/><br/><br/><br/><font color="#ff6600">感觉有点水。。。</font></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-31T09:05:00+08:00" pubdate data-updated="true">Mar 31<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/31/%E9%AB%98%E7%B2%BE%E5%BA%A6%E7%B1%BB%EF%BC%88C%2B%2B%EF%BC%89CBigInt/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/31/%E9%AB%98%E7%B2%BE%E5%BA%A6%E7%B1%BB%EF%BC%88C%2B%2B%EF%BC%89CBigInt/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/29/%E5%9F%83%E5%8F%8A%E5%88%86%E6%95%B0%EF%BC%88IDA%2A%29/" title="Previous Post: 埃及分数（IDA*)">&laquo; 埃及分数（IDA*)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/31/POJ1405%EF%BC%88Heritage%EF%BC%89%EF%BC%88%E9%80%92%E6%8E%A8%2B%E9%AB%98%E7%B2%BE%E5%BA%A6%EF%BC%89/" title="Next Post: POJ1405 （Heritage） （递推+高精度）">POJ1405 （Heritage） （递推+高精度） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

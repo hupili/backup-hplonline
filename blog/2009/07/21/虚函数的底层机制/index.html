@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>虚函数的底层机制 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.7.21环境：VISTA+VC6+OD一。普通的类成员函数调用观察：
+先做一个最基本的 include &lt;iostream&gt; using namespace std ;
+class mycls{
+public:
+    int member ;
+    &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/07/21/%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">虚函数的底层机制</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-21T13:58:00+08:00" pubdate data-updated="true">Jul 21<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.7.21<br/><br/><font color="#0000ff">环境：</font>VISTA+VC6+OD<br/><br/><font color="#0000ff">一。普通的类成员函数调用观察：</font><br/><br/>
+先做一个最基本的<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/><br/></h1>
+
+<p>using namespace std ;<br/><br/>
+class mycls{<br/>
+public:<br/>
+     int member ;<br/>
+     void output(){<br/>
+          cout&lt;&lt;&#8221;I&#8217;m output&#8221;&lt;&lt;endl ;<br/>
+     }<br/>
+     void vf1(){<br/>
+          cout&lt;&lt;&#8221;I&#8217;m vf1&#8221;&lt;&lt;endl ; <br/>
+     }<br/>
+     void vf2(){<br/>
+          cout&lt;&lt;&#8221;I&#8217;m vf2&#8221;&lt;&lt;endl ;<br/>
+     }<br/>
+};<br/><br/>
+int main(){<br/>
+     mycls c ;<br/>
+     mycls *p ;<br/><br/>
+     cout&lt;&lt;sizeof(c)&lt;&lt;endl;<br/><br/>
+     c.output() ;//.调用方式<br/><br/>
+     p = &amp;c ;<br/>
+     p-&gt;output() ;//-&gt;调用方式<br/>
+     <br/>
+     return 0 ;<br/>
+}<br/><br/>
+运行结果中，只有打出的sizeof是要看的，结果是4，为int member的空间。<br/><br/>
+然后在OD里面看相应的调用代码：<br/><br/><font color="#ff6600">c.output() ;//.调用方式</font><br/>
+004015B0    .  8D4D FC        lea      ecx, dword ptr [ebp-4]<br/>
+004015B3    .  E8 01FBFFFF    call     <font color="#ff0000">004010B9</font><br/><br/><font color="#ff6600">p-&gt;output() ;//-&gt;调用方式</font><br/>
+004015B8    .  8D45 FC        lea      eax, dword ptr [ebp-4]<br/>
+004015BB    .  8945 F8        mov      dword ptr [ebp-8], eax<br/>
+004015BE    .  8B4D F8        mov      ecx, dword ptr [ebp-8]<br/>
+004015C1    .  E8 F3FAFFFF    call     004010B9<br/><br/>
+这里看得出来-&gt;调用比.调用就是多了一点指针赋值而已。<br/>
+而调用的类的地址放在ECX中，这是__thiscall的约定。<br/>
+004010B9是output函数的地址，<br/>
+作为普通成员函数，这里直接给出了一个固定的地址。<br/><br/>
+跟到这个地址里面去看下：<br/>
+004010B9    $ /E9 32050000    jmp      mycls::output<br/><br/>
+这种造型的跳转很常见，就这句话的前后就有很多。<br/>
+因为编译的时候不确定函数的地址，所以编译器只有留出个空位。<br/>
+这里的空位就是连接器填上的。<br/><br/><font color="#0000ff">二。虚函数调用观察：</font><br/><br/>
+把上前面那个程序中的函数都加上virtual来修饰：<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/><br/></h1>
+
+<p>using namespace std ;<br/><br/>
+class mycls{<br/>
+public:<br/>
+     int member ;<br/>
+     <font color="#ff0000">virtual </font>void output(){<br/>
+          cout&lt;&lt;&#8221;I&#8217;m output&#8221;&lt;&lt;endl ;<br/>
+     }<br/>
+   <font color="#ff0000"> virtual </font>void vf1(){<br/>
+          cout&lt;&lt;&#8221;I&#8217;m vf1&#8221;&lt;&lt;endl ; <br/>
+     }<br/>
+     <font color="#ff0000">virtual </font>void vf2(){<br/>
+          cout&lt;&lt;&#8221;I&#8217;m vf2&#8221;&lt;&lt;endl ;<br/>
+     }<br/>
+};<br/><br/>
+int main(){<br/>
+     mycls c ;<br/>
+     mycls <em>p ;<br/><br/>
+     cout&lt;&lt;sizeof(c)&lt;&lt;endl;<br/><br/>
+     c.output() ;//.调用方式<br/><br/>
+     p = &amp;c ;<br/>
+     p-&gt;output() ;//-&gt;调用方式<br/>
+     p-&gt;vf1() ;<br/>
+     p-&gt;vf2() ;<br/>
+     return 0 ;<br/>
+}<br/><br/>
+首先观察到的是sizeof出的数据为8。<br/>
+原因是加入了虚函数后，在该类中要额外保存一个虚函数表的指针。<br/><br/>
+对应的汇编代码如下：<br/>
+（去掉了一些检查堆栈平衡之类的与这里研究无关的部分）<br/><br/><font color="#ff6600">     c.output() ;//.调用方式</font><br/>
+004015D8    .  8D4D F8             lea      ecx, dword ptr [ebp-8]<br/>
+004015DB    .  E8 F7FAFFFF         call     004010D7<br/><br/><font color="#ff6600">     p = &amp;c ;</font><br/>
+004015E0    .  8D45 F8             lea      eax, dword ptr [ebp-8]<br/>
+004015E3    .  8945 F4             mov      dword ptr [ebp-C], eax<br/><br/><font color="#ff6600">     p-&gt;output() ;//-&gt;调用方式</font><br/>
+004015E6    .  8B4D F4             mov      ecx, dword ptr [ebp-C]<br/>
+004015E9    .  8B11                mov      edx, dword ptr [ecx]<br/>
+004015ED    .  8B4D F4             mov      ecx, dword ptr [ebp-C]<br/>
+004015F0    .  FF12                call     dword ptr <font color="#ff0000">[edx]      </font>         <br/>
+                             <br/><font color="#ff6600">     p-&gt;vf1() ;</font><br/>
+004015F9    .  8B45 F4             mov      eax, dword ptr [ebp-C]<br/>
+004015FC    .  8B10                mov      edx, dword ptr [eax]<br/>
+00401600    .  8B4D F4             mov      ecx, dword ptr [ebp-C]<br/>
+00401603    .  FF52 04             call     dword ptr <font color="#ff0000">[edx+4]</font><br/><br/><font color="#ff6600">     p-&gt;vf2() ;</font><br/>
+0040160D    .  8B45 F4             mov      eax, dword ptr [ebp-C]<br/>
+00401610    .  8B10                mov      edx, dword ptr [eax]<br/>
+00401614    .  8B4D F4             mov      ecx, dword ptr [ebp-C]<br/>
+00401617    .  FF52 08             call     dword ptr <font color="#ff0000">[edx+8]</font><br/><br/><font color="#ff0000">重要结论：.调用方式的虚函数在处理上和普通函数相同</font><br/>
+这点很重要，在溢出攻击虚函数的时候，<br/>
+如果该函数是用.方式调用，则随便怎么覆盖虚函数表的指针都没有意义。<br/><br/>
+下面的三组指针方式调用在形式上都是差不多的。<br/>
+看到最后对是对edx指向的地方加一个偏移处的值作为函数入口地址调用。<br/><br/>
+用OD跟踪进去。发现EDX为0046F02C。<br/>
+再到这个地址去看一下有什么内容：<br/>
+[edx]<br/>
+004010D7<br/>
+[edx+4]<br/>
+0040119A<br/>
+[edx+8]<br/>
+004012A3<br/>
+（在OD中看到的这三个地址比较乱，<br/>
+因为OD会当作代码的方式来组合排列，需要自己按四字节整理一下）<br/><br/>
+所以对三个函数的调用最后会变成：<br/>
+call 004010D7<br/>
+call  0040119A<br/>
+call 004012A3<br/><br/>
+再分别到这三个地址去逛一圈，OD已经把符号名称标好了。<br/><br/>
+004010D7    $ /E9 84050000         jmp      mycls::output<br/>
+0040119A    . /E9 61050000         jmp      mycls::vf1<br/>
+004012A3    . /E9 B8040000         jmp      mycls::vf2<br/><br/>
+刚好就是要调用的三个函数。<br/><br/>
+所以<font color="#ff0000">EDX可以视作是虚函数表的指针</font>，虚函数表给出了各个函数的入口地址。<br/>
+（尽管真实的地址还是由链接器填上的jmp xxxx)<br/><br/>
+再看下面的两句：<br/>
+0040160D    .  8B45 F4             mov      eax, dword ptr [ebp-C]<br/>
+00401610    .  8B10                mov      edx, dword ptr [eax]<br/><br/>
+[ebp-C]就是指针p。<br/>
+等于说edx = </em>(DWORD *)p ;<br/><font color="#ff0000"><br/>
+再换句话，就是这里的虚函数表的入口地址放在了类的开头处，<br/>
+在所有成员变量之前。</font><br/><br/><font color="#0000ff">三。虚函数表（VTABLE)地址的填入</font><br/><br/>
+程序还是第二节的程序：<br/><br/>
+在main函数开头的地方找到<br/>
+004015B8    .  8D4D F8             lea      ecx, dword ptr [ebp-8]<br/>
+004015BB    .  E8 D9FCFFFF         call     00401299<br/><br/>
+进入00401299：<br/>
+00401299    $ /E9 22040000         jmp      mycls::mycls<br/><br/>
+根据名称来看，是构造函数， 继续进去。<br/>
+004016DA  |.  894D FC             mov      dword ptr [ebp-4], ecx<br/>
+004016DD  |.  8B45 FC             mov      eax, dword ptr [ebp-4]<br/>
+004016E0  |.  C700 2CF04600       <font color="#ff0000">mov      dword ptr [eax], offset mycls::<code>vftable'&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;
+这几句在人看起来确实有点废话。。。不过能够表达那个意思就行了。&lt;br/&gt;
+从最后一句看得出来，VTABLE的地址就是在这里填入的。&lt;br/&gt;&lt;br/&gt;
+这里我们没有写构造函数，编译器自己加上的，&lt;br/&gt;
+那如果给出一个什么都不干的构造函数，这个地址又怎么办了？&lt;br/&gt;&lt;br/&gt;
+该前面的类加一个函数：&lt;br/&gt;
+     mycls(){&lt;br/&gt;
+          member = 1 ;&lt;br/&gt;
+     }&lt;br/&gt;&lt;br/&gt;
+跟踪到构造函数里面的代码：&lt;br/&gt;
+0040167A  |.  894D FC             mov      &lt;font color="#ff6600"&gt;dword ptr [ebp-4]&lt;/font&gt;, ecx&lt;br/&gt;
+0040167D  |.  8B45 FC             mov      eax, dword ptr [ebp-4]&lt;br/&gt;
+00401680  |.  C700 1CF04600       mov      dword ptr [eax], offset mycls::</code>vftable&#8217;<br/>
+00401686  |.  8B4D FC             mov      ecx, dword ptr [ebp-4]<br/>
+00401689  |.  C741 04 01000000  <font color="#ff0000"> mov      dword ptr [ecx+4], 1</font><br/>
+00401690  |.  8B45 FC             mov      eax, <font color="#ff6600">dword ptr [ebp-4]</font><br/><br/>
+红色的是我们的标志语句，可见编译器是直接把相关代码给放在了我们的代码前面。<br/>
+最后一句是个题外话，EAX里面放的值的根本来源是ECX，<br/>
+即该对象的指针，<font color="#ff0000">这同时印证了构造函数不是没有返回，是返回该类的引用。</font><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-21T13:58:00+08:00" pubdate data-updated="true">Jul 21<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/07/21/%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/07/21/%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/07/20/%E6%8A%8Aqq%E8%81%8A%E5%A4%A9%E8%AE%B0%E5%BD%95%E8%BD%AC%E5%8C%96%E6%88%90%E6%AF%94%E8%BE%83%E5%AE%B9%E6%98%93%E6%93%8D%E4%BD%9C%E7%9A%84%E6%A0%BC%E5%BC%8F/" title="Previous Post: 把qq聊天记录转化成比较容易操作的格式">&laquo; 把qq聊天记录转化成比较容易操作的格式</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/07/21/%E6%94%BB%E5%87%BB%E8%99%9A%E5%87%BD%E6%95%B0%EF%BC%88%E6%84%8F%E6%80%9D%E4%B8%80%E4%B8%8B%EF%BC%89/" title="Next Post: 攻击虚函数（意思一下）">攻击虚函数（意思一下） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

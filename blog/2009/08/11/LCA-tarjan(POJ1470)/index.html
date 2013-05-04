@@ -1,0 +1,767 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>LCA-tarjan(POJ1470) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.8.11
+LCA(Lowest Common Ancestor)。
+可以转化为RMQ问题，即可在线计算（边读入询问边给出解答）。
+这里试下tarjan，只能离线计算（读入所有询问后，一起解答）。
+去年的这个时候就听说了这个算法，
+看了一些资料，感觉跟讲绕口令似的， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/08/11/LCA-tarjan%28POJ1470%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">LCA-tarjan(POJ1470)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-11T15:57:00+08:00" pubdate data-updated="true">Aug 11<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.8.11<br/><br/>
+LCA(Lowest Common Ancestor)。<br/>
+可以转化为RMQ问题，即可在线计算（边读入询问边给出解答）。<br/>
+这里试下tarjan，只能离线计算（读入所有询问后，一起解答）。<br/><br/>
+去年的这个时候就听说了这个算法，<br/>
+看了一些资料，感觉跟讲绕口令似的，<br/>
+有些还有点小问题，实在是没看懂。<br/>
+今天又来试下，再刷一道题，感觉心安理得了。<br/><br/><font color="#0000ff">tarjan：</font><br/><br/>
+tarjan的主干是一个<font color="#ff0000">dfs</font>的过程。<br/>
+用树的遍历来看，属于<font color="#ff0000">后根遍历</font>。<br/>
+精华在于，<font color="#ff0000">先读入所有的query，然后一次性把相关的都处理掉</font>。<br/><br/>
+维护一个并查集，集合的代表元素是该集合内所有节点的共同的根，<br/>
+并且这个根有个性质，是“当前”离整个树的根最远。<br/><br/>
+给每个节点一个标记done[u]，表示该节点是否已经完成。<br/>
+完成的意义为，该节点孩子都处理完了，<br/>
+本身相关的query也处理完了，从dfs过程返回上一层。<br/><br/>
+每从一个孩子返回的时候，把他所在的集合并到他的父亲上面去。<br/><br/>
+对于节点u。处理所有有关的询问(u,v)，分四种情况：<br/><br/>
+1.如果v是u的子孙，那么这个时候v已经处理完成了。<br/>
+而u就是LCA(u,v),并且由于v已经并到了u的集合中。<br/>
+find_set(v) == u。<br/><br/>
+2.如果u是v的子孙，因为有了第一条处理，<br/>
+可以在询问(v,u)得到解答。<br/>
+于是拆除这个询问，添加一个(v,u)。<br/>
+这个时候显然的done[v] = false 。<br/><br/>
+3.v和u没有直系的关系，v已经被处理完成了。<br/>
+根据dfs的顺序来看，<br/>
+v到LCA(u，v）的所有所有点都被并在了LCA(u，v）的集合里面。<br/>
+并且由于刚处理到u，所以u是没有被完成的。<br/>
+自然LCA(u，v）不可能被处理完成。<br/>
+所以他还没有被并到更底层的根上面去。<br/>
+于是这个时候find_set(v) == LCA(u，v）。<br/><br/>
+4.v和u没有直系的关系，v还没有被处理。<br/>
+因为有了第3条的处理，<br/>
+直接把这个询问拆除，添加询问(v,u)即可。<br/>
+这样在处理v的时候，可以解答这个询问。<br/><br/>
+仔细看来，3、4条的叙述方式可以用来包含1、2条的。<br/><br/>
+写出来是这样的：<br/><br/><p class="MsoNormal"><font color="#ff9900"><span>init_tarjan</span></font></p></p>
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span>done[1..n] = false</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span>f[1..n] = 0</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span>end</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span> </span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span>tarjan(u)</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span> </span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span>for each child v of u do </span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>              </span>tarjan(v)</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>              </span>f[v] = u </span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span>end</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span></span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span>for each query (u,v) of u do</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>              </span>if done[v] then</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>                     </span>ancestor[u,v] = find_set(v)</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>              </span>else</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>                     </span>addquery(v,u)</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>              </span>end</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span>end</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span></span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span><span>       </span>done[u] = true</span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span> </span></font></p>
+
+
+<p class="MsoNormal"><font color="#ff9900"><span>end</span></font></p>
+
+
+<br/><br/>
+
+
+<p>算法结构就是这样，但是刚接触到的时候，<br/>
+肯定会在编码上存在诸多疑惑。<br/>
+这个只有拿到一个具体的题来，刷掉之就知道怎么回事了。<br/><br/><font color="#0000ff">POJ1470：</font><br/><br/>
+这道题在读入上确实制造了不少麻烦，<br/>
+但刷过一定数量的水题后就有能力很迅速地把他们处理掉。<br/><br/>
+题目描述也很露骨，直接可以看出来该用啥算法。<br/><br/>
+剩下的就是编码的问题。<br/>
+空间给的并不多，而且没有指出最多的询问有多少。<br/>
+所以只有用链表，而为了保证高效，<br/>
+得用静态分配空间的链表的写法，把空间分够就行。<br/><br/>
+首先，树的结构用邻接链表来存。<br/>
+因为要完成的是快速取得孩子的功能，又要省空间。<br/><br/>
+对于询问(u,v)也拿另一个临街链表来存，<br/>
+把v直接放到u的邻接链表里面。<br/>
+因为要完成的是迅速取得“与u相关的询问”这一操作。<br/><br/>
+玩过这种写法的同学一下就搞出来了，<br/>
+长期用malloc或者new的同学，得花点时间体会一下。<br/>
+确实可以对效率达到很大的改进。<br/><br/>
+代码：<br/><br/><p class="MsoNormal"><span>#include &lt;stdio.h&gt;</span></p></p>
+
+<p class="MsoNormal"><span>#include &lt;string.h&gt;</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>const int MAXN = 910 ;</span></p>
+
+
+<p class="MsoNormal"><span>const int MAXQ = 8000000 ;</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>typedef struct list_type{</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>int v ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>struct list_type *next ;</span></p>
+
+
+<p class="MsoNormal"><span>}LIST ;</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>LIST space[MAXQ] , *spacehead ;</span></p>
+
+
+<p class="MsoNormal"><span>LIST *children[MAXN] ;</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>LIST *query[MAXN] ;</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>int n ;</span></p>
+
+
+<p class="MsoNormal"><span>int f[MAXN] ;</span></p>
+
+
+<p class="MsoNormal"><span>int times[MAXN] ;</span></p>
+
+
+<p class="MsoNormal"><span>bool done[MAXN] ;</span></p>
+
+
+<p class="MsoNormal"><span>int root ;</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>void init(){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>spacehead = space ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>memset(children , NULL , sizeof(children)) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>memset(query , NULL , sizeof(query)) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>memset(f , 0 , sizeof(f)) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>memset(times , 0 , sizeof(times)) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>memset(done , false , sizeof(done)) ;</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>int find_set(int x){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span></span><span>int fa = x ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>int t ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span></span><span>while ( f[fa] != fa ){</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>fa = f[fa] ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>while ( x != fa ){</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>t = f[x] ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>f[x] = fa ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span></span><span>x = t ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>return fa ;</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>void union_set(int a , int b){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>a = find_set(a) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>b = find_set(b) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>if ( a != b ) f[b] = a ;</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>void ignore(char ch){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>while ( (getchar() != ch)) ;</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>void addnode(LIST* l[] , int u , int v){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>spacehead-&gt;v = v ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>spacehead-&gt;next = l[u] ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>l[u] = spacehead ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>spacehead ++ ;</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>void input_tree(){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span></span><span>int i , j , u , v , m ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>bool c[MAXN] ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span></span><span>memset(c , false , sizeof(c)) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span></span><span>for ( i = 1 ; i &lt;= n ; i ++ ){</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>scanf(&#8220;%d&#8221; , &amp;u) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>ignore(&#8216;:&#8217;) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>ignore(&#8216;(&#8216;) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>scanf(&#8220;%d&#8221; , &amp;m) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span></span><span>ignore(&#8216;)&#8217;) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>for ( j = 0 ; j &lt; m ; j ++ ){</span></p>
+
+
+<p class="MsoNormal"><span><span>                     </span>scanf(&#8220;%d&#8221; , &amp;v) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>                     </span>addnode(children , u , v) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>                     </span>c[v] = true ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>}</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>for ( i = 1 ; i &lt;= n ; i ++ ){</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>if ( !c[i] ) {</span></p>
+
+
+<p class="MsoNormal"><span><span>                     </span>root = i ;</span></p>
+
+
+<p class="MsoNormal"><span><span>                     </span>break ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>}</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>void input_query(){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span></span><span>int i , m , u , v ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>scanf(&#8220;%d&#8221; , &amp;m) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>for ( i = 0 ; i &lt; m ; i ++ ){</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>ignore(&#8216;(&#8216;) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>scanf(&#8220;%d%d&#8221; , &amp;u , &amp;v) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span></span><span>ignore(&#8216;)&#8217;) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>addnode(query , u , v) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span style="color: red;">void tarjan(int u){</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span></span><span style="color: red;">f[u] = u ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span>LIST *p = children[u] ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span></span><span style="color: red;">while ( p ){</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span>tarjan(p-&gt;v) ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span></span><span style="color: red;">f[p-&gt;v] = u ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span>p = p-&gt;next ;<span>         </span></span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span>p = query[u] ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span></span><span style="color: red;">while ( p ){</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span>if ( done[p-&gt;v] ) {</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span><span>       </span>int anc = find_set(p-&gt;v) ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>                     </span>times[anc] ++ ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span>}else{</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>                     </span>addnode(query , p-&gt;v , u) ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span>}</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>              </span>p = p-&gt;next ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;"><span>       </span>done[u] = true ;</span></p>
+
+
+<p class="MsoNormal"><span style="color: red;">}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>void output(){</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>int i ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>for ( i = 1 ; i &lt;= n ; i ++ ){</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>if ( times[i] != 0 ) {</span></p>
+
+
+<p class="MsoNormal"><span><span>                     </span>printf(&#8220;%d:%d\n&#8221; , i , times[i]) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>}<span>            </span></span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>int main(){</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>//<span>     </span>freopen(&#8220;in.txt&#8221; , &#8220;r&#8221; , stdin) ;</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>while ( scanf(&#8220;%d&#8221; , &amp;n) == 1 ){</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>init() ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>input_tree() ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>input_query() ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>tarjan(root) ;</span></p>
+
+
+<p class="MsoNormal"><span><span>              </span>output() ;</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>}</span></p>
+
+
+<p class="MsoNormal"><span><span>       </span>return 0 ;</span></p>
+
+
+<p class="MsoNormal"><span>}</span></p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-11T15:57:00+08:00" pubdate data-updated="true">Aug 11<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/08/11/LCA-tarjan%28POJ1470%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/08/11/LCA-tarjan%28POJ1470%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/08/10/SparseTable%E8%A7%A3%E5%86%B3RMQ%E9%97%AE%E9%A2%98%EF%BC%88POJ3368%29/" title="Previous Post: Sparse Table解决RMQ问题（POJ3368)">&laquo; Sparse Table解决RMQ问题（POJ3368)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/08/13/BosonNetSim%E8%BD%AF%E4%BB%B6%EF%BC%88%E9%99%84StandAloneLab%E7%AC%94%E8%AE%B0%EF%BC%89/" title="Next Post: Boson NetSim软件（附Stand Alone Lab笔记）">Boson NetSim软件（附Stand Alone Lab笔记） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

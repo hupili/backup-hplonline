@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>KEIL A51 速查笔记 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="从上一把正式用ASM写51的程序到现在都很久了，
+估计后面很长的时间不会再用了。
+这份资料只是个人作为速查使用。
+在若干年后的某天，当我要再用A51写程序的时候，
+我会先来翻翻这个东西，于是就可迅速上手了。
+有模板，语言提要，一些特殊的事情，
+最后附上完整的指令表。。
+（这个东西网上找了好久没找到 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/15/KEILA51%E9%80%9F%E6%9F%A5%E7%AC%94%E8%AE%B0">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">KEIL A51 速查笔记</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-15T23:58:00+08:00" pubdate data-updated="true">May 15<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>从上一把正式用ASM写51的程序到现在都很久了，<br/>
+估计后面很长的时间不会再用了。<br/><br/>
+这份资料只是个人作为速查使用。<br/>
+在若干年后的某天，当我要再用A51写程序的时候，<br/>
+我会先来翻翻这个东西，于是就可迅速上手了。<br/><br/>
+有模板，语言提要，一些特殊的事情，<br/>
+最后附上完整的指令表。。<br/>
+（这个东西网上找了好久没找到。。在一本书的后面拍下来的）<br/><br/>
+==================================<br/><br/>
+(hplonline)2009.5.15<br/><br/><font color="#0000ff">先来一个模板：</font><br/>
+org 00h<br/>
+ljmp func_main<br/>
+;这之间为中断向量腾出空间<br/>
+org 30h<br/>
+func_main:;这里才是主函数开始<br/>
+;这里是主函数<br/>
+sjmp $;一般在逻辑最后都要加上死循环，否则会一直执行到复位。。<br/>
+end ;给编译器看的伪指令<br/><br/><font color="#0000ff">两个命名习惯：</font><br/>
+因为汇编程序的扁平性，大程序必须处理好标号<br/>
+函数：func_functionname（如：func_main)<br/>
+标号：functionname_lp???(如：main_label1)<br/><br/><font color="#0000ff">寻址方式</font><br/>
+mov P1 , 0ffh ;地址为0ffh的单元 <br/>
+mov P1 , #0ffh;这个才是立即数#0ffh<br/>
+mov A , @R1 ;间接寻址<br/><font color="#0000ff"><br/>
+间接寻址</font>，<font color="#ff0000">只有A</font>能作为除了地址寄存器的另一个寄存器。<br/>
+mov A , @R1;8位内部寻址<br/>
+movx A , @R1;8位外部寻址<br/>
+movx A , @DPTR;16位外部寻址<br/><br/>
+movc 仅有两种，寻址程序rom<br/>
+movc A , @A + DPTR<br/>
+movc A , @A + PC <br/><br/><font color="#0000ff">DPTR</font>是唯一16位操作数，支持inc，不支持dec<br/><br/><font color="#0000ff">EQU 定义</font>的时候，不能出现#<br/>
+比如：CTRL EQU      7fffh<br/>
+这导致如果是用立即数的话，不能忘了#CTRL。<br/><br/>
+SWAP A<br/>
+比较特殊的指令，交换A的上下部分<br/><br/><font color="#0000ff">逻辑类指令：</font><br/>
+ANL,ORL,XRL，都以A为核心<br/>
+例外：可以用直接寻址数和立即数操作<br/><br/>
+记住清零有专门的<font color="#ff0000">CLR</font>,不要老想着异或。。。<br/>
+取反有<font color="#ff0000">CPL</font> ， 不要老想着异或。。。<br/><br/><font color="#0000ff">C</font>，是个可<font color="#ff0000">独立</font>操作的单元，<br/>
+CLR C，SETB C，等等。<br/><br/><font color="#0000ff">堆栈指针：</font><font color="#ff0000">SP</font><br/>
+堆栈是<font color="#ff0000">向上增长</font>的，指针指向栈顶元素。<br/>
+push A有问题，要push ACC&#8230;<br/><br/>
+不带进位加法ADD<br/>
+带进位加法ADDC<br/>
+带借位减SUBB<br/>
+没有不带借位的减法指令<br/>
+MUL AB ，A*B,因此最终结果用1个16位数来表达，其中高8位放在B中，低8位放在A中<br/>
+DIV AB，A/B ,商放在A中，余数放在B中<br/><br/>
+AJMP ADDR11      ， 双字节指令<br/>
+LJMP ADDR16      ， 三字节指令<br/>
+SJMP REL_ADDR ， ？<br/>
+JMP @A+DPTR      ， 查表跳转<br/><br/>
+LCALL addr16 ;长调用指令<br/>
+ACALL addr11 ;短调用指令<br/><br/><font color="#0000ff">伪指令：</font><br/>
+READ EQU P1（定义文本相等）<br/>
+SUM DATA 1FH（定义数据，可先使用后定义）<br/>
+RECORD BIT P2.2（定义位）<br/>
+DS 06H（保留字节备用,在代码数据分存的单片机体系中，无用）<br/>
+DB 定义字节<br/>
+DW 定义字<br/><br/><font color="#0000ff">编译期宏：</font><br/>
+MOD<br/>
+/<br/>
+HIGH，取高位<br/>
+LOW，取低位<br/><br/><font color="#0000ff">KEIL中查看内存:</font><br/>
+打开内存视窗，  <br/>
+在地址框填写：  <br/>
+C:0000      ;查看      CODE      区  <br/>
+D:0000      ;查看      DATA      区  <br/>
+I:0000      ;查看      IDATA      区  <br/>
+X:0000      ;查看      XDATA      区<br/><br/>
+=============================<br/>
+（下面是从某书后面照下来的指令表，<br/>
+不容易找到，分享给大家，大图比较清晰）<br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/b0aea7345706fd93d1a2d3f6.jpg" small="0" class="blogimg"/></div></p>
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c4d3bc00c67775a3e850cdf7.jpg" small="0" class="blogimg"/></div>
+
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c813dd2a90dc6a09d52af1f0.jpg" small="0" class="blogimg"/></div>
+
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a3114916b5a4006e21a4e9f1.jpg" small="0" class="blogimg"/></div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-15T23:58:00+08:00" pubdate data-updated="true">May 15<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/15/KEILA51%E9%80%9F%E6%9F%A5%E7%AC%94%E8%AE%B0/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/15/KEILA51%E9%80%9F%E6%9F%A5%E7%AC%94%E8%AE%B0/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/12/%E8%B4%B4%E4%B8%80%E4%B8%AA%E6%B5%B7%E6%98%8E%E7%A0%81%28HammingCode%29/" title="Previous Post: 贴一个海明码(HammingCode)">&laquo; 贴一个海明码(HammingCode)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/17/%E5%8D%95%E7%BA%AF%E5%BD%A2%E6%B3%95%EF%BC%88%E7%BD%9A%E5%87%BD%E6%95%B0%EF%BC%8CMATLAB%29/" title="Next Post: 单纯形法（罚函数，MATLAB)">单纯形法（罚函数，MATLAB) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

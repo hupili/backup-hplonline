@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>POJ2524（并查集） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.19
+没事水点题玩玩，题目描述很露骨，直接就看出来是什么东西了。
+不过，为刷这题，有更多的东西值得说说。先是一组数据Accepted &lt;td width="72" style="width: 54pt;"&gt;620K&lt;/td&gt; &lt;td &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/19/POJ2524%EF%BC%88%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">POJ2524（并查集）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-19T12:45:00+08:00" pubdate data-updated="true">May 19<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.19<br/><br/>
+没事水点题玩玩，题目描述很露骨，直接就看出来是什么东西了。<br/>
+不过，为刷这题，有更多的东西值得说说。<br/><br/><font color="#0000ff">先是一组数据</font><br/><table cellspacing="0" cellpadding="0" border="0" width="527" style="border-collapse: collapse; width: 395pt;"><col width="72" span="5" style="width: 54pt;"/><col width="95" style="width: 71pt;"/><col width="72" style="width: 54pt;"/><tbody><tr height="19" style="height: 14.25pt;"><td height="19" width="72" style="height: 14.25pt; width: 54pt;">Accepted</td></p>
+
+<pre><code>        &lt;td width="72" style="width: 54pt;"&gt;620K&lt;/td&gt;
+        &lt;td width="72" style="width: 54pt;"&gt;32MS&lt;/td&gt;
+        &lt;td width="72" style="width: 54pt;"&gt;G++&lt;/td&gt;
+        &lt;td width="72" style="width: 54pt;"&gt;1212B&lt;/td&gt;
+        &lt;td align="right" width="95" style="width: 71pt;" class="xl24"&gt;2009/5/19&lt;/td&gt;
+        &lt;td align="right" width="72" style="width: 54pt;" class="xl25"&gt;9:55:27&lt;/td&gt;
+    &lt;/tr&gt;&lt;tr height="19" style="height: 14.25pt;"&gt;&lt;td height="19" style="height: 14.25pt;"&gt;Accepted&lt;/td&gt;
+        &lt;td&gt;816K&lt;/td&gt;
+        &lt;td&gt;47MS&lt;/td&gt;
+        &lt;td&gt;G++&lt;/td&gt;
+        &lt;td&gt;1194B&lt;/td&gt;
+        &lt;td align="right" class="xl24"&gt;2009/5/19&lt;/td&gt;
+        &lt;td align="right" class="xl25"&gt;9:54:11&lt;/td&gt;
+    &lt;/tr&gt;&lt;tr height="19" style="height: 14.25pt;"&gt;&lt;td height="19" style="height: 14.25pt;"&gt;Accepted&lt;/td&gt;
+        &lt;td&gt;816K&lt;/td&gt;
+        &lt;td&gt;297MS&lt;/td&gt;
+        &lt;td&gt;G++&lt;/td&gt;
+        &lt;td&gt;994B&lt;/td&gt;
+        &lt;td align="right" class="xl24"&gt;2009/5/19&lt;/td&gt;
+        &lt;td align="right" class="xl25"&gt;9:51:30&lt;/td&gt;
+    &lt;/tr&gt;&lt;tr height="19" style="height: 14.25pt;"&gt;&lt;td height="19" style="height: 14.25pt;"&gt;Accepted&lt;/td&gt;
+        &lt;td&gt;816K&lt;/td&gt;
+        &lt;td&gt;297MS&lt;/td&gt;
+        &lt;td&gt;G++&lt;/td&gt;
+        &lt;td&gt;876B&lt;/td&gt;
+        &lt;td align="right" class="xl24"&gt;2009/5/19&lt;/td&gt;
+        &lt;td align="right" class="xl25"&gt;9:48:48&lt;/td&gt;
+    &lt;/tr&gt;&lt;tr height="19" style="height: 14.25pt;"&gt;&lt;td height="19" style="height: 14.25pt;"&gt;Accepted&lt;/td&gt;
+        &lt;td&gt;816K&lt;/td&gt;
+        &lt;td&gt;313MS&lt;/td&gt;
+        &lt;td&gt;G++&lt;/td&gt;
+        &lt;td&gt;848B&lt;/td&gt;
+        &lt;td align="right" class="xl24"&gt;2009/5/19&lt;/td&gt;
+        &lt;td align="right" class="xl25"&gt;9:46:26&lt;/td&gt;
+    &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;br/&gt;&lt;font color="#0000ff"&gt;看时间吧，从下到上依次是：&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;
+</code></pre>
+
+<p>AC1，普通<br/>
+AC2，对初始化进行优化，少memset了一些地方，快了10多ms<br/>
+AC3，加入启发式合并，没发现变快<br/>
+AC4，加入外挂，刷到47ms，已经很快了<br/>
+AC5，又去掉启发式合并，32ms，成功刷版<br/><br/><font color="#0000ff">于是得出以下结论：</font><br/><br/>
+1.<br/>
+memset少一点可以提高效率，<br/>
+（估计32ms和后面47ms的就是这里有点差异）<br/>
+但要小心，是以可能出错为代价的。。不要写囧。（我曾经在这个问题上<a href="http://hi.baidu.com/hplonline/blog/item/8fbb05b34d84d6afd8335af6.html" target="_blank">囧过多次</a>了）<br/><br/>
+2.<br/>
+启发式合并是一个<font color="#ff0000">理论上</font>很好的东西，但是可能由于加入过多的<font color="#ff0000">if</font>，<br/>
+以及<font color="#ff0000">路径压缩本身就很快</font>的原因，导致没有啥优势。<br/><br/>
+3.<br/><a href="http://hi.baidu.com/hplonline/blog/item/68db005503fdd1ccb645aeb3.html" target="_blank">外挂</a>是个很强的东西。<br/><br/><font color="#0000ff">并查集的代码：</font><br/><br/>
+以后有的哥们是搜并查集进来的。。<br/>
+要是看到我一堆废话肯定会起火的。。<br/>
+于是给出一套，写得不好看也不丑，用起来手感很好。<br/><br/>
+        const int MAXN = 50010 ;<br/><br/>
+        int f[MAXN] ;<br/>
+        //int r[MAXN] ;<br/><br/>
+        void init_set(int n){<br/>
+              memset(f + 1 , 0 , sizeof(f[0]) * n) ;<br/>
+        //      memset(r + 1 , 0 , sizeof(f[0]) * n) ;<br/>
+        }<br/><br/>
+        int find_set(int x){<br/>
+              int fa = x , t ;<br/>
+              while ( f[fa] ) fa = f[fa] ;<br/>
+              while ( f[x] ){<br/>
+                    t = x ;<br/>
+                    x = f[x] ;<br/>
+                    f[t] = fa ;<br/>
+              }<br/>
+              return fa ;<br/>
+        }<br/><br/>
+        int union_set(int a , int b){<br/>
+              a = find_set(a) ;<br/>
+              b = find_set(b) ;<br/>
+              if ( a == b ){<br/>
+                    return 0 ;<br/>
+              }else{<br/>
+                 <font color="#ff0000"> f[a] = b ;</font><br/>
+        //            if ( r[a] &gt; r[b] ) {<br/>
+        //                  f[b] = a ;      <br/>
+        //            }else{<br/>
+        //                  f[a] = b ;<br/>
+        //                  if ( r[a] == r[b] ){<br/>
+        //                        r[b] ++ ;<br/>
+        //                  }<br/>
+        //            }<br/>
+                    return 1 ;<br/>
+              }<br/>
+        }<br/><br/>
+其中注释掉的就是启发式合并的地方，<br/>
+非要用启发式合并的话，就把红色的注释掉，把注释掉的变有效<br/><font color="#ff0000">点的下标是从1</font>开始的<br/><br/><font color="#0000ff">一个火星发现：</font><br/><br/>
+  <font color="#ff0000">      #ifndef ONLINE_JUDGE<br/>
+              freopen(&#8220;in.txt&#8221;,&#8221;r&#8221;,stdin) ;<br/>
+        #endif</font><br/><br/>
+ONLINE_JUDGE是个很好用的宏。。<br/>
+这样就不用担心有的时候搞忘把freopen注释掉了。。。。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-19T12:45:00+08:00" pubdate data-updated="true">May 19<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/19/POJ2524%EF%BC%88%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/19/POJ2524%EF%BC%88%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/18/AVLTree%E7%9A%84%E4%B8%80%E4%B8%AA%E5%AE%9E%E7%8E%B0%EF%BC%88%E5%B8%A6%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C%EF%BC%89/" title="Previous Post: AVLTree的一个实现（带删除操作）">&laquo; AVLTree的一个实现（带删除操作）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/19/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%B8%80%EF%BC%89%E6%97%8B%E8%BD%AC%E5%92%8C%E5%B9%B3%E8%A1%A1/" title="Next Post: 平衡二叉树实现详解（AVLTree）（一）旋转和平衡">平衡二叉树实现详解（AVLTree）（一）旋转和平衡 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

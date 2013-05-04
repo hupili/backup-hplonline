@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>贴一个海明码(HammingCode) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.12
+海明码在通信网中的应用还是挺有价值的。
+总地说，这码就是在m长度的数据中，参杂r位的码，
+这样，接收方收到后，可以在只有一位错误的情况下进行纠正。
+数据和码的排列是。二的整数次幂位置上放码，其他位置放数据，比如：
+123456789rrmrmmmrm &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/12/%E8%B4%B4%E4%B8%80%E4%B8%AA%E6%B5%B7%E6%98%8E%E7%A0%81%28HammingCode%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">贴一个海明码(HammingCode)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-12T18:58:00+08:00" pubdate data-updated="true">May 12<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.12<br/><br/>
+海明码在通信网中的应用还是挺有价值的。<br/><br/>
+总地说，这码就是在m长度的数据中，参杂r位的码，<br/>
+这样，接收方收到后，可以在只有一位错误的情况下进行纠正。<br/><br/>
+数据和码的排列是。二的整数次幂位置上放码，其他位置放数据，比如：<br/><br/>
+123456789<br/><font color="#ff0000">rr</font>m<font color="#ff0000">r</font>mmm<font color="#ff0000">r</font>m<br/><br/>
+注意下标是从1开始的，这点在后面编码的时候要特别注意，<br/>
+因为我们常用的存储结构都是从开始编下标的。<br/><br/>
+上面的整串按照下面的形式来写：<br/>
+r1 , r2 , m3 , r4 , m5 , m6 , m7 , r8 , m9<br/><br/><font color="#0000ff">encode：</font><br/>
+mi的值就是数据串依次排下来的结果。<br/>
+定义与rj相关的mi是 i &amp; rj == 1 的所有mi。<br/>
+于是rj就等于所有与他相关的mi的异或（模2加）。<br/><br/><font color="#0000ff">decode：</font><br/>
+对每个rj，把他与跟他相关的mi异或。<br/>
+k = sum{j : rj == 1}<br/>
+那么k即为出错的位。<br/>
+把该位上的数取反即可纠错。<br/><br/>
+为0，表示没有出错。<br/>
+如果a的值超过了整个串长，说明可能有多个位出错，此时的结果不可信。<br/>
+（即使没有超过，也只在一位出错时可信，<br/>
+当有一位以上出错的概率小到忽略是即可）<br/><br/><font color="#0000ff">原理比较明了：</font><br/>
+考虑encode和decode其实是两个相反的过程。<br/>
+encode的时候把相关的mi异或到了rj上面。<br/>
+decode的时候又异或了一遍。<br/>
+如果所有数据都没有改动，显然rj为0。<br/>
+如果rj为1，并且我们假设了只有1位出错，则该位（或是r或是m）一定与rj相关。<br/>
+而与rj1,rj2,rj3&#8230;都相关的位（或是r或是m）是唯一的。<br/>
+因为j1,j2,j3&#8230;都是2的幂。<br/><font color="#0000ff"><br/><br/>
+代码：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;string&gt;<br/></h1>
+
+<h1>include &lt;iostream&gt;<br/><br/></h1>
+
+<p>//using namespace std;<br/><br/>
+//海明码由数据m和码r组成<br/>
+//下标从1开始计算<br/>
+//r占据的是2的整数次幂的下标<br/>
+//m依次占据其他空位<br/><br/>
+class HammingCode{<br/>
+private:<br/>
+      std::string data ;<br/>
+      std::string code ;<br/>
+      int hamminglength ;<br/>
+      int calhamminglength(int l) ;//计算长度为l的串要多少位的码<br/>
+      int calhamminglength2(int l) ;//计算长度为l的总串中有多少位是码<br/>
+      int lowbit(int x) ;//得到的最低比特<br/>
+      int nextn2power(int x) ;//下一个非2的幂的下标<br/>
+public:<br/>
+      HammingCode() ;<br/>
+      ~HammingCode() ;<br/>
+      void SetData(std::string s) ;<br/>
+      void SetCode(std::string s) ;<br/>
+      void Encode() ;<br/>
+      bool Decode() ;<br/>
+      std::string&amp; GetData() ;<br/>
+      std::string&amp; GetCode() ;<br/>
+      int GetHammingLength() ;<br/>
+};<br/><br/>
+//下一个非2的幂的下标<br/>
+//2的幂的下标将存放海明码<br/>
+int HammingCode::nextn2power(int x){<br/>
+      do{<br/>
+            x ++ ;<br/>
+      }while ( lowbit(x) == x )  ;<br/>
+      return x ;<br/>
+}<br/><br/>
+//得到的最低比特<br/>
+int HammingCode::lowbit(int x){<br/>
+      return x&amp;(-x) ;<br/>
+}<br/><br/>
+//1byte = 8bit ，使用4个位做海明码<br/>
+int HammingCode::calhamminglength(int l){<br/>
+      //纠错码纠错一位所需位数r满足：<br/>
+      //l + r + 1 &lt;= 2 ^ r<br/>
+      int r = 1 ;<br/>
+      int pr = 2 ;<br/>
+      while ( l + r + 1 &gt; pr ) {<br/>
+            r = r + 1 ;<br/>
+            pr &lt;&lt;= 1 ;<br/>
+      }<br/>
+      return r ;<br/>
+}<br/><br/>
+//计算长度为l的总串中有多少位是码<br/>
+int HammingCode::calhamminglength2(int l){<br/>
+      int r = 1 ;<br/>
+      int pr = 2 ;<br/>
+      while ( l &gt;= pr ) {<br/>
+            r = r + 1 ;<br/>
+            pr &lt;&lt;= 1 ;<br/>
+      }<br/>
+      return r ;<br/>
+}<br/><br/>
+HammingCode::HammingCode(){<br/><br/>
+}<br/><br/>
+HammingCode::~HammingCode(){<br/><br/>
+}<br/><br/>
+void HammingCode::SetData(std::string s){<br/>
+      data = s ;<br/>
+      hamminglength = calhamminglength(s.size()) ;<br/>
+}<br/><br/>
+void HammingCode::SetCode(std::string s){<br/>
+      code = s ;<br/>
+      hamminglength = calhamminglength2(s.size()) ;<br/>
+}<br/><br/>
+void HammingCode::Encode(){<br/>
+      int i; <br/>
+      int curpos = 1 ;//初始的数据放置点<br/>
+      code.reserve(hamminglength + data.length()) ;<br/>
+      code = &#8220;&#8221; ;<br/>
+//      cout&lt;&lt;code.length()&lt;&lt;&#8217; &#8216;&lt;&lt;code.capacity()&lt;&lt;endl;<br/>
+      //置0，因为0是异或操作的证同元素<br/>
+      for ( i = 0 ; i &lt; hamminglength + data.length() ; i ++ ) {<br/>
+            code += &#8216;\0&#8217; ;<br/>
+      }<br/>
+      //字符变化为数字<br/>
+      for ( i = 0 ; i &lt; data.length() ; i ++ ) {<br/>
+            data[i] -= &#8216;0&#8217; ;<br/>
+      }<br/>
+      //下面注意对code[x]引用的时候，string是从0开始的，所以要减1<br/>
+      for ( i = 0 ; i &lt; data.length() ; i ++ ) {<br/>
+            curpos = nextn2power(curpos) ;<br/>
+            code[curpos - 1] = data[i] ;<br/>
+            int tmp = curpos ;<br/>
+            int lb ;<br/>
+            //加到相关位上，即下标中2进制位为1的位上<br/>
+            while ( tmp ) {<br/>
+                  lb = lowbit(tmp) ;<br/>
+                  code[lb - 1] ^= data[i] ;<br/>
+                  tmp -= lb ;<br/>
+            }<br/>
+      }<br/>
+      for ( i = 0 ; i &lt; data.length() ; i ++ ){<br/>
+            data[i] += &#8216;0&#8217; ;<br/>
+      }<br/>
+      for ( i = 0 ; i &lt; code.length() ; i ++ ){<br/>
+            code[i] += &#8216;0&#8217; ;<br/>
+      }<br/>
+}<br/><br/>
+bool HammingCode::Decode(){<br/>
+      int i ;<br/>
+      int curpos = 1 ;<br/>
+      int wpos = 0 ;//计算出错位<br/>
+      data.reserve(code.length() - hamminglength) ;<br/>
+      data = &#8220;&#8221; ;<br/>
+      for ( i = 0 ; i &lt; code.length() ; i ++ ) {<br/>
+            code[i] -= &#8216;0&#8217; ;<br/>
+      }<br/>
+      <br/>
+      for ( curpos = 3 ; curpos &lt;= code.length() ; curpos = nextn2power(curpos) ){<br/>
+      //      code[curpos - 1] = data[i] ;<br/>
+            int tmp = curpos ;<br/>
+            int lb ;<br/>
+            //加到相关位上，即下标中2进制位为1的位上<br/>
+            while ( tmp ) {<br/>
+                  lb = lowbit(tmp) ;<br/>
+                  code[lb - 1] ^= code[curpos - 1] ;<br/>
+                  tmp -= lb ;<br/>
+            }<br/>
+      }<br/>
+      <br/>
+      for ( i = 1 ; i &lt;= code.length() ; i &lt;&lt;= 1 ){<br/>
+            if ( code[i - 1] ) wpos += i ;<br/>
+      }<br/><br/>
+      //可能不止一位出错，解码失败<br/>
+      if ( wpos &gt; code.length() ) return false ;<br/>
+      if ( wpos ) code[wpos - 1] = !code[wpos - 1] ;<br/>
+      <br/>
+      data = &#8220;&#8221; ;<br/>
+      for ( curpos = 3 ; curpos &lt;= code.length() ; curpos = nextn2power(curpos) ){<br/>
+            data += code[curpos - 1] ;<br/>
+      }<br/><br/>
+      for ( i = 0 ; i &lt; code.length() ; i ++ ){<br/>
+            code[i] += &#8216;0&#8217; ;<br/>
+      }<br/>
+      for ( i = 0 ; i &lt; data.length() ; i ++ ){<br/>
+            data[i] += &#8216;0&#8217; ;<br/>
+      }<br/>
+      return true ;<br/>
+}<br/><br/>
+std::string&amp; HammingCode::GetData(){<br/>
+      return data ;<br/>
+}<br/><br/>
+std::string&amp; HammingCode::GetCode(){<br/>
+      return code ;<br/>
+}<br/><br/>
+int HammingCode::GetHammingLength(){<br/>
+      return hamminglength ;<br/>
+}<br/><br/>
+//测试部分开始<br/>
+using namespace std;<br/><br/>
+int main(){<br/>
+      string src = &#8220;11100010&#8221; ;<br/>
+      string dst ;<br/>
+      HammingCode hc ;<br/><br/>
+      cout&lt;&lt;&#8221;original:&#8221;&lt;&lt;endl;<br/>
+      cout&lt;&lt;src&lt;&lt;endl;<br/><br/>
+      cout&lt;&lt;&#8221;hamming encoding:&#8221;&lt;&lt;endl;<br/>
+      hc.SetData(src) ;<br/>
+      hc.Encode() ;<br/>
+      dst = hc.GetCode() ;<br/>
+      cout&lt;&lt;dst&lt;&lt;endl;<br/>
+      <br/>
+      if ( dst[3] == &#8216;1&#8217; ) dst[3] = &#8216;0&#8217; ;<br/>
+      else dst[3] = &#8216;1&#8217; ;<br/><br/>
+      cout&lt;&lt;&#8221;modified by 1 bit:&#8221;&lt;&lt;endl;<br/>
+      cout&lt;&lt;dst&lt;&lt;endl;<br/><br/>
+      hc.SetCode(dst) ;<br/>
+      hc.Decode() ;<br/>
+      cout&lt;&lt;&#8221;hamming decoding:&#8221;&lt;&lt;endl;<br/>
+      cout&lt;&lt;hc.GetData()&lt;&lt;endl;<br/>
+      return 0 ;<br/>
+}</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-12T18:58:00+08:00" pubdate data-updated="true">May 12<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/12/%E8%B4%B4%E4%B8%80%E4%B8%AA%E6%B5%B7%E6%98%8E%E7%A0%81%28HammingCode%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/12/%E8%B4%B4%E4%B8%80%E4%B8%AA%E6%B5%B7%E6%98%8E%E7%A0%81%28HammingCode%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/11/%E8%B4%B4%E4%B8%80%E4%B8%AABST%EF%BC%88BinarySearchTree%EF%BC%89/" title="Previous Post: 贴一个BST（BinarySearchTree）">&laquo; 贴一个BST（BinarySearchTree）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/15/KEILA51%E9%80%9F%E6%9F%A5%E7%AC%94%E8%AE%B0/" title="Next Post: KEIL A51 速查笔记">KEIL A51 速查笔记 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

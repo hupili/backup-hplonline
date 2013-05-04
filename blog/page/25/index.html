@@ -1,0 +1,1136 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.2.13
+先是有同学讨论绝对的CALL
+网上搜了下，啥都没搜到。
+有人说了用FF15。不过里面还有点小东西，后面跟的不是地址。
+就把我论坛发言COPY下来了&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;第一份
+貌似FF15 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/page/25">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/02/13/%E5%85%B3%E4%BA%8ECALL%EF%BC%88%E7%BB%9D%E5%AF%B9CALL%EF%BC%9F%E7%9B%B8%E5%AF%B9CALL%EF%BC%9F%29/">关于CALL（绝对CALL？相对CALL？)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-13T14:06:00+08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.2.13<br/><br/>
+先是有同学讨论绝对的CALL<br/>
+网上搜了下，啥都没搜到。<br/><br/>
+有人说了用FF15。不过里面还有点小东西，后面跟的不是地址。<br/>
+就把我论坛发言COPY下来了<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;第一份</font><br/><br/>
+貌似FF15 后面跟的也不是绝对的地址，应该是一个DWORD的地址，<br/>
+而这个地址正好存了你要CALL的地方<br/><br/>
+.data<br/>
+n DWORD m<br/>
+.CODE<br/>
+m proc<br/>
+ret<br/>
+m endp<br/>
+START:<br/>
+call DWORD PTR [n]<br/>
+ret<br/>
+end start<br/><br/>
+然后就这长相，<br/><br/>
+00401000  /$  C3            retn<br/>
+00401001 &gt;|.  FF15 00304000 call    dword ptr [403000]               ;  CONSOLE.00401000<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-第二份</font><br/><br/>
+像下面这样，后面跟的就是过程地址，然后执行就挂掉<br/><br/>
+.data<br/>
+n DWORD m<br/>
+.CODE<br/>
+m proc<br/>
+ret<br/>
+m endp<br/>
+START:<br/>
+call DWORD PTR [m]<br/>
+ret<br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;-<br/>
+00401000  /$  C3            retn<br/>
+00401001 &gt;|.  FF15 00104000 call    dword ptr [401000]<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-第三份</font><br/><br/>
+然后给一组对比<br/>
+.data<br/>
+n DWORD m<br/>
+.CODE<br/>
+m proc<br/>
+ret<br/>
+m endp<br/>
+START:<br/>
+call DWORD PTR[n]<br/>
+call NEAR PTR [n]<br/>
+call DWORD PTR[m]<br/>
+call NEAR PTR [m]<br/>
+ret<br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;-<br/>
+00401001 &gt;|.  FF15 00304000 call    dword ptr [403000]               ;  CONSOLE.00401000<br/>
+00401007  |?  E8 F41F0000   call    00403000<br/>
+0040100C  |.  FF15 00104000 call    dword ptr [401000]               ; [getchar<br/>
+00401012  /$  E8 E9FFFFFF   call    00401000<br/><br/>
+其中第一个和第四个用法是可以的，中间两个用了程序要挂掉。<br/>
+然后，默认的写法<br/>
+call n == call DWORD PTR[n]<br/>
+call m == call NEAR PTR [m]<br/><br/><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;第四份</font><br/><h6 class="quote">Quote:</h6></p>
+
+<blockquote>引用第24楼依然随意于2009-02-13 11:57发表的  :<br/><br/>
+一个是相对偏移量，一个是绝对地址<br/>
+call DWORD PTR[xxx]：其中的xxx处存放着要call的指令的地址<br/>
+call NEAR       PTR [xxx]：最终要运行到的地址也是根据当前EIP和xxx联合计算出来的<br/><br/>
+&#8230;&#8230;.</blockquote>
+
+
+<br/><br/>
+
+
+<p>不知道吧。呵呵，不过FF15那个可以变相实现还是可以。<br/><br/>
+调用许多系统API的时候就是用的那个<br/><br/>
+call DWORD PTR [thunk VA]<br/><br/>
+thunk VA，是叫这个吧。。？<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;<br/><br/>
+想在网上搜一份详细的机器码表的，但是没有找到。。<br/><br/>
+有人在他的BLOG上上传了一套，但是分了好几十个页面。。<br/><br/>
+要弄下来太累了。。<br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/02/11/%E5%85%A8%E5%B1%80%E5%BF%AB%E6%8D%B7%E9%94%AE%2B%E6%98%BE%E9%9A%90%E7%AA%97%E5%8F%A3%EF%BC%88VB%29/">全局快捷键+显隐窗口（VB)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-11T11:47:00+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.2.11<br/><br/>
+既然有同学问到了，就顺便写一个吧。。。<br/><br/>
+这个东西网上代码也多。。但是大都懒得解释。。<br/><br/><strong><font color="#0000ff">一。代码</font></strong><br/><br/>
+先把代码拿出来再解释，其实很短：<br/><br/><font color="#ff0000">FORM1里面：</font><br/><br/>
+Option Explicit<br/><br/>
+SetWindowLong Lib &#8220;user32&#8221; Alias &#8220;SetWindowLongA&#8221; (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long<br/>
+Private Declare Function GetWindowLong Lib &#8220;user32&#8221; Alias &#8220;GetWindowLongA&#8221; (ByVal hwnd As Long, ByVal nIndex As Long) As Long<br/>
+Private Declare Function RegisterHotKey Lib &#8220;user32&#8221; (ByVal hwnd As Long, ByVal id As Long, ByVal fskey_Modifiers As Long, ByVal vk As Long) As Long<br/>
+Private Declare Function UnregisterHotKey Lib &#8220;user32&#8221; (ByVal hwnd As Long, ByVal id As Long) As Long<br/><br/>
+Const MOD_ALT = &amp;H1<br/>
+Const MOD_CONTROL = &amp;H2<br/>
+Const MOD_SHIFT = &amp;H4<br/>
+Const GWL_WNDPROC = (-4)<br/><br/><br/>
+Private Sub Form_Load()<br/>
+            key_preWinProc = GetWindowLong(Form1.hwnd, GWL_WNDPROC)<br/>
+            SetWindowLong Form1.hwnd, GWL_WNDPROC, AddressOf keyWndproc<br/>
+            RegisterHotKey Form1.hwnd, 1, MOD_CONTROL, vbKeyQ<br/>
+            RegisterHotKey Form1.hwnd, 2, MOD_CONTROL, vbKeyW<br/>
+End Sub<br/><br/><br/>
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)<br/>
+        UnregisterHotKey Form1.hwnd, 1<br/>
+        UnregisterHotKey Form1.hwnd, 2<br/>
+End Sub<br/><font color="#ff0000"><br/>
+新建一个模块，放里面：</font><br/>
+Option Explicit<br/><br/>
+Private Declare Function CallWindowProc Lib &#8220;user32&#8221; Alias &#8220;CallWindowProcA&#8221; (ByVal lpPrevWndFunc As Long, ByVal hwnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long<br/><br/>
+Const WM_HOTKEY = &amp;H312<br/>
+Const MOD_ALT = &amp;H1<br/>
+Const MOD_CONTROL = &amp;H2<br/>
+Const MOD_SHIFT = &amp;H4<br/>
+Const GWL_WNDPROC = (-4)<br/><br/>
+Public key_preWinProc As Long<br/><br/>
+Public Function keyWndproc(ByVal hwnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long<br/><br/>
+        If Msg = WM_HOTKEY Then<br/>
+&#8216;响应代码<br/>
+            If (wParam = 1) Then<br/>
+                Form1.Show<br/>
+            End If<br/>
+            If (wParam = 2) Then<br/>
+                Form1.Hide<br/>
+            End If<br/>
+        End If<br/>
+        <br/>
+        keyWndproc = CallWindowProc(key_preWinProc, hwnd, Msg, wParam, lParam)<br/>
+        <br/>
+End Function<br/><br/>
+看效果吧，就是Ctrl+Q和Ctrl+w来显示和隐藏FORM1<br/><br/><br/><font color="#0000ff"><strong>二。思路</strong></font><br/><br/>
+首先，知道windows有那么一种东西叫消息机制（什么意思？我也不懂，好吧你去百度，了解大意就行）<br/>
+然后，处理消息依靠的是窗口过程（什么东西？。。。这个VB封装得太结识了，完全掩盖了这个事情，所以只用过VB的同学觉得很陌生。没关系，知道意思就行，我们马上就要开始写的）<br/>
+接着，其实你已经想到了，我们向系统注册快捷键，系统发现按了快捷键，就会通知我们的窗口过程，让我们的窗口过程来处理这个快捷键，我们就在窗口过程中显隐窗口。<br/><br/><font color="#0000ff"><strong>三。声明和常量</strong></font><br/><br/>
+先从头说了，两个文件的头部都有一堆<br/>
+Private Declare Function 样子的东西，就是要用的API了，<br/>
+这么长也不用记的，知道名字就在VB配套的一个API浏览器里面就可以找到了。<br/>
+（API是个什么？怎么用API浏览器？这个网上讲得也多）<br/><br/>
+然后你要问我从哪里知道这些函数的名字的，<br/>
+这个倒是真的不好说。。平时到处逛论坛，看别人的文章，不小心就看到了。。<br/>
+如果实在不知道，也可以根据英文来猜，在MSDN里面查。<br/><br/>
+不管怎么说，函数的用法还是要在MSDN里面查的，<br/>
+如果很熟悉，当然看参数名字就大致知道啥意思了。<br/><br/>
+好，再接下来是一堆<br/>
+Const 样子的东西，就是用到的一些常量。<br/>
+同样可以在API浏览器里面查看到。<br/>
+至于常量的名字，你在MSDN里面查看某个函数的时候，往往下面的说明里面会列出来的。<br/><br/><strong><font color="#0000ff">四。注册注销快捷键，改写窗口过程地址</font></strong><br/><br/>
+然后说Form_Load()里面的货了，<br/>
+下面的很多函数都用到句柄这个东西，就不单说了，网上也多。<br/><br/>
+首先GetWindowLong这个函数可以得到一些窗口的参数（可以这么叫吧）<br/>
+这里第二个参数传的是GWL_WNDPROC，表示取得窗口过程的地址<br/>
+我们把他保存到key_preWinProc里面等着还要用。<br/><br/>
+仅接着SetWindowLong，一看这名字，和上面的那个就很对偶，<br/>
+我们这就要把自己定义的窗口过程设置进去。<br/>
+这样系统发给原窗口过程的消息可以到我们写的窗口过程那里，<br/>
+我们就可以判断是不是有快捷键按下了。<br/><br/>
+RegisterHotKey直接读出来就是注册快捷键了。<br/>
+第二个参数是给快捷键一个编号，于是当你按这个快捷键的时候，这个编号会同时传到你的窗口过程<br/>
+第三个参数是模式，可以使用 MOD_ 开头的一系列常量，并且可以通过OR 连接<br/>
+第四个参数是虚拟键码，字母键的键码就是对应大写字母的ASCII值<br/>
+我RegisterHotKey Form1.hwnd, 1, MOD_CONTROL, vbKeyQ一句<br/>
+就是告诉系统，注册一个编号为1的快捷键，按键为Ctrl+Q<br/><br/>
+Form_QueryUnload()这个过程里面的两个函数其实类比一下就很明了了<br/>
+就是注销掉相应快捷键。不注销会有什么情况呢？你试下不就知道了。。<br/><br/><strong><font color="#0000ff">五。编辑自己的窗口过程</font></strong><br/><br/>
+看到了我们的窗口过程<br/>
+Public Function keyWndproc(ByVal hwnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long<br/>
+为什么长这样呢。。这是规定，没啥好说的。参数就得这么传，返回就得是这样。<br/><br/>
+四个参数分别是，接收到消息的窗口的句柄，消息类型，w参数，l参数<br/>
+在这里，快捷键消息类型会是WM_HOTKEY<br/>
+并且我们注册时，指定的编号会以wParam传进来。<br/><br/>
+所以有注释&#8221;&#8217;响应代码&#8221;的地方就是你大师拳脚的位置了。<br/>
+你可以在接到这个快捷键之后干任何事情。<br/>
+我这里是举例显隐窗口，所以Form1.Hide  , From1.Show就可以了。<br/><br/>
+最后  keyWndproc = CallWindowProc(key_preWinProc, hwnd, Msg, wParam, lParam)<br/>
+这句话相当关键。<br/>
+因为我们自己写的这个窗口过程只对快捷键消息做了响应，<br/>
+但是系统会给我们窗口过程发各种各样的消息。<br/>
+所以我们要用到那个默认的窗口过程，就是之前改写的时候保存的<br/>
+key_preWinProc<br/>
+让他来收拾后面的砸碎。<br/>
+所以用了CallWindowProc，这个函数，也是个直呼其名便知其意的东西。<br/>
+第一个参数是调用的窗口过程的地址，<br/>
+后四个参数跟我们一般的窗口过程的参数是一样的，直接传过去就好了。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/02/10/%E5%B7%AE%E5%88%86%E7%BA%A6%E6%9D%9F%E7%B3%BB%E7%BB%9F%28POJ1201%29/">差分约束系统(POJ1201)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-10T15:51:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.2.10<br/><br/>
+之前听起来觉得这名字很爽，但是一直没搞过。<br/>
+前面连着看了网上一些东西，看得很梗塞。<br/>
+有些给出来的代码要WA，有些AC的，因为用了各种其他处理，没怎么明白。<br/><br/>
+后来也不知道为啥就貌似看出来了。<br/>
+1201在模型上比较好转化，直接一点，拿来练下不错。<br/><br/>
+网上细讲的资料还是比较多。个人理解一下：<br/>
+1.就是给了一堆不等式，用他们来约束一些变量之间的关系。<br/>
+2.正好图论中的单源最短路的松弛操作是维护了某种不等式（路径长度）。<br/><br/>
+就是把这些变量当成图里面的点这个意思。<br/><br/>
+比如:<br/>
+if ( d[b] &lt; d[a] + c ) d[b] = d[a] + c ;<br/>
+就可以保证，形如：<br/>
+d[b] &gt;= d[a] + c 的条件。<br/><br/>
+这样，用SPFA的框架来跑，就可能存在：<br/>
+1.队列空了，说明里面变量的取值（源点到某点的路径长度）已经到了极限（最大或最小）。<br/>
+2.某个点入队n（点数，即变量个数）次，说明无解。<br/><br/>
+那么拿这道题来说。<br/>
+设s[x] = 从0 到x 的所有在集合中的数的个数<br/>
+从题目输入中得<br/>
+(1) s[bi] - s[ai - 1] &gt;= ci<br/>
+又根据s[x]本身的性质，<br/>
+后面的一定不比前面的小，后面的最多比前面多一，有：<br/>
+(2) s[i + 1] - s[i] &gt;= 0 <br/>
+(3) s[i + 1] - s[i] &lt;= 1<br/><br/>
+那么首先把这些不等式整理成同向的。<br/>
+s[bi] &gt;= s[ai - 1] + ci<br/>
+s[i + 1] &gt;= s[i]<br/>
+s[i] &gt;= s[i + 1] + (-1)<br/><br/>
+这样spfa的松弛采用<br/>
+if ( d[b] &lt; d[a] + c ) d[b] = d[a] + c ;<br/>
+就可以保证，形如：<br/>
+d[b] &gt;= d[a] + c 的条件。(c是从a指向b的边权值)<br/><br/>
+建图的话，从松弛的式子很容易看出：<br/>
+“&gt;=” 左边作为终点，右边的作为起点，权值为 <font color="#ff0000">加上</font> 的那个常数<br/>
+这个松弛对应的是最长路，所以除源点外的点的初始距离为负无穷。<br/><br/>
+算法结束后，<br/>
+对于最后的s[max] &gt;= s[-1] + c 也是成立的，（max 是输入数据中最大的区间端点）<br/>
+显然这个c就是要求的s[max] - s[-1] 的最小值，令s[-1] = 0，<br/>
+得到的就是s[max]的最小值，也就是0..max中存在这个集合中的数的最小个数<br/>
+（大于max的数肯定是不要的吧！）<br/><br/>
+为避免下标-1出现，读入的时候把所有b都加1。<br/>
+a就相当于原来的a-1了。<br/><br/>
+另外，根据点的范围，可以在读入的时候检查rmin,rmax<br/>
+这样只对[rmin,rmax]范围内的点建图<br/><br/>
+以上为AC1<br/><br/>
+AC2:采用最短路松弛<br/>
+if ( d[b] &gt; d[a] + c ) d[b] = d[a] + c;<br/>
+保证了:d[b] &lt;= d[a] + c<br/><br/>
+所以对题目的不等式整理为：<br/>
+(1) s[ai - 1] &lt;= s[bi] + ( -ci )<br/>
+(2) s[i] &lt;= s[i + 1] + 0<br/>
+(3) s[i + 1] &lt;= s[i] + 1 <br/><br/>
+最后满足的是s[-1] &lt;= s[max] + (-c)<br/>
+s[max] &gt;= c<br/>
+注意最后出来的距离值d[max]其实是-c<br/><br/>
+还有建图的时候跟上一个有点不一样<br/>
+上面是理论叙述<br/>
+操作的时候要倒过来，令s[max] = 0 <br/>
+那么求出的d[-1] == -c <br/><br/>
+以上两个处理的时候是先把所有的边生成好，<br/>
+然后按起点排序，再扫描一遍，记录每个起点在边数组中的开始位置list[]<br/>
+当作邻接表使用<br/><br/>
+之所以采用这种方式，主要是刚开始不懂差分约束的时候，<br/>
+看到网上的好几份代码都是这种写法，<br/>
+于是就照搬了。。。<br/>
+但是仔细一想，其实那么大数组一排序，相当耗时的。<br/><br/>
+所以最后搞个<br/>
+AC3:<br/>
+用了预分空间的邻接表，以及所谓外挂，刷进第一版了。。<br/>
+空间上还是差头两名很大。。。<br/><br/>
+===================代码分割线===================<br/>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;AC1:<br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;algorithm&gt;<br/></h1>
+
+<h1>include &lt;string.h&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+const int MAXN = 50002 ;<br/>
+const int MAXE = MAXN * 3 ;<br/>
+const int MAXINT = 2000000000;<br/><br/>
+typedef struct edge_type{<br/>
+       int a,b,c;<br/>
+}EDGE;<br/><br/>
+int dist[MAXN],inq[MAXN],q[MAXN];<br/>
+int list[MAXN];<br/>
+EDGE edges[MAXE] ;<br/>
+int n , m , rmin , rmax , front ,rear ;<br/><br/>
+bool operator&lt;(const EDGE a , const EDGE b){<br/>
+       return a.a &lt; b.a ;<br/>
+}<br/><br/>
+void init(){<br/>
+       int i;<br/>
+       int a,b,c;<br/><br/>
+       scanf(&#8220;%d&#8221;,&amp;n);<br/>
+       m = 0 ;<br/>
+       rmin = MAXINT ;<br/>
+       rmax = -MAXINT ;<br/>
+       for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+              scanf(&#8220;%d%d%d&#8221;,&amp;a,&amp;b,&amp;c);<br/>
+              b ++ ;<br/><font color="#ff0000">              edges[m].a = a;<br/>
+              edges[m].b = b;</font><br/>
+              edges[m].c = c;<br/>
+              m ++ ;<br/>
+              if ( a &lt; rmin ) rmin = a ;<br/>
+              if ( b &gt; rmax ) rmax = b ; <br/>
+       }<br/>
+       <br/>
+       for ( i = rmin ; i &lt; rmax ; i ++ ) {<br/>
+              edges[m].a = i + 1 ; <br/>
+              edges[m].b = i ;<br/>
+              edges[m].c = <font color="#ff0000">-1 ;</font><br/>
+              m ++ ;<br/><br/>
+              edges[m].a = i ; <br/>
+              edges[m].b = i + 1 ;<br/>
+              edges[m].c =<font color="#ff0000"> 0 ;</font><br/>
+              m ++ ;<br/>
+       }<br/><br/>
+       sort(edges,edges + m );<br/>
+       for ( i = rmin ; i &lt;= rmax ; i ++ ){<br/>
+              list[i] = MAXINT ;<br/>
+       }<br/>
+       for ( i = 0 ; i &lt; m ; i ++ ){<br/>
+              if ( list[edges[i].a] &gt; i )<br/>
+                     list[edges[i].a] = i ;<br/>
+       }<br/>
+}<br/><br/>
+void spfa(){<br/>
+       int i;<br/>
+       int from , to ;<br/>
+       int cost ;<br/><br/>
+       for ( i = rmin ; i &lt;= rmax ; i ++ ) {<br/>
+              dist[i] = <font color="#ff0000">-MAXINT ;</font><br/>
+       }<br/>
+       <font color="#ff0000">dist[rmin] = 0 ;</font><br/>
+       memset(inq , false , sizeof(inq)) ;<br/>
+       <font color="#ff0000">inq[rmin] = true ;</font><br/><br/>
+       <font color="#ff0000">q[0] = rmin ;</font><br/>
+       front = 0 ; rear = 1 ;<br/>
+       while ( front != rear ){<br/>
+              from = q[front] ;<br/>
+              inq[from] = false ;<br/>
+              front = ( front + 1 ) % MAXN ;<br/>
+              for ( i = list[from] ; edges[i].a == from ; i ++ ){<br/>
+                     to = edges[i].b;<br/>
+                     cost = edges[i].c + dist[from] ;<br/>
+                     if ( dist[to]<font color="#ff0000"> &lt; </font>cost ) {<br/>
+                            dist[to] = cost ;<br/>
+                            if ( !inq[to] ){<br/>
+                                   inq[to] = true ; <br/>
+                                   q[rear] = to ;<br/>
+                                   rear = ( rear + 1 ) % MAXN ;<br/>
+                            }<br/>
+                     }<br/>
+              }<br/>
+       }<br/>
+}<br/><br/>
+int main(){<br/>
+       init();<br/>
+       spfa();<br/>
+       printf(&#8220;%d\n&#8221;,<font color="#ff0000">dist[rmax]</font>);<br/>
+       return 0 ;<br/>
+}<br/>
+===============================================<br/><br/>
+===================代码分割线===================<br/>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;AC2:<br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;algorithm&gt;<br/></h1>
+
+<h1>include &lt;string.h&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+const int MAXN = 50002 ;<br/>
+const int MAXE = MAXN * 3 ;<br/>
+const int MAXINT = 2000000000;<br/><br/>
+typedef struct edge_type{<br/>
+       int a,b,c;<br/>
+}EDGE;<br/><br/>
+int dist[MAXN],inq[MAXN],q[MAXN];<br/>
+int list[MAXN];<br/>
+EDGE edges[MAXE] ;<br/>
+int n , m , rmin , rmax , front ,rear ;<br/><br/>
+bool operator&lt;(const EDGE a , const EDGE b){<br/>
+       return a.a &lt; b.a ;<br/>
+}<br/><br/>
+void init(){<br/>
+       int i;<br/>
+       int a,b,c;<br/><br/>
+       scanf(&#8220;%d&#8221;,&amp;n);<br/>
+       m = 0 ;<br/>
+       rmin = MAXINT ;<br/>
+       rmax = -MAXINT ;<br/>
+       for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+              scanf(&#8220;%d%d%d&#8221;,&amp;a,&amp;b,&amp;c);<br/>
+              b ++ ;<br/>
+              edges[m].a <font color="#ff0000">= b;</font><br/>
+              edges[m].b <font color="#ff0000">= a;</font><br/>
+              edges[m].c <font color="#ff0000">= -c;</font><br/>
+              m ++ ;<br/>
+              if ( a &lt; rmin ) rmin = a ;<br/>
+              if ( b &gt; rmax ) rmax = b ; <br/>
+       }<br/>
+       <br/>
+       for ( i = rmin ; i &lt; rmax ; i ++ ) {<br/>
+              edges[m].a = i + 1 ; <br/>
+              edges[m].b = i ;<br/>
+              edges[m].c =<font color="#ff0000"> 0 ;</font><br/>
+              m ++ ;<br/><br/>
+              edges[m].a = i ; <br/>
+              edges[m].b = i + 1 ;<br/>
+              edges[m].c = <font color="#ff0000">1 ;</font><br/>
+              m ++ ;<br/>
+       }<br/><br/>
+       sort(edges,edges + m );<br/>
+       for ( i = rmin ; i &lt;= rmax ; i ++ ){<br/>
+              list[i] = MAXINT ;<br/>
+       }<br/>
+       for ( i = 0 ; i &lt; m ; i ++ ){<br/>
+              if ( list[edges[i].a] &gt; i )<br/>
+                     list[edges[i].a] = i ;<br/>
+       }<br/>
+}<br/><br/>
+void spfa(){<br/>
+       int i;<br/>
+       int from , to ;<br/>
+       int cost ;<br/><br/>
+       for ( i = rmin ; i &lt;= rmax ; i ++ ) {<br/>
+              dist[i] =<font color="#ff0000"> MAXINT ;</font><br/>
+       }<br/>
+      <font color="#ff0000"> dist[rmax] = 0 ;</font><br/>
+       memset(inq , false , sizeof(inq)) ;<br/>
+   <font color="#ff0000">  inq[rmax] = true ;</font><br/><br/>
+   <font color="#ff0000">  q[0] = rmax ;</font><br/>
+       front = 0 ; rear = 1 ;<br/>
+       while ( front != rear ){<br/>
+              from = q[front] ;<br/>
+              inq[from] = false ;<br/>
+              front = ( front + 1 ) % MAXN ;<br/>
+              for ( i = list[from] ; edges[i].a == from ; i ++ ){<br/>
+                     to = edges[i].b;<br/>
+                     cost = edges[i].c + dist[from] ;<br/>
+                     if ( dist[to] &gt; cost ) {<br/>
+                            dist[to] = cost ;<br/>
+                            if ( !inq[to] ){<br/>
+                                   inq[to] = true ; <br/>
+                                   q[rear] = to ;<br/>
+                                   rear = ( rear + 1 ) % MAXN ;<br/>
+                            }<br/>
+                     }<br/>
+              }<br/>
+       }<br/>
+}<br/><br/>
+int main(){<br/>
+       init();<br/>
+       spfa();<br/>
+       printf(&#8220;%d\n&#8221;,<font color="#ff0000">-dist[rmin]</font>);<br/>
+       return 0 ;<br/>
+}<br/>
+===============================================<br/><br/>
+===================代码分割线===================<br/>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;AC3:<br/>
+这个在输入上比较猥琐，拿出来怕挨飞刀。。。<br/>
+就算了，前面两个主要是有个对比，<br/>
+帮助像我一样在刚开始就被搅昏的同学理解一下。。<br/></p>
+
+<h1>我把前面不同地方标出来。<br/></h1>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/02/09/%E7%BC%96%E8%AF%91%E5%99%A8%E6%89%93%E8%A1%A8%EF%BC%88MASM%29/">编译器打表（MASM)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-09T16:16:00+08:00" pubdate data-updated="true">Feb 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.2.9<br/><br/>
+打表这个说法对在各大OJ上交题的同学们来说那是相当熟悉了。<br/><br/>
+假设有一道题，让你输出<span style="font-size: 10.5pt; color: rgb(0, 0, 0); line-height: normal;"><strong>Fibonacci数列</strong></span>第X个数，<br/>
+其实这道题本身没啥讨论的，我们就用一般的递推，主要说打表。<br/><br/>
+如果是运行时打表。<br/>
+比如，开始的时候先用一段，算出小于XXXX的所有数。<br/>
+然后输入一个n，直接读个fib[n]就输出了。<br/>
+这种就是常说的预处理。。。<br/><br/>
+然后可以在编写代码时打表。<br/>
+比如写源代码的时候就<br/>
+int fib[NUM] = {1,1,2,3,5,8,13 &#8230;.}<br/>
+这样写好。这种静态打表就是常说的打表了。<br/><br/>
+对于这两种打表，前者仍然占用一定运行时间的，感觉不极致<br/>
+后者的话，会造成代码臃肿，还是不爽。<br/><br/>
+用C的话，暂时还不知道啥方法了，<br/>
+不过最近学了点MASM，很火星地发现编译时解释的宏简直就是强大。。。。<br/><br/>
+比如这样：<br/><br/>
+.data<br/>
+v1 = 1<br/>
+v2 = 1                              ;初始值<br/>
+fib DWORD v1<br/>
+DWORD v2                              ;放置前两个值<br/>
+count = 0                         ;一个计数器<br/>
+WHILE count LT 20            ;重复20次<br/>
+      v3 = v1 + v2            ;Fibonacci的递推公式<br/>
+      DWORD v3                        ;放置当前产生的这个值<br/>
+      v1 = v2                        ;<br/>
+      v2 = v3                        ;递推<br/>
+      count = count + 1      ;计数增加<br/>
+ENDM                                    ;是ENDM，不是ENDW。。<br/><br/>
+在我的数据段fib标号开始的地方就存上了前22个Fibonacci数了。<br/>
+这里<strong>WHILE</strong>和<strong>.WHILE</strong> 是不同的。<br/>
+后面这个是运行时的。前面这个是发生在编译期间的。<br/><br/>
+做一个测试输出<br/>
+.code<br/>
+      mov ebx , 1<br/>
+      .WHILE ebx &lt; count<br/>
+            mov eax , ebx<br/>
+            dec eax<br/>
+            mov eax , fib[eax * 4]<br/>
+            invoke WriteInt10 , eax       ;我的输出整数的函数，具体替换<br/>
+            call WriteCrLf                              ;我的输出换行的函数，具体替换<br/>
+            inc ebx <br/>
+      .ENDW<br/><br/>
+这段除了两个我自己用的函数，其他都很熟悉的东西了。<br/><br/>
+这个姑且就叫编译器打表了吧。。<br/>
+配合的还有如IF之类的宏。。几乎可以完成各种计算逻辑。。<br/>
+怎一个强大了得。。<br/><br/>
+跟前面的打表比来说，代码又不臃肿，又不占运行时间，<br/>
+但是如果没写好的话，编译器也可以死循环。。。<br/><br/>
+比如：<br/>
+WHILE 1<br/>
+ENDM<br/>
+这样之后，打开任务管理，可以看到ml.exe占满了在跑。。。<br/><br/>
+虽然说起来编译器打表很强。。但是现在还没看哪个OJ允许用MASM的吧。。。<br/>
+要不你交个上去，打成死循环了杂办呢。。<br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/02/08/%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E8%AF%AF%E8%A7%A3_%E8%AF%BB%E5%90%8E%E5%AE%9E%E9%AA%8C%E7%AC%94%E8%AE%B0/">指针和数组的误解_读后实验笔记</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-08T15:30:00+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.2.8<br/><br/>
+原文：http://richardxx.yo2.cn/articles/%E5%85%B3%E4%BA%8Ec%E6%95%B0%E7%BB%84%E5%92%8C%E6%8C%87%E9%92%88%E7%<br/><br/>
+9A%84%E4%B8%80%E7%82%B9%E8%A7%81%E8%A7%A3.html<br/><br/>
+这是受启发后的练习笔记：<br/><br/>
+实验一：<br/><br/>
+a.c:<br/><br/>
+int a[] = { 1 , 2 , 3 };<br/><br/>
+b.c:<br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>extern int <em>a;<br/><br/>
+int main(){<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a);<br/>
+      printf(&#8220;%x\n&#8221;,a);<br/>
+      return 0 ;<br/>
+}<br/><br/>
+输出：<br/>
+424a30<br/>
+1<br/><br/>
+把extern int </em>a;<br/>
+改为extern int a[];<br/><br/>
+输出：<br/>
+424a30<br/>
+424a30<br/><br/>
+这个实验说明了数组和指针的语义不同。<br/>
+指针：该变量本身占据一个地址，且该地址存储的是一个地址值<br/>
+数组：数组名代表就是该数组的首地址值，即上面的a == &amp;a<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;<br/><br/>
+实验二：<br/>
+a.c:<br/><br/>
+int a[] = { 1 , 2 , 3 };<br/><br/>
+b.c:<br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>extern int <em>a;<br/><br/>
+int main(){<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a);<br/>
+      printf(&#8220;%x\n&#8221;,(&amp;a)[1]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[1]);<br/>
+//      printf(&#8220;%x\n&#8221;,a[1]);<br/>
+      return 0 ;<br/>
+}<br/><br/>
+输出<br/>
+424a30<br/>
+2<br/>
+5<br/><br/>
+首先说下最后注释掉的那句，因为语义问题，<br/>
+指针a中存的值为1，会把他当作地址来做[1]的运算，<br/>
+显然跑到程序领空外面了。<br/><br/>
+那么要正确引用a[]的1号元素，就用第二句了。<br/>
+先取a的地址，再做[1]的运算。<br/>
+&amp;的优先级比[]低，通过二三句对比就知道。<br/><font color="#ff0000">（此段其实是个巧合，因为指针和int都是4字节，详细见1楼-2009.3.13）</font><br/><br/>
+那么第三句明明先运行a[1]（优先级），却不像最后一句报错。<br/>
+主要是编译器优化的原因。<br/>
+a[1] &#8212;-&gt; </em>( a + 1 )<br/>
+&amp;a[1] &#8212;-&gt; &amp;*( a + 1 )<br/>
+连续的取值和取地址消掉了。<br/>
+至于5，那是因为a = 1,<br/>
+并且按照int型的长度做指针运算，所以 a + 1 ，翻译后其实是 1 + 4<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br/><br/>
+实验三：<br/>
+上到二维，先来个基础的<br/><br/>
+a.c:</p>
+
+<div>
+  <pre><code class='c'>int a[2][3]={ {1,2,3},{4,5,6} };&lt;br/&gt;&lt;br/&gt;
+int b[2][3]={ {1,2,3},{4,5,6} };&lt;br/&gt;&lt;br/&gt;</code></pre>
+</div>
+
+
+<p>b.c:</p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>//如果用 extern int <strong>a ， 则<br/>
+//链接出错：unresolved external symbol &#8220;int * * a&#8221; (?a@@3PAPAHA)<br/>
+//少了(<em>a)的括号也是同样的错误，<br/>
+//</em>a[3]代表的是三个元素的数组，每个元素都是指针<br/>
+extern int (*a)[3];<br/>
+//很多书把这两种写法等价，或用上面的写法解释二维数组<br/>
+//包括编译器和连接器本身，也认同上面的表示<br/>
+//否则会unresolved external symbol<br/>
+extern int b[][3];<br/><br/>
+int main(){<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a);<br/>
+      printf(&#8220;%x\n&#8221;,a);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[0][0]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[0]);<br/>
+      printf(&#8220;%x\n&#8221;,a[0]);<br/><br/>
+      puts(&#8220;&#8212;&#8212;-&#8220;);<br/><br/>
+      printf(&#8220;%x\n&#8221;,&amp;b);<br/>
+      printf(&#8220;%x\n&#8221;,b);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;b[0][0]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;b[0]);<br/>
+      printf(&#8220;%x\n&#8221;,b[0]);<br/>
+      return 0 ;<br/>
+}<br/><br/>
+输出：<br/>
+424a30<br/>
+1<br/>
+1<br/>
+1<br/>
+1<br/>
+&#8212;&#8212;-<br/>
+424a48<br/>
+424a48<br/>
+424a48<br/>
+424a48<br/>
+424a48<br/><br/>
+这个还是谈及的语义问题，正如市面上的各类书讲的一样，<br/>
+二维数组名==二位数组的地址==第0行数组名==第0行数组地址==第0行0列元素地址<br/>
+这里用行序来说<br/>
+而对指针，正如上面的a一样，<br/>
+根据前面的实验，很奇怪a[0]为啥没有执行出错？<br/>
+明明打印出来的值a==1那么解析1[0]显然有问题啊！<br/>
+这里是指向数组的指针，情况稍微不同，跟后面一个例子一起说。<br/><br/>
+&#8212;&#8212;&#8212;&#8212;-<br/><br/>
+实验四：<br/>
+把上一个稍改一下，对比下面几组<br/>
+      printf(&#8220;%x\n&#8221;,a);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[1]);<br/>
+      printf(&#8220;%x\n&#8221;,a[1]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[1][1]);<br/>
+输出：<br/>
+1<br/>
+d<br/>
+d<br/>
+11<br/>
+先来第一个，a在这里是指针，a的值就是另外一个文件中定义的第一个元素值 1 <br/>
+第二，三个，这样一下就看出端倪了吧，他们的值是一样的<br/>
+就是说指向数组的指针和一般的指针是不一样的！<br/>
+指向数组的指针在脱指针（[])后，代表的是一个数组，<br/>
+用x来记，那么x == &amp;x 对数组是总是成立的。编译器可没搞忘这一点！！<br/>
+所以a[1]感觉是解析了一个无效的地址，<br/>
+但这个表达式本身是看成一个数组的，关心的是他的地址，<br/>
+于是这句话没有问题。<br/>
+并且&amp;a[1]也可以得到该地址。<br/><br/>
+下面这几句话可以印证普通指针和指向数组指针的区别：<br/>
+      int </strong>c = (int <em><em>)a;<br/>
+      int (</em>d)[3] = (int (</em>)[3]) c;<br/>
+      //printf(&#8220;%x\n&#8221;,c[1]);<br/>
+      printf(&#8220;%x\n&#8221;,d[1]);<br/>
+c为普通指针，注释掉的一句会造成内存错误。<br/>
+而下面的一句看出d虽然中间经过了一次转换，依然保持着a的性质。<br/><br/>
+另外，关于&amp;a[1]有另外一种理解<br/>
+&amp;a[1] = &amp;*( a + 1 ) = a + sizeof( int [3] ) = 1 + 12 = 13<br/>
+在这以前，我也会这样理解，<br/>
+但这种理解无法解释a[1]的正常执行<br/>
+所以现在看来更好的理解是把<br/>
+a[1]看作一个数组，根据数组的语义来说&amp;a[1] == a[1]<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;<br/><br/>
+后面跟几句废话：<br/><br/>
+最初学的时候，因为之前学的VB,PASCAL，到整C的时候，<br/>
+老是把数组和指针当成两种不同的东西；<br/><br/>
+学到一些时候了，自以为看到了数组的本质，<br/>
+认为就是一回事了。<br/>
+（在我看过的C的书里面，若干本都有这么一句：<br/>
+数组的本质就是指针，所以专业的人员更喜欢用指针代替数组来传参。<br/>
+我也目睹了大量非专业人员如此行为，包括我）；<br/><br/>
+直到现在，才发现数组和指针乃是有很微妙的差异的，<br/>
+只是平常没用到这些特性，于是总是得到正确的结果而已。<br/><br/><br/>
+宋代禅宗大师青原行思提出参禅的三重境界：参禅之初，看山是山，看水是水；禅有悟时，看山不是山，看水不是水；禅中彻悟，看山仍然山，看水仍然是水。 <br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/02/06/C%E5%BA%93%E5%87%BD%E6%95%B0memset%28%29%E7%9A%84%E6%BA%90%E7%A0%81/">C库函数memset()的源码</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-06T23:16:00+08:00" pubdate data-updated="true">Feb 6<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>         page     ,132<br/>
+         title    memset - set sections of memory all to one byte<br/>
+;<strong><em><br/>
+;memset.asm - set a section of memory to all one byte<br/>
+;<br/>
+;        Copyright (c) Microsoft Corporation. All rights reserved.<br/>
+;<br/>
+;Purpose:<br/>
+;        contains the memset() routine<br/>
+;<br/>
+;</em></strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em><strong><em><br/><br/>
+         .xlist<br/>
+         include cruntime.inc<br/>
+         .list<br/><br/>
+page<br/>
+;</em></strong><br/>
+;char </em>memset(dst, value, count) - sets &#8220;count&#8221; bytes at &#8220;dst&#8221; to &#8220;value&#8221;<br/>
+;<br/>
+;Purpose:<br/>
+;        Sets the first &#8220;count&#8221; bytes of the memory starting<br/>
+;        at &#8220;dst&#8221; to the character value &#8220;value&#8221;.<br/>
+;<br/>
+;        Algorithm:<br/>
+;        char <em><br/>
+;        memset (dst, value, count)<br/>
+;                char </em>dst;<br/>
+;                char value;<br/>
+;                unsigned int count;<br/>
+;                {<br/>
+;                char <em>start = dst;<br/>
+;<br/>
+;                while (count&#8211;)<br/>
+;                        </em>dst++ = value;<br/>
+;                return(start);<br/>
+;                }<br/>
+;<br/>
+;Entry:<br/>
+;        char <em>dst - pointer to memory to fill with value<br/>
+;        char value - value to put in dst bytes<br/>
+;        int count - number of bytes of dst to fill<br/>
+;<br/>
+;Exit:<br/>
+;        returns dst, with filled bytes<br/>
+;<br/>
+;Uses:<br/>
+;<br/>
+;Exceptions:<br/>
+;<br/>
+;</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>******<br/><br/>
+         CODESEG<br/><br/>
+         public  memset<br/>
+memset proc<br/><br/>
+         .FPO     ( 0, 3, 0, 0, 0, 0 )<br/><br/>
+         mov      edx,[esp + 0ch] ; edx = &#8220;count&#8221;<br/>
+         mov      ecx,[esp + 4]    ; ecx points to &#8220;dst&#8221;<br/><br/>
+         test     edx,edx          ; 0?<br/>
+         jz       short toend      ; if so, nothing to do<br/><br/>
+         xor      eax,eax<br/>
+         mov      al,[esp + 8]     ; the byte &#8220;value&#8221; to be stored<br/><br/><br/>
+; Align address on dword boundary<br/><br/>
+         push     edi              ; preserve edi<br/>
+         mov      edi,ecx          ; edi = dest pointer<br/><br/>
+         cmp      edx,4            ; if it&#8217;s less then 4 bytes<br/>
+         jb       tail             ; tail needs edi and edx to be initialized<br/><br/>
+         neg      ecx<br/>
+         and      ecx,3            ; ecx = # bytes before dword boundary<br/>
+         jz       short dwords     ; jump if address already aligned<br/><br/>
+         sub      edx,ecx          ; edx = adjusted count (for later)<br/>
+adjust_loop:<br/>
+         mov      [edi],al<br/>
+         add      edi,1<br/>
+         sub      ecx,1<br/>
+         jnz      adjust_loop<br/><br/>
+dwords:<br/>
+; set all 4 bytes of eax to [value]<br/>
+         mov      ecx,eax          ; ecx=0/0/0/value<br/>
+         shl      eax,8            ; eax=0/0/value/0<br/><br/>
+         add      eax,ecx          ; eax=0/0val/val<br/><br/>
+         mov      ecx,eax          ; ecx=0/0/val/val<br/><br/>
+         shl      eax,10h          ; eax=val/val/0/0<br/><br/>
+         add      eax,ecx          ; eax = all 4 bytes = [value]<br/><br/>
+; Set dword-sized blocks<br/>
+         mov      ecx,edx          ; move original count to ecx<br/>
+         and      edx,3            ; prepare in edx byte count (for tail loop)<br/>
+         shr      ecx,2            ; adjust ecx to be dword count<br/>
+         jz       tail             ; jump if it was less then 4 bytes<br/><br/>
+         rep      stosd<br/>
+main_loop_tail:<br/>
+         test     edx,edx          ; if there is no tail bytes,<br/>
+         jz       finish           ; we finish, and it&#8217;s time to leave<br/>
+; Set remaining bytes<br/><br/>
+tail:<br/>
+         mov      [edi],al         ; set remaining bytes<br/>
+         add      edi,1<br/><br/>
+         sub      edx,1            ; if there is some more bytes<br/>
+         jnz      tail             ; continue to fill them<br/><br/>
+; Done<br/>
+finish:<br/>
+         mov      eax,[esp + 8]    ; return dest pointer<br/>
+         pop      edi              ; restore edi<br/><br/>
+         ret<br/><br/>
+toend:<br/>
+         mov      eax,[esp + 4]    ; return dest pointer<br/><br/>
+         ret<br/><br/>
+memset  endp<br/><br/>
+         end<br/><br/><br/>
+其实上面的C语言算法描述和下面的汇编实现之间还是有很大的区别的。。<br/><br/>
+上面只是说了一个外围看进去的意思。<br/><br/>
+下面汇编的思路是这样的。<br/><br/>
+首先按照32位（4字节）的长度进行内存赋值，<br/><br/>
+当小于4字节的时候才一个个字节地赋值，<br/><br/>
+而四字节赋值的时候也有个细节处理，就是对齐到双字的地址处，<br/><br/>
+这些都是为了在32位平台上加速而设计的。<br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/backup-hplonline/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/backup-hplonline/blog/page/24/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

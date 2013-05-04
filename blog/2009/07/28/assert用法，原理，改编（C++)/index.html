@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>assert用法，原理，改编（C++) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.7.28最近才发现，原来assert这么好用啊。。。
+再看看是怎么实现的，又找到了些有趣的东西。用法：
+先包含 inlcude &lt;assert.h&gt; 在想用的地方给一句：
+assert(expression)就可以了。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/07/28/assert%E7%94%A8%E6%B3%95%EF%BC%8C%E5%8E%9F%E7%90%86%EF%BC%8C%E6%94%B9%E7%BC%96%EF%BC%88C%2B%2B%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">assert用法，原理，改编（C++)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-28T16:51:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.7.28<br/><br/><img src="http://img.baidu.com/hi/jx/j_0003.gif"/>最近才发现，原来assert这么好用啊。。。<br/>
+再看看是怎么实现的，又找到了些有趣的东西。<br/><br/><font color="#0000ff">用法：<br/></font><br/>
+先包含<br/></p>
+
+<h1>inlcude &lt;assert.h&gt;<br/><br/></h1>
+
+<p>在想用的地方给一句：<br/>
+assert(expression)就可以了。<br/>
+expression是任意有效的逻辑表达式。<br/>
+比如：<br/><font color="#ff6600"><br/>
+FILE <em>fp = fopen(&#8220;in.txt&#8221;,&#8221;r&#8221;) ;<br/>
+if ( ! fp ){<br/>
+     exit(0) ;<br/>
+}<br/>
+assert(fp != NULL) ;</font><br/><br/>
+当expression不满足时，就会报出一个很丑陋的框框，<br/>
+然后向控制台输出assert不满足的文件和行号。<br/><br/>
+具体到debug的时候，<br/>
+可以撒网式地在各个地方放上认为应该为真的表达式的assert，<br/>
+说不定哪个就爆了，于是趁机发现了问题。<br/><br/><font color="#0000ff">原理：</font><br/><br/>
+只要有源码就没有秘密，<br/>
+所以打开assert.h，看看里面是怎么写的。<br/><br/>
+主要的就这两句：<br/><font color="#ff6600"><em>CRTIMP void __cdecl </em>assert(void </em>, void *, unsigned);<br/></p>
+
+<h1>define assert(exp) (void)( (exp) || (_assert(#exp, <strong>FILE</strong>, <strong>LINE</strong>), 0) )</font><br/><br/></h1>
+
+<p>第一句就干的就是输出一些信息，然后弹出个框框，<br/>
+顺便结束程序这些勾当。<br/>
+他被调用的时候，是类似于：<br/>
+_assert(&#8220;false&#8221; , &#8220;c:\1.cpp&#8221; , 15)<br/>
+这样。<br/><br/>
+第二句的构造可谓精简啊，小小一句话还包含了挺多以前没注意到的事情。<br/><br/><font color="#ff6600">1.短路求值</font><br/><br/>
+这个是c的重要特性，在处理&amp;&amp;的时候前面为假则不用继续，<br/>
+在处理|| 的时候，前面为真则不用继续。<br/>
+形象地说把后面的表达式短路了。<br/><br/><font color="#ff6600">2.单行宏</font><br/><br/></p>
+
+<h1>exp 生成&#8221;exp&#8221;这样的字符串<br/></h1>
+
+<h1>@a 生成&#8217;a&#8217;这样的字符<br/></h1>
+
+<p>a##b 把a和b连接起来<br/><br/>
+第一个用法在这里见到了，第二个暂时还没见到用的实例。<br/>
+第三个在a和b是宏的参数的时候有用。否则直接的ab会被当作一个东西。<br/><br/><font color="#ff6600">3.特殊的预定义宏</font><br/><br/>
+<strong>FILE</strong> 会被替换成所在的文件，字符串形式<br/>
+<strong>LINE</strong> 会被替换成行号，unsigned类型<br/>
+<strong>DATE</strong> 会被替换成日期<br/>
+<strong>TIME</strong> 会被替换成时间<br/><br/>
+其实之前翻过的跟C有关的书应该都讲了这些的。<br/>
+不过拿着一个列表，又不给出真正实用的例子，<br/>
+当然不知道这些东西是怎么回事，<br/>
+久了自然也就忘了。<br/><br/><font color="#ff6600">4.逗号表达式</font><br/><br/>
+感觉实在是一个用的很少的事情，<br/>
+毕竟有多句话的时候，完全可以用分号就行了。<br/>
+虽然有好多地方在if之类的里面很压缩的用逗号表达式写好几句话，<br/>
+其实都可以改得不用逗号表达式的。<br/><br/>
+其一是逗号表达式的优先级很低，所以后面那对括号实在是不可缺少。<br/><br/>
+其二是逗号表达式的值为最右边式子的值。<br/>
+这个估计很多人都记过，但不见得有啥重大意义。<br/>
+这里，倒确实是发挥了他的意义。<br/>
+因为<em>asert这个函数是void型的，<br/>
+如果不使用逗号表达式在右边补个0的话，<br/>
+会报告：（VC6)<br/>
+error C2297: &#8216;||&#8217; : illegal, right operand has type &#8216;void&#8217;<br/><br/><font color="#0000ff">改编：</font><br/><br/>
+知道是怎么回事，当然可以很容易做出自己想要的东西。<br/>
+再说还有asert.h里面的参照呢。<br/><br/>
+比如，我嫌默认的</em>assert弹出的东西看着太压抑了。。。<br/>
+就自己写个就行了。<br/><br/></p>
+
+<h1>include &lt;windows.h&gt;<br/></h1>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;stdlib.h&gt;<br/><br/></h1>
+
+<h1>define MAX_BUFFER 200 <br/></h1>
+
+<p>void _assert(char <em>msg , char </em>file , unsigned line){<br/>
+     char buf[MAX_BUFFER] ;<br/>
+     sprintf(buf , &#8220;assertion fail:\n%s\nin file:\n%s\non line:\n%d&#8221; , msg , file , line) ;<br/>
+     ::MessageBox(NULL , buf , &#8220;assertion failure&#8221; , MB_OK) ;<br/>
+     exit(0) ;<br/>
+}<br/><br/></p>
+
+<h1>define assert(exp) ((exp) || (_assert(#exp , <strong>FILE</strong> , <strong>LINE</strong>) , 0) )<br/><br/></h1>
+
+<p>int main(){<br/>
+     assert(1 == 1 &amp;&amp; 3 == 4) ;<br/>
+     return 0 ;<br/>
+}<br/><br/>
+效果：<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/42a9f1f226242c3bb17ec52c.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>至于我的这个是不是更压抑。。那不属于这里讨论的问题了。<br/><br/>
+反正通过简单变更_assert函数，可以把相关情况输出到文件，<br/>
+或者选择另外的方式表达出来，能想到的都可以。<br/><br/>
+至于assert这个宏，也有可以动手脚的地方。<br/>
+自带的是assert一个为真的表达式。<br/>
+有的时候就想assert一个为假的表达式，当他为真的时候发出警告。<br/><br/>
+比如：<br/><br/><font color="#ff6600">FILE *fp = fopen(&#8220;in.txt&#8221;,&#8221;r&#8221;) ;<br/>
+if ( ! fp ){<br/>
+     exit(0) ;<br/>
+}<br/>
+warn(fp == NULL)</font><br/><br/>
+套用上面的写法，既然是为真发警告，那么用&amp;&amp;去换||就行了。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-28T16:51:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/07/28/assert%E7%94%A8%E6%B3%95%EF%BC%8C%E5%8E%9F%E7%90%86%EF%BC%8C%E6%94%B9%E7%BC%96%EF%BC%88C%2B%2B%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/07/28/assert%E7%94%A8%E6%B3%95%EF%BC%8C%E5%8E%9F%E7%90%86%EF%BC%8C%E6%94%B9%E7%BC%96%EF%BC%88C%2B%2B%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/07/26/find%E5%AF%B9%E8%B1%A1%EF%BC%88word.vba%EF%BC%89/" title="Previous Post: find对象（word.vba）">&laquo; find对象（word.vba）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/07/29/BrainFuck%EF%BC%88%E4%B8%80%EF%BC%89%E8%A7%A3%E9%87%8A%E5%99%A8/" title="Next Post: BrainFuck（一）解释器">BrainFuck（一）解释器 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>表驱动CRC，CRC24A,CRC24B的计算程序 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.1.19
+&#8212;
+简单的CRC。。
+UESTC.SCIE.P2P之用。
+前几期觉得时间紧，不想动手，
+后来发现地球人都在加这分，于是动一下。
+把分刷爆是个不正常的心理，
+但是有这么个不正常的环境，
+才会给这种不正常的机会。
+我始终认为，葡萄本来就是酸的， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/01/19/%E8%A1%A8%E9%A9%B1%E5%8A%A8CRC%EF%BC%8CCRC24A%2CCRC24B%E7%9A%84%E8%AE%A1%E7%AE%97%E7%A8%8B%E5%BA%8F">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">表驱动CRC，CRC24A,CRC24B的计算程序</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-19T17:31:00+08:00" pubdate data-updated="true">Jan 19<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.1.19<br/><br/>
+&#8212;<br/>
+简单的CRC。。<br/>
+UESTC.SCIE.P2P之用。<br/>
+前几期觉得时间紧，不想动手，<br/>
+后来发现地球人都在加这分，于是动一下。<br/>
+把分刷爆是个不正常的心理，<br/>
+但是有这么个不正常的环境，<br/>
+才会给这种不正常的机会。<br/>
+我始终认为，葡萄本来就是酸的，<br/>
+但是我要先吃到了再告诉别人。<br/>
+不过下盘究竟还用得上这分没有是个问号了。<br/>
+&#8212;<br/><br/><a href="http://www.box.net/shared/yojyvxn8na" target="_blank">资料和程序下载</a><br/><br/>
+计算多项式为：<br/><font color="#ff9900">CRC24A:{0 , 1 , 3 , 4 , 5 , 6 , 7 , 10 , 11 , 14 , 17 , 18 , 23}<br/>
+CRC24B:{0 , 1 , 5 , 6 , 23 }</font><br/><font color="#0000ff"><br/>
+基本原理：</font><br/><br/>
+CRC这个东西因为用得特别多，<br/>
+很多地方都有讲，比如之前的计通网这样的课。<br/><br/>
+原理上就是两个01序列按位相除。<br/>
+只是加法的定义为模2加，即异或。<br/>
+用数据序列除以生成多项式，<br/>
+所得的余数就是CRC的校验序列，<br/>
+发送端把这个序列附加在原序列末尾。<br/>
+接收端用收到的序列除以生成多项式，<br/>
+如果为0的话，即认为没有出错。<br/><br/><font color="#0000ff">表驱动原理：</font><br/><br/>
+长期以来，只知其基本原理，没有深入地想过实现的问题。<br/>
+最近这个东西是从LTE的模块中分离出来的，<br/>
+也就是说不定以后大家的手机中都会有这个，<br/>
+因为我们不断收发信息，效率当然要考虑上。<br/><br/>
+以24位的生成多项式为例，<br/>
+每试除一位，就会影响后面的24位。<br/>
+（具体说是可能会跟生成多项式进行异或）<br/>
+而异或有个性质，就是满足结合率。<br/>
+我按照8个bit进行分组，<br/>
+每一组试除完的余数记下来，<br/>
+这个余数与后面的24位进行异或是等效的。<br/>
+而在计算机实现中，往往字节是最小单位，<br/>
+这样做不仅程序上写起来好看，<br/>
+而且效率比一个bit一个bit计算要好多了。<br/><br/>
+如果是取8bit为一个单位，<br/>
+那么总共的情况就是256种。<br/>
+可以先预处理，把这张表算出来，<br/>
+用到的时候，直接查表就行了，<br/>
+所以叫表驱动法。。<br/><br/>
+可以考虑的是，增加表的大小。<br/>
+比如空间允许的话，可以开个65536的表，<br/>
+这样就可以两字节一个单位地运算了。<br/><br/>
+另外，CRC查表计算的循环是主要开销，<br/>
+可以考虑用内嵌汇编进行优化。<br/><br/>
+在VISTA.VC.DEBUG下一次测试结果为：<br/>
+未压缩的普通CRC:1165<br/>
+8bit压缩的表驱动：23<br/>
+8bit压缩表驱动加汇编：16<br/><br/>
+更深入的研究还是看下上面的资料看吧，<br/>
+英文的，不过写得非常详细。。<br/>
+（我还没来得及看。。感觉很详细）<br/><br/><font color="#0000ff">我写戳瓢过的地方：</font><br/><br/><font color="#ff9900">1.signed和unsigned的区别</font><br/><br/>
+由于本来该unsigned的东西，用成signed了，<br/>
+则可能会出现负值，然后读取到范围外的内存了。<br/>
+很囧的是在我做的过程中，<br/>
+一直读的都是可行区域，<br/>
+所以没有出现access violation，找了很久。<br/><br/>
+char在VC里面默认是signed的。<br/><br/>
+发现这个问题是因为我后来检查了一下整张CRC字节表，<br/>
+发现前127号都是正确的，从128号开始就错了。<br/>
+所以意识到可能是这个问题。<br/>
+128开始，符号位就取反了，<br/>
+signed就会造成不同现象。<br/><font color="#ff9900"><br/>
+2.8比特压缩和解压</font><br/><br/>
+解压前是1个字节存8个比特，<br/>
+解压后是1个字节存1个比特，<br/>
+我居然写出了下面这句话来解压。。<br/>
+tmp.data[i * 8 + j] = cd.data[i] &amp; ( 1 &lt;&lt; j )<br/><br/>
+cd.data[i] &amp; ( 1 &lt;&lt; j ) 确实可以用来提取第j位，<br/>
+但是表达式返回的是1，2，4，8&#8230;这样的。<br/>
+而解压后的数据应该存为0，1两种。。<br/><br/>
+如果把解压后的数据定义成bool型，<br/>
+那么C++编译器可以解决这个问题，<br/>
+任何非0的数都会被转成1进行存储。<br/><br/>
+可是C里面又没有bool这个东西。<br/>
+（自己定义的typedef int BOOL ;这种不行）<br/>
+关键不在于要多少bit来存，和他的逻辑意义，<br/>
+在于编译器的实际操作上。<br/>
+比如<br/>
+a=1;<br/>
+b=2;<br/>
+c=a&amp;b;<br/>
+对三个int来说，就是0.<br/>
+对三个bool来说，就是1.<br/><br/>
+所以写的时候得格外小心了。<br/><font color="#ff9900"><br/>
+3.汇编寻址不同于C的指针滑动</font><br/><br/>
+最初写的是一句：<br/>
+mov edx , DWORD PTR code_array[eax] ;<br/><br/>
+其中code_array是函数的参数，定义为：<br/>
+unsigned int * code_array。<br/><br/>
+那句汇编完全是受C指针的影响：<br/>
+j = code_array[i] ;这种意思。<br/><br/>
+因为C里面已经很方便地处理了指针，<br/>
+按照指向的数据类型的长度进行滑动。<br/>
+在汇编里面就要自己乘上个尺度因子。<br/><br/>
+想到这点后，立刻有了第二版:<br/>
+mov edx , DWORD PTR code_array[eax * 4]<br/><br/>
+结果依然不对。<br/>
+其原因在于，汇编里面只有标号这一说，<br/>
+大部分时候，用起来如同变量，但实质不同。<br/>
+比如这里的code_array，因为C里定义的是函数参数，<br/>
+所以实际上是个标号，标记的是栈上的一个位置。<br/>
+VC的编译器选择使用ebp做框架指针，<br/>
+所以这个标号的实际地址是类似于：<br/>
+ebp+0ch这样。<br/><br/>
+比如：<br/>
+mov edx , code_array<br/>
+相当于：<br/>
+mov edx , [ebp+0ch]<br/>
+要是让edx代表那个地址应该写成：<br/>
+lea edx , code_array<br/><br/>
+于是我程序里面的查表本质上应该是这样：<br/>
+mov edi , code_array ;<br/>
+mov edx , DWORD PTR [edi + 4 * eax] ;<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-19T17:31:00+08:00" pubdate data-updated="true">Jan 19<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/01/19/%E8%A1%A8%E9%A9%B1%E5%8A%A8CRC%EF%BC%8CCRC24A%2CCRC24B%E7%9A%84%E8%AE%A1%E7%AE%97%E7%A8%8B%E5%BA%8F/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/01/19/%E8%A1%A8%E9%A9%B1%E5%8A%A8CRC%EF%BC%8CCRC24A%2CCRC24B%E7%9A%84%E8%AE%A1%E7%AE%97%E7%A8%8B%E5%BA%8F/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/01/16/linuxshell%2BC%2B%2B%E6%9A%B4%E5%8A%9B24%E7%82%B9/" title="Previous Post: linux shell+C++暴力24点">&laquo; linux shell+C++暴力24点</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/01/20/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%EF%BC%88C%2CC%2B%2B%2Cstdarg.h%2C%E5%85%A8%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E5%AE%9E%E7%8E%B0%29/" title="Next Post: 可变参数（C,C++,stdarg.h,全可变参数实现)">可变参数（C,C++,stdarg.h,全可变参数实现) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

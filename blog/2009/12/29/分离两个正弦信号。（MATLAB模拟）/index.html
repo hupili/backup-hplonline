@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>分离两个正弦信号。（MATLAB模拟） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.12.29 条件： 1.次信号的频率离主信号有10%的差异
+2.次信号的幅值为主信号的1/5左右 原理概述： 对混合信号进行采样，
+做FFT，在频谱上能看到分离的两簇。
+从频谱上将信号分离，
+再做IFFT，即可得到两信号的离散序列。 从离散序列到模拟信号， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/12/29/%E5%88%86%E7%A6%BB%E4%B8%A4%E4%B8%AA%E6%AD%A3%E5%BC%A6%E4%BF%A1%E5%8F%B7%E3%80%82%EF%BC%88MATLAB%E6%A8%A1%E6%8B%9F%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">分离两个正弦信号。（MATLAB模拟）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-29T14:03:00+08:00" pubdate data-updated="true">Dec 29<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.12.29</p>
+
+
+<p><font color="#0000ff">条件：</font></p>
+
+
+<p>1.次信号的频率离主信号有10%的差异<br/>
+2.次信号的幅值为主信号的1/5左右</p>
+
+
+<p><font color="#0000ff">原理概述：</font></p>
+
+
+<p>对混合信号进行采样，<br/>
+做FFT，在频谱上能看到分离的两簇。<br/>
+从频谱上将信号分离，<br/>
+再做IFFT，即可得到两信号的离散序列。</p>
+
+
+<p>从离散序列到模拟信号，<br/>
+有两种思路：<br/>
+一是做D/A，然后低通滤波。<br/>
+二是得到幅值和频率等参数，交给两个VCO来输出信号。</p>
+
+
+<p>不过本模拟是纯粹原理上的，<br/>
+就不做具体的恢复部分了。<br/>
+仅仅关注如何在频谱上鉴别两个信号。</p>
+
+
+<p><font color="#0000ff">分离算法：</font></p>
+
+
+<p>原主次信号如图</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/30d5b20efb4cbad737d122df.jpg"/><br/></span></p>
+
+
+<p>FFT变换后的频谱（已经在集中位置进行了放大，对称位置忽略了）</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/8ed7f2dc15a15491cc1166d8.jpg"/><br/></span></p>
+
+
+<p>可以明显看到有两簇频谱。<br/>
+但除了两个主峰外，还有若干小的旁瓣。</p>
+
+
+<p>这里采用的是一个简单的三点鉴峰算法。<br/>
+即如果一点比左右两点的幅值高，那么就认为他是一个峰。</p>
+
+
+<p>先把所有的峰都提取出来，<br/>
+这个序列可以想象成原频谱的一个“包络”。<br/>
+绘制出的形状如下：</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/76e3c33db06cd5f79e3d62da.jpg"/><br/></span></p>
+
+
+<p>这样就可以排除旁瓣纹波的干扰，<br/>
+看到两个更独立的峰。<br/>
+对这个峰的序列继续使用三点鉴峰算法，<br/>
+即可提取出主次信号的峰值频率位置p1和p2。</p>
+
+
+<p>分离操作也是从简的，<br/>
+直接取pmid=(p1+p2)/2，<br/>
+然后以pmid把频谱分成两段。<br/>
+效果如下图：</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/83afdc88049969a4a5c272a5.jpg"/><br/></span></p>
+
+
+<p><font color="#0000ff">信号恢复效果的讨论：</font></p>
+
+
+<p>由于为了提高频谱分辨率，<br/>
+对N点的信号做的是M点的fft（M&gt;N)。<br/>
+对上面分离的频谱做IFFT后，<br/>
+得到的也应该是M点的序列。<br/>
+这个序列应该是原序列在后面补零所产生的，<br/>
+我们只取前面的N点就可以了。</p>
+
+
+<p>具体效果如下图</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1d1e3badbf4898394a36d6a6.jpg"/><br/></span></p>
+
+
+<p>可以看到信号的整体形状比较怪异，<br/>
+但中间部分貌似还行。<br/>
+在中部放大后的效果如图</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a71758660eb1e714aa184ca6.jpg"/><br/></span></p>
+
+
+<p>经过与原主次信号对比，<br/>
+发现幅值和频率基本上是一致的。</p>
+
+
+<p><font color="#0000ff">遗留问题：</font></p>
+
+
+<p>1.相关参数需要根据实际使用的器件来定，再次仿真</p>
+
+
+<p>2.当采样率相对主信号很高的时候，两个信号的频谱会压在一起<br/>
+所以需要考虑根据实际情况调整采样率。<br/>
+或者调整其他相关参数，如一帧的点数（N)，变换的点数（M)</p>
+
+
+<p>程序文件<a target="_blank" href="http://www.box.net/shared/k8dmu7e316">下载</a></p>
+
+
+<p> </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-29T14:03:00+08:00" pubdate data-updated="true">Dec 29<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/12/29/%E5%88%86%E7%A6%BB%E4%B8%A4%E4%B8%AA%E6%AD%A3%E5%BC%A6%E4%BF%A1%E5%8F%B7%E3%80%82%EF%BC%88MATLAB%E6%A8%A1%E6%8B%9F%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/12/29/%E5%88%86%E7%A6%BB%E4%B8%A4%E4%B8%AA%E6%AD%A3%E5%BC%A6%E4%BF%A1%E5%8F%B7%E3%80%82%EF%BC%88MATLAB%E6%A8%A1%E6%8B%9F%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/12/28/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88%E4%BB%BB%E6%84%8F%E5%9F%BADIT%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%29/" title="Previous Post: FFT相关（三）（MATLAB）（任意基DIT递归实现)">&laquo; FFT相关（三）（MATLAB）（任意基DIT递归实现)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/12/29/%E6%98%BE%E7%A4%BA%E6%96%87%E4%BB%B6%E5%B1%9E%E6%80%A7%E7%9A%84%E8%84%9A%E6%9C%AC/" title="Next Post: 显示文件属性的脚本">显示文件属性的脚本 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

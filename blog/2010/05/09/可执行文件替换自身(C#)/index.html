@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>可执行文件替换自身(C#) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.5.9 给程序编写自动更新模块。 对于比较大的软件，可能按组件开发。
+于是在非大改的情况下，
+可以卸载相关DLL，然后用新文件覆盖即可。
+如果要替换主程序，
+很多软件的做法是另外做一个update.exe，
+让这个程序来完成更新这套功能。 作为一个小软件， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/05/09/%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E6%9B%BF%E6%8D%A2%E8%87%AA%E8%BA%AB%28C%23%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">可执行文件替换自身(C#)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-09T16:06:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.5.9</p>
+
+
+<p>给程序编写自动更新模块。</p>
+
+
+<p>对于比较大的软件，可能按组件开发。<br/>
+于是在非大改的情况下，<br/>
+可以卸载相关DLL，然后用新文件覆盖即可。<br/>
+如果要替换主程序，<br/>
+很多软件的做法是另外做一个update.exe，<br/>
+让这个程序来完成更新这套功能。</p>
+
+
+<p>作为一个小软件，<br/>
+用户肯定不喜欢看到一个RAR，<br/>
+解开后一堆文档、dll、exe这样。<br/>
+于是把所有功能都装进一个可执行文件，<br/>
+从网站下载最新版之后，<br/>
+就涉及到用下载文件替换自身的问题了。</p>
+
+
+<p><font color="#0000ff">原理：</font></p>
+
+
+<p>通过.bat可以方便地dos命令，达到替换的效果。</p>
+
+
+<p>.bat文件可以删除自身，这是一个很牛X的性质。。<br/>
+在替换完后自己也走掉，可以不留下垃圾。</p>
+
+
+<p>在.bat中首先延迟一下，等待原程序自己退出。<br/>
+这主要是处于数据完整性的考虑。<br/>
+timeout /T 1 /NOBREAK<br/>
+（更多延迟方法见<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/b528771ecf13abf81bd5769a.html">上一篇</a>）</p>
+
+
+<p>程序有可能各种原因没退出，所以强制结束：<br/>
+Taskkill /f /im</p>
+
+
+<p>copy /Y 命令可以强制进行文件覆盖。</p>
+
+
+<p>start xxxx 可以新打开一个cmd来执行程序。<br/>
+如果直接xxxx，那么前面是xxxx在执行，<br/>
+后面的cmd会等到该程序结束才退出，视觉极差。</p>
+
+
+<p><br/><font color="#0000ff">该类的相关部分：</font></p>
+
+
+<p>     class CUpdate<br/>
+     {<br/>
+         static string _toNull = &#8221; &gt; nul&#8221;;<br/>
+         static string _Delay = &#8220;timeout /T 1 /NOBREAK&#8221;;</p>
+
+
+<p>         // Explanation:<br/>
+         // When CUpdate module do a substitution,<br/>
+         // it will create a batch file first.<br/>
+         // The batch kill process with image name &#8216;_ImageName&#8217;.<br/>
+         // Then, it copy new application to cover the old one.<br/>
+         // At last, the batch delete itself<br/>
+         static string _ImageName = &#8220;updatetest.exe&#8221;; //the image name when program runs <br/>
+         static string _Suffix = &#8220;update&#8221;; // suffix for newly downloaded application<br/>
+         static string _Bat = &#8220;substitute.bat&#8221;; // the bat file name, which used to do substitution<br/>
+         <br/>
+         public static void Substitute()<br/>
+         {<br/>
+             string dest_path = Application.ExecutablePath; //&#8221;Taskkill /f /im&#8221;;<br/>
+             string src_path = dest_path + &#8220;.&#8221; + _Suffix;</p>
+
+
+<p>             StreamWriter sw; <br/>
+             if (File.Exists(_Bat))<br/>
+             {<br/>
+                 File.Delete(_Bat);<br/>
+             }<br/>
+             sw = File.CreateText(_Bat);<br/>
+             sw.WriteLine(&#8220;@echo off&#8221;);<br/>
+             sw.WriteLine(&#8220;echo updating, please wait&#8230;&#8221;);<br/>
+             sw.WriteLine(_Delay + _toNull);<br/>
+             sw.WriteLine(&#8220;Taskkill /f /im &#8221; + _ImageName + _toNull);<br/>
+             sw.WriteLine(&#8220;copy /Y &#8221; + src_path + &#8221; &#8221; + dest_path + _toNull);<br/>
+             sw.WriteLine(&#8220;del &#8221; + src_path + _toNull);<br/>
+             sw.WriteLine(&#8220;start &#8221; + dest_path + _toNull);<br/>
+             sw.WriteLine(&#8220;del &#8221; + _Bat + _toNull);<br/>
+             //sw.WriteLine(&#8220;pause&#8221;);<br/>
+             sw.Close();</p>
+
+
+<p>             System.Diagnostics.Process.Start(_Bat);<br/>
+             Application.Exit();</p>
+
+
+<p>         }<br/>
+     }</p>
+
+
+<p>如下几行需要根据程序情况进行修改：<br/><font color="#ff9900">        static string _ImageName = &#8220;updatetest.exe&#8221;; //the image name when program runs <br/>
+         static string _Suffix = &#8220;update&#8221;; // suffix for newly downloaded application<br/>
+         static string _Bat = &#8220;substitute.bat&#8221;; // the bat file name, which used to do substitution</font></p>
+
+
+<p>比如我的程序就叫“updatetest.exe”，<br/>
+我下载的更新程序放当前目录“updatetest.exe.update”，<br/>
+用于做该替换的批处理文件“substitute.bat”。</p>
+
+
+<p> </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-09T16:06:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/05/09/%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E6%9B%BF%E6%8D%A2%E8%87%AA%E8%BA%AB%28C%23%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/05/09/%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E6%9B%BF%E6%8D%A2%E8%87%AA%E8%BA%AB%28C%23%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/05/08/%E7%94%A8XML%E6%96%87%E4%BB%B6%E4%BF%9D%E5%AD%98%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF%E7%9A%84%E4%B8%80%E4%B8%AA%E7%B1%BB%28C%23%29/" title="Previous Post: 用XML文件保存配置信息的一个类(C#)">&laquo; 用XML文件保存配置信息的一个类(C#)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/05/11/%E7%BA%A7%E8%81%94%E5%B1%9E%E6%80%A7%E6%A8%A1%E5%BC%8F/" title="Next Post: 级联属性模式">级联属性模式 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

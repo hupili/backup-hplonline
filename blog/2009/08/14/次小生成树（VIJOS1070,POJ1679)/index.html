@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>次小生成树（VIJOS1070,POJ1679) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.8.14
+结论：替换最小生成树中的任何一条边，将使总代价变大
+根据路径最优条件，（参考这里）
+MST上的任两点(i,j)的树上路径的所有边的权重，
+均小于w[i][j]。所以结论显然。次小生成树1，简单解法：
+有个比较直观的方法。
+依次把MST上的边删掉， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/08/14/%E6%AC%A1%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88VIJOS1070%2CPOJ1679%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">次小生成树（VIJOS1070,POJ1679)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-14T19:46:00+08:00" pubdate data-updated="true">Aug 14<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.8.14<br/><br/>
+结论：<br/><font color="#ff9900">替换最小生成树中的任何一条边，将使总代价变大</font><br/><br/>
+根据<font color="#ff0000">路径最优条件</font>，（<a href="http://hi.baidu.com/hplonline/blog/item/8d68db58eb0e1d89810a18c7.html" target="_blank">参考这里</a>）<br/>
+MST上的任两点(i,j)的树上路径的所有边的权重，<br/>
+均小于w[i][j]。所以结论显然。<br/><br/><font color="#0000ff">次小生成树1，简单解法：</font><br/><br/>
+有个比较直观的方法。<br/>
+依次把MST上的边删掉，然后再做MST。<br/>
+这样的做就是编码简洁，有模块可以重用。<br/>
+效率O(n*O(MST))<br/><br/><font color="#0000ff">次小生成树2，优化解法：</font><br/><br/>
+既然每替换出去一条边，都将使代价变大。<br/>
+所以求次小生成树，只需要替换出去一条边即可。<br/><br/>
+枚举不在树上的边eij，<br/>
+树上路径上的边权都不大于w[i][j]。<br/>
+选取其中最大的与eij替换，<br/>
+得到新树的权重。<br/>
+选取替换后最小的一个就是次小生成树了。<br/>
+这个过程可以做到O(m)<br/><br/>
+然后就是计算出path_max[i][j]表示i，j树上路径中的最大边权。<br/>
+在计算MST的时候，点是依次加入到树中。<br/>
+当前加入的是j，与他相连的是i。<br/>
+那么，对所有在树上集合中的k：<br/>
+path_max[k][j] = max{ path_max[k][i] , w[i][j] }<br/>
+因为path_max[][]的每个元素都要计算，且仅一次。<br/>
+累加起来的复杂度是O(n<sup>2)<br/><br/></sup>
+总的复杂度：<br/>
+O(MST)+O(n<sup>2)+O(m)<br/><br/></sup>
+MST的计算采用任何一种方法都可以。<br/><br/><font color="#0000ff">VIJOS1070：</font><br/><br/>
+题目就是很明摆着的次小生成树了。<br/>
+关于无解的输出是：<br/>
+1.首先如果MST都无解，那么显然也不存在次小<br/>
+（判断依据为：有没有成功加进n-1条边）<br/>
+2.MST有解的情况下，如果m == n-1，<br/>
+那么不存在次小生成树，否则一定存在。<br/>
+（至少都可以进行一次替换）<br/><br/>
+关于这道题的WA。<br/>
+首先是把：<br/>
+ans_mst - path_max[i][j] + map[i][j]<br/>
+写成了：<br/>
+ans_mst + path_max[i][j] - map[i][j]<br/><br/>
+。。。<br/><br/>
+然后是求次小的时候，判断边：<br/>
+if ( !edge_in[i][j] &amp;&amp; map[i][j] != MAXINT ){<br/><br/>
+最初写的是<br/><br/>
+if ( edge_in[i][j]) 。。。。<br/><br/>
+注意是枚举不在树中的边，然后要记得判断是不是这个边不存在。<br/>
+由于我这里是用MAXINT来表达的边不存在，<br/>
+当不存在的时候，下面的加法中会溢出成负数，反而更小。。<br/><font color="#0000ff"><br/>
+VIJOS1070代码：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>const int MAXN = 510 ;<br/>
+const int MAXM = MAXN * MAXN ;<br/>
+const int MAXINT = 2147483647 ;<br/><br/>
+int path_max[MAXN][MAXN] ; //树上路径的最大值<br/>
+int d[MAXN] , pre[MAXN] ; //最短边长，前驱点<br/>
+int in[MAXN] , num_in ;<br/>
+bool isin[MAXN] ;//顶点是否在树内<br/>
+bool edge_in[MAXN][MAXN] ;//边是否在树内 <br/><br/>
+int map[MAXN][MAXN] ;<br/>
+int n , m ;<br/>
+int ans_mst ;<br/><br/>
+int getmin(int a , int b){<br/>
+return a &lt; b ? a : b ;<br/>
+}<br/><br/>
+int getmax(int a , int b){<br/>
+return a &gt; b ? a : b ;<br/>
+}<br/><br/>
+//最小<br/>
+int mst1(){<br/>
+int i , j ;<br/>
+int min , min_j ;<br/>
+int ans = 0 ;<br/>
+num_in = 1 ;<br/>
+in[0] = 1 ;<br/>
+isin[1] = true ;<br/>
+d[1] = 0 ;<br/>
+for ( i = 2 ; i &lt;= n ; i ++ ){<br/>
+d[i] = map[1][i] ;<br/>
+pre[i] = 1 ;<br/>
+}<br/>
+for ( i = 1 ; i &lt; n ; i ++ ){<br/>
+min = MAXINT ;<br/>
+for ( j = 1 ; j &lt;= n ; j ++ ){<br/>
+if ( !isin[j] &amp;&amp; d[j] &lt; min ) {<br/>
+min = d[j] ;<br/>
+min_j = j ;<br/>
+}<br/>
+}<br/>
+if ( min == MAXINT ) return -1 ;//无法形成树<br/><br/>
+//更新树上路径表<br/>
+for ( j = 0 ; j &lt; num_in ; j ++ ){<br/>
+if ( in[j] != pre[min_j] ) <br/>
+path_max[min_j][in[j]] = getmax(path_max[pre[min_j]][in[j]] , map[min_j][pre[min_j]] );<br/>
+else <br/>
+path_max[min_j][in[j]] = map[min_j][pre[min_j]] ;<br/>
+path_max[in[j]][min_j] = path_max[min_j][in[j]] ;<br/>
+}<br/><br/>
+in[num_in] = min_j ;<br/>
+num_in ++ ;<br/>
+ans += min ;<br/>
+isin[min_j] = true ;<br/>
+edge_in[min_j][pre[min_j]] = true ;<br/>
+edge_in[pre[min_j]][min_j] = true ;<br/><br/>
+//更新最短边记录<br/>
+for ( j = 1 ; j &lt;= n ; j ++ ){<br/>
+if ( !isin[j] &amp;&amp; map[min_j][j] &lt; d[j] ) {<br/>
+d[j] = map[min_j][j] ;<br/>
+pre[j] = min_j ;<br/>
+}<br/>
+}<br/><br/>
+}<br/>
+ans_mst = ans ;<br/>
+return ans ;<br/>
+}<br/><br/>
+//次小<br/>
+int mst2(){<br/>
+int ans = MAXINT ;<br/>
+int i , j ;<br/>
+if ( m == n - 1 ) return -1 ;<br/>
+for ( i = 1 ; i &lt;= n - 1 ; i ++ ){<br/>
+for ( j = i + 1 ; j &lt;= n ; j ++ ){<br/>
+if ( !edge_in[i][j] &amp;&amp; map[i][j] != MAXINT ){<br/>
+ans = getmin(ans_mst - path_max[i][j] + map[i][j] , ans) ;<br/>
+}<br/>
+}<br/>
+}<br/>
+return ans ;<br/>
+}<br/><br/>
+int main(){<br/><br/>
+int i , j ;<br/>
+int x , y , c ;<br/>
+scanf(&#8220;%d%d&#8221; , &amp;n , &amp;m) ;<br/>
+for ( i = 1 ; i &lt;= n ; i ++ ){<br/>
+for ( j = 1 ; j &lt;= n ; j ++ ){<br/>
+map[i][j] = MAXINT ;<br/>
+}<br/>
+}<br/>
+for ( i = 0 ; i &lt; m ; i ++ ){<br/>
+scanf(&#8220;%d%d%d&#8221; , &amp;x , &amp;y , &amp;c) ;<br/>
+map[x][y] = c ;<br/>
+map[y][x] = c ;<br/>
+}<br/>
+int ret = mst1() ;<br/>
+printf(&#8220;Cost: %d\n&#8221; , ret) ;<br/>
+if ( ret == -1 ) printf(&#8220;-1\n&#8221;) ;<br/>
+else printf(&#8220;Cost: %d\n&#8221; , mst2()) ;<br/><br/>
+return 0 ;<br/>
+}<br/><br/><font color="#0000ff">POJ1679：</font><br/><br/>
+问的是MST是否唯一。<br/>
+那么求出最小生成树和次小生成树，<br/>
+如果权重相等，当然就是不唯一的。<br/><br/>
+只不过这个想法太直观了，<br/>
+干了不少多余的事情。<br/>
+直接在MST的计算过程中，就可以判断出来了。<br/><br/>
+拿PRIM来说：<br/><br/>
+每次添加点的时候，要找出关联边最小的。<br/>
+如果这个最小值不唯一，那么就可以直接指出MST不唯一了。<br/><br/>
+拿KRUSCAL来说：<br/><br/>
+由于边已经按权值排序了，<br/>
+那么添加一个边的时候，<br/>
+把和他权值相同的边都试添加一次，<br/>
+如果有多余一条边可以添加进，也指出不唯一。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-14T19:46:00+08:00" pubdate data-updated="true">Aug 14<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/08/14/%E6%AC%A1%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88VIJOS1070%2CPOJ1679%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/08/14/%E6%AC%A1%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88VIJOS1070%2CPOJ1679%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/08/13/BosonNetSim%E8%BD%AF%E4%BB%B6%EF%BC%88%E9%99%84StandAloneLab%E7%AC%94%E8%AE%B0%EF%BC%89/" title="Previous Post: Boson NetSim软件（附Stand Alone Lab笔记）">&laquo; Boson NetSim软件（附Stand Alone Lab笔记）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/08/18/%E6%95%B4%E6%95%B0%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%86%99%E6%B3%95%E6%AF%94%E8%BE%83/" title="Next Post: 整数二分的两种写法比较">整数二分的两种写法比较 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

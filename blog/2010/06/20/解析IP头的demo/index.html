@@ -1,0 +1,525 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>解析IP头的demo - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.6.20
+以前应付作业，抓抓包，抄几个数据，
+并没有发现这里面太多的猫腻。
+今天看课件的时候，发现一处错误。
+课件上对IP头的结构体定义为：
+typedef struct _iphdr1{
+UCHAR version;    / IP version number &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/06/20/%E8%A7%A3%E6%9E%90IP%E5%A4%B4%E7%9A%84demo">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">解析IP头的demo</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-06-20T21:35:00+08:00" pubdate data-updated="true">Jun 20<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.6.20<br/><br/>
+以前应付作业，抓抓包，抄几个数据，<br/>
+并没有发现这里面太多的猫腻。<br/>
+今天看课件的时候，发现一处错误。<br/>
+课件上对IP头的结构体定义为：<br/><br/>
+typedef struct _iphdr1{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    unsigned int congest:1;/<em> Congestion experienced bit (exp) </em>/<br/>
+unsigned int df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+unsigned int mf:1;        /<em> More Fragments flag </em>/<br/>
+USHORT Offset:13;        /<em> Fragment offset in bytes </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/>
+} iphdr1;<br/><br/>
+标红的这段在顺序上应该是有问题的。<br/><br/>
+关于IP头的格式详细定义：<a href="http://hi.baidu.com/hplonline/blog/item/6a639451076bc22e43a75ba8.html" target="_blank">这里</a>。<br/>
+关于位域细节的说明：<a href="http://hi.baidu.com/hplonline/blog/item/4411b8fba8d9562f4e4aeaa3.html" target="_blank">这里</a>。<br/><br/>
+有了以上认识之后，就可以知道标红的段有两个错误：<br/><font color="#ff0000">1。顺序与IP头的定义不一致。<br/>
+2。会造成对齐上的错误。</font><br/><br/>
+另外，这个定义把VERSION和HLEN合成了一个VERSION字段。<br/>
+这个也不算错误，只能说是一种工程上的简化。<br/>
+在大多数情况下，第一个字节都是0x45。（IPv4，5*4=20的头长）<br/>
+这样，我们直接定义成一个整字节就行了，<br/>
+然后在收到数据包的时候，提取低4位看下是多少。<br/><br/><font color="#0000ff">》》实验程序</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;string.h&gt;<br/></h1>
+
+<h1>include &lt;winsock.h&gt;<br/><br/></h1>
+
+<h1>pragma comment(lib, &#8220;ws2_32.lib&#8221;)<br/><br/></h1>
+
+<p>typedef unsigned char UCHAR ;<br/>
+typedef unsigned short USHORT ;<br/>
+typedef unsigned int UINT ;<br/>
+typedef unsigned long ULONG ;<br/><br/></p>
+
+<h1>define IP_MAXOPT 20 <br/><br/></h1>
+
+<p>typedef struct <em>iphdr1{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    unsigned int congest:1;/<em> Congestion experienced bit (exp) </em>/<br/>
+unsigned int df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+unsigned int mf:1;        /<em> More Fragments flag </em>/<br/>
+USHORT Offset:13;        /<em> Fragment offset in bytes </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/><font color="#ff0000">} iphdr1;</font><br/><br/>
+typedef struct </em>iphdr2{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    USHORT Offset:13;        /<em> Fragment offset in bytes </em>/<br/>
+unsigned int mf:1;        /<em> More Fragments flag </em>/<br/>
+unsigned int df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+unsigned int congest:1;/<em> Congestion experienced bit (exp) </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/><font color="#ff0000">} iphdr2;</font><br/><br/>
+typedef struct _iphdr3{<br/>
+UCHAR version;    /<em> IP version number ,header length??? </em>/<br/>
+UCHAR tos;        /<em> Type of service </em>/<br/>
+USHORT length;    /<em> Total length </em>/<br/>
+USHORT id;        /<em> Identification </em>/<br/><font color="#ff0000">    USHORT Offset:13;        /<em> Fragment offset in bytes </em>/<br/>
+USHORT mf:1;        /<em> More Fragments flag </em>/<br/>
+USHORT df:1;        /<em> Don&#8217;t fragment flag </em>/<br/>
+USHORT congest:1;/<em> Congestion experienced bit (exp) </em>/</font><br/>
+UCHAR ttl;            /<em> Time to live </em>/<br/>
+UCHAR protocol;        /<em> Protocol </em>/<br/>
+USHORT checksum;    /<em> Header checksum </em>/<br/>
+ULONG source;        /<em> Source address </em>/<br/>
+ULONG dest;        /<em> Destination address </em>/<br/>
+UCHAR optlen;        /<em> Length of options field, bytes </em>/<br/>
+UCHAR options[IP_MAXOPT];    /<em> Options field </em>/<br/>
+}<font color="#ff0000"> iphdr;</font><br/><br/>
+char buf1[] = {0x45 ,0x00 ,0x05 ,0xdc ,0x00 ,0x26 ,0x20 ,0x00 ,0x80 <br/>
+,0x01 ,0x72 ,0xa5 ,0xc0 ,0xa8 ,0x0b ,0x02 ,0xc0 ,0xa8 ,0x16 ,0x03} ;<br/><br/>
+char buf2[] = {0x45 ,0x00 ,0x00 ,0x30 ,0x00 ,0x26 ,0x00 ,0xb9 ,0x80 <br/>
+,0x01 ,0x97 ,0x98 ,0xc0 ,0xa8 ,0x0b ,0x02 ,0xc0 ,0xa8 ,0x16 ,0x03} ;<br/><br/>
+void analyze(char <em>bufin , int len){<br/>
+char buf[512] ;<br/>
+memcpy(buf , bufin , len) ;<br/>
+static count = 0 ;<br/>
+printf(&#8220;IP HEADER: %d\n&#8221; , ++count) ;<br/>
+puts(&#8220;=============&#8221;) ;<br/>
+iphdr </em>p = (iphdr<em>)buf ;<br/>
+printf(&#8220;version:0x%x\n&#8221; , p-&gt;version) ;<br/>
+printf(&#8220;tos:0x%x\n&#8221; , p-&gt;tos) ;<br/>
+printf(&#8220;length:%d\n&#8221; , ntohs(p-&gt;length)) ;<br/>
+printf(&#8220;identifier:0x%x\n&#8221; , ntohs(p-&gt;id)) ;<br/>
+USHORT </em>pu = (USHORT<em>)&amp;p-&gt;id + 1 ;<br/>
+//printf(&#8220;%x\n&#8221; , </em>pu) ;<br/>
+<em>pu = ntohs(</em>pu) ;<br/>
+//printf(&#8220;%x\n&#8221; , <em>pu) ;<br/>
+printf(&#8220;congest?:%d\n&#8221; , p-&gt;congest) ;<br/>
+printf(&#8220;don&#8217;t fragment?:%d\n&#8221; , p-&gt;df) ;<br/>
+printf(&#8220;more gragment?:%d\n&#8221; , p-&gt;mf) ;<br/>
+printf(&#8220;offset:0x%x , (%d Bytes)\n&#8221; , p-&gt;Offset , p-&gt;Offset * 8) ;<br/>
+printf(&#8220;ttl:%d\n&#8221; , p-&gt;ttl) ;<br/>
+printf(&#8220;protocol:%d\n&#8221; , p-&gt;protocol) ;<br/>
+printf(&#8220;checksum:0x%x\n&#8221; , ntohs(p-&gt;checksum)) ;<br/>
+SOCKADDR_IN addr ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;source ;<br/>
+printf(&#8220;source ip:%s\n&#8221; , inet_ntoa(addr.sin_addr)) ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;dest ;<br/>
+printf(&#8220;destination ip:%s\n&#8221; , inet_ntoa(addr.sin_addr)) ;    <br/>
+puts(&#8220;=============&#8221;) ;<br/>
+putchar(&#8216;\n&#8217;) ;<br/>
+}<br/><br/>
+int main(){<br/>
+analyze(buf1 , sizeof(buf1)) ;<br/>
+analyze(buf2 , sizeof(buf2)) ;<br/>
+return 0 ; <br/>
+}<br/><br/>
+程序里面，将需要测试的结构typedef为iphdr，<br/>
+另外的typedef为其他名字即可，<br/>
+这样，可以依次测试三种写法的效果。<br/><br/>
+buf1和buf2是实际ping的时候，<br/>
+抓出来的IP头部分的字节流。<br/><br/><font color="#0000ff">》》实验结果</font><br/><br/>
+以WireShark的输出为标准，先来看下：<br/><br/>
+第一个报文：<br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/28eb2b3f18a8b6d155e723aa.jpg" small="0" class="blogimg"/></span><br/><span><br/>
+第二个报文：<br/><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/34c7de2a5d92f9a6023bf6aa.jpg" small="0" class="blogimg"/></span><br/><br/><font color="#ff00ff">结构体1的输出：</font><br/><br/>
+IP HEADER: 1<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:1500<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0x8c0 , (17920 Bytes)<br/>
+ttl:11<br/>
+protocol:2<br/>
+checksum:0xc0a8<br/>
+source ip:204.204.204.204<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/>
+IP HEADER: 2<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:48<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0x8c0 , (17920 Bytes)<br/>
+ttl:11<br/>
+protocol:2<br/>
+checksum:0xc0a8<br/>
+source ip:204.204.204.204<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/><font color="#ff00ff">结构体2的输出：</font><br/><br/>
+IP HEADER: 1<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:1500<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0x0 , (0 Bytes)<br/>
+ttl:192<br/>
+protocol:168<br/>
+checksum:0xb02<br/>
+source ip:192.168.22.3<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/>
+IP HEADER: 2<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:48<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0xb9 , (1480 Bytes)<br/>
+ttl:192<br/>
+protocol:168<br/>
+checksum:0xb02<br/>
+source ip:192.168.22.3<br/>
+destination ip:204.204.204.204<br/>
+=============<br/><br/><font color="#ff00ff">结构体3的输出：</font><br/><br/>
+IP HEADER: 1<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:1500<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:1<br/>
+offset:0x0 , (0 Bytes)<br/>
+ttl:128<br/>
+protocol:1<br/>
+checksum:0x72a5<br/>
+source ip:192.168.11.2<br/>
+destination ip:192.168.22.3<br/>
+=============<br/><br/>
+IP HEADER: 2<br/>
+=============<br/>
+version:0x45<br/>
+tos:0x0<br/>
+length:48<br/>
+identifier:0x26<br/>
+congest?:0<br/>
+don&#8217;t fragment?:0<br/>
+more gragment?:0<br/>
+offset:0xb9 , (1480 Bytes)<br/>
+ttl:128<br/>
+protocol:1<br/>
+checksum:0x9798<br/>
+source ip:192.168.11.2<br/>
+destination ip:192.168.22.3<br/>
+=============<br/><br/><font color="#0000ff">》》结论</font><br/><br/>
+很显然，第三种写法才是对的。<br/><br/>
+但重要的不是什么对，而是前两个错在哪里。<br/>
+从代码可以看到，第二个在第一个的基础上交换了conget，df，mf，offset的顺序。<br/>
+在输出结果中，可以看到，程序打印出了正确的offset。<br/>
+但由于“对齐”的问题，另外三个flag被放到下一个int里面去了。<br/>
+这也导致后面的数据域被推后了，所以均产生错误。<br/>
+第三个在第二个的基础上用USHORT统一了定义。<br/>
+上篇对<a href="http://hi.baidu.com/hplonline/blog/item/4411b8fba8d9562f4e4aeaa3.html" target="_blank">位域</a>详细分析过了，<br/>
+只有都用USHORT，临近的成员才能放在一起。<br/><br/><font color="#0000ff">》》关于analyze函数</font><br/><br/>
+其实这个demo的关键在于记录了一种方法：<br/><font color="#ff0000">通过结构体来对缓冲区进行格式化。</font><br/><br/>
+再摘抄一下：<br/><br/>
+void analyze(char </em>bufin , int len){<br/>
+char buf[512] ;<br/>
+memcpy(buf , bufin , len) ;<br/>
+static count = 0 ;<br/>
+printf(&#8220;IP HEADER: %d\n&#8221; , ++count) ;<br/>
+puts(&#8220;=============&#8221;) ;<br/>
+iphdr <em>p = (iphdr</em>)buf ;<br/>
+printf(&#8220;version:0x%x\n&#8221; , p-&gt;version) ;<br/>
+printf(&#8220;tos:0x%x\n&#8221; , p-&gt;tos) ;<br/>
+printf(&#8220;length:%d\n&#8221; , <font color="#ff0000">ntohs(</font>p-&gt;length)) ;<br/>
+printf(&#8220;identifier:0x%x\n&#8221; , <font color="#ff0000">ntohs(</font>p-&gt;id)) ;<br/><font color="#ff0000">   USHORT <em>pu = (USHORT</em>)&amp;p-&gt;id + 1 ;<br/>
+//printf(&#8220;%x\n&#8221; , <em>pu) ;<br/>
+</em>pu = ntohs(<em>pu) ;<br/>
+//printf(&#8220;%x\n&#8221; , </em>pu) ;</font><br/>
+printf(&#8220;congest?:%d\n&#8221; , p-&gt;congest) ;<br/>
+printf(&#8220;don&#8217;t fragment?:%d\n&#8221; , p-&gt;df) ;<br/>
+printf(&#8220;more gragment?:%d\n&#8221; , p-&gt;mf) ;<br/>
+printf(&#8220;offset:0x%x , (%d Bytes)\n&#8221; , p-&gt;Offset , p-&gt;Offset * 8) ;<br/>
+printf(&#8220;ttl:%d\n&#8221; , p-&gt;ttl) ;<br/>
+printf(&#8220;protocol:%d\n&#8221; , p-&gt;protocol) ;<br/>
+printf(&#8220;checksum:0x%x\n&#8221; , <font color="#ff0000">ntohs(</font>p-&gt;checksum)) ;<br/>
+SOCKADDR_IN addr ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;source ;<br/>
+printf(&#8220;source ip:%s\n&#8221; ,<font color="#ff0000"> inet_ntoa(</font>addr.sin_addr)) ;<br/>
+addr.sin_addr.S_un.S_addr = p-&gt;dest ;<br/>
+printf(&#8220;destination ip:%s\n&#8221; , <font color="#ff0000">inet_ntoa(</font>addr.sin_addr)) ;    <br/>
+puts(&#8220;=============&#8221;) ;<br/>
+putchar(&#8216;\n&#8217;) ;<br/>
+}<br/><br/>
+以前，对<a href="http://hi.baidu.com/hplonline/blog/item/6a639451076bc22e43a75ba8.html" target="_blank">IP和TCP格式的记录</a>中有一段十分生涩的话。<br/>
+虽然有点朦胧的感觉，还是硬性记录了下来，<br/>
+但在多次跟别人交流的时候，总是无法把这个问题说清楚。<br/>
+如果一个人不进行实际的编程，就无法意识到这中间的猫腻，<br/>
+脑袋里的唯一印象就是：“这东西我看着很自然的啊，你搞复杂了吧“。<br/><br/>
+这个analyze函数所展示的，主要是<font color="#ff0000">网络字节序</font>的问题。<br/><br/>
+先来看下IP头的定义：<br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/4868b8b7d14f52db33add162.jpg" small="0" class="blogimg"/></span><br/><br/>
+对于整字节的元素（8bit，16bit，32bit），我们可以直接操作。<br/>
+比如TOTAL LENGTH，直接按照USHORT读出来即可。<br/>
+在代码中，使用ntohs进行转化，就得到了以主机字节序表示的总长。<br/><br/>
+但是注意第二个红框（flags，offset），这里就比较麻烦了。<br/>
+对于这种非整字节组合的域，不能直接读取。<br/>
+首先应该按照基础存储类型取出（就是结构定义中的USHORT），<br/>
+使用ntohs转化为主机字节序，再写回到缓冲区中的原位置。<br/>
+（不写也可以，那么就需要自行提取高3位和低13位，<br/>
+这失去了<font color="#ff0000">定义结构体的意义</font>）<br/>
+（定义结构体，就是为了不用通过指针和偏移访问缓冲，<br/>
+直接引用结构体的成员就行了）<br/>
+而<a href="http://hi.baidu.com/hplonline/blog/item/4411b8fba8d9562f4e4aeaa3.html" target="_blank">上篇</a>提到过，不能取位域的地址，<br/>
+这个定义非常的不爽，于是只有手动获得指针：<br/><font color="#ff0000">   USHORT <em>pu = (USHORT</em>)&amp;p-&gt;id + 1 ;</font><br/>
+而这个动作，一瞬间就把结构体的优美特性抹杀了。。<br/><br/>
+那么能不能通过比较好的定义flags和offset，<br/>
+以达到不需要通过指针偏移和ntohs来交换，直接解析呢？？<br/><font color="#ff0000">在小尾机上我是真没啥好办法，有好办法的同学麻烦通知一下。</font><br/>
+在大尾机上当然就不用题了，因为ntohs就是一个空壳函数，<br/>
+于是我们正确定义了结构后（比如上面的第三个结构），直接读出来就行了。。。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-06-20T21:35:00+08:00" pubdate data-updated="true">Jun 20<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/06/20/%E8%A7%A3%E6%9E%90IP%E5%A4%B4%E7%9A%84demo/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/06/20/%E8%A7%A3%E6%9E%90IP%E5%A4%B4%E7%9A%84demo/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/06/20/%E6%9C%89%E5%85%B3C%E4%BD%8D%E5%9F%9F%E4%BD%BF%E7%94%A8%E7%9A%84%E7%BB%86%E8%8A%82/" title="Previous Post: 有关C位域使用的细节">&laquo; 有关C位域使用的细节</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/07/10/%E7%A6%BB%E6%A0%A1%E5%89%8D%E9%85%B1%E6%B2%B9%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%AF%94%E8%B5%9B%EF%BC%88%E6%95%B0%E7%8B%AC%E6%B8%B8%E6%88%8F%EF%BC%89/" title="Next Post: 离校前酱油最后一个比赛（数独游戏）">离校前酱油最后一个比赛（数独游戏） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

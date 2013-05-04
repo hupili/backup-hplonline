@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>《C陷阱与缺陷》笔记 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.8.18 书就是这本。 1.关于字符常量的处理 P12下方的译注关于VC6的说明是错误的。
+只用一个程序就说明问题： #include &lt;stdio.h&gt; int main(){
+    printf(&#8220;%x%x%x\n&#8221 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/08/18/%E3%80%8AC%E9%99%B7%E9%98%B1%E4%B8%8E%E7%BC%BA%E9%99%B7%E3%80%8B%E7%AC%94%E8%AE%B0">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">《C陷阱与缺陷》笔记</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-18T19:50:00+08:00" pubdate data-updated="true">Aug 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.8.18</p>
+
+
+<p>书就是<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/80c99ddd3ebc113d5882dd88.html">这本</a>。</p>
+
+
+<p><br/><font color="#0000ff">1.关于字符常量的处理</font></p>
+
+
+<p>P12下方的译注关于VC6的说明是错误的。<br/>
+只用一个程序就说明问题：</p>
+
+
+<p>#include &lt;stdio.h&gt;</p>
+
+
+<p>int main(){<br/>
+     printf(&#8220;%x%x%x\n&#8221; , &#8216;y&#8217; , &#8216;e&#8217; , &#8216;s&#8217;) ;<br/>
+     printf(&#8220;%x\n&#8221; , &#8216;yes&#8217;) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>结果：<br/>
+796573<br/>
+796573</p>
+
+
+<p>有的时候，译的过程中注一下，<br/>
+有助于读者理解一些不熟悉的内容，<br/>
+但是不能乱注。</p>
+
+
+<p><font color="#0000ff">2.ex1-2</font></p>
+
+
+<p>注释嵌套，个人认为那是相当有必要啊。<br/>
+方便写程序，方便调试。<br/>
+有时候需要暂时注释掉一段内含注释的代码。</p>
+
+
+<p><font color="#0000ff">3.时代特征是很有趣的。。</font></p>
+
+
+<p>比如ex2-2让举例其他语言的语句分割方式。<br/>
+我只能想到PASCAL，VB,MATLAB。<br/>
+作者的例子是FORTRAN , SNOBOL等。。。</p>
+
+
+<p><font color="#0000ff">4.数组方面</font></p>
+
+
+<p>对数组名可以使用&amp;运算。<br/>
+     int a[4] ;<br/>
+     printf(&#8220;%x\n%x\n&#8221; , a , &amp;a) ;</p>
+
+
+<p>a[i]和i[a]的等同性。<br/>
+使用MASM做过程序就知道，<br/>
+赋予i[a]等同的功能是有意义的。</p>
+
+
+<p><font color="#0000ff">5.函数声明和实现体的关系</font></p>
+
+
+<p>虽然专门问来知道，但平时却想不起。<br/>
+见这个例子：</p>
+
+
+<p>int* (*malloc)(int x) ;<br/>
+int main(){<br/>
+     int *p = malloc(4) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>之前也不用包含stdlib.h。<br/>
+这个程序可以正常编译，<br/>
+并且不用像往常那样给malloc返回的指针做强制转换。</p>
+
+
+<p>有的时候，不用机械地包含一大堆东西。<br/>
+可以选择性声明，能编译就行。<br/>
+而链接的时候，linker并不关心是int *还是char*，<br/>
+反正都是一个4字节的值而已。</p>
+
+
+<p><font color="#0000ff">6.对字符常量修改的限制</font></p>
+
+
+<p>这个运行正常：<br/>
+     char s[] = &#8220;123&#8221; ;<br/>
+     s[0] = 0 ;</p>
+
+
+<p>这个运行要挂掉：<br/>
+     char *s = &#8220;123&#8221; ;<br/>
+     s[0] = 0 ;</p>
+
+
+<p><font color="#0000ff">7.关于数组越界的检查</font></p>
+
+
+<p>个人认为在实现上是臃肿而且没有必要的。<br/>
+比如：<br/>
+int a[10] ;<br/>
+a[10] = 1 ;</p>
+
+
+<p>这样的常量下标可能被检查出来越界。<br/>
+但是a[i] = 1 ;呢？？</p>
+
+
+<p>这在编译阶段完全是没法确定的。<br/>
+所以，只有在编译的时候加上相关的条件判断：<br/>
+if ( i &lt; 0 || i &gt;= 10 ) {<br/>
+     error(&#8220;???&#8221;) ;<br/>
+}else{<br/>
+     a[i] = 1 ;<br/>
+}<br/>
+这样就是十分的臃肿了。<br/>
+况且这是运行时检查，也不是编译期能完成的。</p>
+
+
+<p>也许是个人知识的不足，<br/>
+也希望见识一下有实现的编译器是怎么干的。</p>
+
+
+<p><font color="#0000ff">8.static的声明</font></p>
+
+
+<p>在很多时候，最好给函数和外部变量带上。<br/>
+这样可以在连接的时候减少外部对象列表，<br/>
+也可以很好地避免名称上的冲突。</p>
+
+
+<p><font color="#0000ff">9.ANSI C允许不声明就调用。。</font></p>
+
+
+<p>而且函数声明的时候也只用指定返回值即可。。<br/>
+如果不指定，就是默认的int型。</p>
+
+
+<p>这种设计其实也是有道理的。<br/>
+在处理变参数个数的变量的时候，<br/>
+参数的出入栈都由调用者来控制。<br/>
+双方能共同关心的问题仅仅有:<br/>
+函数的地址，函数的返回值。</p>
+
+
+<p><font color="#0000ff">10.函数调用时的自动转换标准</font></p>
+
+
+<p>float会自动转为double。<br/>
+short和char会自动转为int。</p>
+
+
+<p>这个也就又应证了一下为什么printf<br/>
+的格式字符串只有%f来处理float和double两种。</p>
+
+
+<p>之前关于这点的<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/c0e3b9de2e24355fcdbf1afc.html">实验和笔记</a>。</p>
+
+
+<p><font color="#0000ff">11.函数头部的表征意义：</font></p>
+
+
+<p>int f(c)<br/>
+char c ;<br/>
+{<br/>
+&#8230;<br/>
+}</p>
+
+
+<p>相当于：</p>
+
+
+<p>int f(int i){<br/>
+char c = i ;<br/>
+&#8230;<br/>
+}</p>
+
+
+<p>这个规定在硬件实现上也是有对应的。<br/>
+比如IA-32下，push进去的操作数都是32位的，<br/>
+正好符合一个int型的空间。<br/>
+然后使用变长前缀可以兼容处理16位的操作数。</p>
+
+
+<p><font color="#0000ff">12.关于getchar的截断处理</font></p>
+
+
+<p>在VC6下，EOF=-1.<br/>
+也就是每个位都是1。<br/>
+所以可以截断成任意的长度，<br/>
+按照补码翻译过来还是-1，不改变意义。</p>
+
+
+<p><font color="#0000ff">13.关于fseek的必要性</font></p>
+
+
+<p>如下程序段：</p>
+
+
+<p>#include &lt;stdio.h&gt;</p>
+
+
+<p>int main(){<br/>
+     FILE *fp = fopen(&#8220;file.dat&#8221; , &#8220;rb+&#8221;) ;<br/>
+     int i = 1 ;</p>
+
+
+<p>     fread(&amp;i , sizeof(int) , 1 , fp) ;<br/>
+     printf(&#8220;%d\n&#8221; , i) ;<br/>
+     printf(&#8220;%d\n&#8221; , fseek(fp , (long)(-1*sizeof(int)) , SEEK_CUR)) ;<br/>
+     i ++ ;<br/>
+     printf(&#8220;%d\n&#8221; , fwrite(&amp;i , sizeof(int) , 1 , fp)) ;</p>
+
+
+<p>     fread(&amp;i , sizeof(int) , 1 , fp) ;<br/>
+     printf(&#8220;%d\n&#8221; , i) ;<br/>
+     printf(&#8220;%d\n&#8221; , fseek(fp , (long)(-1*sizeof(int)) , SEEK_CUR)) ;<br/>
+     i ++ ;<br/>
+     printf(&#8220;%d\n&#8221; , fwrite(&amp;i , sizeof(int) , 1 , fp)) ;<br/>
+     <br/>
+     fclose(fp) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>可以正常执行，而在中间的fwrite，<br/>
+和fread之间没有fseek(fp , 0 , SEEK_SET) 这一语句。</p>
+
+
+<p>说明书中所讲为历史问题。测试环境：VISTA+VC6。</p>
+
+
+<p><font color="#0000ff">14.关于signal</font></p>
+
+
+<p>在处理过程中有可能继续产生信号。<br/>
+所以处理函数唯一安全的做法就是打印出错信息，然后退出程序。<br/>
+或者可以设置某些标志，<br/>
+让主程序在某个时候检查到这些标志。</p>
+
+
+<p><font color="#0000ff">15.包含stdio.h的重要性</font></p>
+
+
+<p>见P91,ex5-2。</p>
+
+
+<p>由于该头文件中有getchar的宏定义，<br/>
+使得该“函数”的执行会更快。</p>
+
+
+<p>如果不包含这个头文件，<br/>
+编译器只有把getchar当作返回整形的函数，<br/>
+然后期待连接器来指出该函数的地址。</p>
+
+
+<p>而进出函数的开销比较大，<br/>
+可能导致效率变低。</p>
+
+
+<p><font color="#0000ff">16.关于使用宏</font></p>
+
+
+<p>需要格外注意的是多次求值的问题。<br/>
+所以传给宏的参数一定要是non-mutable的。<br/>
+即不能是i++这样的在计算表达式的同时改变i的值。</p>
+
+
+<p><font color="#0000ff">17.宏不是语句</font></p>
+
+
+<p>P99，chap6.3详细解释了这个问题。<br/>
+分析的是assert宏，<br/>
+阐释了由||的短路求值来代替if结构的必要性。<br/>
+对于自己设计的宏内有条件判断时，<br/>
+很有借鉴意义。</p>
+
+
+<p><font color="#0000ff">18.类型转换</font><br/>
+char c<br/>
+在做(unsigned)c时。<br/>
+按照标准是先转换成int，然后转换成unsigned int。<br/>
+所以，可能由于符号扩展的原因，导致不是期望的结果。</p>
+
+
+<p>有的时候，我们期望的是在多余的位上补零。<br/>
+正确的做法是(unsigned int)(unsigned char)c。</p>
+
+
+<p>而如果c本来就是unsigned char型的，则可以直接到unsigned int。<br/>
+下面的代码来验证这个事情：</p>
+
+
+<p>     char c = (char)0xfe ;<br/>
+     unsigned char cc = (unsigned char)0xfe ;</p>
+
+
+<p>     printf(&#8220;%x\n&#8221; , (unsigned)c) ;<br/>
+     printf(&#8220;%x\n&#8221; , (unsigned)(unsigned char)c) ;<br/>
+     <br/>
+     printf(&#8220;%x\n&#8221; , (unsigned)cc) ;<br/>
+     printf(&#8220;%x\n&#8221; , (unsigned)(unsigned char)cc) ;</p>
+
+
+<p><font color="#0000ff">19.解决字符集不连续的问题</font></p>
+
+
+<p>P117的。&#8221;0123456789&#8221;[n % 10] <br/>
+这个用法相当巧妙啊。</p>
+
+
+<p><font color="#0000ff">20.符号数的绝对值转为无符号的</font></p>
+
+
+<p>比如：<br/>
+int n = -1 ;<br/>
+unsigned int m = -n ;</p>
+
+
+<p>作者提到了补码表示中绝对值最大负数，<br/>
+在转换成正数的时候会溢出。<br/>
+但实际上，可以不用担心。<br/>
+因为补码的负数能表示的范围比正数仅多1。</p>
+
+
+<p>比如下面的程序段：<br/>
+     int i ;<br/>
+     unsigned u ;<br/>
+     i = -2147483648 ;<br/>
+     printf(&#8220;%d\n&#8221; , -i) ;<br/>
+     u = -i ;<br/>
+     printf(&#8220;%u\n&#8221; , u) ;<br/>
+     printf(&#8220;%u\n&#8221; , i) ;</p>
+
+
+<p>因为32-bit的int有个奇特的性质。<br/>
+i = -2147483648时i和-i的二进制位是一样的。<br/>
+所以-i得到的数，从概念上来说，已经溢出了int的范围了，<br/>
+但是机器并不管这点，仍然老实地把值赋给一个unsigned型的，<br/>
+这完全是可以的，而且运行结果也是正常的。</p>
+
+
+<p>这段程序最后还展示了，<br/>
+输出时使用不同的格式字符串，<br/>
+可以得到的不同效果。</p>
+
+
+<p> </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-18T19:50:00+08:00" pubdate data-updated="true">Aug 18<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/08/18/%E3%80%8AC%E9%99%B7%E9%98%B1%E4%B8%8E%E7%BC%BA%E9%99%B7%E3%80%8B%E7%AC%94%E8%AE%B0/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/08/18/%E3%80%8AC%E9%99%B7%E9%98%B1%E4%B8%8E%E7%BC%BA%E9%99%B7%E3%80%8B%E7%AC%94%E8%AE%B0/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/08/18/%E6%95%B4%E6%95%B0%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%86%99%E6%B3%95%E6%AF%94%E8%BE%83/" title="Previous Post: 整数二分的两种写法比较">&laquo; 整数二分的两种写法比较</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/08/24/%E5%BC%82%E6%83%B3%E5%A4%A9%E5%BC%80%E7%9A%84%E5%88%863%E6%AE%B5%E5%BF%AB%E6%8E%92%E3%80%82%E3%80%82%E3%80%82/" title="Next Post: 异想天开的分3段快排。。。">异想天开的分3段快排。。。 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

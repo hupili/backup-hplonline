@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>FFT相关（三）（MATLAB）（任意基DIT递归实现) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.12.28 其实有了前面基2，基4的原理。。。
+任意基的FFT也就是那个样子。 详细推导和程序文件下载。 简要说明： 任意基就是把长度作因子分解：
+N=a*b
+于是可以通过计算a个长度为b的子序列，
+然后再把结果整合得到N点的DFT。
+（ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/12/28/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88%E4%BB%BB%E6%84%8F%E5%9F%BADIT%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">FFT相关（三）（MATLAB）（任意基DIT递归实现)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-28T20:22:00+08:00" pubdate data-updated="true">Dec 28<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.12.28</p>
+
+
+<p>其实有了前面基2，基4的原理。。。<br/>
+任意基的FFT也就是那个样子。</p>
+
+
+<p>详细推导和程序文件<a target="_blank" href="http://www.box.net/shared/s4tcp5rpvg">下载</a>。</p>
+
+
+<p><font color="#0000ff">简要说明：</font></p>
+
+
+<p>任意基就是把长度作因子分解：<br/>
+N=a*b<br/>
+于是可以通过计算a个长度为b的子序列，<br/>
+然后再把结果整合得到N点的DFT。<br/>
+（话说虽然DSP的期末貌似不考FFT，<br/>
+但是这个任意基的原理在某课后题出现过，<br/>
+只是没有点名可以用来做FFT而已）</p>
+
+
+<p>这个过程可以递归下去，<br/>
+直到b=1，就可以直接算得X=x。</p>
+
+
+<p>详细的推导还是见下载的包吧。</p>
+
+
+<p>另外，作为原理模拟，<br/>
+像分解因数等部分写得就很土鳖了，<br/>
+反正意思是到了。</p>
+
+
+<p><font color="#0000ff">关键程序段：</font></p>
+
+
+<p>function X = ditany(x)<br/>
+     N = length(x) ;<br/>
+     if N == 1<br/>
+         X = x ;<br/>
+     else <br/>
+         %factorize N = a * b<br/>
+         flag = 0 ;<br/>
+         for a = 2:fix(sqrt(N))<br/>
+             if fix(N / a) == N / a<br/>
+                flag = 1 ;<br/>
+                break ;<br/>
+             end<br/>
+         end<br/>
+         if ~flag<br/>
+            a = N ; <br/>
+         end<br/>
+         b = N / a ;<br/>
+         %start caculation of length b dft <br/>
+         %and assemble the a sequences<br/>
+         W = exp(-1j * 2 * pi / N * (0:a-1)&#8217;*(0:b-1)) ;<br/>
+         %preallocation of space will be needed here<br/>
+         %to accelerate the programme<br/>
+         XX = [] ;<br/>
+         for ii = 1:a<br/>
+            XX = [XX ; ditany(x(ii:a:N))] ; <br/>
+         end<br/>
+         X = [] ;<br/>
+         XX = XX .* W ;<br/>
+         for jj = 1:a<br/>
+             tmp = exp(-j * 2 * pi / N * (0:a-1) * b * (jj - 1)) * XX ;<br/>
+             X = [X , tmp] ;<br/>
+         end<br/>
+     end<br/>
+return ;</p>
+
+
+<p><font color="#0000ff">一些比较:</font></p>
+
+
+<p>其实我们比较关心的是这个任意基的算法究竟能改进多少时间。<br/>
+基准采用的是矩阵定义的DFT变换：<br/>
+X1 = x * exp(-j * 2 * pi / N * (0:N-1)&#8217;*(0:N-1)) ;</p>
+
+
+<p>以点数为横坐标，<br/>
+加速比为纵坐标。<br/>
+加速比的定义为DIT_any的耗时比上矩阵DFT的耗时。<br/>
+画出散点图，并标注基准线y=1来观察。</p>
+
+
+<p>首先来看从1到200点的散点图。</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/83afdc8802b56fa4a5c272c1.jpg"/></span><br/>
+再看以2的方冪为点数的散点图。</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/46c61bdf99666223622798c1.jpg"/><br/></span><br/>
+在观察各种自然数的时候，<br/>
+发现这个任意基的算法大部分时候反而更戳。</p>
+
+
+<p>专门把2的方冪提取出来观察，<br/>
+发现效率有所改进，<br/>
+但似乎并不是很明显的样子。</p>
+
+
+<p>要仔细观察其中的差异，<br/>
+还得用C来实现一下。<br/>
+因为MATLAB隐藏了太多的细节，<br/>
+让我们无法把握每一个消耗时间的地方。<br/>
+不过作为粗糙的原理模拟，<br/>
+以及简易对比来说是可以的。</p>
+
+
+<p>出现这种现象也比较好理解，<br/>
+因为任意基的算法的精华在于分解。<br/>
+把大的序列分解成若干小的序列，分别计算。<br/>
+随便选一个数，如果是质数，<br/>
+则无法发挥任意基的能力，<br/>
+甚至由于其他操作引入更多的时间。<br/>
+即使不是质数，<br/>
+如果其中有较大的质数因子也会导致耗时较多。</p>
+
+
+<p>由于是任意基，exp(2 * pi / N * k)的计算是逃不掉的。<br/>
+不像基2基4基8，出来的是如1,j,1+j这类比较好看的数字。</p>
+
+
+<p> </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-28T20:22:00+08:00" pubdate data-updated="true">Dec 28<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/12/28/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88%E4%BB%BB%E6%84%8F%E5%9F%BADIT%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/12/28/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88%E4%BB%BB%E6%84%8F%E5%9F%BADIT%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/12/27/FFT%E7%9B%B8%E5%85%B3%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%88MATLAB%EF%BC%89%EF%BC%88DIT4%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%29/" title="Previous Post: FFT相关（二）（MATLAB）（DIT4递归实现)">&laquo; FFT相关（二）（MATLAB）（DIT4递归实现)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/12/29/%E5%88%86%E7%A6%BB%E4%B8%A4%E4%B8%AA%E6%AD%A3%E5%BC%A6%E4%BF%A1%E5%8F%B7%E3%80%82%EF%BC%88MATLAB%E6%A8%A1%E6%8B%9F%EF%BC%89/" title="Next Post: 分离两个正弦信号。（MATLAB模拟）">分离两个正弦信号。（MATLAB模拟） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

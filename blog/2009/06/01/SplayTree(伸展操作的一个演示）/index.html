@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>SplayTree(伸展操作的一个演示） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.6.1
+上篇给出了一个SplayTree的完整实现。
+可以看到，一旦有了splay操作，那么其他的事情就很好办了。
+不过我看到的这份splay操作实在是很费解。
+于是一边看一边拿visio画图。
+其实我也不杂理解，拿出来大家一起看一下玩。伸展代码如下：
+PSNode &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/01/SplayTree%28%E4%BC%B8%E5%B1%95%E6%93%8D%E4%BD%9C%E7%9A%84%E4%B8%80%E4%B8%AA%E6%BC%94%E7%A4%BA%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">SplayTree(伸展操作的一个演示）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-01T16:55:00+08:00" pubdate data-updated="true">Jun 1<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.6.1<br/><br/>
+上篇给出了一个SplayTree的完整实现。<br/>
+可以看到，一旦有了splay操作，那么其他的事情就很好办了。<br/><br/>
+不过我看到的这份splay操作实在是很费解。<br/>
+于是一边看一边拿visio画图。<br/>
+其实我也不杂理解，拿出来大家一起看一下玩。<br/><br/><font color="#0000ff">伸展代码如下：</font><br/><br/>
+PSNode SplayTree::<em>splay(ElemType d , PSNode p){<br/>
+      //(1)left:待完成的树左子树，他的右子树为空<br/>
+      //(2)通过移动，可以把left视为右子树为空的树串成的链表<br/>
+      //left为左子树中的最大值（因为右子树为空）<br/>
+      PSNode left , right ;<br/>
+      //为了满足(1)，设置一个header，他初始的时候左右均空<br/>
+      SNode header ;<br/>
+      header.left = nil ;<br/>
+      header.right = nil ;<br/>
+      //而left和right均从header开始出发<br/>
+      //(3)当left离开header的时候，left的右端挂上的肯定是当前树的左端<br/>
+      left = &amp;header ;<br/>
+      right = &amp;header ;<br/><br/>
+      nil-&gt;data = d ;//(4)避免在空节点处发生双旋<br/><br/>
+      while ( p-&gt;data != d ){<br/>
+            if ( d &lt; p-&gt;data ){<br/>
+                  if ( d &lt; p-&gt;left-&gt;data ) { // 当p-&gt;left为nil时，条件自动不成立，见(4)<br/>
+                        p = </em>rotate_right(p) ; //同个方向前进，应该双旋<br/>
+                  }<br/>
+                  if ( p-&gt;left == nil ) break ;//节点查找失败，但p已经为新节点应当的插入点了。<br/>
+                  right-&gt;left = p ;<br/>
+                  right = p ;<br/>
+                  p = p-&gt;left ;<br/>
+            }else{<br/>
+                  if ( p-&gt;right-&gt;data &lt; d ) {<br/>
+                        p = _rotate_left(p) ;<br/>
+                  }<br/>
+                  if ( p-&gt;right == nil ) break ;<br/>
+                  left-&gt;right = p ;<br/>
+                  left = p ;<br/>
+                  p = p-&gt;right ;<br/>
+            }<br/>
+      }<br/><br/>
+      //p已经是我们要的节点了。他为新的根<br/>
+      left-&gt;right = p-&gt;left ;//left的右端是空的,见(1)<br/>
+      right-&gt;left = p-&gt;right ;<br/>
+      //将header左右子树链接到p上面<br/>
+      p-&gt;left = header.right ;//head的右端是新根的左端，见(3)<br/>
+      p-&gt;right = header.left ;<br/>
+      return p ;<br/>
+}<br/><br/><font color="#0000ff">下图是关于双旋的演示：</font><br/><div forimg="1"><br/><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0f979f03064768aa50f5211.jpg"/><br/><br/>
+下面的这个可以看作是中间状态。<br/><br/><br/><font color="#0000ff">1。初始的时候，令空节点的值为splay操作的值。</font><br/>
+把header做成一个左右均空的节点。<br/>
+让left和right都指向header</div></p>
+
+<div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a2f3e1c477236f8c8326ac12.jpg"/><br/><br/><br/><font color="#0000ff">2。第一次比较，应该向左移动两次。</font></div>
+
+
+<div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a2f1ba51367faa3d377abe12.jpg"/><br/><br/><br/><font color="#0000ff">3。先对X右旋一次。</font></div>
+
+
+<div forimg="1"><br/><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/cb5e40edfd15a7f1b21cb112.jpg"/><br/><br/><br/><br/><font color="#0000ff">4。将X的右枝挂到right的左枝，同时移动right向新的左枝<br/><br/></font></div>
+
+
+<div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/8fc50d08f45e3315e8248812.jpg"/><br/><br/><font color="#0000ff">5。应该向X的右端插入，但已经为空，于是停止。</font><br/><br/>
+将X的左枝挂到left的右枝上。<br/>
+将X的右枝挂到right的左枝上。</div>
+
+
+<div forimg="1"><br/><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/7fec1795ee1d2e2d7af48012.jpg"/><br/><br/><font color="#0000ff">6。最后一步合并操作。</font><br/><br/>
+将header的右枝挂给X的左枝<br/>
+将header的左枝挂给X的右枝</div>
+
+
+<div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/612531c71b5ad4f9d0006012.jpg"/></div>
+
+
+<div forimg="1"><br/><font color="#0000ff">7。将元素4在树根的位置插入</font><br/><br/><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0eab0a145765eae46106412.jpg"/></div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-01T16:55:00+08:00" pubdate data-updated="true">Jun 1<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/01/SplayTree%28%E4%BC%B8%E5%B1%95%E6%93%8D%E4%BD%9C%E7%9A%84%E4%B8%80%E4%B8%AA%E6%BC%94%E7%A4%BA%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/01/SplayTree%28%E4%BC%B8%E5%B1%95%E6%93%8D%E4%BD%9C%E7%9A%84%E4%B8%80%E4%B8%AA%E6%BC%94%E7%A4%BA%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/01/SplayTree%28%E4%BC%B8%E5%B1%95%E6%A0%91%EF%BC%8C%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%89/" title="Previous Post: SplayTree(伸展树，自顶向下的实现）">&laquo; SplayTree(伸展树，自顶向下的实现）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/02/%E5%85%B3%E4%BA%8E%E6%8E%92%E5%BA%8F%E7%9A%84%E4%B8%80%E7%82%B9%E4%BA%8B%E6%83%85/" title="Next Post: 关于排序的一点事情">关于排序的一点事情 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

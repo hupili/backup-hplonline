@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>DAC0808实现LED亮度调节 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.3.22
+练习一下DAC0808
+首先是来自DATASHEET的典型电路。 这个就按照接就行了。VO的输出公式也给出了的。
+第二步就是左边的控制部分。 下面用了PULLDOWN，因为这个东西用起来很方便，不用考虑阻值，只考虑电平特性。
+正如前面发现的PULLUP一样 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/22/DAC0808%E5%AE%9E%E7%8E%B0LED%E4%BA%AE%E5%BA%A6%E8%B0%83%E8%8A%82">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">DAC0808实现LED亮度调节</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-22T22:07:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.3.22<br/><br/>
+练习一下DAC0808<br/><br/>
+首先是来自DATASHEET的典型电路。<br/><br/><div forimg="1"><a target="_blank" href="http://hiphotos.baidu.com/hplonline/pic/item/42a9f1f21e163432b17ec577.jpg"></p>
+
+<div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/42a9f1f21e163432b17ec577.jpg"/></div>
+
+
+<p></a><br/><br/>
+这个就按照接就行了。VO的输出公式也给出了的。<br/><br/>
+第二步就是左边的控制部分。<br/><br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a9e471ec9ce091f02e2e2177.jpg"/></div></p>
+
+<br/>
+
+
+<p>下面用了PULLDOWN，因为这个东西用起来很方便，不用考虑阻值，只考虑电平特性。<br/>
+正如<a href="http://hi.baidu.com/hplonline/blog/item/5de26406e44d1c73030881af.html" target="_blank">前面发现的PULLUP</a>一样。<br/><br/>
+右边的图是<br/><br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/2bc327f500f93e04bd310977.jpg"/></div>
+</div>
+主要还是参照典型电路把DAC0808接好。<br/><br/>
+最右边这个接地电阻。。其实是比较重要的东西。。一开始居然忘了。。<br/>
+搞得电压探针测出来的值一直有问题，怎么换开关都是2点几的样子。。<br/>
+因为LED导通后，把电压钳在那里了。<br/><br/>
+练习下器件而已。。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-22T22:07:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/22/DAC0808%E5%AE%9E%E7%8E%B0LED%E4%BA%AE%E5%BA%A6%E8%B0%83%E8%8A%82/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/22/DAC0808%E5%AE%9E%E7%8E%B0LED%E4%BA%AE%E5%BA%A6%E8%B0%83%E8%8A%82/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/22/%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8%E7%9A%84%E8%AF%AD%E4%B9%89%E5%8F%8A%E5%BA%94%E7%94%A8/" title="Previous Post: 数组引用的语义及应用">&laquo; 数组引用的语义及应用</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/22/PWM%E5%92%8C%E8%B0%83%E5%8E%8B%E6%B3%95%E5%AF%B9%E7%9B%B4%E6%B5%81%E7%94%B5%E6%9C%BA%E7%9A%84%E6%8E%A7%E5%88%B6/" title="Next Post: PWM和调压法对直流电机的控制">PWM和调压法对直流电机的控制 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

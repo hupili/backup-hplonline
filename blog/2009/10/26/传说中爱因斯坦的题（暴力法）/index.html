@@ -1,0 +1,525 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>传说中爱因斯坦的题（暴力法） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.10.26 好久没暴力过了，比较手痒，
+今天看有同学在讨论这个题。。。
+发现可以用暴力解决。 题目： ================ 来看看这道爱因斯坦出的智商测试题, 他说世界上有98%的人回答不出, 看看你是否属于另外的2%： 1. 有5栋5种颜色的房子 2 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/10/26/%E4%BC%A0%E8%AF%B4%E4%B8%AD%E7%88%B1%E5%9B%A0%E6%96%AF%E5%9D%A6%E7%9A%84%E9%A2%98%EF%BC%88%E6%9A%B4%E5%8A%9B%E6%B3%95%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">传说中爱因斯坦的题（暴力法）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-26T19:34:00+08:00" pubdate data-updated="true">Oct 26<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.10.26</p>
+
+
+<p>好久没暴力过了，比较手痒，<br/>
+今天看有同学在讨论这个题。。。<br/>
+发现可以用暴力解决。</p>
+
+
+<p><font color="#0000ff">题目：</font></p>
+
+
+<p>================</p>
+
+
+<p>来看看这道爱因斯坦出的智商测试题, 他说世界上有98%的人回答不出, 看看你是否属于另外的2%：</p>
+
+
+<p>1. 有5栋5种颜色的房子</p>
+
+
+<p>2. 每一位房子的主人国籍都不同</p>
+
+
+<p>3. 这5个人每人只喝一个牌子的饮料, 只抽一个牌子的香烟, 只养一种宠物</p>
+
+
+<p>4. 没有人有相同的宠物, 抽相同牌子的香烟, 喝相同的饮料</p>
+
+
+<p>已知:</p>
+
+
+<p>1. 英国人住在红房子里</p>
+
+
+<p>2. 瑞典人养了一条狗</p>
+
+
+<p>3. 丹麦人喝茶</p>
+
+
+<p>4. 绿房子在白房子左边</p>
+
+
+<p>5. 绿房子主人喝咖啡</p>
+
+
+<p>6. 抽PALL MALL烟的人养了一只鸟</p>
+
+
+<p>7. 黄房子主人抽DUNHILL烟</p>
+
+
+<p>8. 住在中间那间房子的人喝牛奶</p>
+
+
+<p>9. 挪威人住在第一间房子</p>
+
+
+<p>10. 抽混合烟的人住在养猫人的旁边</p>
+
+
+<p>11. 养马人住在DUNHILL烟的人旁边</p>
+
+
+<p>12. 抽BLUE MASTER烟的人喝啤酒</p>
+
+
+<p>13. 德国人抽PRINCE烟</p>
+
+
+<p>14. 挪威人住在蓝房子旁边</p>
+
+
+<p>15、抽Blends香烟的人有一个喝水的邻居</p>
+
+
+<p>             so, 是谁养鱼？</p>
+
+
+<p>====================</p>
+
+
+<p>由于这个题流传甚广，版本也就很多。<br/>
+在这里的叙述中有个“混合烟”，<br/>
+经过考证就是最后的BLEND烟。</p>
+
+
+<p>另外“4. 绿房子在白房子左边”是一句有歧义的话，<br/>
+我开始枚举出来有多种答案，<br/>
+后来发现这句的理解很关键，原文可能是：<br/>
+&#8220;green house is <font color="#ff0000">to</font> the left of white house&#8221;<br/>
+或者<br/>
+&#8220;green house is <font color="#ff0000">on</font> the left of white house&#8221;<br/>
+这会导致第一个关于房子的判断出现两种写法：<br/>
+if ( green &lt; white ) return true ;<br/>
+if ( green == white - 1 ) return true ;</p>
+
+
+<p><font color="#0000ff">程序：</font></p>
+
+
+<p>每个人和各种属性都是一一对应的，<br/>
+所以最简单的方法就是进行全排列，<br/>
+用C++的next_permutation可以比较方便。</p>
+
+
+<p>如果直接枚举的话，工作量为(5!)^5，<br/>
+这个数字是相当大的，<br/>
+所以适当剪枝。</p>
+
+
+<p>说是剪枝，也就是边枚举边判断罢了，<br/>
+避免堆到最后来一起判断。</p>
+
+
+<p>#include &lt;stdio.h&gt;<br/>
+#include &lt;algorithm&gt;<br/>
+#include &lt;iostream&gt;<br/>
+#include &lt;math.h&gt;</p>
+
+
+<p>using namespace std ;</p>
+
+
+<p>int color[5] ;     //red,green,white,yellow,blue<br/>
+int nation[5] ;     //english,swede,dane,norwegian,german<br/>
+int pet[5] ;     //dog,bird,cat,horse,fish?<br/>
+int drink[5] ;     //tea,coffee,milk,beer,water<br/>
+int cig[5] ;     //PALL MALL,DUNHILL,BLEND,BLUE MASTER,PRINCE</p>
+
+
+<p>#define make_string_array(a,b,c,d,e) {#a,#b,#c,#d,#e} ;<br/>
+char *color_name[] = make_string_array(red,green,white,yellow,blue) ;<br/>
+char *nation_name[] = make_string_array(english,swede,dane,norwegian,german) ;<br/>
+char *pet_name[] = make_string_array(dog,bird,cat,horse,fish) ;<br/>
+char *drink_name[] = make_string_array(tea,coffee,milk,beer,water) ;<br/>
+char *cig_name[] = make_string_array(PALL MALL,DUNHILL,BLEND,BLUE MASTER,PRINCE) ;</p>
+
+
+<p>void init(int *a){<br/>
+     int i ;<br/>
+     for ( i = 0 ; i &lt; 5 ; i ++ ) a[i] = i ;<br/>
+}</p>
+
+
+<p>bool check_color(){<br/>
+     //4. 绿房子在白房子左边     <br/>
+     int *green = find(color , color + 5 , 1) ;<br/>
+     int *white = find(color , color + 5 , 2) ;<br/>
+     //at first , I thought &#8220;green house is to the left of white house&#8221;<br/>
+     //but most likely case is &#8220;green house is on the left of white house&#8221;<br/>
+     if ( green == white - 1 ) return true ;</p>
+
+
+<p>     else return false ;<br/>
+}</p>
+
+
+<p>bool check_nation(){<br/>
+     //1. 英国人住在红房子里     <br/>
+     int *english = find(nation , nation + 5 , 0) ;<br/>
+     int *red = find(color , color + 5 , 0) ;<br/>
+     if ( english - nation != red - color ) return false ;<br/>
+     //9. 挪威人住在第一间房子<br/>
+     if ( nation[0] != 3 ) return false ;<br/>
+     //14. 挪威人住在蓝房子旁边<br/>
+     //第二间是蓝房子<br/>
+     if ( color[1] != 4 ) return false ;</p>
+
+
+<p>     return true ;<br/>
+}</p>
+
+
+<p>bool check_pet(){<br/>
+     //2. 瑞典人养了一条狗     <br/>
+     int *dog = find(pet , pet + 5 , 0) ;<br/>
+     int *swade = find(nation , nation + 5 , 1) ;<br/>
+     if ( dog - pet != swade - nation ) return false ;</p>
+
+
+<p>     return true ;<br/>
+}</p>
+
+
+<p>bool check_drink(){<br/>
+     //3. 丹麦人喝茶<br/>
+     int *dane = find(nation , nation + 5 , 2) ;<br/>
+     int *tea = find(drink , drink + 5 , 0) ;<br/>
+     if ( dane - nation != tea - drink ) return false ;<br/>
+     //5. 绿房子主人喝咖啡<br/>
+     int *green = find(color , color + 5 , 1) ;<br/>
+     int *coffee = find(drink , drink + 5 , 1) ;<br/>
+     if ( green - color != coffee - drink ) return false ;<br/>
+     //8. 住在中间那间房子的人喝牛奶     <br/>
+     if ( drink[2] != 2 ) return false ;</p>
+
+
+<p>     return true ;<br/>
+}</p>
+
+
+<p>bool check_cig(){<br/>
+     //6. 抽PALL MALL烟的人养了一只鸟<br/>
+     int *pallmall = find(cig , cig + 5 , 0) ;<br/>
+     int *bird = find(pet , pet + 5 , 1) ;<br/>
+     if ( pallmall - cig != bird - pet ) return false ;<br/>
+     //7. 黄房子主人抽DUNHILL烟<br/>
+     int *dunhill = find(cig , cig + 5 , 1) ;<br/>
+     int *yellow = find(color , color + 5 , 3) ;<br/>
+     if ( dunhill - cig != yellow - color ) return false ;<br/>
+     //10. 抽BLEND的人住在养猫人的旁边<br/>
+     int *blend = find(cig , cig + 5 , 2) ;<br/>
+     int *cat = find(pet , pet + 5 , 2) ;<br/>
+     if ( abs((blend - cig) - (cat - pet)) != 1 ) return false ;<br/>
+     //11. 养马人住在DUNHILL烟的人旁边<br/>
+     int *horse = find(pet , pet + 5 , 3) ;<br/>
+     if ( abs((horse - pet) - (dunhill - cig)) != 1 ) return false ;<br/>
+     //12. 抽BLUE MASTER烟的人喝啤酒<br/>
+     int *bluemaster = find(cig , cig + 5 , 3) ;<br/>
+     int *beer = find(drink , drink + 5 , 3) ;<br/>
+     if ( bluemaster - cig != beer - drink ) return false ;<br/>
+     //13. 德国人抽PRINCE烟<br/>
+     int *german = find(nation , nation + 5 , 4) ;<br/>
+     int *prince = find(cig , cig + 5 , 4) ;<br/>
+     if ( german - nation != prince - cig) return false ;<br/>
+     //15、抽Blends香烟的人有一个喝水的邻居<br/>
+     int *water = find(drink , drink + 5 , 4) ;<br/>
+     if ( abs((water - drink) - (blend - cig)) != 1 ) return false ;</p>
+
+
+<p>     return true ;<br/>
+}</p>
+
+
+<p>void out_elem(int *a , char **s){<br/>
+     int i ;<br/>
+     for ( i = 0 ; i &lt; 5 ; i ++ ){<br/>
+         printf(&#8220;%-15s&#8221; , s[a[i]]) ;<br/>
+     }<br/>
+     cout&lt;&lt;endl ;<br/>
+}</p>
+
+
+<p>void output(){<br/>
+     static cs = 0 ;<br/>
+     cs ++ ;<br/>
+     cout &lt;&lt; &#8220;case:&#8221; &lt;&lt; cs &lt;&lt; endl ;<br/>
+     out_elem(color , color_name) ;<br/>
+     out_elem(nation , nation_name) ;<br/>
+     out_elem(pet , pet_name) ;<br/>
+     out_elem(drink , drink_name) ;<br/>
+     out_elem(cig , cig_name) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     init(color) ;<br/>
+     do{<br/>
+         if ( check_color() ) {<br/>
+             init(nation) ;<br/>
+             do{<br/>
+                 if ( check_nation() ) {     <br/>
+                     init(pet) ;<br/>
+                     do{<br/>
+                         if ( check_pet() ) {<br/>
+                             init(drink) ;<br/>
+                             do{<br/>
+                                 if ( check_drink() ) {                                     <br/>
+                                     init(cig) ;<br/>
+                                     do{<br/>
+                                         if ( check_cig() ) {                             <br/>
+                                             output() ;<br/>
+                                         }<br/>
+                                     }while ( next_permutation(cig , cig + 5) ) ;     <br/>
+                                 }<br/>
+                             }while ( next_permutation(drink , drink + 5) ) ;     <br/>
+                         }<br/>
+                     }while ( next_permutation(pet , pet + 5) ) ;     <br/>
+                 }<br/>
+             }while ( next_permutation(nation , nation + 5) ) ;                 <br/>
+         }<br/>
+     }while ( next_permutation(color , color + 5) ) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p><font color="#0000ff">输出：</font></p>
+
+
+<p>case:1<br/>
+yellow          blue            red             green           white<br/>
+norwegian       dane            english         german          swede<br/>
+cat             horse           bird            fish            dog<br/>
+water           tea             milk            coffee          beer<br/>
+DUNHILL         BLEND           PALL MALL       PRINCE          BLUE MASTER</p>
+
+
+<p>估计这道题的最初意思是让人直接用脑袋想，<br/>
+不过很多人用纸和笔等等。</p>
+
+
+<p>但是现在我们有电脑。。。。。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-26T19:34:00+08:00" pubdate data-updated="true">Oct 26<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/10/26/%E4%BC%A0%E8%AF%B4%E4%B8%AD%E7%88%B1%E5%9B%A0%E6%96%AF%E5%9D%A6%E7%9A%84%E9%A2%98%EF%BC%88%E6%9A%B4%E5%8A%9B%E6%B3%95%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/10/26/%E4%BC%A0%E8%AF%B4%E4%B8%AD%E7%88%B1%E5%9B%A0%E6%96%AF%E5%9D%A6%E7%9A%84%E9%A2%98%EF%BC%88%E6%9A%B4%E5%8A%9B%E6%B3%95%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/10/20/RFC1027%E7%AC%94%E8%AE%B0%EF%BC%8C%E4%BD%BF%E7%94%A8ARP%E5%AE%9E%E7%8E%B0%E9%80%8F%E6%98%8E%E5%AD%90%E7%BD%91%E7%BD%91%E5%85%B3/" title="Previous Post: RFC1027笔记，使用ARP实现透明子网网关">&laquo; RFC1027笔记，使用ARP实现透明子网网关</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/10/29/1-n%E7%9A%84%E6%95%B0%E7%BB%84%E6%88%90%E7%9A%84huffman%E6%A0%91%E7%9A%84%E6%9D%83%E9%87%8D/" title="Next Post: 1-n的数组成的huffman树的权重">1-n的数组成的huffman树的权重 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ASM做标准库，C调用【尝鲜实验，无技术含量】 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline) 2009.2.14
+理由，在效率比较关键的地方，可以选择用汇编来实现，这没啥好说的，
+所以先试一下这个功能，至少知道有这么一回事。一.环境：
+VC6:怎么说也很老了，不过经典，用起将就
+MASMPlus:有Plus字样的自然是多两把刷子，不然怎么能叫Plus呢，对吧 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/18/ASM%E5%81%9A%E6%A0%87%E5%87%86%E5%BA%93%EF%BC%8CC%E8%B0%83%E7%94%A8%E3%80%90%E5%B0%9D%E9%B2%9C%E5%AE%9E%E9%AA%8C%EF%BC%8C%E6%97%A0%E6%8A%80%E6%9C%AF%E5%90%AB%E9%87%8F%E3%80%91">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ASM做标准库，C调用【尝鲜实验，无技术含量】</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-18T21:10:00+08:00" pubdate data-updated="true">Feb 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline) 2009.2.14<br/><br/>
+理由，在<font color="#ff0000">效率</font>比较关键的地方，可以选择用汇编来实现，这没啥好说的，<br/>
+所以先试一下这个功能，至少知道有这么一回事。<br/><br/><font color="#0000ff">一.环境：</font><br/><br/>
+VC6:怎么说也很老了，不过经典，用起将就<br/><br/>
+MASMPlus:有Plus字样的自然是多两把刷子，不然怎么能叫Plus呢，对吧<br/>
+屏蔽了很多编译链接方面繁琐的操作,并且编辑环境也不错,就用他了<br/><br/><font color="#0000ff">二.练习内容：</font><br/>
+1.实现简单地给文件异或加密，<br/>
+2.当然是试ASM做标准库，然后C来调用<br/>
+3.顺便练习一下C++的文件流，想自己以前老是fprintf地。。很土的样子<br/><br/><font color="#0000ff">三.动手：</font><br/><br/>
+1.先来做C这边事情，个人习惯是一桩一桩地做好。所以先不管ASM，直接做一个整的程序<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;fstream&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+const int BUFFERSIZE = 1024 ; <br/><br/>
+char buffer[BUFFERSIZE];<br/>
+int count ; <br/><br/><font color="#999999">void encode(char <em>buf , int size , unsigned char code){<br/>
+     int i;<br/>
+     for ( i = 0 ; i &lt; size ; i ++ )buf[i] ^= code ;<br/>
+}</font><br/><br/>
+int main(int argv , char </em>args[]){<br/>
+     int code ; <br/><br/>
+     if ( argv != 3 ){<br/>
+          cout&lt;&lt;&#8221;parameter wrong!&#8221;&lt;&lt;endl; <br/>
+          cout&lt;&lt;&#8221;usage: coder infile outfile&#8221;&lt;&lt;endl;<br/>
+          return 1 ; <br/>
+     }<br/><br/>
+     ifstream infile(args[1] , ios::binary);<br/>
+     ofstream outfile(args[2] , ios::binary);<br/>
+     <br/>
+     cout&lt;&lt;&#8221;input your code[0..255]&#8221;&lt;&lt;endl;<br/>
+     cin&gt;&gt;code;<br/>
+     if ( code &lt; 0 || code &gt; 255 ){<br/>
+          cout&lt;&lt;&#8221;code range error!!&#8221;&lt;&lt;endl;<br/>
+          return 2 ;<br/>
+     }<br/><br/>
+     cout&lt;&lt;&#8221;encoding from &#8220;&lt;&lt;args[1]&lt;&lt;&#8221; to &#8220;&lt;&lt;args[2]&lt;&lt;endl;<br/><br/>
+     while ( !infile.eof() ){<br/>
+          infile.read(buffer , BUFFERSIZE );<br/>
+          count = infile.gcount() ; <br/>
+          encode(buffer,count, ( unsigned char )code);<br/>
+          outfile.write(buffer , count );<br/>
+     }<br/><br/>
+     return 0 ;<br/>
+}<br/><br/>
+这个程序是要从命令行输入加密文件名的，<br/>
+为了调试方便<br/>
+project-&gt;settings-&gt;debug-&gt;programme arguments<br/>
+这里可以设置参数<br/>
+比如我写成：1.txt 2.txt<br/>
+然后在工程目录下建个1.txt,随便写点东西，就可以运行了，<br/>
+输入用来异或的CODE,生成加密后的2.txt<br/><br/>
+其实从功能上来说，这样就很好了，不过我这里要练习用ASM做标准库，<br/>
+所以把 encode函数给注释掉，换成外部的申明<br/><font color="#ff6600"><br/></p>
+
+<h1>pragma comment(lib,&#8221;encode.Lib&#8221;)<br/></h1>
+
+<p>extern &#8220;C&#8221; void encode(char <em>buf , int size , unsigned char code) ;</font><br/><br/>
+其实比较重要的也就是这里<br/><font color="#ff6600">extern &#8220;C&#8221;</font> 一方面是把encode函数申明成外部过程，<br/>
+还有就是指定了是C调用约定，因为用C++约定的话。。<br/>
+函数名字会被改造成比较复杂的样子，不方便，而在MASM中又没有指定C++约定的项。<br/><br/><font color="#ff6600">#pragma comment(lib,&#8221;encode.Lib&#8221;)       <br/><font color="#000000">这个也是关键地方，意思就是添加encode.lib这个库<br/>
+也可以不要这句，而在下面的位置<br/></font></font>project-&gt;settings-&gt;link-&gt;object / library modules<br/>
+手动写上encode.lib<br/><br/>
+这样C这边就OK了，只等我们把encode 这个库做好，放到工程目录下面，就可以组建了。<br/><br/>
+2.MASM<br/><br/>
+MASMPlus的方便性很快就体现出来了，直接新建工程，选标准库<br/>
+然后选好位置，框架就生成好了。<br/><br/>
+不过我们用不了那么臃肿的东西，代码全部删了。<br/>
+下面就够了：<br/>
+.386<br/><font color="#ff6600">.model flat, C</font><br/>
+option casemap :none <br/><br/>
+.CODE<br/><br/>
+encode proc C uses ecx esi eax ,  lpBuffer:DWORD , lSize:DWORD , ucCode:BYTE<br/>
+     mov esi , lpBuffer<br/>
+     mov ecx , lSize<br/>
+     mov al , ucCode<br/>
+     <em>l:<br/>
+     xor BYTE PTR[esi] , al<br/>
+     inc esi <br/>
+     loop </em>l<br/>
+     ret<br/>
+encode endp<br/><br/>
+END<br/><br/>
+第二句比较关键，指定C调用约定，这样才好跟我们在VC中编的程序接口<br/>
+而函数本身也没啥说的，从C的代码很容易就翻译过来了。<br/><br/>
+于是组建这个工程，生成了</em>.lib文件。<br/>
+改名encode.lib，复制到开始VC的工程目录下。就可以运行了。<br/><br/><br/>
+于是就做完了。。纯粹是因为之前没这样搞过 ，觉得新鲜而已。。<br/>
+好吧，下次我们用C编写库，让MASM来调用。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-18T21:10:00+08:00" pubdate data-updated="true">Feb 18<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/18/ASM%E5%81%9A%E6%A0%87%E5%87%86%E5%BA%93%EF%BC%8CC%E8%B0%83%E7%94%A8%E3%80%90%E5%B0%9D%E9%B2%9C%E5%AE%9E%E9%AA%8C%EF%BC%8C%E6%97%A0%E6%8A%80%E6%9C%AF%E5%90%AB%E9%87%8F%E3%80%91/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/18/ASM%E5%81%9A%E6%A0%87%E5%87%86%E5%BA%93%EF%BC%8CC%E8%B0%83%E7%94%A8%E3%80%90%E5%B0%9D%E9%B2%9C%E5%AE%9E%E9%AA%8C%EF%BC%8C%E6%97%A0%E6%8A%80%E6%9C%AF%E5%90%AB%E9%87%8F%E3%80%91/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/02/17/%E4%BC%98%E5%85%88%E7%BA%A7%E5%95%8A%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%88C%EF%BC%89/" title="Previous Post: 优先级啊优先级（C）">&laquo; 优先级啊优先级（C）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/02/19/MAP%E6%96%87%E4%BB%B6%E5%92%8C%E8%B0%83%E8%AF%95%EF%BC%88VC%29%28%E4%BB%8E%E5%B4%A9%E6%BA%83%E5%9C%B0%E5%9D%80%E6%89%BE%E5%87%BA%E9%94%99%E6%BA%90%E7%A0%81%E4%BD%8D%E7%BD%AE%29/" title="Next Post: MAP文件和调试（VC)(从崩溃地址找出错源码位置)">MAP文件和调试（VC)(从崩溃地址找出错源码位置) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

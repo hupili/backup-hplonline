@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>标定绘图位置的一种设计（VC6.MFC.CWnd.GetWindowPlacement) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline) 2009.4.26
+比如现在要实现这样的功能：我们在某个窗口上绘图，图形的相对位置是可以在设计时改变的。
+当然我们可以在绘图函数里面写上一个偏移。
+或者把这个偏移定义为某些常量，然后根据设计的需要来更改。
+这个就有点像创建一个CButton对象，调用他的Create。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/26/%E6%A0%87%E5%AE%9A%E7%BB%98%E5%9B%BE%E4%BD%8D%E7%BD%AE%E7%9A%84%E4%B8%80%E7%A7%8D%E8%AE%BE%E8%AE%A1%EF%BC%88VC6.MFC.CWnd.GetWindowPlacement%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">标定绘图位置的一种设计（VC6.MFC.CWnd.GetWindowPlacement)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-26T21:21:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline) 2009.4.26<br/><br/>
+比如现在要实现这样的功能：<br/><br/><font color="#ff6600">我们在某个窗口上绘图，图形的相对位置是可以在设计时改变的。</font><br/><br/>
+当然我们可以在绘图函数里面写上一个偏移。<br/>
+或者把这个偏移定义为某些常量，然后根据设计的需要来更改。<br/><br/>
+这个就有点像创建一个CButton对象，调用他的Create。<br/>
+在该函数里面指定创建出按钮的坐标。<br/>
+然后当我更改界面的时候，就去修改这句创建按钮的语句。<br/><br/>
+功能虽然达到了，可是这样就很麻烦。<br/><br/>
+好比在处理按钮这个问题上，MFC允许我们在对话框中“画”出这个按钮。<br/>
+我们更改界面的时候，只需要去拖动他就行了。<br/><br/>
+那么，我上面提到的绘图应该也能找到一种类似的方法。<br/><font color="#ff6600">这种方法使得我们设计相关绘图函数的时候，多考虑一些细节。<br/>
+而改变界面的时候，也能通过&#8221;拖动“这样的操作来实现，</font><br/>
+而无需修改绘图的函数，<font color="#ff0000">这显然规避修改代码带来的风险</font>。<br/><br/>
+想了一下，可以像下面这样做：用 CStatic标定一个位置，作为我们绘图开始的左上角<br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/5de26406a22f5a58030881ac.jpg" small="0" class="blogimg"/><br/><br/>
+而绘图函数这样写：<br/><font color="#ff6600">假设该标签的ID为IDC_MARK。</font><br/><br/>
+     CStatic <em>pstatic = (CStatic</em>) GetDlgItem(IDC_MARK) ;<br/>
+     RECT rect ;<br/>
+     WINDOWPLACEMENT wp ;<br/>
+     pstatic-&gt;GetWindowPlacement(&amp;wp) ;<br/>
+     rect = wp.rcNormalPosition ;<br/>
+     rect.right = rect.left + 100 ;<br/>
+     rect.bottom = rect.top + 100 ;<br/>
+     dc.Rectangle(&amp;rect);<br/><br/>
+效果如下：<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/5adca6af3866f3ef7dd92aac.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>要绘制其他的图形，也可以加上rect的左上角的偏移即可。<br/><br/>
+之后，我们无需再动这个绘图函数了，把标签拖到我们想要的地方即可。<br/>
+（<font color="#ff0000">当然，开发完成后，把这个标签设置成不可见就行了</font>）<br/><br/>
+这段代码看起来轻巧。。还是搞了我很久。。<br/><br/>
+开始只知道有GetWindowRect和GetClientRect。<br/>
+结果这两个得到的区域都不能满足要求。。<br/><br/>
+又仔细看了MSDN，淘宝到了GetWindowPlacement这个函数。<br/><br/>
+那么附上这三个函数的区别：<br/><font color="#0000ff">GetWindowRect</font>得到的是相对于整个屏幕的区域<br/><font color="#0000ff">GetClientRect</font>得到的是该窗体的客户区，（返回的左上坐标始终为0，0）<br/><font color="#0000ff">WINDOWPLACEMENT </font>结构的<font color="#0000ff">rcNormalPosition</font> 标定的区域是相对父窗口的客户区而言的。</div></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-26T21:21:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/26/%E6%A0%87%E5%AE%9A%E7%BB%98%E5%9B%BE%E4%BD%8D%E7%BD%AE%E7%9A%84%E4%B8%80%E7%A7%8D%E8%AE%BE%E8%AE%A1%EF%BC%88VC6.MFC.CWnd.GetWindowPlacement%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/26/%E6%A0%87%E5%AE%9A%E7%BB%98%E5%9B%BE%E4%BD%8D%E7%BD%AE%E7%9A%84%E4%B8%80%E7%A7%8D%E8%AE%BE%E8%AE%A1%EF%BC%88VC6.MFC.CWnd.GetWindowPlacement%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/24/%E5%B0%BD%E9%87%8F%E9%81%BF%E5%85%8Dstackoverflow%E7%9A%84quicksort%E7%9A%84%E4%B8%80%E7%A7%8D%E5%86%99%E6%B3%95/" title="Previous Post: 尽量避免stack overflow的quick sort的一种写法">&laquo; 尽量避免stack overflow的quick sort的一种写法</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/29/LSB%E6%95%B0%E5%AD%97%E6%B0%B4%E5%8D%B0%E5%92%8C%E4%BF%A1%E6%81%AF%E9%9A%90%E8%97%8F/" title="Next Post: LSB数字水印和信息隐藏">LSB数字水印和信息隐藏 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

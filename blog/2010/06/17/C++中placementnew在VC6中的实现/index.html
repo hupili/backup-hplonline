@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>C++中placement new在VC6中的实现 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.6.17
+昨天研究了一个题，于是认识了所谓的placement new。
+虽然做几个实验，
+从现象上可以确定什么是placement new，
+但总对其实现耿耿于怀。
+》》代码：（上篇的程序，只贴主要部分）
+int main(){
+int p ;
+cls1 p1 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/06/17/C%2B%2B%E4%B8%ADplacementnew%E5%9C%A8VC6%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">C++中placement new在VC6中的实现</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-06-17T10:03:00+08:00" pubdate data-updated="true">Jun 17<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.6.17<br/><br/>
+昨天研究了一个题，于是认识了所谓的<a href="http://hi.baidu.com/hplonline/blog/item/0a3fa76e45727fd780cb4ac9.html" target="_blank">placement new</a>。<br/><br/>
+虽然做几个实验，<br/>
+从现象上可以确定什么是placement new，<br/>
+但总对其实现耿耿于怀。<br/><font color="#0000ff"><br/>
+》》代码：（上篇的程序，只贴主要部分）</font><br/><br/>
+int main(){<br/>
+int <em>p ;<br/>
+cls1 </em>p1 = new cls1 ;<br/>
+p1-&gt;print() ;<br/>
+p = (int<em>)p1 ;<br/>
+cout&lt;&lt;&#8221;cookie:&#8221;&lt;&lt;p[-4]&lt;&lt;endl ;<br/><br/>
+cls2 </em>p2 ;<br/><font color="#ff0000">p2 = new(p1) cls2 ;</font><br/>
+p2-&gt;print() ;<br/>
+p1-&gt;print() ;<br/>
+p = (int*)p2 ;<br/>
+cout&lt;&lt;&#8221;cookie:&#8221;&lt;&lt;p[-4]&lt;&lt;endl ;<br/><br/>
+return 0 ;<br/>
+}<br/><br/>
+主要就是想看一些红色这句会产生什么样的目标代码。<br/><br/>
+因为通过之前打印cookie的实验，<br/>
+可以知道空间并没有重新分配，<br/>
+但是当两个类的大小不一样的时候，<br/>
+编译器是否会给new传入这个信息呢？<br/><br/><font color="#0000ff">》》debug方式的目标代码</font><br/><br/>
+main函数：<br/><br/>
+00401658   .  8B55 EC       mov     edx, dword ptr [ebp-14]<br/>
+0040165B   .  52            push    edx<br/>
+0040165C   .  6A 08       <font color="#ff0000">  push    8</font><br/>
+0040165E   .  E8 F2F9FFFF   call    00401055<br/><br/>
+可以看到，第二种类的信息是传入了的！！<br/>
+那为什么不根据这个重新分配空间呢？<br/><br/>
+operator new函数（placement new的版本）：<br/><br/>
+00401B90 &gt;/&gt; \55            push    ebp<br/>
+00401B91  |.  8BEC          mov     ebp, esp<br/>
+00401B93  |.  83EC 40       sub     esp, 40<br/>
+00401B96  |.  53            push    ebx<br/>
+00401B97  |.  56            push    esi<br/>
+00401B98  |.  57            push    edi<br/>
+00401B99  |.  8D7D C0       lea     edi, dword ptr [ebp-40]<br/>
+00401B9C  |.  B9 10000000   mov     ecx, 10<br/>
+00401BA1  |.  B8 CCCCCCCC   mov     eax, CCCCCCCC<br/>
+00401BA6  |.  F3:AB         rep     stos dword ptr es:[edi]<br/><font color="#ff0000">00401BA8  |.  8B45 0C       mov     eax, dword ptr [ebp+C]</font><br/>
+00401BAB  |.  5F            pop     edi                              ;  0012FF3C<br/>
+00401BAC  |.  5E            pop     esi<br/>
+00401BAD  |.  5B            pop     ebx<br/>
+00401BAE  |.  8BE5          mov     esp, ebp<br/>
+00401BB0  |.  5D            pop     ebp<br/>
+00401BB1  .  C3            retn<br/><br/>
+[epb+C]就是我们push的第一个参数，也就是new括号中的那个指针。<br/>
+从红色这句可以看到，程序赤裸裸地把这个指针原样返回了。<br/><br/>
+这么大一个过程，其实一个mov就可以解决，怎么会这么扭曲。。<br/><br/><font color="#0000ff">》》release方式编译</font><br/><br/>
+怀疑是不是debug方式编译器不知道优化，<br/>
+故使用release来看一下。<br/><br/>
+main：<br/><br/>
+0040165B   .  52            push    edx<br/>
+0040165C   .  6A 08         push    8<br/>
+0040165E   .  E8 F2F9FFFF   call    00401055<br/><br/>
+operator new：<br/><br/>
+00401B90 &gt;/&gt; \55            push    ebp<br/>
+00401B91  |.  8BEC          mov     ebp, esp<br/>
+00401B93  |.  83EC 40       sub     esp, 40<br/>
+00401B96  |.  53            push    ebx<br/>
+00401B97  |.  56            push    esi<br/>
+00401B98  |.  57            push    edi<br/>
+00401B99  |.  8D7D C0       lea     edi, dword ptr [ebp-40]<br/>
+00401B9C  |.  B9 10000000   mov     ecx, 10<br/>
+00401BA1  |.  B8 CCCCCCCC   mov     eax, CCCCCCCC<br/>
+00401BA6  |.  F3:AB         rep     stos dword ptr es:[edi]<br/>
+00401BA8  |.  8B45 0C       mov     eax, dword ptr [ebp+C]<br/>
+00401BAB  |.  5F            pop     edi<br/>
+00401BAC  |.  5E            pop     esi<br/>
+00401BAD  |.  5B            pop     ebx<br/>
+00401BAE  |.  8BE5          mov     esp, ebp<br/>
+00401BB0  |.  5D            pop     ebp<br/>
+00401BB1  .  C3            retn<br/><br/>
+可以看到，简化的只是main函数里面的一些冗余赋值语句。<br/>
+本质上的调用<font color="#ff0000">operator new(size , pointer)</font>的框架没有改变。<br/><br/><font color="#ff00ff">附记：</font><br/><br/>
+release方式下没有源码信息，故定位比较麻烦，只有手动跟踪。<br/>
+从代码入口开始，找到三次特征的压栈操作即可，<br/>
+并且main的入口在调用exit之前。<br/><br/>
+00422490  |.  8B15 E0D34700 mov     edx, dword ptr [_environ]<br/>
+00422496  |.  52          <font color="#ff0000">  push    edx</font><br/>
+00422497  |.  A1 D8D34700   mov     eax, dword ptr<font color="#ff0000"> [<strong>argv]</font><br/>
+0042249C  |.  50       <font color="#ff0000">     push    eax</font><br/>
+0042249D  |.  8B0D D4D34700 mov     ecx, dword ptr<font color="#ff0000"> [</strong>argc]</font><br/>
+004224A3  |.  51        <font color="#ff0000">    push    ecx</font><br/>
+004224A4  |.  E8 91EDFDFF   call    0040123A<br/>
+004224A9  |.  83C4 0C       add     esp, 0C<br/>
+004224AC  |.  8945 E4       mov     dword ptr [ebp-1C], eax<br/>
+004224AF  |.  8B55 E4       mov     edx, dword ptr [ebp-1C]<br/>
+004224B2  |.  52            push    edx                              ; /status<br/>
+004224B3  |.  E8 E8400000   <font color="#ff0000">call    exit                             ; \exit</font><br/><br/><font color="#0000ff">》》结论</font><br/><br/>
+从表面上看，这个placement new着实有种脱了裤子放屁的感觉。<br/>
+不过为什么要这样设计，前人也许有他们自己的原因。<br/>
+麻烦知道的同学告诉一声。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-06-17T10:03:00+08:00" pubdate data-updated="true">Jun 17<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/06/17/C%2B%2B%E4%B8%ADplacementnew%E5%9C%A8VC6%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/06/17/C%2B%2B%E4%B8%ADplacementnew%E5%9C%A8VC6%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/06/16/C%2B%2B%E4%B8%AD%E5%B8%A6%E6%8B%AC%E5%8F%B7%E7%9A%84new%E3%80%82%E3%80%82%EF%BC%88placementnew%EF%BC%89/" title="Previous Post: C++中带括号的new。。（placement new）">&laquo; C++中带括号的new。。（placement new）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/06/18/C%E4%B8%AD%E7%9A%84Trigraphs/" title="Next Post: C中的Trigraphs">C中的Trigraphs &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

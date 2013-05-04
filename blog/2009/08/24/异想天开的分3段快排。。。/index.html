@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>异想天开的分3段快排。。。 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.8.20 看了一份研究报告之后，
+也手痒了，想想能不能把快排变得更快一点。 之前讨论过STL中一个尽量避免爆栈的写法。
+这里突然想到的是改变一下分段数有没有作用。 理论分析： 首先说说一般的快排效率，
+我更倾向于立足某个程序实现，分析实际的比较和移动， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/08/24/%E5%BC%82%E6%83%B3%E5%A4%A9%E5%BC%80%E7%9A%84%E5%88%863%E6%AE%B5%E5%BF%AB%E6%8E%92%E3%80%82%E3%80%82%E3%80%82">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">异想天开的分3段快排。。。</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-24T14:23:00+08:00" pubdate data-updated="true">Aug 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.8.20</p>
+
+
+<p>看了一份研究报告之后，<br/>
+也手痒了，想想能不能把快排变得更快一点。</p>
+
+
+<p>之前讨论过STL中一个<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/a8d29150a0f2506a84352447.html">尽量避免爆栈的写法</a>。<br/>
+这里突然想到的是改变一下分段数有没有作用。</p>
+
+
+<p><font color="#0000ff">理论分析：</font></p>
+
+
+<p>首先说说一般的快排效率，<br/>
+我更倾向于立足某个程序实现，分析实际的比较和移动，<br/>
+而不是单纯的看个理论的复杂度。</p>
+
+
+<p>比如下方程序中的qsort2就是市面上常见的经典写法。<br/>
+应该说，已经做得很精炼了，而且结构上看着很整齐。<br/>
+每次比较的时候区间[l,r]中的每个数都和轴比较了一次。<br/>
+而当把整个区间分成m段时，每一段比较的是n/m次，<br/>
+总共加起来还是n次。<br/>
+也就是说，每次把区间分成两段，不断分下去，形成一棵树。<br/>
+这棵树的每层耗掉的比较次数都是n次。<br/>
+而这棵树总共只有log2(n)这么高。<br/>
+所以总共的耗费是f1=n*log2(n)</p>
+
+
+<p>qsort3就是后面突发奇想的，<br/>
+如果每次分成三段的话，<br/>
+效率会怎么样呢。。<br/>
+沿用上面的这种分析法。<br/>
+分成三段，则需要两个轴元素，每个元素进行两次比较。<br/>
+所以每层是2*n次比较，而总共的层数是log3(n)。<br/>
+乘起来就是f2=2*n*log3(n)</p>
+
+
+<p>比较两个式子可以简单使用作商法：<br/>
+f1/f2<br/>
+=(n*log2(n))/(2*n*log3(n))<br/>
+=(ln(n)/ln(2))/(2*ln(n)/ln(3))<br/>
+=ln(3)/(2*ln(2))<br/>
+=  0.7925 &lt; 1</p>
+
+
+<p>也就是说，单看比较次数，<br/>
+这个想法就很作废了。<br/>
+不过我还是写了下程序看看。。。</p>
+
+
+<p><font color="#0000ff">程序：</font></p>
+
+
+<p>#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;time.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;algorithm&gt;</p>
+
+
+<p>using namespace std ;</p>
+
+
+<p>const int MAXN = 1000000;</p>
+
+
+<p>int origin[MAXN] , standard[MAXN];<br/>
+int a[MAXN] ;<br/>
+int tmp[MAXN] ;</p>
+
+
+<p>void init(){<br/>
+     int i;<br/>
+     for ( i = 0 ; i &lt; MAXN ; i ++ ){<br/>
+         origin[i] = rand() % 1000 ;<br/>
+     }<br/>
+     memcpy(standard , origin , sizeof(origin)) ;<br/>
+     sort(standard , standard + MAXN) ;<br/>
+}</p>
+
+
+<p>void qsort2(int l , int r){<br/>
+     int i , j , t ;<br/>
+     i = rand() % ( r - l + 1 ) + l ;<br/>
+     t = a[i] ;<br/>
+     a[i] = a[l] ;<br/>
+     a[l] = t ;<br/>
+     <br/>
+     i = l ;<br/>
+     j = r ;<br/>
+     //t == a[i] <br/>
+     while ( i &lt; j ){<br/>
+         while ( i &lt; j &amp;&amp; t &lt;= a[j] ) j &#8211; ;<br/>
+         a[i] = a[j] ;<br/>
+         while ( i &lt; j &amp;&amp; a[i] &lt;= t ) i ++ ;<br/>
+         a[j] = a[i] ;<br/>
+     }<br/>
+     a[i] = t ;</p>
+
+
+<p>     if ( i - 1 &gt; l ) qsort2(l , i - 1) ;<br/>
+     if ( i + 1 &lt; r ) qsort2(i + 1 , r) ;<br/>
+}</p>
+
+
+<p>void qsort3(int l , int r){<br/>
+     int k , i , i1 , j , j1 , t1 , t2 ;<br/>
+     <br/>
+     t1 = a[l] ;<br/>
+     if ( t1 &gt; a[l + 1] ) {<br/>
+         t2 = t1 ;<br/>
+         t1 = a[l + 1] ;<br/>
+     }else t2 = a[l + 1] ;</p>
+
+
+<p>     i = l ;<br/>
+     j = r ;<br/>
+     for ( k = l + 2 ; k &lt;= r ; k ++ ){<br/>
+         if ( a[k] &lt; t1 ) tmp[i ++] = a[k] ;<br/>
+         else tmp[j &#8211;] = a[k] ;<br/>
+     }</p>
+
+
+<p>     memcpy(&amp;a[l] , &amp;tmp[l] , sizeof(int) * (i - l)) ;<br/>
+     i1 = i ;<br/>
+     a[i ++] = t1 ;</p>
+
+
+<p>     j1 = j ;<br/>
+     j = r ;<br/>
+     for ( k = j1 + 1 ; k &lt;= r ; k ++ ){<br/>
+         if ( tmp[k] &gt; t2 ) a[j &#8211;] = tmp[k] ;<br/>
+         else a[i ++] = tmp[k] ;<br/>
+     }<br/>
+     a[j] = t2 ;<br/>
+     <br/>
+     if ( i1 - 1 &gt; l ) qsort3(l , i1 - 1) ;<br/>
+     if ( j - i1 &gt; 2 ) qsort3(i1 + 1 , j - 1) ;<br/>
+     if ( j + 1 &lt; r ) qsort3(j + 1 , r) ;</p>
+
+
+<p>}</p>
+
+
+<p>void test(void (*func)(int , int)){<br/>
+     memcpy(a , origin , sizeof(origin)) ;<br/>
+     int t = clock() ;<br/>
+     (*func)(0 , MAXN - 1) ;<br/>
+     if ( memcmp(standard , a , sizeof(origin)) == 0 ) printf(&#8220;right:&#8221;) ;<br/>
+     else printf(&#8220;wrong:&#8221;) ;<br/>
+     printf(&#8220;%d\n&#8221; , clock() - t) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     init() ;<br/>
+     test(qsort2) ;<br/>
+     test(qsort3) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p> </p>
+
+
+<p>结果：（debug编译）</p>
+
+
+<p>right:1576<br/>
+right:3010</p>
+
+
+<p>结论是很显然的，效率没有改进。<br/>
+而且慢得比理论推算的比例更多。。</p>
+
+
+<p>最后再认真想一下，<br/>
+发现最初的想法忽略的最重要的一个问题，<br/>
+就是分段的均匀性。</p>
+
+
+<p>上面的f1和f2两个式子都是在分段均匀的情况下得来的。<br/>
+如果是分成两段，那么通过随机交换轴元素，可以从统计上说均匀了。<br/>
+而分成三段的话，这一点就完全没法保证，<br/>
+上面的实现是直接取的区间的前两个元素来做轴的。</p>
+
+
+<p>尽管这个想法没有实践上的任何意义，<br/>
+用来练习编码还是不错的。<br/>
+因为3段和2段说起来仅仅是一个数字的不一样，<br/>
+实现起来才发现要考虑的东西还真有不少。<br/>
+为了保证2*n的比较次数，我用了O(n)的辅助空间，<br/>
+也同时引入了大量元素的搬移工作。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-24T14:23:00+08:00" pubdate data-updated="true">Aug 24<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/08/24/%E5%BC%82%E6%83%B3%E5%A4%A9%E5%BC%80%E7%9A%84%E5%88%863%E6%AE%B5%E5%BF%AB%E6%8E%92%E3%80%82%E3%80%82%E3%80%82/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/08/24/%E5%BC%82%E6%83%B3%E5%A4%A9%E5%BC%80%E7%9A%84%E5%88%863%E6%AE%B5%E5%BF%AB%E6%8E%92%E3%80%82%E3%80%82%E3%80%82/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/08/18/%E3%80%8AC%E9%99%B7%E9%98%B1%E4%B8%8E%E7%BC%BA%E9%99%B7%E3%80%8B%E7%AC%94%E8%AE%B0/" title="Previous Post: 《C陷阱与缺陷》笔记">&laquo; 《C陷阱与缺陷》笔记</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/08/26/%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%9A%84%E5%BA%95%E5%B1%82%E8%BE%93%E5%85%A5%E5%87%BD%E6%95%B0%E8%8E%B7%E5%8F%96%E9%BC%A0%E6%A0%87%E4%BF%A1%E6%81%AF/" title="Next Post: 控制台的底层输入函数获取鼠标信息">控制台的底层输入函数获取鼠标信息 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

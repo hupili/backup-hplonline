@@ -1,0 +1,2562 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.9.9 想了下，要统计一下代码行数。
+用之前写过的遍历文件夹的模块就可以了，
+只需要编写用来统计行数的函数。
+回调函数得到了文件名，
+将其打开，依次读取每一行，
+传给判断函数，指出该行是否统计。 问题在于统计的标准是啥，
+关于C/C++的文件，大致列了下面几条：1. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/page/11">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/09/09/%E4%BB%A3%E7%A0%81%E8%A1%8C%E6%95%B0%E7%BB%9F%E8%AE%A1/">代码行数统计</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-09-09T20:39:00+08:00" pubdate data-updated="true">Sep 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.9.9</p>
+
+
+<p>想了下，要统计一下代码行数。<br/>
+用之前写过的<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/b0aea73439bb4fbed1a2d349.html">遍历文件夹的模块</a>就可以了，<br/>
+只需要编写用来统计行数的函数。<br/>
+回调函数得到了文件名，<br/>
+将其打开，依次读取每一行，<br/>
+传给判断函数，指出该行是否统计。</p>
+
+
+<p>问题在于统计的标准是啥，<br/>
+关于C/C++的文件，大致列了下面几条：<br/><font color="#ff9900">1.空行不算<br/>
+2.｛｝占据的单行不算<br/>
+3.一整行的注释不算，包括//或者/**/<br/>
+4.#include 的行不算</font></p>
+
+
+<p>其他的暂时没想到。<br/>
+至于/**/括起来的注释就有点麻烦了。<br/>
+支持注释嵌套的编译器，和不支持嵌套的编译器还得用不同的方式处理。<br/>
+于是没有管这种情况，只把/*打头的行略去了。。</p>
+
+
+<p>比如下面这个示例：<br/>
+&#8212;&#8212;&#8212;&#8212;&#8211;<br/>
+/* */<br/>
+//program<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+int main()<br/>
+{<br/>
+if ( 1 ){<br/>
+    //here : add your code   <br/>
+}<br/>
+return 0 ;<br/>
+}<br/>
+&#8212;&#8212;&#8212;&#8212;&#8211;<br/>
+统计出来只有3行。</p>
+
+
+<p><font color="#0000ff">程序：</font></p>
+
+
+<p>#include &lt;windows.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;</p>
+
+
+<p>const int MAX_BUFFER = 5000 ;</p>
+
+
+<p>char EscChar[] = &#8221; \t{}\n&#8221; ;<br/>
+char FileType[] = &#8220;frm|asm|m|c|cpp&#8221; ;<br/>
+char Dir[] = &#8220;f:&#92;acworks&#8221; ;<br/>
+int lines = 0 ;</p>
+
+
+<p>typedef void (*OPFUNC)(char *filename) ;</p>
+
+
+<p>bool IsTypeValid(char *filename){<br/>
+     int len = strlen(filename) ;<br/>
+     char extname[MAX_PATH] ;<br/>
+     char *p = extname + MAX_PATH - 1 ;<br/>
+     int i ;<br/>
+     *p = &#8216;\0&#8217; ;<br/>
+     for ( i = len - 1 ;     i &gt;= 0 &amp;&amp; filename[i] != &#8216;.&#8217; ; i&#8211; ){<br/>
+         p&#8211; ;<br/>
+         *p = filename[i] ;<br/>
+     }<br/>
+     //no extensive name<br/>
+     if ( i &lt; 0 ){<br/>
+         return false ;<br/>
+     }<br/>
+     if ( strstr(FileType , p) != NULL ){<br/>
+         return true ;<br/>
+     }else {<br/>
+         return false ;<br/>
+     }<br/>
+}</p>
+
+
+<p>bool IsLineValid(char *s){<br/>
+     char tmp[MAX_BUFFER] ;<br/>
+     int l = 0 ;<br/>
+     for ( ; *s ; s++ ){<br/>
+         if ( !strchr(EscChar , *s) ){<br/>
+             tmp[l++] = *s ;<br/>
+         }<br/>
+     }<br/>
+     tmp[l] = &#8216;\0&#8217; ;<br/>
+     //completely consist of escape characters<br/>
+     if ( l == 0 ) return false ;<br/>
+     //pure annotation line is neglected<br/>
+     if ( tmp[0] == &#8216;/&#8217; &amp;&amp; tmp[1] == &#8216;/&#8217; <br/>
+         || tmp[0] == &#8216;/&#8217; &amp;&amp; tmp[1] == &#8216;*&#8217; ) return false ;<br/>
+     //#include lines are neglected<br/>
+     if ( l &gt;= 8 ){<br/>
+         tmp[8] = &#8216;\0&#8217; ;<br/>
+         if ( strcmp(tmp , &#8220;#include&#8221;) == 0 ){<br/>
+             return false ;<br/>
+         }<br/>
+     }<br/>
+     return true ;<br/>
+}</p>
+
+
+<p>void LineCount(char *filename){<br/>
+     if ( !IsTypeValid(filename) ){<br/>
+         return ;<br/>
+     }<br/>
+//     lines++ ; return ;<br/>
+//     if ( strstr(filename,&#8221;rem&#8221;) ) return ;<br/>
+     printf(&#8220;checking %s\n&#8221; , filename) ;<br/>
+     FILE *fp = fopen(filename , &#8220;r&#8221; ) ;<br/>
+     char buffer[MAX_BUFFER] ;<br/>
+     int cur_count = 0 ;<br/>
+     while ( fgets(buffer , MAX_BUFFER , fp) ){<br/>
+         if ( IsLineValid(buffer) ){<br/>
+             cur_count ++ ;<br/>
+         }<br/>
+     }<br/>
+     printf(&#8220;valid lines:%d\n&#8221; , cur_count) ;<br/>
+     lines += cur_count ;<br/>
+     fclose(fp) ;<br/>
+}</p>
+
+
+<p>void SearchDir(char *dir , OPFUNC func){<br/>
+     WIN32_FIND_DATA wfd ; <br/>
+     char szCurDir[MAX_PATH] ;<br/>
+     char szFind[MAX_PATH] ;<br/>
+     strcpy(szCurDir , dir) ;<br/>
+     int len = strlen(szCurDir) ;<br/>
+     //is root directory or not <br/>
+     if ( szCurDir[len - 1] != &#8216;&#92;&#8217; ) {<br/>
+         strcat(szCurDir , &#8220;&#92;&#8221;) ;     <br/>
+     }<br/>
+     strcpy(szFind , szCurDir) ;<br/>
+     strcat(szFind , &#8220;*.*&#8221;) ;</p>
+
+
+<p>     HANDLE hFind=FindFirstFile(szFind , &amp;wfd) ; <br/>
+     if ( hFind == INVALID_HANDLE_VALUE ) {<br/>
+         return ;<br/>
+     }else{<br/>
+         do{<br/>
+             //filtering the current directory and its parent<br/>
+             if ( wfd.cFileName[0] == &#8216;.&#8217; ) continue ;<br/>
+             char szFileName[MAX_PATH] ;<br/>
+             sprintf(szFileName , &#8220;%s%s&#8221; , szCurDir , wfd.cFileName ) ;<br/>
+             //this is a directory and do recursion<br/>
+             if ( wfd.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY ) {<br/>
+                 SearchDir(szFileName , func) ;<br/>
+             }else{<br/>
+                 (*func)(szFileName) ;<br/>
+             }<br/>
+         }while ( FindNextFile(hFind , &amp;wfd) ) ;<br/>
+     }<br/>
+     FindClose(hFind) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     char sDir[MAX_PATH] ;<br/>
+     GetCurrentDirectory(MAX_PATH , sDir) ;<br/>
+     SearchDir(Dir , LineCount) ;<br/>
+     printf(&#8220;\n\ntotal lines:%d\n\n&#8221; , lines) ;<br/>
+     system(&#8220;pause&#8221;) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p><font color="#0000ff">&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-下面是保存了的成品统计，</font></p>
+
+
+<p><font color="#0000ff">不包含任何课程上要求的代码，</font></p>
+
+
+<p><font color="#0000ff">非要刷数据的时候 ，可以把他们统计上，</font></p>
+
+
+<p><font color="#0000ff">不过我觉得那些代码大部分以后拿着用都没有。。。。</font></p>
+
+
+<p>由于平时没有按照好的方式来存储代码，<br/>
+需要统计的时候，发现有点囧了。</p>
+
+
+<p><font color="#0000ff">acm文件夹下：<br/></font>不含&#8221;rem.txt&#8221;：<font color="#ff9900">21677行</font><br/>
+含&#8221;rem.txt&#8221;：23875行<br/>
+在各大OJ上交的题，和一些比赛的代码，<br/>
+有许多以前没有保存到的，<br/>
+开始的时候图方便，直接存成了txt格式。<br/>
+其中的rem.txt是每道题做完后，自己写提示性文件。</p>
+
+
+<p><font color="#0000ff">单片机（89s52硬件上实现）：</font><br/>
+880行<br/><font color="#0000ff">proteus：</font><br/>
+717行<br/><font color="#0000ff">matlab：</font><br/>
+359行</p>
+
+
+<p><font color="#0000ff">算法模板库：</font><br/>
+4146行<br/>
+这里面基本上是按照源文件保存的，<br/>
+没有像建一个工程后的那么多框架代码。<br/>
+有些是txt，有些是c、cpp。。。</p>
+
+
+<p><font color="#0000ff">汇编：</font><br/>
+1904行</p>
+
+
+<p><font color="#0000ff">项目：</font><br/>
+56122行<br/>
+（<font color="#ff0000">啥东西都在里面，估计连数据都包含进去了，这个数字不可参考）<br/></font>去掉txt文件：<br/><font color="#ff9900">9531行</font><br/>
+这个数字可以参考。。</p>
+
+
+<p><font color="#0000ff">VC学习练习：</font><br/>
+4431行</p>
+
+
+<p><font color="#0000ff">总共的“c,cpp,m,frm,a51,asm&#8221;等：（没txt）<br/></font>18223行<br/>
+其中DSW文件数：（用于估算框架代码）<br/>
+37<br/>
+一个dlg工程初建好后的行数：<br/>
+147行<br/>
+总共耗掉的行数：5439<br/><font color="#ff9900">减掉后有：12784行</font></p>
+
+
+<p>&#8212;&#8212;-</p>
+
+
+<p>只算成品，并且按照上面这个程序的统计规则。<br/>
+大概有<font color="#ff9900">2W的算法，1W的工程</font>吧。。。<br/>
+唉。。两年了就这么点东西。。。。。</p>
+
+
+<p>虽然相对这些成品而言，<br/>
+有超出他们<font color="#ff0000">几倍的废品</font>，<br/>
+但是不好统计了，<br/>
+而且个人感觉那些记在代码量上好像不好。。<br/>
+另外有些学习过程中积累的片段，<br/>
+记在笔记里面了，也没专门整理。<br/>
+后来一些时候的，就发到空间来了，<br/>
+更不好整理了。。。</p>
+
+
+<p>另外，程序员光有代码行数还不够的，<br/>
+文档能力也是非常重要的。<br/>
+这个我就根本没正式地练过了。。</p>
+
+
+<p>最近看了不少酱油的简历，<br/><font color="#ff0000">希望毕业的时候不要落魄到拿作业里面的代码行来充数，<br/>
+以及像有些人拿几个课堂上的实验当“项目经验”。。。</font></p>
+
+
+<p>2009.9.9记之，一年后来看看数据有啥变化<img src="http://img.baidu.com/hi/jx/j_0003.gif"/></p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/09/09/%E9%81%8D%E5%8E%86%E7%9B%AE%E5%BD%95%E7%9A%84%E6%A8%A1%E5%9D%97/">遍历目录的模块</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-09-09T18:37:00+08:00" pubdate data-updated="true">Sep 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.9.9</p>
+
+
+<p>经常会用到的操作，<br/>
+遍历某个文件夹（包括其子目录），<br/>
+然后对其中的文件进行某种操作。</p>
+
+
+<p>SearchDir函数可以完成这个功能，<br/>
+传入OPFUNC类型的回调函数即可。<br/>
+OPFUNC可以得到每个文件名，并决定作何操作。<br/>
+下面的程序演示了输出d:\下的所有文件名的方法。<br/>
+关于路径的习惯，根目录后面是带&#8217;&#39;的，<br/>
+而其他目录是不带&#8217;&#39;的。<br/>
+我也觉得这是个很别扭的事情，<br/>
+但是前人都这么搞的，<br/>
+也就跟着这么搞。</p>
+
+
+<p>有的时候，最初的设计不周，<br/>
+导致后人多写许多句if。。。</p>
+
+
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</p>
+
+
+<p>#include &lt;windows.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;</p>
+
+
+<p>char Dir[] = &#8220;d:&#92;&#8221; ;</p>
+
+
+<p>typedef void (*OPFUNC)(char *filename) ;</p>
+
+
+<p><font color="#ff0000">void myOperation(char *filename){<br/>
+     puts(filename) ;<br/>
+}</font></p>
+
+
+<p>void SearchDir(char *dir , OPFUNC func){<br/>
+     WIN32_FIND_DATA wfd ; <br/>
+     char szCurDir[MAX_PATH] ;<br/>
+     char szFind[MAX_PATH] ;<br/>
+     strcpy(szCurDir , dir) ;<br/>
+     int len = strlen(szCurDir) ;<br/>
+     //is root directory or not <br/>
+     if ( szCurDir[len - 1] != &#8216;&#92;&#8217; ) {<br/>
+         strcat(szCurDir , &#8220;&#92;&#8221;) ;     <br/>
+     }<br/>
+     strcpy(szFind , szCurDir) ;<br/>
+     strcat(szFind , &#8220;*.*&#8221;) ;</p>
+
+
+<p>     HANDLE hFind=FindFirstFile(szFind , &amp;wfd) ; <br/>
+     if ( hFind == INVALID_HANDLE_VALUE ) {<br/>
+         return ;<br/>
+     }else{<br/>
+         do{<br/>
+             //filtering the current directory and its parent<br/>
+             if ( wfd.cFileName[0] == &#8216;.&#8217; ) continue ;<br/>
+             char szFileName[MAX_PATH] ;<br/>
+             sprintf(szFileName , &#8220;%s%s&#8221; , szCurDir , wfd.cFileName ) ;<br/>
+             //this is a directory and do recursion<br/>
+             if ( wfd.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY ) {<br/>
+                 SearchDir(szFileName , func) ;<br/>
+             }else{<br/>
+                 (*func)(szFileName) ;<br/>
+             }<br/>
+         }while ( FindNextFile(hFind , &amp;wfd) ) ;<br/>
+     }<br/>
+     FindClose(hFind) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     char sDir[MAX_PATH] ;<br/>
+     SearchDir(Dir , myOperation) ;<br/>
+     system(&#8220;pause&#8221;) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/09/07/%E5%B1%82%E6%AC%A1%E5%88%86%E6%9E%90%E6%B3%95%EF%BC%88%E4%BB%A5%E9%80%89%E5%A5%B3%E5%8F%8B%E4%B8%BA%E4%BE%8B%EF%BC%89/">层次分析法（以选女友为例）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-09-07T21:03:00+08:00" pubdate data-updated="true">Sep 7<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.9.7</p>
+
+
+<p><font color="#0000ff">简介：</font></p>
+
+
+<p>总的来说，个人认为是一种理论上很充分，<br/>
+但数据源很随意的方法。</p>
+
+
+<p>通常在做某种决策的时候，<br/>
+方案带有若干属性，<br/>
+无法找到某个方案让各个属性同时满足最优。<br/>
+这就需要取舍，决定究竟哪个方案更好。</p>
+
+
+<p>其精华在于通过分层，<br/>
+将比较局部化，使得人更容易作出决策。</p>
+
+
+<p><font color="#0000ff">实例：</font></p>
+
+
+<p>有三个女的，选一个当女朋友，现掌握的信息如下：<br/>
+1.女1比女2容貌好很多<br/>
+2.女1比女3容貌好一点<br/>
+3.女3比女2容貌好一点<br/>
+4.女2非常有思想，女1女3都很一般<br/>
+5.女3比女1有才</p>
+
+
+<p>整理出来，可评价的指标有三种：<font color="#ff9900">容貌，思想，才华。</font></p>
+
+
+<p>而直观看上去，貌似三个女的都各有所长，<br/>
+非要揉成一团地看过去，很难取舍。<br/>
+虽然从总体上，说不清哪个更好，<br/>
+但正如给出的5点信息，<br/>
+我们可以站在某特定的指标上给出评价。<br/>
+这时，可以使用层次分析法，<br/>
+将这种比较局部化。</p>
+
+
+<p><font color="#0000ff">分层如下：</font></p>
+
+
+<p><span><span><img class="blogimg" height="334" width="474" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a194c08085967bfc9023d9a0.jpg"/><br/></span><br/></span></p>
+
+
+<p>一般做层次分析的时候，<br/>
+最上层是目标层，<font color="#ff9900">往往只有一个目标</font>。<br/>
+中间若干层是准则层，即这里各种评价指标，<br/>
+这里只用了一层，但可以用多层，处理方法类似。<br/>
+最下层是方案层，即这里的三个女的。<br/><font color="#ff0000">整个问题就是求出各个方案对目标层的权重。</font></p>
+
+
+<p>因为马上要用数字描述一个强度，<br/>
+这里做如下定义：<br/><font color="#ff9900">i比j一样强，1<br/>
+i比j稍微强，3<br/>
+i比j强，5<br/>
+i比j明显地强，7<br/>
+i比j强非常多，9</font><br/>
+（这个定义是常用的1-9定义法，<br/>
+如果程度在这几个描述之间，<br/>
+可以用2、4、6、8来刻画。<br/>
+这是Saaty经过大量实验确定的，<br/>
+比较适合用来描述的度量方式）<br/>
+当j比i强的时候，取跟上面相应的倒数。</p>
+
+
+<p>首先，看准则层对目标层的影响。<br/>
+记A(i,j)为i跟j比的强度，<br/>
+而A(j,i)=1/A(i,j)，<br/>
+所以对于三个准则，仅需两两比较，共三次即可。<br/>
+显然，始终有A(i,i)=1。</p>
+
+
+<p>容貌跟思想相比，显然没那么重要，<br/>
+因为大家都知道韩国人很厉害的，<br/>
+整改一下完全可行，<br/>
+而思想可是一个恼火的事情，<br/>
+要发现一个有思想的人真的很困难。<br/>
+所以，A(1,2)=1/7。</p>
+
+
+<p>容貌跟才华相比，就不那么明晰了。<br/>
+从先天的角度来说，<br/>
+容貌还真的是天生的，<br/>
+而有些人在某些方面本来就有天赋，<br/>
+自然也就显得有才一点。<br/>
+从后天的角度来说，<br/>
+容貌可以通过去韩国解决，<br/>
+才华方面，假以时日，不难培养。<br/>
+于是A(1,3)=1。</p>
+
+
+<p>思想和才华比，重要性也是显著的，<br/>
+因为给一个人洗脑比教其用C难度大。<br/>
+这里就给一个A(2,3)=5吧。</p>
+
+
+<p>综合下来，准则层对目标层的成对比较矩阵为：<br/>
+A = [<br/>
+1    1/7    1 ;<br/>
+7    1    5 ;<br/>
+1    1/5    1 ;<br/>
+] ;</p>
+
+
+<p>前面给出的3条信息比较明确，<br/>
+按照同样的方法，可以给出在容貌这个准则下，<br/>
+三个女的成对比较矩阵：<br/>
+B{1} = [<br/>
+1    5    3 ;<br/>
+1/5    1    1/3 ;<br/>
+1/3    3    1 ;<br/>
+] ;</p>
+
+
+<p>第4条信息比较简短，<br/>
+但从中能够得到两两比较的信息。<br/>
+构造出的在思想这个准则下，<br/>
+三个女的成对比较矩阵：<br/>
+B{2} = [<br/>
+1    1/7    1 ;<br/>
+7    1    7 ;<br/>
+1    1/7    1 ;<br/>
+] ;</p>
+
+
+<p>第5条信息就需要一点技术上的处理了。<br/>
+从字面上，可以先构造出：<br/>
+B{3} = [<br/>
+1    ?  1/3 ;<br/>
+?    1    ? ;<br/>
+3    ?    1 ;<br/>
+] ;<br/>
+另外两处，没有进行比较，<br/>
+这在实际中也是可能经常出现的，<br/>
+比如有两者由于信息确实没法比较，<br/>
+或者不愿意进行比较。。。</p>
+
+
+<p>关于层次分析的讲解中，<br/>
+也给出了填充这个矩阵的方法：<br/><font color="#ff0000">1.问号部分用0代替<br/>
+2.对角线上的数为一行中问号的个数加一</font></p>
+
+
+<p>结果为：<br/>
+B{3} = [<br/>
+3    0  1/3 ;<br/>
+0    3    0 ;<br/>
+3    0    3 ;<br/>
+] ;</p>
+
+
+<p>得到这些成对比较矩阵之后，<br/>
+最终权重的算法如下：（向量都是列向量）<br/><font color="#ff0000">1.求得A的主特征向量wA<br/>
+2.求得B{1},B{2},B{3}的主特征向量wB{1},wB{2},wB{3}<br/>
+3.构造方案层对准则层的权矩阵，WB=[wB{1},wB{2},wB{3}]<br/>
+4.最终权重w=WB*wA</font></p>
+
+
+<p><font color="#0000ff">用MATLAB来实现程序如下：</font></p>
+
+
+<p>%层次分析<br/>
+function ahp<br/>
+A = [<br/>
+1    1/7    1 ;<br/>
+7    1    5 ;<br/>
+1    1/5    1 ;<br/>
+] ;<br/>
+B{1} = [<br/>
+1    5    3 ;<br/>
+1/5    1    1/3 ;<br/>
+1/3    3    1 ;<br/>
+] ;<br/>
+B{2} = [<br/>
+1    1/7    1 ;<br/>
+7    1    7 ;<br/>
+1    1/7    1 ;<br/>
+] ;<br/>
+B{3} = [<br/>
+3    0  1/3 ;<br/>
+0    3    0 ;<br/>
+3    0    3 ;<br/>
+] ;<br/>
+BN = size(B{1}) ;<br/>
+[ciA , wA] = get_main_eig(A) ;<br/>
+for i = 1:BN<br/>
+     [ciB{i},wB{i}] = get_main_eig(B{i}) ;     <br/>
+end<br/>
+WB = [] ;<br/>
+for i = 1:BN<br/>
+     WB = [WB wB{i}]  ;  <br/>
+end<br/>
+%输出一致性<br/>
+ciA<br/>
+for i = 1:BN<br/>
+     ciB{i}     <br/>
+end<br/>
+%最终权重<br/>
+w = WB * wA</p>
+
+
+<p>%取主特征值<br/>
+function [ci,w] = get_main_eig(X)<br/>
+[v d] = eig(X) ;<br/>
+n = size(X , 1) ;<br/>
+[m i] = max(sum(abs(d))) ;<br/>
+w = v(: , i) ;<br/>
+w = w / sum(w) ;<br/>
+ci = (m - n) / (n - 1) ;</p>
+
+
+<p>结果：</p>
+
+
+<p>最后求得的w输出为：<br/>
+     0.1924<br/>
+     0.5935<br/>
+     0.2140</p>
+
+
+<p>说明女2赢了。。。<br/>
+其实这个世界本来就应该重视思想的。。</p>
+
+
+<p><font color="#0000ff">方法评价：</font></p>
+
+
+<p>正如大家看到的，<br/>
+计算过程都是数学上的操作，<br/>
+但构造成对比较矩阵的时候，显得有点YY。<br/>
+在实际操作中，<br/>
+一般是请一群相关方向的砖家，<br/>
+进行群体判断。</p>
+
+
+<p>至于开始说的目标层一般只有一个目标，<br/>
+这倒真的是一般情况，<br/>
+如果能做到有多个目标，<br/>
+且每个目标与一个准则对应，那原来的问题就不是问题了。</p>
+
+
+<p>比如，把原来的目标去掉，三个准则变为目标。<br/>
+那么针对容貌好的，咱选一个，<br/>
+针对有思想的，咱选一个，<br/>
+针对有才的，咱还选一个。<br/>
+如此一来，脚踏三船，<br/>
+不用这么费力就可以作出决策了。</p>
+
+
+<p><font color="#ff0000">所以有的时候，<br/>
+社会伦理学家做出的一小点点改进，<br/>
+即可让数学家节省很多精力。。</font></p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/09/02/%E9%A2%84%E6%B5%8B%E6%89%8B%E6%AE%B5%EF%BC%8C%E5%AE%9A%E5%8F%82%E6%89%8B%E6%AE%B5/">预测手段，定参手段</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-09-02T21:00:00+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.9.1</p>
+
+
+<p>据说霍金这样说过：<br/>
+我注意过，即便是那些声称一切都是命中注定的而且我们无力改变的人，在过马路之前都会左右看。</p>
+
+
+<p>所以有的时候，虽然我们很明确是在装13，<br/>
+但毕竟得拿出方案，装得彻头彻尾。</p>
+
+
+<p>先看一组数据：<br/>
+25.80     42.60     24.70     3.90     3.00     0.00     <br/>
+15.30     20.20     49.80     9.70     1.90     3.10     <br/>
+12.20     24.90     43.60     13.30     2.60     3.40     <br/>
+11.50     24.10     52.80     8.30     1.70     1.60     <br/>
+5.20     39.80     35.20     9.50     6.20     4.10     <br/>
+5.60     32.80     35.60     16.60     4.40     5.30     <br/>
+5.90     33.10     34.70     14.00     5.50     6.80     <br/>
+4.40     44.00     28.30     10.00     3.20     10.00     <br/>
+4.70     41.50     31.30     6.40     5.80     10.30     <br/>
+1.20     26.90     39.90     14.80     5.90     11.30   </p>
+
+
+<p>横着的每一行加和为100，其实代表的是各类脑残的百分比。<br/>
+而竖着看表示各年的情况。</p>
+
+
+<p>从左往右，脑残程度依次增加。<br/>
+比如第一行的25.80，代表一般思维正常的人；<br/>
+42.60属于2级脑残，各种蛋疼围观群众属于这类；<br/>
+而3、4、5等等是级别越高越严重；<br/>
+最后一列是劣5类脑残，属于无可救药类，<br/>
+hplonline正好属于这一列。</p>
+
+
+<p>拿到这些数据的目的并不是放在那乘凉的，<br/>
+显然是要来做做预测之类。<br/>
+比如，我们可以问问劣5类脑残所占的比例发展趋势如何？<br/>
+也许从数值上可以让我看到希望。</p>
+
+
+<p>matlab的fminsearch可谓强大，<br/>
+配合各种准则可以拟合出不同需求的东西来，<br/>
+这是一个通用的方法。</p>
+
+
+<p><font color="#0000ff">一。分析脑残比例的变化方式</font></p>
+
+
+<p>一般来说，经过整治，重度脑残是可以变轻的。<br/>
+又一般来说，经过洗脑，轻度脑残也是可以变重的。<br/>
+于是可以给出参数aij表示第i类脑残化为第j类脑残的比例，<br/>
+很显然的，aij对j求和应该是为1的，<br/>
+因为地球人都属于某种脑残，不可能凭空变成火星人。</p>
+
+
+<p>另外一点，脑残的变化应该是有过渡性的，<br/>
+所以不考虑突然加重两级这样的不合理情况。<br/>
+从理论上说，跳级只有两种可能：<br/><font color="#ff9900">1.被hplonline洗脑后可能直接到达劣5类<br/>
+2.春歌出手拯救，自然可以从各个级别直接降为1类。</font></p>
+
+
+<p>但是，被hplonline洗脑是需要一个长期过程的，<br/>
+既然是进行短期预测，自然不用考虑这种情况。<br/>
+而春歌要保持元气去拯救地球，一般不轻易出手，<br/>
+那么，这种情况也不考虑了。</p>
+
+
+<p>由于只是进行方法展示，转移函数从简，就用个线性的。<br/>
+记列向量y(n)为各级别脑残所占比例。<br/>
+如果给出一个转移矩阵：</p>
+
+
+<p>A = [<br/>
+     a11 a21    0    0    0    0;<br/>
+     a12 a22 a32    0    0    0;<br/>
+     0    a23 a33 a43    0    0;<br/>
+     0    0    a34 a44  a54  0;<br/>
+     0    0    0    a45  a55  a65;<br/>
+     0    0    0      0  a56  a66;<br/>
+] ;</p>
+
+
+<p>那么，y(n)=A*y(n-1)</p>
+
+
+<p>等于说把这个A矩阵给确定了，<br/>
+就可以YY出未来脑残的发展趋势。</p>
+
+
+<p><font color="#0000ff">二。通用的定参手段</font></p>
+
+
+<p>fminsearch来干这勾当其实是很合适的，<br/>
+只要转换一些观念上的东西，就很好套用。</p>
+
+
+<p>最基本的就一句话：<br/>
+[x fval flag] = fminsearch(&#8216;myfunc&#8217; , x0)</p>
+
+
+<p>这里的x0是一个向量，依次排上了待定的各个参数<br/>
+即，x0=[a12，a23，a34，a45，a56，a21，a32，a43，a54，a65]T</p>
+
+
+<p>而myfunc是一个需要自己构造的函数，<br/>
+返回一个值，告诉fminsearch这组参数效果怎样。</p>
+
+
+<p>这里的myfunc可以这样写：<br/>
+function err = myfunc(x)<br/>
+1.从x向量中取得各个参数，构造出转移矩阵<br/>
+2.递推出预测序列y(n)=A^n*y(0)<br/>
+3.根据原始序列p(n)和预测序列y(n)，给出评价标准</p>
+
+
+<p>这种方法实际上可以用于蹂躏任何数据，<br/>
+首先，给出从之前序列推得之后值点的方式，<br/>
+然后，给出拟合好坏的标准，<br/>
+最后，fminsearch就把参数搞出来了。。。</p>
+
+
+<p><font color="#0000ff">三。各种评价标准</font></p>
+
+
+<p>一般这类数据拟合喜欢用最小二乘准则，<br/>
+原因是该准则比起残差绝对值和最小准则，<br/>
+以及chebyshev准则来说，容易求导，也就容易推出理论的计算公式。</p>
+
+
+<p>而我们现在要用的方法是一种搜索，<br/>
+选用以上各种准则，甚至自己发明的准则来说，<br/>
+都是一样的，仅仅是计算评价标准时候耗时有点差异。</p>
+
+
+<p>可以先来观察我试过的几个标准。<br/>
+首先用p表示原序列：<br/>
+p = [<br/>
+25.80     42.60     24.70     3.90     3.00     0.00     <br/>
+15.30     20.20     49.80     9.70     1.90     3.10     <br/>
+12.20     24.90     43.60     13.30     2.60     3.40     <br/>
+11.50     24.10     52.80     8.30     1.70     1.60     <br/>
+5.20     39.80     35.20     9.50     6.20     4.10     <br/>
+5.60     32.80     35.60     16.60     4.40     5.30     <br/>
+5.90     33.10     34.70     14.00     5.50     6.80     <br/>
+4.40     44.00     28.30     10.00     3.20     10.00     <br/>
+4.70     41.50     31.30     6.40     5.80     10.30     <br/>
+1.20     26.90     39.90     14.80     5.90     11.30     <br/>
+]&#8217;;<br/>
+注意最后有一个转置。</p>
+
+
+<p>y和p是同样维度的，只是在对应位置上都变为预测数据。</p>
+
+
+<p>如果选取残差平方和最小，就是这样：<br/>
+err = sum(sum((p - y).^2)) ;</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/94dfefdda707a8c477c6384f.jpg"/><br/></span></p>
+
+
+<p><br/>
+这个时候，考虑到有的脑残比例本来就很小，<br/>
+而另外的脑残比例占得很大，<br/>
+仅仅是用残差平方和的话，<br/>
+会更偏重于大者。<br/>
+所以，可以考虑把准则换为相对残差和最小：<br/>
+err = sum(sum(((p - y)./p).^2)) ;</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/b7f4a2d39709791f960a164f.jpg"/><br/></span></p>
+
+
+<p><br/>
+这样出来的图还有个问题，<br/>
+就是从数据来看，<br/>
+本来1类脑残应该是势力越来越单薄才对，<br/>
+而图上的曲线已经趋于平稳。<br/>
+所以考虑这样一个时间依赖性的准则，<br/>
+即我们更倾向于相信最近的数据。<br/>
+于是对这10年的残差进行加权，<br/>
+让越近的残差的重量越大。<br/>
+这样出来的曲线会更“将就”最近的数据。<br/>
+出于简单考虑，直接按照1-9线性加权就是了：<br/>
+err = sum(sum(((p - y)./p.*(ones(6,1)*[1:9])).^2)) ;</p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0eab0a1b1074aa04610644f.jpg"/><br/></span></p>
+
+
+<p><font color="#0000ff">四。初始值的问题</font></p>
+
+
+<p><font color="#ff0000">fminsearch在搜索的时候，会陷入局部极值点，<br/></font>所以一般的做法是先随机出一系列的参数，<br/>
+选取其中效果最好的点，再开始搜索。</p>
+
+
+<p>不过既然是随机，所以每次运行的时候都可能出现不同的结果，<br/>
+因为随到的初始点附近有可能有局部极小值。<br/>
+但从fminsearch的返回fval可以得到自己定的评价标准，<br/>
+如果两次运行的结果不同，显然选其中fval较小的。</p>
+
+
+<p>主过程就长成这样：</p>
+
+
+<p>N = 10000 ;<br/>
+flag = 0 ;<br/>
+while flag == 0<br/>
+     bf = 1e6 ;<br/>
+     for i = 1:N <br/>
+        x = rand(1,10) ;<br/>
+        f = myfunc(x) ;<br/>
+        if f  &lt; bf<br/>
+          bf = f ;<br/>
+          bx = x ;<br/>
+       end<br/>
+     end<br/>
+     [x fval flag] = fminsearch(&#8216;myfunc&#8217; , bx) ;<br/>
+end<br/>
+x,fval</p>
+
+
+<p><font color="#0000ff">五。myfunc的实现细节</font></p>
+
+
+<p>既然我前面是随机出来的参数，<br/>
+那么很有可能有某列加起来已经大于1的情况。<br/>
+这个时候，显然是不满足要求的，就强制返回一个极大值，<br/>
+这个值形象地说起来就像一堵墙，<br/>
+fminsearch就会向着离墙越远的地方走。<br/>
+（这同时说明了脱离墙不仅是人们美好的愿望，<br/>
+一个matlab的小小函数也是如此）</p>
+
+
+<p>如果发现加和满足要求，那么就计算出同一列的另外的参数。<br/>
+比如：<br/>
+if a21 + a23 &gt; 1 <br/>
+     err = MAX_ERR ;<br/>
+     return ;<br/>
+else<br/>
+     a22 = 1 - a21 - a23 ;<br/>
+end</p>
+
+
+<p>之后把这些参数带如A矩阵，<br/>
+计算出y(n)，和p(n)一起计算出评价指标返回就行。</p>
+
+
+<p>整个函数写出来是这样：</p>
+
+
+<p>function err = myfunc(x)<br/>
+MAX_ERR = 1e5 ;<br/>
+if sum(x &lt; 0 | x &gt; 1) &gt; 0 <br/>
+     err = MAX_ERR ;<br/>
+     return ;<br/>
+end<br/>
+a12 = x(1) ;<br/>
+a23 = x(2) ;<br/>
+a34 = x(3) ;<br/>
+a45 = x(4) ;<br/>
+a56 = x(5) ;<br/>
+a21 = x(6) ;<br/>
+a32 = x(7) ;<br/>
+a43 = x(8) ;<br/>
+a54 = x(9) ;<br/>
+a65 = x(10) ;<br/>
+a11 = 1 - a12 ;<br/>
+a66 = 1 - a65 ;<br/>
+if a21 + a23 &gt; 1 <br/>
+     err = MAX_ERR ;<br/>
+     return ;<br/>
+else<br/>
+     a22 = 1 - a21 - a23 ;<br/>
+end<br/>
+if a32 + a34 &gt; 1<br/>
+     err = MAX_ERR ;<br/>
+     return ;<br/>
+else <br/>
+     a33 = 1 - a32 - a34 ;<br/>
+end<br/>
+if a43 + a45 &gt; 1<br/>
+     err = MAX_ERR ;<br/>
+     return ;<br/>
+else<br/>
+     a44 = 1 - a43 - a45 ;<br/>
+end<br/>
+if a54 + a56 &gt; 1<br/>
+     err = MAX_ERR ;     <br/>
+     return<br/>
+else<br/>
+     a55 = 1 - a54 - a56 ;<br/>
+end<br/>
+A = [<br/>
+     a11 a21    0    0    0    0;<br/>
+     a12 a22 a32    0    0    0;<br/>
+     0    a23 a33 a43    0    0;<br/>
+     0    0    a34 a44  a54  0;<br/>
+     0    0    0    a45  a55  a65;<br/>
+     0    0    0      0  a56  a66;<br/>
+] ;<br/>
+p = [<br/>
+25.80     42.60     24.70     3.90     3.00     0.00     <br/>
+15.30     20.20     49.80     9.70     1.90     3.10     <br/>
+12.20     24.90     43.60     13.30     2.60     3.40     <br/>
+11.50     24.10     52.80     8.30     1.70     1.60     <br/>
+5.20     39.80     35.20     9.50     6.20     4.10     <br/>
+5.60     32.80     35.60     16.60     4.40     5.30     <br/>
+5.90     33.10     34.70     14.00     5.50     6.80     <br/>
+4.40     44.00     28.30     10.00     3.20     10.00     <br/>
+4.70     41.50     31.30     6.40     5.80     10.30     <br/>
+1.20     26.90     39.90     14.80     5.90     11.30     <br/>
+]&#8217;;<br/>
+p0 = p(:,1) ;<br/>
+p = p(: , 2:end) ;<br/>
+y = [] ;<br/>
+for i = 2:10<br/>
+     p0 = A * p0 ;<br/>
+     y = [y p0] ;<br/>
+end<br/>
+%err = sum(sum((p - y).^2)) ;<br/>
+%err = sum(sum(((p - y)./p).^2)) ;<br/>
+err = sum(sum(((p - y)./p.*(ones(6,1)*[1:9])).^2)) ;</p>
+
+
+<p>这样把参数搞定后，做做矩阵乘法，画个图就是很简单的事了。</p>
+
+
+<p><font color="#0000ff">六。评价</font></p>
+
+
+<p>这里只是讨论手段问题，不讲究任何理论依据，<br/>
+因为这是没有依据的。<br/>
+即使这个矩阵乘法看起来很像leslie模型，<br/>
+甚至还可以说是改进的leslie模型，<br/>
+我还是要说是没有依据的。</p>
+
+
+<p>评价一个预测的好坏的唯一标准就是，<br/>
+等到过几年，看看各种级别的脑残有多少。<br/>
+就好比真理是检验实践的唯一标准一样。<br/><font color="#ff0000">（？？？）</font></p>
+
+
+<p>如果非要某种依据，那就是，<br/>
+等某天咱混到了个高级别的教授位置，<br/>
+耍耍学术流氓，写本书来讲讲这些，发两篇paper。<br/>
+自然就给后人引用参考的机会了。</p>
+
+
+<p>这就像是，如果有知情人士不小心看到这篇文章，<br/>
+一拍手：<br/>
+你这个太有道理了，跟XX在《YY》中写得一样啊！！</p>
+
+
+<p>而不认识XX也没看过《YY》的人一样不认为有道理，<br/>
+就像我不苟同这篇文章一样。</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/09/01/%E7%94%A8%E4%B8%A4%E4%B8%AA%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0%E7%BF%BB%E8%BD%AC%E4%B8%89%E4%B8%AA%E5%8F%98%E9%87%8F/">用两个非门实现翻转三个变量</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-09-01T11:48:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.9.1<br/><br/>
+题目来源<a target="_blank" href="http://www.brand.site.co.il/riddles/">UYHIP</a>，09年8月第一问。<br/>
+这网站上每月都会出一些难题给大家做，月底发答案。<br/>
+瞟一下以前的东西，实在是太数学了，有的题都读不懂。<br/><br/>
+这回出了三个问，第一个问在IBM的网站上放着，<a target="_blank" href="http://domino.research.ibm.com/Comm/wwwr_ponder.nsf/Challenges/August2009.html">这里</a>。<br/>
+简单地说就是：<font color="#ff0000">用两个非门，以及任意与门和或门实现翻转三个变量</font>。<br/><br/>
+当时一看这题就乐了。。有点基础的人都能看懂，可谓老少皆宜。<br/>
+结果想了半天，乱凑了一堆，也没想出来。等到昨天，终于看到<a target="_blank" href="http://domino.research.ibm.com/Comm/wwwr_ponder.nsf/solutions/August2009.html">答案</a>了。<br/>
+答案写得比较简洁，分解了一下，一步一步做出来，在proteus里面仿真了一把。<br/><font color="#0000ff"><br/>
+1.大体布局：</font><br/><br/><span><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/01d25943d7a7943a9213c60e.jpg"/></span><br/></span><br/>
+把输入输出都放在右上角，便于一起观看效果。<br/>
+左边是实现的若干模块，右下角是最终输出前的部分电路。<br/>
+虽然原题的门都是两输入的，<br/>
+这里为了画起来方便，有的地方直接用3输入的了。<br/><br/><font color="#0000ff">2.表决电路</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/dff19716a5af897af2de320e.jpg"/></span><br/><br/>
+这个电路指出abc三个变量中多数为1还是多数为0，结果放在maj中。<br/>
+对maj取非，引出一个NOTmaj备用，至此，用掉了第一个非门。<br/>
+同时，在这个实现中，得到了两两相与的结果，<br/>
+标注为a<em>b,b</em>c,c<em>a，便于后面从这些点直接引出使用。<br/><br/><font color="#0000ff">3.三变量异或电路</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/d916c9ce57a8da2893457e0e.jpg"/></span><br/>
+拿到这个题的时候，一直想弄个异或门出来用，<br/>
+可是平时只用过A</em>B&#8217;+A&#8217;<em>B的写法，<br/>
+光是一个异或就得用掉两个非门，后面就没得搞了。。<br/><br/>
+结果发现三变量的还可以这样玩，分两种情况：<br/>
+1.所有变量都为1<br/>
+2.有1个1<br/>
+除了这两种情况外，异或的结果都是0，<br/>
+于是分别实现他们。<br/><br/>
+三变量相与为1，即判断情况1成立。<br/>
+NOTmaj为1，即判断0为多数，<br/>
+这时，只要三变量有1个为1，就判断情况2成立。<br/><br/><font color="#0000ff">4.0的个数判断电路</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/9a3eb91c5b5487a086d6b60f.jpg"/></span><br/>
+左边是为了后面使用，实现的两两相或的模块，<br/>
+记为a+b,b+c,c+a。<br/><br/>
+要实现的是，<br/>
+三个变量中，0的个数为3，2，1时，<br/>
+3</em>0,2<em>0,1</em>0引脚分别出现1。<br/><br/>
+当大多数变量为0，且异或为0时，表示三个变量为0。<br/>
+NOTmaj &amp;&amp; NOTxor<br/><br/>
+当大多数变量为0，且异或为1时，表示有两个变量为0。<br/>
+NOTmaj &amp;&amp; xor<br/><br/>
+当大多数变量为1，且异或为0时，表示有两个变量为0。<br/>
+maj &amp;&amp; NOTxor<br/><br/><font color="#0000ff">5.最终模块</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/63e406f3dd9c5de00b46e00f.jpg"/></span><br/><br/>
+三组是类似的，用第一组来说。<br/>
+NOTa要取1，表示a一定是0，只有三种情况：<br/>
+1.所有变量都为0，那么a肯定为0<br/>
+2.有两个变量为0，并且b和c里面有一个为1，说明a肯定为0<br/>
+3.有一个变量为0，并且b和c都为1，那么a肯定为0<br/><br/><font color="#0000ff">6.输出效果</font><br/><br/><span><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1dd98d44ffae3c67500ffe0f.jpg"/></span><br/><br/>
+唉，数电白学了，你说这题要出在期末考试，那我肯定完蛋。。<br/>
+可是这题如此简洁的描述，即使用英语写出来，大家也能读懂。。。<br/>
+就算没学过数电的，花个把小时看看基本的定义，<br/>
+也能读懂这个题。。。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/08/26/%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%9A%84%E5%BA%95%E5%B1%82%E8%BE%93%E5%85%A5%E5%87%BD%E6%95%B0%E8%8E%B7%E5%8F%96%E9%BC%A0%E6%A0%87%E4%BF%A1%E6%81%AF/">控制台的底层输入函数获取鼠标信息</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-26T21:25:00+08:00" pubdate data-updated="true">Aug 26<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.8.26</p>
+
+
+<p>看到了一个底层的控制台输入函数。<br/>
+ReadConsoleInput</p>
+
+
+<p>非常强大，于是在控制台下也可以玩鼠标了。</p>
+
+
+<p>读入的INPUT_RECORD定义如下：</p>
+
+
+<p>typedef struct _INPUT_RECORD { // ir <br/>
+     WORD EventType; <br/>
+     union { <br/>
+         KEY_EVENT_RECORD KeyEvent; <br/>
+         MOUSE_EVENT_RECORD MouseEvent; <br/>
+         WINDOW_BUFFER_SIZE_RECORD WindowBufferSizeEvent; <br/>
+         MENU_EVENT_RECORD MenuEvent; <br/>
+         FOCUS_EVENT_RECORD FocusEvent; <br/>
+     } Event; <br/>
+} INPUT_RECORD;</p>
+
+
+<p>EventType可以判断出事件类型。<br/>
+下面Event是个联合，<br/>
+不同的EventType时，应该用不同的结构体去对应其中的信息。</p>
+
+
+<p>跟鼠标有关的是这个：<br/>
+typedef struct _MOUSE_EVENT_RECORD { // mer <br/>
+     COORD dwMousePosition; <br/>
+     DWORD dwButtonState; <br/>
+     DWORD dwControlKeyState; <br/>
+     DWORD dwEventFlags; <br/>
+} MOUSE_EVENT_RECORD;</p>
+
+
+<p>其中要取得坐标和按键状态都很容易了，在MSDN上很清楚。<br/>
+要注意的是，x坐标是向右，y坐标是向下。<br/>
+并且控制台的尺寸是80*25。<br/>
+但当输出内容过多的时候，会向下滚动，<br/>
+于是得到的(x,y)坐标的行值可能会一直增大。<br/>
+最大的时候也就是299，因为只支持300行。</p>
+
+
+<p><font color="#0000ff">一个演示程序：</font></p>
+
+
+<p>输出鼠标的位置，并且用&#8217;0&#8217;画上一个跟随鼠标走的十字标记。</p>
+
+
+<p><br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;windows.h&gt;</p>
+
+
+<p>const int ROW = 25 ;<br/>
+const int COL = 80 ;</p>
+
+
+<p>char buffer[ROW][COL] ;</p>
+
+
+<p>HANDLE ih ;<br/>
+HANDLE oh ;</p>
+
+
+<p>void back_to_00(){<br/>
+     COORD cp ;<br/>
+     int ret ;<br/>
+     cp.X = 0 ; <br/>
+     cp.Y = 0 ;<br/>
+     ret = SetConsoleCursorPosition(oh , cp) ;<br/>
+}</p>
+
+
+<p>void draw_heart(int x , int y){<br/>
+     int i , j ;<br/>
+     for ( i = 0 ; i &lt; ROW ; i ++ ){<br/>
+         buffer[i][x] = &#8216;0&#8217; ;<br/>
+     }<br/>
+     for ( j = 0 ; j &lt; COL ; j += 2 ){<br/>
+         buffer[y][j] = &#8216;0&#8217; ;<br/>
+     }<br/>
+     sprintf(buffer[0] , &#8220;(%d,%d)&#8221; , x , y) ;<br/>
+}</p>
+
+
+<p>void flush_buffer(){<br/>
+     int i , j ;<br/>
+     back_to_00() ;<br/>
+     for ( i = 0 ; i &lt; ROW ; i ++ ){<br/>
+         for ( j = 0 ; j &lt; COL ; j ++ ){<br/>
+             putchar(buffer[i][j]) ;<br/>
+         }<br/>
+     }<br/>
+     back_to_00() ;<br/>
+     memset(buffer , &#8217; &#8217; , sizeof(buffer)) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     INPUT_RECORD irc ;<br/>
+     DWORD n ;<br/>
+     ih = GetStdHandle(STD_INPUT_HANDLE) ;<br/>
+     oh = GetStdHandle(STD_OUTPUT_HANDLE) ;<br/>
+     flush_buffer() ;<br/>
+     while(1){<br/>
+         ReadConsoleInput(ih , &amp;irc , 1 , &amp;n) ;<br/>
+         if ( n == 1 ){<br/>
+             if ( irc.EventType == MOUSE_EVENT ) {<br/>
+                 MOUSE_EVENT_RECORD mrc = irc.Event.MouseEvent ;<br/>
+                 //flush_buffer() ;<br/>
+                 //printf(&#8220;%d,%d\n&#8221; , mrc.dwMousePosition.X , mrc.dwMousePosition.Y ) ;<br/>
+                 //puts(&#8220;mouse&#8221;) ;<br/>
+                 draw_heart(mrc.dwMousePosition.X , mrc.dwMousePosition.Y) ;<br/>
+                 flush_buffer() ;<br/>
+             }<br/>
+         }<br/>
+     }<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p> </p>
+
+
+<p><font color="#0000ff">效果：</font></p>
+
+
+<p><span><img class="blogimg" border="0" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c762de3f69bd75e87c1e715a.jpg"/><br/></span></p>
+
+
+<p> </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/08/24/%E5%BC%82%E6%83%B3%E5%A4%A9%E5%BC%80%E7%9A%84%E5%88%863%E6%AE%B5%E5%BF%AB%E6%8E%92%E3%80%82%E3%80%82%E3%80%82/">异想天开的分3段快排。。。</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-24T14:23:00+08:00" pubdate data-updated="true">Aug 24<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.8.20</p>
+
+
+<p>看了一份研究报告之后，<br/>
+也手痒了，想想能不能把快排变得更快一点。</p>
+
+
+<p>之前讨论过STL中一个<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/a8d29150a0f2506a84352447.html">尽量避免爆栈的写法</a>。<br/>
+这里突然想到的是改变一下分段数有没有作用。</p>
+
+
+<p><font color="#0000ff">理论分析：</font></p>
+
+
+<p>首先说说一般的快排效率，<br/>
+我更倾向于立足某个程序实现，分析实际的比较和移动，<br/>
+而不是单纯的看个理论的复杂度。</p>
+
+
+<p>比如下方程序中的qsort2就是市面上常见的经典写法。<br/>
+应该说，已经做得很精炼了，而且结构上看着很整齐。<br/>
+每次比较的时候区间[l,r]中的每个数都和轴比较了一次。<br/>
+而当把整个区间分成m段时，每一段比较的是n/m次，<br/>
+总共加起来还是n次。<br/>
+也就是说，每次把区间分成两段，不断分下去，形成一棵树。<br/>
+这棵树的每层耗掉的比较次数都是n次。<br/>
+而这棵树总共只有log2(n)这么高。<br/>
+所以总共的耗费是f1=n*log2(n)</p>
+
+
+<p>qsort3就是后面突发奇想的，<br/>
+如果每次分成三段的话，<br/>
+效率会怎么样呢。。<br/>
+沿用上面的这种分析法。<br/>
+分成三段，则需要两个轴元素，每个元素进行两次比较。<br/>
+所以每层是2*n次比较，而总共的层数是log3(n)。<br/>
+乘起来就是f2=2*n*log3(n)</p>
+
+
+<p>比较两个式子可以简单使用作商法：<br/>
+f1/f2<br/>
+=(n*log2(n))/(2*n*log3(n))<br/>
+=(ln(n)/ln(2))/(2*ln(n)/ln(3))<br/>
+=ln(3)/(2*ln(2))<br/>
+=  0.7925 &lt; 1</p>
+
+
+<p>也就是说，单看比较次数，<br/>
+这个想法就很作废了。<br/>
+不过我还是写了下程序看看。。。</p>
+
+
+<p><font color="#0000ff">程序：</font></p>
+
+
+<p>#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;time.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;algorithm&gt;</p>
+
+
+<p>using namespace std ;</p>
+
+
+<p>const int MAXN = 1000000;</p>
+
+
+<p>int origin[MAXN] , standard[MAXN];<br/>
+int a[MAXN] ;<br/>
+int tmp[MAXN] ;</p>
+
+
+<p>void init(){<br/>
+     int i;<br/>
+     for ( i = 0 ; i &lt; MAXN ; i ++ ){<br/>
+         origin[i] = rand() % 1000 ;<br/>
+     }<br/>
+     memcpy(standard , origin , sizeof(origin)) ;<br/>
+     sort(standard , standard + MAXN) ;<br/>
+}</p>
+
+
+<p>void qsort2(int l , int r){<br/>
+     int i , j , t ;<br/>
+     i = rand() % ( r - l + 1 ) + l ;<br/>
+     t = a[i] ;<br/>
+     a[i] = a[l] ;<br/>
+     a[l] = t ;<br/>
+     <br/>
+     i = l ;<br/>
+     j = r ;<br/>
+     //t == a[i] <br/>
+     while ( i &lt; j ){<br/>
+         while ( i &lt; j &amp;&amp; t &lt;= a[j] ) j &#8211; ;<br/>
+         a[i] = a[j] ;<br/>
+         while ( i &lt; j &amp;&amp; a[i] &lt;= t ) i ++ ;<br/>
+         a[j] = a[i] ;<br/>
+     }<br/>
+     a[i] = t ;</p>
+
+
+<p>     if ( i - 1 &gt; l ) qsort2(l , i - 1) ;<br/>
+     if ( i + 1 &lt; r ) qsort2(i + 1 , r) ;<br/>
+}</p>
+
+
+<p>void qsort3(int l , int r){<br/>
+     int k , i , i1 , j , j1 , t1 , t2 ;<br/>
+     <br/>
+     t1 = a[l] ;<br/>
+     if ( t1 &gt; a[l + 1] ) {<br/>
+         t2 = t1 ;<br/>
+         t1 = a[l + 1] ;<br/>
+     }else t2 = a[l + 1] ;</p>
+
+
+<p>     i = l ;<br/>
+     j = r ;<br/>
+     for ( k = l + 2 ; k &lt;= r ; k ++ ){<br/>
+         if ( a[k] &lt; t1 ) tmp[i ++] = a[k] ;<br/>
+         else tmp[j &#8211;] = a[k] ;<br/>
+     }</p>
+
+
+<p>     memcpy(&amp;a[l] , &amp;tmp[l] , sizeof(int) * (i - l)) ;<br/>
+     i1 = i ;<br/>
+     a[i ++] = t1 ;</p>
+
+
+<p>     j1 = j ;<br/>
+     j = r ;<br/>
+     for ( k = j1 + 1 ; k &lt;= r ; k ++ ){<br/>
+         if ( tmp[k] &gt; t2 ) a[j &#8211;] = tmp[k] ;<br/>
+         else a[i ++] = tmp[k] ;<br/>
+     }<br/>
+     a[j] = t2 ;<br/>
+     <br/>
+     if ( i1 - 1 &gt; l ) qsort3(l , i1 - 1) ;<br/>
+     if ( j - i1 &gt; 2 ) qsort3(i1 + 1 , j - 1) ;<br/>
+     if ( j + 1 &lt; r ) qsort3(j + 1 , r) ;</p>
+
+
+<p>}</p>
+
+
+<p>void test(void (*func)(int , int)){<br/>
+     memcpy(a , origin , sizeof(origin)) ;<br/>
+     int t = clock() ;<br/>
+     (*func)(0 , MAXN - 1) ;<br/>
+     if ( memcmp(standard , a , sizeof(origin)) == 0 ) printf(&#8220;right:&#8221;) ;<br/>
+     else printf(&#8220;wrong:&#8221;) ;<br/>
+     printf(&#8220;%d\n&#8221; , clock() - t) ;<br/>
+}</p>
+
+
+<p>int main(){<br/>
+     init() ;<br/>
+     test(qsort2) ;<br/>
+     test(qsort3) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p> </p>
+
+
+<p>结果：（debug编译）</p>
+
+
+<p>right:1576<br/>
+right:3010</p>
+
+
+<p>结论是很显然的，效率没有改进。<br/>
+而且慢得比理论推算的比例更多。。</p>
+
+
+<p>最后再认真想一下，<br/>
+发现最初的想法忽略的最重要的一个问题，<br/>
+就是分段的均匀性。</p>
+
+
+<p>上面的f1和f2两个式子都是在分段均匀的情况下得来的。<br/>
+如果是分成两段，那么通过随机交换轴元素，可以从统计上说均匀了。<br/>
+而分成三段的话，这一点就完全没法保证，<br/>
+上面的实现是直接取的区间的前两个元素来做轴的。</p>
+
+
+<p>尽管这个想法没有实践上的任何意义，<br/>
+用来练习编码还是不错的。<br/>
+因为3段和2段说起来仅仅是一个数字的不一样，<br/>
+实现起来才发现要考虑的东西还真有不少。<br/>
+为了保证2*n的比较次数，我用了O(n)的辅助空间，<br/>
+也同时引入了大量元素的搬移工作。</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/08/18/%E3%80%8AC%E9%99%B7%E9%98%B1%E4%B8%8E%E7%BC%BA%E9%99%B7%E3%80%8B%E7%AC%94%E8%AE%B0/">《C陷阱与缺陷》笔记</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-18T19:50:00+08:00" pubdate data-updated="true">Aug 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.8.18</p>
+
+
+<p>书就是<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/80c99ddd3ebc113d5882dd88.html">这本</a>。</p>
+
+
+<p><br/><font color="#0000ff">1.关于字符常量的处理</font></p>
+
+
+<p>P12下方的译注关于VC6的说明是错误的。<br/>
+只用一个程序就说明问题：</p>
+
+
+<p>#include &lt;stdio.h&gt;</p>
+
+
+<p>int main(){<br/>
+     printf(&#8220;%x%x%x\n&#8221; , &#8216;y&#8217; , &#8216;e&#8217; , &#8216;s&#8217;) ;<br/>
+     printf(&#8220;%x\n&#8221; , &#8216;yes&#8217;) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>结果：<br/>
+796573<br/>
+796573</p>
+
+
+<p>有的时候，译的过程中注一下，<br/>
+有助于读者理解一些不熟悉的内容，<br/>
+但是不能乱注。</p>
+
+
+<p><font color="#0000ff">2.ex1-2</font></p>
+
+
+<p>注释嵌套，个人认为那是相当有必要啊。<br/>
+方便写程序，方便调试。<br/>
+有时候需要暂时注释掉一段内含注释的代码。</p>
+
+
+<p><font color="#0000ff">3.时代特征是很有趣的。。</font></p>
+
+
+<p>比如ex2-2让举例其他语言的语句分割方式。<br/>
+我只能想到PASCAL，VB,MATLAB。<br/>
+作者的例子是FORTRAN , SNOBOL等。。。</p>
+
+
+<p><font color="#0000ff">4.数组方面</font></p>
+
+
+<p>对数组名可以使用&amp;运算。<br/>
+     int a[4] ;<br/>
+     printf(&#8220;%x\n%x\n&#8221; , a , &amp;a) ;</p>
+
+
+<p>a[i]和i[a]的等同性。<br/>
+使用MASM做过程序就知道，<br/>
+赋予i[a]等同的功能是有意义的。</p>
+
+
+<p><font color="#0000ff">5.函数声明和实现体的关系</font></p>
+
+
+<p>虽然专门问来知道，但平时却想不起。<br/>
+见这个例子：</p>
+
+
+<p>int* (*malloc)(int x) ;<br/>
+int main(){<br/>
+     int *p = malloc(4) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>之前也不用包含stdlib.h。<br/>
+这个程序可以正常编译，<br/>
+并且不用像往常那样给malloc返回的指针做强制转换。</p>
+
+
+<p>有的时候，不用机械地包含一大堆东西。<br/>
+可以选择性声明，能编译就行。<br/>
+而链接的时候，linker并不关心是int *还是char*，<br/>
+反正都是一个4字节的值而已。</p>
+
+
+<p><font color="#0000ff">6.对字符常量修改的限制</font></p>
+
+
+<p>这个运行正常：<br/>
+     char s[] = &#8220;123&#8221; ;<br/>
+     s[0] = 0 ;</p>
+
+
+<p>这个运行要挂掉：<br/>
+     char *s = &#8220;123&#8221; ;<br/>
+     s[0] = 0 ;</p>
+
+
+<p><font color="#0000ff">7.关于数组越界的检查</font></p>
+
+
+<p>个人认为在实现上是臃肿而且没有必要的。<br/>
+比如：<br/>
+int a[10] ;<br/>
+a[10] = 1 ;</p>
+
+
+<p>这样的常量下标可能被检查出来越界。<br/>
+但是a[i] = 1 ;呢？？</p>
+
+
+<p>这在编译阶段完全是没法确定的。<br/>
+所以，只有在编译的时候加上相关的条件判断：<br/>
+if ( i &lt; 0 || i &gt;= 10 ) {<br/>
+     error(&#8220;???&#8221;) ;<br/>
+}else{<br/>
+     a[i] = 1 ;<br/>
+}<br/>
+这样就是十分的臃肿了。<br/>
+况且这是运行时检查，也不是编译期能完成的。</p>
+
+
+<p>也许是个人知识的不足，<br/>
+也希望见识一下有实现的编译器是怎么干的。</p>
+
+
+<p><font color="#0000ff">8.static的声明</font></p>
+
+
+<p>在很多时候，最好给函数和外部变量带上。<br/>
+这样可以在连接的时候减少外部对象列表，<br/>
+也可以很好地避免名称上的冲突。</p>
+
+
+<p><font color="#0000ff">9.ANSI C允许不声明就调用。。</font></p>
+
+
+<p>而且函数声明的时候也只用指定返回值即可。。<br/>
+如果不指定，就是默认的int型。</p>
+
+
+<p>这种设计其实也是有道理的。<br/>
+在处理变参数个数的变量的时候，<br/>
+参数的出入栈都由调用者来控制。<br/>
+双方能共同关心的问题仅仅有:<br/>
+函数的地址，函数的返回值。</p>
+
+
+<p><font color="#0000ff">10.函数调用时的自动转换标准</font></p>
+
+
+<p>float会自动转为double。<br/>
+short和char会自动转为int。</p>
+
+
+<p>这个也就又应证了一下为什么printf<br/>
+的格式字符串只有%f来处理float和double两种。</p>
+
+
+<p>之前关于这点的<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/c0e3b9de2e24355fcdbf1afc.html">实验和笔记</a>。</p>
+
+
+<p><font color="#0000ff">11.函数头部的表征意义：</font></p>
+
+
+<p>int f(c)<br/>
+char c ;<br/>
+{<br/>
+&#8230;<br/>
+}</p>
+
+
+<p>相当于：</p>
+
+
+<p>int f(int i){<br/>
+char c = i ;<br/>
+&#8230;<br/>
+}</p>
+
+
+<p>这个规定在硬件实现上也是有对应的。<br/>
+比如IA-32下，push进去的操作数都是32位的，<br/>
+正好符合一个int型的空间。<br/>
+然后使用变长前缀可以兼容处理16位的操作数。</p>
+
+
+<p><font color="#0000ff">12.关于getchar的截断处理</font></p>
+
+
+<p>在VC6下，EOF=-1.<br/>
+也就是每个位都是1。<br/>
+所以可以截断成任意的长度，<br/>
+按照补码翻译过来还是-1，不改变意义。</p>
+
+
+<p><font color="#0000ff">13.关于fseek的必要性</font></p>
+
+
+<p>如下程序段：</p>
+
+
+<p>#include &lt;stdio.h&gt;</p>
+
+
+<p>int main(){<br/>
+     FILE *fp = fopen(&#8220;file.dat&#8221; , &#8220;rb+&#8221;) ;<br/>
+     int i = 1 ;</p>
+
+
+<p>     fread(&amp;i , sizeof(int) , 1 , fp) ;<br/>
+     printf(&#8220;%d\n&#8221; , i) ;<br/>
+     printf(&#8220;%d\n&#8221; , fseek(fp , (long)(-1*sizeof(int)) , SEEK_CUR)) ;<br/>
+     i ++ ;<br/>
+     printf(&#8220;%d\n&#8221; , fwrite(&amp;i , sizeof(int) , 1 , fp)) ;</p>
+
+
+<p>     fread(&amp;i , sizeof(int) , 1 , fp) ;<br/>
+     printf(&#8220;%d\n&#8221; , i) ;<br/>
+     printf(&#8220;%d\n&#8221; , fseek(fp , (long)(-1*sizeof(int)) , SEEK_CUR)) ;<br/>
+     i ++ ;<br/>
+     printf(&#8220;%d\n&#8221; , fwrite(&amp;i , sizeof(int) , 1 , fp)) ;<br/>
+     <br/>
+     fclose(fp) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p>可以正常执行，而在中间的fwrite，<br/>
+和fread之间没有fseek(fp , 0 , SEEK_SET) 这一语句。</p>
+
+
+<p>说明书中所讲为历史问题。测试环境：VISTA+VC6。</p>
+
+
+<p><font color="#0000ff">14.关于signal</font></p>
+
+
+<p>在处理过程中有可能继续产生信号。<br/>
+所以处理函数唯一安全的做法就是打印出错信息，然后退出程序。<br/>
+或者可以设置某些标志，<br/>
+让主程序在某个时候检查到这些标志。</p>
+
+
+<p><font color="#0000ff">15.包含stdio.h的重要性</font></p>
+
+
+<p>见P91,ex5-2。</p>
+
+
+<p>由于该头文件中有getchar的宏定义，<br/>
+使得该“函数”的执行会更快。</p>
+
+
+<p>如果不包含这个头文件，<br/>
+编译器只有把getchar当作返回整形的函数，<br/>
+然后期待连接器来指出该函数的地址。</p>
+
+
+<p>而进出函数的开销比较大，<br/>
+可能导致效率变低。</p>
+
+
+<p><font color="#0000ff">16.关于使用宏</font></p>
+
+
+<p>需要格外注意的是多次求值的问题。<br/>
+所以传给宏的参数一定要是non-mutable的。<br/>
+即不能是i++这样的在计算表达式的同时改变i的值。</p>
+
+
+<p><font color="#0000ff">17.宏不是语句</font></p>
+
+
+<p>P99，chap6.3详细解释了这个问题。<br/>
+分析的是assert宏，<br/>
+阐释了由||的短路求值来代替if结构的必要性。<br/>
+对于自己设计的宏内有条件判断时，<br/>
+很有借鉴意义。</p>
+
+
+<p><font color="#0000ff">18.类型转换</font><br/>
+char c<br/>
+在做(unsigned)c时。<br/>
+按照标准是先转换成int，然后转换成unsigned int。<br/>
+所以，可能由于符号扩展的原因，导致不是期望的结果。</p>
+
+
+<p>有的时候，我们期望的是在多余的位上补零。<br/>
+正确的做法是(unsigned int)(unsigned char)c。</p>
+
+
+<p>而如果c本来就是unsigned char型的，则可以直接到unsigned int。<br/>
+下面的代码来验证这个事情：</p>
+
+
+<p>     char c = (char)0xfe ;<br/>
+     unsigned char cc = (unsigned char)0xfe ;</p>
+
+
+<p>     printf(&#8220;%x\n&#8221; , (unsigned)c) ;<br/>
+     printf(&#8220;%x\n&#8221; , (unsigned)(unsigned char)c) ;<br/>
+     <br/>
+     printf(&#8220;%x\n&#8221; , (unsigned)cc) ;<br/>
+     printf(&#8220;%x\n&#8221; , (unsigned)(unsigned char)cc) ;</p>
+
+
+<p><font color="#0000ff">19.解决字符集不连续的问题</font></p>
+
+
+<p>P117的。&#8221;0123456789&#8221;[n % 10] <br/>
+这个用法相当巧妙啊。</p>
+
+
+<p><font color="#0000ff">20.符号数的绝对值转为无符号的</font></p>
+
+
+<p>比如：<br/>
+int n = -1 ;<br/>
+unsigned int m = -n ;</p>
+
+
+<p>作者提到了补码表示中绝对值最大负数，<br/>
+在转换成正数的时候会溢出。<br/>
+但实际上，可以不用担心。<br/>
+因为补码的负数能表示的范围比正数仅多1。</p>
+
+
+<p>比如下面的程序段：<br/>
+     int i ;<br/>
+     unsigned u ;<br/>
+     i = -2147483648 ;<br/>
+     printf(&#8220;%d\n&#8221; , -i) ;<br/>
+     u = -i ;<br/>
+     printf(&#8220;%u\n&#8221; , u) ;<br/>
+     printf(&#8220;%u\n&#8221; , i) ;</p>
+
+
+<p>因为32-bit的int有个奇特的性质。<br/>
+i = -2147483648时i和-i的二进制位是一样的。<br/>
+所以-i得到的数，从概念上来说，已经溢出了int的范围了，<br/>
+但是机器并不管这点，仍然老实地把值赋给一个unsigned型的，<br/>
+这完全是可以的，而且运行结果也是正常的。</p>
+
+
+<p>这段程序最后还展示了，<br/>
+输出时使用不同的格式字符串，<br/>
+可以得到的不同效果。</p>
+
+
+<p> </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/08/18/%E6%95%B4%E6%95%B0%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%86%99%E6%B3%95%E6%AF%94%E8%BE%83/">整数二分的两种写法比较</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-18T14:08:00+08:00" pubdate data-updated="true">Aug 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.8.18<br/><br/>
+看了《C陷阱与缺陷》的ex3-3。<br/>
+感觉后面的题解貌似过于啰嗦，<br/>
+并且写法并不优美，<br/>
+故也实现了一个来比较一下。<br/><br/><font color="#0000ff">程序：</font></p>
+
+
+<p>#include &lt;stdio.h&gt;<br/>
+#include &lt;time.h&gt;<br/>
+#include &lt;stdlib.h&gt;</p>
+
+
+<p>const int MAXN = 10000000 ;</p>
+
+
+<p>int *bsearch1(int *t , int n , int x){<br/>
+     int *lo = t , *hi = t + n ;<br/>
+     while ( lo &lt; hi ){<br/>
+         int *mid = lo + ((hi - lo) &gt;&gt; 1) ;<br/>
+         if (x &lt; *mid)<br/>
+             hi = mid ;<br/>
+         else if (x &gt; *mid)<br/>
+             lo = mid + 1 ;<br/>
+         else <br/>
+             return mid ;<br/>
+     }<br/>
+     return NULL ;<br/>
+}</p>
+
+
+<p>int *bsearch2(int *t , int n , int x){<br/>
+     while ( n &gt; 1 ){<br/>
+         int half = n &gt;&gt; 1 ;<br/>
+         int *mid = t + half ;<br/>
+         if ( x &gt;= *mid ){<br/>
+             t = mid ;<br/>
+             n -= half ;<br/>
+         }else {<br/>
+             n = half ;<br/>
+         }<br/>
+     }<br/>
+     if ( *t == x ) return t ;<br/>
+     else return NULL ;<br/>
+}</p>
+
+
+<p>int *bsearch3(int *t , int n , int x){<br/>
+     __asm{<br/>
+         mov eax , t ;<br/>
+         mov esi , n ;<br/>
+         mov ecx , x ;</p>
+
+
+<p>__loop_begin:<br/>
+         cmp esi , 1 ;<br/>
+         jng __loop_end ;<br/>
+         mov ebx , esi ;<br/>
+         shr ebx , 1 ;<br/>
+         lea edx , [eax + ebx] ;<br/>
+         cmp ecx , [edx] ;<br/>
+         jl _less_than ;<br/>
+         mov eax , edx ;<br/>
+         sub esi , ebx ;<br/>
+         jmp __loop_begin ;<br/>
+_less_than:<br/>
+         mov esi , ebx ;<br/>
+         jmp __loop_begin ;<br/>
+__loop_end:<br/>
+         <br/>
+         cmp [eax] , ecx ;<br/>
+         je _return ;<br/>
+         xor eax , eax ;<br/>
+_return:<br/>
+         mov t , eax ;<br/>
+     }<br/>
+     return t ;<br/>
+}</p>
+
+
+<p>int a[MAXN] = {1 , 5 , 7 , 10 , 30 , 32 , 90 , 100} ;<br/>
+int n = 8 ;</p>
+
+
+<p>void init(){<br/>
+     int i ;<br/>
+     n = MAXN ;<br/>
+     a[0] = 1 ;<br/>
+     for ( i = 1 ; i &lt; n ; i ++ ){<br/>
+         a[i] = a[i - 1] + rand() % 10 + 1 ;<br/>
+     }</p>
+
+
+<p><br/>
+}</p>
+
+
+<p>void test(int* (*func)(int* , int , int) ){<br/>
+     int t = clock() ;<br/>
+     <br/>
+     int i ;<br/>
+     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+         (*func)(a , n , a[i]) ;<br/>
+     }</p>
+
+
+<p>     printf(&#8220;%d\n&#8221; , clock() - t) ;<br/>
+}</p>
+
+
+<p>int main()<br/>
+{<br/>
+     srand(time(NULL)) ;<br/>
+/*     int *p ;<br/>
+     p = bsearch2(a , n , 30) ;<br/>
+     if ( p ) printf(&#8220;%d\n&#8221; , *p) ;<br/>
+     else printf(&#8220;NULL\n&#8221;) ;<br/>
+     return 0 ;*/<br/>
+     init() ;<br/>
+     test(bsearch3) ;<br/>
+     test(bsearch2) ;<br/>
+     test(bsearch1) ;<br/>
+     return 0 ;<br/>
+}</p>
+
+
+<p><br/>
+其中bsearch1是作者给出的最终版本。<br/>
+bsearch2是我看书的时候写下的版本。<br/>
+bsearch3是上机测试的时候，<br/>
+弄的一个汇编版本来做比较。<br/><br/><font color="#0000ff">做了两组测试：</font><br/><br/>
+由于二分的效率是对数级的，<br/>
+所以要把数组开到很大，<br/>
+才能看到之间的差异，<br/>
+否则，进出函数的开销都会大于这个时间。<br/><br/><font color="#ff9900">1.测试查找到的时候的效率。</font><br/><br/>
+vc6.release<br/>
+MAXN=10000000<br/><br/>
+随机数产生：<br/>
+a[i] = a[i - 1] + rand() % 10 + 1 ;<br/>
+查找：<br/>
+a[i]，保证每次都能找到，<br/>
+并且累加了查找每个位置的时间。<br/><br/>
+结果：<br/>
+bsearch3:1380<br/>
+bsearch2:1217<br/>
+bsearch1:914<br/><br/><font color="#ff9900">2.查找不到时候的效率</font><br/><br/>
+vc6.release<br/>
+MAXN=10000000<br/><br/>
+随机产生：<br/>
+a[i] = a[i - 1] + rand() % 10 + 2 ;<br/>
+查找：<br/>
+a[i]+1，保证每次都查找不到，<br/>
+并且累加了各次的时间。<br/><br/>
+bsearch3:1401<br/>
+bsearch2:1271<br/>
+bsearch1:1468<br/><br/>
+我的汇编版本的表现比较有波动，<br/><font color="#ff0000">但是bsearch2的表现在各次测试中比较稳定，<br/>
+均比作者给出的版本要好</font>。<br/><br/><font color="#0000ff">关于写法的说明：</font><br/><br/>
+作者的写法实际上是市面上经常见到的“<font color="#ff0000">三段式</font>”。<br/>
+就是要判断&gt;&lt;=三种情况。<br/>
+很明显的，代码中出现了两次比较。<br/>
+我上面的测试是均匀地测了数字出现的各个位置的。<br/>
+如果有倾向性地测试某一边，<br/>
+将可以造成在很多时候都进行两次比较的情况。<br/>
+而条件跳转的开销是很大的。<br/>
+可以参考<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/8504fa1f4fa13dfde1fe0b1e.html">这个实验</a>的结果。<br/><br/>
+我的写法也并不是什么原创的东西。<br/>
+思路还是学的STL的那一套。<br/>
+首先是左闭右开的区间表示法。<br/>
+然后是转化成&lt;起点，长度&gt;的表示法。<br/>
+这种表示在实现很多事情的时候很方便。<br/>
+说不到特别明白，也没啥具体的例子，<br/>
+写了若干回后就感觉到了。<br/><br/>
+然后，最有影响的地方其实是“<font color="#ff0000">两段式</font>”的写法。<br/>
+这样就只用一次比较。<br/>
+如果现在的应用比较的不是int的数据，<br/>
+是个结构体，或者类。<br/>
+每一次比较都要调用一个函数，<br/>
+且很费时间。<br/>
+那么这减少的一次比较将变得特别明显。<br/><br/>
+但是“两段式”写法有个最大的问题，<br/>
+就是很多时候掌握不好该怎么写，<br/>
+最后跑成个TLE，或者WA。<br/>
+没有在OJ上大量刷题经验的人，<br/>
+一般都会感觉良好，二分嘛，不就那个意思嘛。。<br/>
+而<font color="#ff0000">这个世界上有很多事情就那个意思，<br/>
+一动手就不是那个意思了。<br/></font>我是直到去年刷挂了若干题之后，<br/>
+才开始仔细想想各种情况下应该怎么写，<br/>
+使得既准确，又可以很快地实现出来。<br/><br/><font color="#0000ff">可以考虑的问题：</font><br/><br/>
+1.用左开右闭的方式怎么写？<br/><br/>
+2.假设现在要完成的是这样的任务：<br/>
+返回的指针*i，表示的是把x插入到i的后面一个，原序列依然有序。<br/><br/>
+返回i的下界怎么写？返回i的上界怎么写？<br/><br/>
+比如：1 5 7 10 11 11 20<br/>
+x=11<br/>
+（下标从0开始）<br/>
+i的下界是3，上界是5。</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/08/14/%E6%AC%A1%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88VIJOS1070%2CPOJ1679%29/">次小生成树（VIJOS1070,POJ1679)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-14T19:46:00+08:00" pubdate data-updated="true">Aug 14<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.8.14<br/><br/>
+结论：<br/><font color="#ff9900">替换最小生成树中的任何一条边，将使总代价变大</font><br/><br/>
+根据<font color="#ff0000">路径最优条件</font>，（<a href="http://hi.baidu.com/hplonline/blog/item/8d68db58eb0e1d89810a18c7.html" target="_blank">参考这里</a>）<br/>
+MST上的任两点(i,j)的树上路径的所有边的权重，<br/>
+均小于w[i][j]。所以结论显然。<br/><br/><font color="#0000ff">次小生成树1，简单解法：</font><br/><br/>
+有个比较直观的方法。<br/>
+依次把MST上的边删掉，然后再做MST。<br/>
+这样的做就是编码简洁，有模块可以重用。<br/>
+效率O(n*O(MST))<br/><br/><font color="#0000ff">次小生成树2，优化解法：</font><br/><br/>
+既然每替换出去一条边，都将使代价变大。<br/>
+所以求次小生成树，只需要替换出去一条边即可。<br/><br/>
+枚举不在树上的边eij，<br/>
+树上路径上的边权都不大于w[i][j]。<br/>
+选取其中最大的与eij替换，<br/>
+得到新树的权重。<br/>
+选取替换后最小的一个就是次小生成树了。<br/>
+这个过程可以做到O(m)<br/><br/>
+然后就是计算出path_max[i][j]表示i，j树上路径中的最大边权。<br/>
+在计算MST的时候，点是依次加入到树中。<br/>
+当前加入的是j，与他相连的是i。<br/>
+那么，对所有在树上集合中的k：<br/>
+path_max[k][j] = max{ path_max[k][i] , w[i][j] }<br/>
+因为path_max[][]的每个元素都要计算，且仅一次。<br/>
+累加起来的复杂度是O(n<sup>2)<br/><br/></sup>
+总的复杂度：<br/>
+O(MST)+O(n<sup>2)+O(m)<br/><br/></sup>
+MST的计算采用任何一种方法都可以。<br/><br/><font color="#0000ff">VIJOS1070：</font><br/><br/>
+题目就是很明摆着的次小生成树了。<br/>
+关于无解的输出是：<br/>
+1.首先如果MST都无解，那么显然也不存在次小<br/>
+（判断依据为：有没有成功加进n-1条边）<br/>
+2.MST有解的情况下，如果m == n-1，<br/>
+那么不存在次小生成树，否则一定存在。<br/>
+（至少都可以进行一次替换）<br/><br/>
+关于这道题的WA。<br/>
+首先是把：<br/>
+ans_mst - path_max[i][j] + map[i][j]<br/>
+写成了：<br/>
+ans_mst + path_max[i][j] - map[i][j]<br/><br/>
+。。。<br/><br/>
+然后是求次小的时候，判断边：<br/>
+if ( !edge_in[i][j] &amp;&amp; map[i][j] != MAXINT ){<br/><br/>
+最初写的是<br/><br/>
+if ( edge_in[i][j]) 。。。。<br/><br/>
+注意是枚举不在树中的边，然后要记得判断是不是这个边不存在。<br/>
+由于我这里是用MAXINT来表达的边不存在，<br/>
+当不存在的时候，下面的加法中会溢出成负数，反而更小。。<br/><font color="#0000ff"><br/>
+VIJOS1070代码：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>const int MAXN = 510 ;<br/>
+const int MAXM = MAXN * MAXN ;<br/>
+const int MAXINT = 2147483647 ;<br/><br/>
+int path_max[MAXN][MAXN] ; //树上路径的最大值<br/>
+int d[MAXN] , pre[MAXN] ; //最短边长，前驱点<br/>
+int in[MAXN] , num_in ;<br/>
+bool isin[MAXN] ;//顶点是否在树内<br/>
+bool edge_in[MAXN][MAXN] ;//边是否在树内 <br/><br/>
+int map[MAXN][MAXN] ;<br/>
+int n , m ;<br/>
+int ans_mst ;<br/><br/>
+int getmin(int a , int b){<br/>
+return a &lt; b ? a : b ;<br/>
+}<br/><br/>
+int getmax(int a , int b){<br/>
+return a &gt; b ? a : b ;<br/>
+}<br/><br/>
+//最小<br/>
+int mst1(){<br/>
+int i , j ;<br/>
+int min , min_j ;<br/>
+int ans = 0 ;<br/>
+num_in = 1 ;<br/>
+in[0] = 1 ;<br/>
+isin[1] = true ;<br/>
+d[1] = 0 ;<br/>
+for ( i = 2 ; i &lt;= n ; i ++ ){<br/>
+d[i] = map[1][i] ;<br/>
+pre[i] = 1 ;<br/>
+}<br/>
+for ( i = 1 ; i &lt; n ; i ++ ){<br/>
+min = MAXINT ;<br/>
+for ( j = 1 ; j &lt;= n ; j ++ ){<br/>
+if ( !isin[j] &amp;&amp; d[j] &lt; min ) {<br/>
+min = d[j] ;<br/>
+min_j = j ;<br/>
+}<br/>
+}<br/>
+if ( min == MAXINT ) return -1 ;//无法形成树<br/><br/>
+//更新树上路径表<br/>
+for ( j = 0 ; j &lt; num_in ; j ++ ){<br/>
+if ( in[j] != pre[min_j] ) <br/>
+path_max[min_j][in[j]] = getmax(path_max[pre[min_j]][in[j]] , map[min_j][pre[min_j]] );<br/>
+else <br/>
+path_max[min_j][in[j]] = map[min_j][pre[min_j]] ;<br/>
+path_max[in[j]][min_j] = path_max[min_j][in[j]] ;<br/>
+}<br/><br/>
+in[num_in] = min_j ;<br/>
+num_in ++ ;<br/>
+ans += min ;<br/>
+isin[min_j] = true ;<br/>
+edge_in[min_j][pre[min_j]] = true ;<br/>
+edge_in[pre[min_j]][min_j] = true ;<br/><br/>
+//更新最短边记录<br/>
+for ( j = 1 ; j &lt;= n ; j ++ ){<br/>
+if ( !isin[j] &amp;&amp; map[min_j][j] &lt; d[j] ) {<br/>
+d[j] = map[min_j][j] ;<br/>
+pre[j] = min_j ;<br/>
+}<br/>
+}<br/><br/>
+}<br/>
+ans_mst = ans ;<br/>
+return ans ;<br/>
+}<br/><br/>
+//次小<br/>
+int mst2(){<br/>
+int ans = MAXINT ;<br/>
+int i , j ;<br/>
+if ( m == n - 1 ) return -1 ;<br/>
+for ( i = 1 ; i &lt;= n - 1 ; i ++ ){<br/>
+for ( j = i + 1 ; j &lt;= n ; j ++ ){<br/>
+if ( !edge_in[i][j] &amp;&amp; map[i][j] != MAXINT ){<br/>
+ans = getmin(ans_mst - path_max[i][j] + map[i][j] , ans) ;<br/>
+}<br/>
+}<br/>
+}<br/>
+return ans ;<br/>
+}<br/><br/>
+int main(){<br/><br/>
+int i , j ;<br/>
+int x , y , c ;<br/>
+scanf(&#8220;%d%d&#8221; , &amp;n , &amp;m) ;<br/>
+for ( i = 1 ; i &lt;= n ; i ++ ){<br/>
+for ( j = 1 ; j &lt;= n ; j ++ ){<br/>
+map[i][j] = MAXINT ;<br/>
+}<br/>
+}<br/>
+for ( i = 0 ; i &lt; m ; i ++ ){<br/>
+scanf(&#8220;%d%d%d&#8221; , &amp;x , &amp;y , &amp;c) ;<br/>
+map[x][y] = c ;<br/>
+map[y][x] = c ;<br/>
+}<br/>
+int ret = mst1() ;<br/>
+printf(&#8220;Cost: %d\n&#8221; , ret) ;<br/>
+if ( ret == -1 ) printf(&#8220;-1\n&#8221;) ;<br/>
+else printf(&#8220;Cost: %d\n&#8221; , mst2()) ;<br/><br/>
+return 0 ;<br/>
+}<br/><br/><font color="#0000ff">POJ1679：</font><br/><br/>
+问的是MST是否唯一。<br/>
+那么求出最小生成树和次小生成树，<br/>
+如果权重相等，当然就是不唯一的。<br/><br/>
+只不过这个想法太直观了，<br/>
+干了不少多余的事情。<br/>
+直接在MST的计算过程中，就可以判断出来了。<br/><br/>
+拿PRIM来说：<br/><br/>
+每次添加点的时候，要找出关联边最小的。<br/>
+如果这个最小值不唯一，那么就可以直接指出MST不唯一了。<br/><br/>
+拿KRUSCAL来说：<br/><br/>
+由于边已经按权值排序了，<br/>
+那么添加一个边的时候，<br/>
+把和他权值相同的边都试添加一次，<br/>
+如果有多余一条边可以添加进，也指出不唯一。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/backup-hplonline/blog/page/12/">&larr; Older</a>
+    
+    <a href="/backup-hplonline/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/backup-hplonline/blog/page/10/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>贴一个BST（BinarySearchTree） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="hplonline(2009.5.11)
+写过这么多程序了，貌似还没正式写过这个结构。
+毕竟以后可能会用到这些东西。
+老是小打小闹地遇到特殊问题时写一篇特殊的代码，
+编码效率上会很吃亏的，
+还是写得像模像样一点，
+标准就是自己在若干天后用起来比较方便就行了。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/11/%E8%B4%B4%E4%B8%80%E4%B8%AABST%EF%BC%88BinarySearchTree%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">贴一个BST（BinarySearchTree）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-11T21:34:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>hplonline(2009.5.11)<br/><br/>
+写过这么多程序了，貌似还没<font color="#ff6600">正式</font>写过这个结构。<br/>
+毕竟以后可能会用到这些东西。<br/>
+老是小打小闹地遇到特殊问题时写一篇特殊的代码，<br/>
+编码效率上会很吃亏的，<br/>
+还是写得像模像样一点，<br/>
+标准就是自己在若干天后用起来比较方便就行了。<br/><br/>
+由于学习STL的最后一部分被RBTree卡到了。。<br/>
+得先学下这个结构。<br/>
+而他的近亲AVLTree也要学一下。<br/>
+当然AVL的老爹应该先搞定，于是从BST开始。<br/><br/>
+我这个版本就有两点稍微可以说的：<br/><br/><font color="#ff0000">1.除了Clear()外没有用递归。</font><br/>
+因为像Find，Insert之类的，当前指针p在树上跑的路线都是单边的。<br/>
+这样大可不必递归。<br/>
+但Clear() 由于要先清除左右子树，自己写栈来消除递归显然更臃肿，就算了。<br/><br/><font color="#ff0000">2.空间分配方面留了三个宏</font><br/></p>
+
+<h1>define _BST_initspace <br/></h1>
+
+<h1>define _BST_allocate() (BNode *)malloc(sizeof(BNode))<br/></h1>
+
+<h1>define _BST_deallocate(p) free(p) <br/><br/></h1>
+
+<p>长期做工程的同学可能不理解这个用意。<br/>
+但是长期刷题的同学应该知道这写猥琐的手脚。。。<br/><br/>
+比如，刷题的时候换成下面一组：<br/>
+//BNode space[1000] , *spacehead ;<br/>
+//#define <em>BST_initspace spacehead = space <br/>
+//#define </em>BST_allocate() spacehead++ ;<br/>
+//#define _BST_deallocate(p) <br/><br/>
+一般来说刷题可以先估计要用的内存大小，<br/>
+这样搞可以提高速度。<br/>
+而且把释放内存的宏定义为空。<br/>
+因为开在全局区的空间，随程序结束自动释放。<br/><br/>
+总得来说，这一手脚有的时候可以让TLE的变AC。<br/><br/>
+记得曾经有一道题：<br/>
+用new和delete<font color="#ff0000">超时</font>，<br/>
+搞了半天，决定不delete了，<font color="#ff0000">300ms</font>过了。<br/>
+把new换成malloc，<font color="#ff0000">200ms</font>过了。<br/>
+换成静态分配，<font color="#ff0000">100ms</font>过了。<br/><br/><font color="#0000ff">源码：</font>包含测试部分<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;stdlib.h&gt;<br/><br/></h1>
+
+<p>//元素类型<br/>
+typedef int ElemType ;<br/><br/>
+//树的节点<br/>
+struct BNode{<br/>
+     ElemType data ;<br/>
+     BNode <em>left , </em>right , <em>parent ;<br/>
+     BNode(){<br/>
+          left = NULL ;<br/>
+          right = NULL ; <br/>
+          parent = NULL ;<br/>
+     }<br/>
+     BNode(ElemType d){<br/>
+          data = d ;<br/>
+          left = NULL ;<br/>
+          right = NULL ; <br/>
+          parent = NULL ;<br/>
+     }<br/>
+     void init(ElemType d){<br/>
+          data = d ;<br/>
+          left = NULL ;<br/>
+          right = NULL ; <br/>
+          parent = NULL ;          <br/>
+     }<br/>
+};<br/>
+typedef BNode </em>PBNode ;<br/><br/>
+//空间分配宏，便于实现其他配置方式<br/></p>
+
+<h1>define _BST_initspace <br/></h1>
+
+<h1>define _BST_allocate() (BNode *)malloc(sizeof(BNode))<br/></h1>
+
+<h1>define _BST_deallocate(p) free(p) <br/></h1>
+
+<p>//BNode space[1000] , *spacehead ;<br/>
+//#define <em>BST_initspace spacehead = space <br/>
+//#define </em>BST_allocate() spacehead++ ;<br/>
+//#define <em>BST_deallocate(p) <br/><br/>
+//BST<br/>
+class BinarySearchTree{<br/>
+private:<br/>
+     PBNode root ;<br/>
+     void </em>delete_node(PBNode p) ;<br/>
+     PBNode <em>find_subs(PBNode pos) ;//寻找删除时用于替换的节点<br/>
+public:<br/>
+     BinarySearchTree() ;<br/>
+     PBNode Find(ElemType d) ;<br/>
+     PBNode FindMax() ;<br/>
+     PBNode FindMin() ;<br/>
+     ElemType&amp; Retrieve(PBNode p) ;<br/>
+     PBNode Insert(ElemType d) ;<br/>
+     void Delete(ElemType d) ;//按元素删除<br/>
+     void Erase(PBNode p) ;//按节点位置删除<br/>
+     void Clear() ;<br/>
+     static void Sort(ElemType a[] , int n , int d = 1) ;//利用BST进行排序，静态函数<br/>
+} ;<br/><br/>
+//d：1，从小到大，0，从大到小<br/>
+void BinarySearchTree::Sort(ElemType a[] , int n , int d){<br/>
+     BinarySearchTree tree ;<br/>
+     int i ;<br/>
+     for ( i = 0 ; i &lt;n ; i ++ ){<br/>
+          tree.Insert(a[i]) ;<br/>
+     }<br/>
+     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+          PBNode p ;<br/>
+          if ( d ) {<br/>
+               p = tree.FindMin() ;<br/>
+          }else{<br/>
+               p = tree.FindMax() ;     <br/>
+          }<br/>
+          a[i] = tree.Retrieve(p) ;<br/>
+          tree.Erase(p) ;<br/>
+     }<br/>
+}<br/><br/>
+BinarySearchTree::BinarySearchTree(){<br/>
+     root = NULL ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::Find(ElemType d){<br/>
+     PBNode p = root ;<br/>
+     while ( p &amp;&amp; p-&gt;data != d ){<br/>
+          if ( d &lt; p-&gt;data ) p = p-&gt;left ;<br/>
+          else p = p-&gt;right ;<br/>
+     }     <br/>
+     return p ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::FindMax(){<br/>
+     if ( root == NULL ) return NULL ;<br/>
+     PBNode p = root ;<br/>
+     while ( p-&gt;right ){<br/>
+          p = p-&gt;right ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::FindMin(){<br/>
+     if ( root == NULL ) return NULL ;<br/>
+     PBNode p = root ;<br/>
+     while ( p-&gt;left ){<br/>
+          p = p-&gt;left ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+ElemType&amp; BinarySearchTree::Retrieve(PBNode p){<br/>
+     return p-&gt;data ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::Insert(ElemType d){<br/>
+     //根为空特殊处理<br/>
+     if ( root == NULL ) {<br/>
+          root = </em>BST_allocate() ;<br/>
+          root-&gt;init(d) ;          <br/>
+          return root ;<br/>
+     }<br/>
+     PBNode p = root ;<br/>
+     PBNode q = NULL ;<br/>
+     while ( p &amp;&amp; p-&gt;data != d ){<br/>
+          q = p ;<br/>
+          if ( d &lt; p-&gt;data ) p = p-&gt;left ;<br/>
+          else p = p-&gt;right ;<br/>
+     }<br/>
+     //该节点存在,直接返回<br/>
+     if ( p ) {<br/>
+          return p ;<br/>
+     }<br/>
+     //不存在,q为插入点<br/>
+     p = <em>BST_allocate() ;<br/>
+     p-&gt;init(d) ;<br/>
+     p-&gt;parent = q ;<br/>
+     if ( d &lt; q-&gt;data ){<br/>
+          q-&gt;left = p ;<br/>
+     }else{<br/>
+          q-&gt;right = p ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::</em>find_subs(PBNode pos){<br/>
+     PBNode su ;<br/>
+     if ( pos-&gt;left == NULL || pos-&gt;right == NULL ) {<br/>
+          //有一个子树为空<br/>
+          if ( pos-&gt;left == NULL ){<br/>
+               su = pos-&gt;right ;<br/>
+          }else{<br/>
+               su = pos-&gt;left ;<br/>
+          }          <br/>
+     }else{<br/>
+          //两个均不为空，寻找前驱，即左子树的最右枝<br/>
+          su = pos-&gt;left ;<br/>
+          while ( su-&gt;right ) su = su-&gt;right ;<br/>
+     }<br/>
+     return su ;<br/>
+}<br/><br/>
+void BinarySearchTree::Erase(PBNode pos){<br/>
+     if ( pos == NULL ) return ;<br/>
+     PBNode su = <em>find_subs(pos) ;//替换节点<br/>
+     //根节点<br/>
+     if ( pos-&gt;parent == NULL ) {<br/>
+          if ( su ){<br/>
+               PBNode sup = su-&gt;parent ;<br/>
+               if ( su == sup-&gt;left ) {<br/>
+                    sup-&gt;left = NULL ;<br/>
+               }else{<br/>
+                    sup-&gt;right = NULL ;<br/>
+               }<br/>
+               su-&gt;parent = NULL ;<br/>
+          }<br/>
+          root = su ;<br/>
+          </em>BST_deallocate(pos) ;<br/>
+          return ;<br/>
+     }<br/><br/>
+     PBNode pa = pos-&gt;parent ;//父节点<br/>
+     //替换<br/>
+     if ( pos == pa-&gt;left ) {<br/>
+          pa-&gt;left = su ;<br/>
+     }else{<br/>
+          pa-&gt;right = su ;<br/>
+     }<br/>
+     if ( su ) {<br/>
+          PBNode sup = su-&gt;parent ;<br/>
+          if ( su == sup-&gt;left ) {<br/>
+               sup-&gt;left = NULL ;<br/>
+          }else{<br/>
+               sup-&gt;right = NULL ;<br/>
+          }<br/>
+          su-&gt;parent = pa ;<br/>
+     }<br/>
+     <em>BST_deallocate(pos) ;<br/>
+}<br/><br/>
+void BinarySearchTree::Delete(ElemType d){<br/>
+     Erase(Find(d)) ;<br/>
+}<br/><br/>
+void BinarySearchTree::</em>delete_node(PBNode p){<br/>
+     if ( p != NULL ){<br/>
+          <em>delete_node(p-&gt;left) ;<br/>
+          </em>delete_node(p-&gt;right) ;<br/>
+          <em>BST_deallocate(p) ;<br/>
+     }<br/>
+}<br/><br/>
+void BinarySearchTree::Clear(){<br/>
+     </em>delete_node(root) ;<br/>
+     root = NULL ;<br/>
+}<br/><br/><br/>
+//测试代码<br/>
+using namespace std;<br/><br/>
+int main(){<br/>
+     int a[] = {3,2,9,7,5,8,6} ;<br/>
+     int b[10] ;<br/>
+     int sz = sizeof(a) / sizeof(int)  ;<br/>
+     int i;<br/>
+     <br/>
+     for ( i = 0 ; i &lt; sz ; i ++ ) b[i] = a[i] ;<br/><br/>
+      _BST_initspace ;<br/><br/>
+     //排序测试<br/>
+     BinarySearchTree::Sort(a , sz , 1) ;<br/>
+     for ( i = 0 ; i &lt; sz ; i ++ )cout&lt;&lt;a[i]&lt;&lt;&#8217; &#8217; &lt;&lt;endl;<br/>
+     <br/>
+     BinarySearchTree tree ;<br/>
+     for ( i = 0 ; i &lt; sz ; i ++ ){<br/>
+          tree.Insert(a[i]) ;<br/>
+     }<br/><br/>
+     cout&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(4)&lt;&lt;endl;<br/><br/>
+     cout&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(9)&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(9)-&gt;data&lt;&lt;endl;<br/>
+     tree.Delete(9) ;<br/>
+     cout&lt;&lt;tree.Find(9)&lt;&lt;endl;<br/><br/>
+     cout&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(3)&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Retrieve(tree.Find(3))&lt;&lt;endl;<br/>
+     tree.Clear() ;<br/>
+     cout&lt;&lt;tree.Find(3)&lt;&lt;endl;     <br/><br/>
+     return 0 ;<br/>
+}</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-11T21:34:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/11/%E8%B4%B4%E4%B8%80%E4%B8%AABST%EF%BC%88BinarySearchTree%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/11/%E8%B4%B4%E4%B8%80%E4%B8%AABST%EF%BC%88BinarySearchTree%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/10/%E8%AF%A1%E5%BC%82%E7%9A%84%E7%BC%96%E8%AF%91%E6%9C%9F%E6%B1%82%E5%80%BC/" title="Previous Post: 诡异的编译期求值">&laquo; 诡异的编译期求值</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/12/%E8%B4%B4%E4%B8%80%E4%B8%AA%E6%B5%B7%E6%98%8E%E7%A0%81%28HammingCode%29/" title="Next Post: 贴一个海明码(HammingCode)">贴一个海明码(HammingCode) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

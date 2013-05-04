@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>初始化类中引用型的成员变量（VC6.C2758） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.5.14
+昨天跟T哥讨论实现传递类成员函数指针，
+T哥有份一直没编译通，
+最后发现是这个问题。
+遂试了下，仔细想想很合逻辑，但之前还真没注意到过。
+例子：class mycls
+{
+int &amp;i ;
+mycls(int &amp;i_in){
+i = &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/05/14/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B1%BB%E4%B8%AD%E5%BC%95%E7%94%A8%E5%9E%8B%E7%9A%84%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%EF%BC%88VC6.C2758%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">初始化类中引用型的成员变量（VC6.C2758）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-14T11:13:00+08:00" pubdate data-updated="true">May 14<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.5.14<br/><br/>
+昨天跟T哥讨论实现传递类成员函数指针，<br/>
+T哥有份一直没编译通，<br/>
+最后发现是这个问题。<br/>
+遂试了下，仔细想想很合逻辑，但之前还真没注意到过。<br/><br/>
+例子：<br/><br/><font color="#ff9900">class mycls<br/>
+{<br/>
+int &amp;i ;<br/>
+mycls(int &amp;i_in){<br/>
+i = i_in ;<br/>
+}<br/>
+} ;</font><br/><br/>
+报错为：<br/><br/><font color="#ff0000">error C2758: &#8216;i&#8217; : must be initialized in constructor base/member initializer list</font><br/><br/>
+这段代码看上去很逼真，为什么要报错呢。<br/><br/>
+其实只要知道引用是由编译器用指针实现的，<br/>
+而我们把引用转化为指针一般只有下面几个步骤：<br/><br/><font color="#ff0000">1.定义的地方换成指针（比如int &amp;i换成int <em>i）<br/>
+2.函数形参，把引用也换成指针<br/>
+3.函数实参，加取地址符<br/>
+4.初始化引用的地方右值取地址<br/>
+5.其他代码块中凡是遇到引用变量的表达式，换成脱指针（比如i=1换成</em>i=1）</font><br/><br/>
+例子：<br/><br/>
+void f(int &amp;i){}<br/>
+int main(){<br/>
+int i = 0 ;<br/>
+int &amp;r = i;<br/>
+f(r) ;<br/>
+return 0;<br/>
+}<br/><br/>
+根据第1、2条：<br/><br/>
+void f(int <font color="#ff0000"><em>i</font>){}<br/>
+int main(){<br/>
+int i = 0 ;<br/>
+int <font color="#ff0000"></em>r</font> = i;<br/>
+f(r) ;<br/>
+return 0;<br/>
+}<br/><br/>
+第4条：<br/><br/>
+void f(int <em>i){}<br/>
+int main(){<br/>
+int i = 0 ;<br/>
+int </em>r =<font color="#ff0000"> &amp;i;</font><br/>
+f(r) ;<br/>
+return 0;<br/>
+}<br/><br/>
+第3、5条：<br/><br/>
+void f(int <em>i){}<br/>
+int main(){<br/>
+int i = 0 ;<br/>
+int </em>r = &amp;i;<br/>
+f(<font color="#ff0000">&amp;<em>r</font>) ;<br/>
+return 0;<br/>
+}<br/><br/>
+当然，上面的函数部分会被优化一下：<br/><br/>
+void f(int </em>i){}<br/>
+int main(){<br/>
+int i = 0 ;<br/>
+int <em>r = &amp;i;<br/>
+f(r) ;<br/>
+return 0;<br/>
+}<br/><br/>
+改过之后是下面这个样子：<br/><br/><font color="#ff9900">class mycls<br/>
+{<br/>
+int </em>i ;<br/>
+mycls(int <em>i_in){<br/>
+</em>i = <em>i_in ;<br/>
+}<br/>
+} ;</font><br/><br/>
+这段代码可以编过了，但我们一眼就看出问题在哪了。<br/>
+i这个指针现在的值根本就没有确定，<br/>
+直接脱指针肯定会出问题的。<br/><br/>
+但实际上，上面那段引用所想表达的本来意思是：<br/><font color="#ff9900"><br/>
+class mycls<br/>
+{<br/>
+int </em>i ;<br/>
+mycls(int <em>i_in){<br/>
+i = i_in ;<br/>
+}<br/>
+} ;</font><br/><br/>
+这里就是<font color="#ff0000">易用性和灵活性</font>的一个矛盾了。<br/>
+引用使我们不用在使用的时候打上&amp;或者</em>这样的符号，<br/>
+这是易用的一面，但同时降低了灵活性，<br/>
+每当遇到引用类型的变量名时，<br/>
+都是按照脱指针来处理的，<br/>
+这样我们想使用该变量内含的地址都没办法了。<br/><br/>
+根据C2758后面的提示信息，最前面的代码修改为：<br/><br/><font color="#ff9900">class mycls<br/>
+{<br/>
+int &amp;i ;<br/>
+mycls(int &amp;i_in):i(i_in)<br/>
+{<br/>
+}<br/>
+} ;</font><br/><br/>
+就是把引用类型的初始化放到初始化列表中去。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-14T11:13:00+08:00" pubdate data-updated="true">May 14<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/05/14/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B1%BB%E4%B8%AD%E5%BC%95%E7%94%A8%E5%9E%8B%E7%9A%84%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%EF%BC%88VC6.C2758%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/05/14/%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B1%BB%E4%B8%AD%E5%BC%95%E7%94%A8%E5%9E%8B%E7%9A%84%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%EF%BC%88VC6.C2758%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/05/11/%E7%BA%A7%E8%81%94%E5%B1%9E%E6%80%A7%E6%A8%A1%E5%BC%8F/" title="Previous Post: 级联属性模式">&laquo; 级联属性模式</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/05/16/%E5%A4%8D%E6%95%B0%E4%B9%98%E6%B3%95%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%AE%9E%E7%8E%B0%EF%BC%8842%EF%BC%8C33%EF%BC%89/" title="Next Post: 复数乘法的两种实现（4/2，3/3）">复数乘法的两种实现（4/2，3/3） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

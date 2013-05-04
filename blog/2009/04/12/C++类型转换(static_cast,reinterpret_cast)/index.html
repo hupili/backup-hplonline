@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>C++类型转换(static_cast,reinterpret_cast) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.4.12先来个实验。
+定义如下三个类。
+class ca{
+public:
+    int ia ;
+};
+class cb{
+public:
+    int ib1,ib2 ;
+};
+class cc:public ca,public cb{
+public &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/12/C%2B%2B%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%28static_cast%2Creinterpret_cast%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">C++类型转换(static_cast,reinterpret_cast)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-12T15:33:00+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.4.12<br/><br/><font color="#0000ff">先来个实验</font>。<br/>
+定义如下三个类。<br/><br/>
+class ca{<br/>
+public:<br/>
+     int ia ;<br/>
+};<br/><br/>
+class cb{<br/>
+public:<br/>
+     int ib1,ib2 ;<br/>
+};<br/><br/>
+class cc:public ca,public cb{<br/>
+public:<br/>
+};<br/><br/>
+然后打印出一组数据:<br/><br/>
+     cc c ;<br/>
+     cc <em>pc = &amp;c ;<br/>
+     cb </em>pb1 = pc ;<br/>
+     cb <em>pb2 = static_cast&lt;cb</em>&gt;(pc);<br/>
+     cb <em>pb3 = (cb</em>)(void<em>)pc ;<br/>
+     cout&lt;&lt;pc&lt;&lt;endl;<br/>
+     cout&lt;&lt;pb1&lt;&lt;endl;<br/>
+     cout&lt;&lt;pb2&lt;&lt;endl;<br/>
+     cout&lt;&lt;pb3&lt;&lt;endl;<br/><br/><font color="#0000ff">结果为：</font><br/><br/>
+0012FF3C<br/>
+0012FF40<br/>
+0012FF40<br/>
+0012FF3C<br/><br/>
+可以发现 。<br/>
+pb1 = pc + sizeof(ca)<br/>
+pb2 = pc + sizeof(ca)<br/>
+pb3 = pc<br/><br/>
+由于cc是从ca和cb派生出来的，安排数据元素的时候，ca在cb之前。<br/>
+所以得到了一个cc的指针之后（pc），<br/>
+把他转换成cb的指针，自然后移一个ca的长度。<br/>
+     cb </em>pb1 = pc ;<br/>
+相当于隐式的static_cast。所以结果和<br/>
+     cb <em>pb2 = static_cast&lt;cb</em>&gt;(pc);<br/>
+是一样的。<br/>
+这一点对有多重派生的类很重要。可见指针包含的信息很丰富：<br/><font color="#ff0000">1。地址。我们最初认识指针的时候，就知道<br/>
+2。长度信息。比如int<em>一次前进4个字节，double</em>一次前进8个字节<br/>
+3。类型的相对位置。就好比这里的cc中  cb放在ca之后 。=号赋值的时候引发相对移动。</font><br/>
+（这点我一直没有关注到）<br/><br/>
+而<br/>
+cb <em>pb3 = (cb</em>)(void<em>)pc ;<br/>
+用了void进行中转。于是编译器无法知道(void</em>)pc处放的是个cc。<br/>
+只能机械地把地址给pb3。<br/><br/><font color="#0000ff">第二个实验：</font><br/><br/>
+     float f = 1.2 ;<br/>
+     float <em>pf = &amp;f ;<br/>
+     int i = static_cast&lt;int&gt;(f);<br/>
+    // i = f ;<br/>
+     int </em>pi = reinterpret_cast&lt;int<em>&gt;(pf);<br/>
+    // pi = (int</em>)pf ;<br/>
+     cout&lt;&lt;i&lt;&lt;endl;<br/>
+     cout&lt;&lt;<em>pi&lt;&lt;endl;<br/>
+     cout&lt;&lt;</em>(float<em>)pi&lt;&lt;endl;<br/><br/><font color="#0000ff">结果：</font><br/><br/>
+1<br/>
+1067030938<br/>
+1.2<br/><br/>
+第一个i，经过转换后，把float变成了int<br/><br/>
+int </em>pi = reinterpret_cast&lt;int<em>&gt;(pf);<br/>
+这句如果用static_cast就编译不过。因为两种指针指向的东西就不一致。<br/>
+但是可以使用reinterpret重新解释，强制转换这样一种指针。<br/>
+输出</em>pi。可见是没有意义的。因为里面是按照float的标准存放的数据。<br/>
+cout&lt;&lt;<em>(float</em>)pi&lt;&lt;endl;<br/>
+这句又做个强制转换回float的指针，再dereference。于是可以输出pi所指内存的原本值。<br/><br/>
+其中注释了两句话，如果用他们去替换对应的语句，结果也是一样的。<br/><br/>
+所以，可以看出，“=”本身具有static_cast意思。<br/>
+int     i = f ;这句是成功的<br/>
+int<em> pi = pf ;这句是失败的<br/>
+这里和static_cast是相应的。<br/><br/>
+而强制指针类型转换，有reinterpret_cast的意思。<br/>
+int</em> pi = (int<em>)pf ;<br/>
+int </em>pi = reinterpret_cast&lt;int<em>&gt;(pf);<br/>
+以上两句的功能是相同的。<br/><br/>
+但同时强制指针类型转换，也有static_cast的意思。<br/>
+cb </em>pb2 = reinterpret_cast&lt;cb<em>&gt;(pc); //0012FF3C<br/>
+cb </em>pb2 = static_cast&lt;cb<em>&gt;(pc);//0012FF40<br/>
+cb </em>pb3 = (cb*)pc ;//0012FF40</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-12T15:33:00+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/12/C%2B%2B%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%28static_cast%2Creinterpret_cast%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/12/C%2B%2B%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%28static_cast%2Creinterpret_cast%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/12/%E5%9B%9B%E7%A7%8D%E9%94%AE%E7%9B%98%E7%9A%84%E6%80%BB%E7%BB%93%EF%BC%88%E5%8D%95%E6%8E%92%E9%94%AE%E7%9B%98%E3%80%82%E8%AF%91%E7%A0%81%E9%94%AE%E7%9B%98%E3%80%82%E7%9F%A9%E9%98%B5%E9%94%AE%E7%9B%98%E3%80%82%E7%9F%A9%E9%98%B5%E8%AF%91%E7%A0%81%E9%94%AE%E7%9B%98%E3%80%82%EF%BC%89/" title="Previous Post: 四种键盘的总结（单排键盘。译码键盘。矩阵键盘。矩阵译码键盘。）">&laquo; 四种键盘的总结（单排键盘。译码键盘。矩阵键盘。矩阵译码键盘。）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/13/__based%28c%2B%2B%29/" title="Next Post: __based(c++)">__based(c++) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

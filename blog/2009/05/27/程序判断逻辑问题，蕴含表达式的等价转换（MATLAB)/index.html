@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>程序判断逻辑问题，蕴含表达式的等价转换（MATLAB) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.27
+昨天在河畔上碰到有人问一个送200水的题，
+题虽然很水，看在200水的份上，还是决定去刷掉。
+==========================
+如果A参加比赛，那么B、C、D也将参加比赛。如果上述断定为真，那么下述哪项断定 必定为真（　　） A. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/27/%E7%A8%8B%E5%BA%8F%E5%88%A4%E6%96%AD%E9%80%BB%E8%BE%91%E9%97%AE%E9%A2%98%EF%BC%8C%E8%95%B4%E5%90%AB%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E7%AD%89%E4%BB%B7%E8%BD%AC%E6%8D%A2%EF%BC%88MATLAB%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">程序判断逻辑问题，蕴含表达式的等价转换（MATLAB)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-27T22:39:00+08:00" pubdate data-updated="true">May 27<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.27<br/><br/>
+昨天在河畔上碰到有人问一个送200水的题，<br/>
+题虽然很水，看在200水的份上，还是决定去刷掉。<br/><br/>
+==========================<br/>
+如果A参加比赛，那么B、C、D也将参加比赛。如果上述断定为真，那么下述哪项断定 <br/>
+必定为真（　　） <br/>
+A.如果A没参加比赛，那么B、C、D都参加比赛 <br/>
+B.如果B、C、D都参加比赛，那么A也参加比赛 <br/>
+C.如果D没参加比赛，那么B、C不会都参加比赛 <br/>
+D.如果C没参加比赛，那么A、D不会都参加比赛 <br/>
+==========================<br/><br/>
+由于题目过于水。。好几个人抢在我前面就把答案给出来了。<br/>
+而且有很啰嗦的证明。<br/>
+看来只有另辟蹊径。。其实就是搞点花样好赚水。。<br/><br/><font color="#0000ff">打开MATLAB，写一个程序：</font><br/><pre class="prettyprint"><span class="kwd">for</span><span class="pln"> a </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">:</span><span class="lit">1</span><span class="pln"><br/></span><span class="kwd">for</span><span class="pln"> b </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">:</span><span class="lit">1</span><span class="pln"><br/></span><span class="kwd">for</span><span class="pln"> c </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">:</span><span class="lit">1</span><span class="pln"><br/></span><span class="kwd">for</span><span class="pln"> d </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">:</span><span class="lit">1</span><span class="pln"><br/></span><span class="pun">%</span><span class="pln">p</span><span class="pun">-&gt;</span><span class="pln">q  </span><span class="pun">==&gt;</span><span class="pln"> </span><span class="pun">~</span><span class="pln">p</span><span class="pun">|</span><span class="pln">q<br/></span><span class="kwd">if</span><span class="pln">  </span><span class="pun">~</span><span class="pln">a </span><span class="pun">|</span><span class="pln"> </span><span class="pun">(</span><span class="pln"> b </span><span class="pun">&amp;</span><span class="pln"> c </span><span class="pun">&amp;</span><span class="pln"> d </span><span class="pun">)</span><span class="pln"> <br/></span><span class="kwd">if</span><span class="pln"> </span><span class="pun">~(</span><span class="pln">a </span><span class="pun">|</span><span class="pln"> </span><span class="pun">(</span><span class="pln"> b </span><span class="pun">&amp;</span><span class="pln"> c </span><span class="pun">&amp;</span><span class="pln"> d </span><span class="pun">))</span><span class="pln"> <br/>                        disp</span><span class="pun">(</span><span class="str">'A false'</span><span class="pun">)</span><span class="pln"><br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">if</span><span class="pln"> </span><span class="pun">~(~(</span><span class="pln">b </span><span class="pun">&amp;</span><span class="pln"> c </span><span class="pun">&amp;</span><span class="pln"> <font color="#ff0000">d</font></span><span class="pun">)</span><span class="pln"> </span><span class="pun">|</span><span class="pln"> a </span><span class="pun">)</span><span class="pln"> <br/>                        disp</span><span class="pun">(</span><span class="str">'B false'</span><span class="pun">)</span><span class="pln"><br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">if</span><span class="pln"> </span><span class="pun">~(</span><span class="pln">d </span><span class="pun">|</span><span class="pln"> </span><span class="pun">~(</span><span class="pln">b </span><span class="pun">&amp;</span><span class="pln"> c</span><span class="pun">))</span><span class="pln"><br/>                        disp</span><span class="pun">(</span><span class="str">'C false'</span><span class="pun">)</span><span class="pln">    <br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">if</span><span class="pln"> </span><span class="pun">~(</span><span class="pln">c </span><span class="pun">|</span><span class="pln"> </span><span class="pun">~(</span><span class="pln">a </span><span class="pun">&amp;</span><span class="pln"> d</span><span class="pun">))</span><span class="pln"><br/>                        disp</span><span class="pun">(</span><span class="str">'D false'</span><span class="pun">)</span><span class="pln">    <br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">end</span><span class="pln"><br/></span><span class="kwd">end</span><span class="pln"><br/></span></pre>
+<font color="#0000ff">结果：</font><br/>
+A false<br/>
+A false<br/>
+A false<br/>
+A false<br/>
+A false<br/>
+A false<br/>
+A false<br/>
+B false<br/>
+C false<br/>
+B false<br/><br/>
+程序的原理是枚举所有合理情况。一旦有某个选项在某个情况下为假，就打出false。<br/><br/>
+实践证明，只有D没有被打出。也就是满足所有情况的。为全真式。<br/><br/>
+记得第一次看到用程序来解决逻辑问题，<br/>
+还是那本讲QB的教材，举了几个基本的例子。<br/>
+看了觉得很搞笑的，<br/>
+首先，这么简单的东西还写个程序干嘛。<br/>
+其次，一直没细致地想过，只是直观上觉得构造逻辑式子很容易。<br/><br/>
+比如，A为1，B为1：<br/>
+A&amp;B<br/><br/>
+A和B至少有一个为真：<br/>
+A|B<br/><br/>
+还能举出很多，让人觉得很简单的式子。<br/>
+归结了一下，这类式子用到的都是基本的逻辑描述：<br/><font color="#ff0000">与，或，非，异或。。。等等</font><br/><br/>
+而这些东西，中学的数序会提到，概率的前几章也会再讲，数字电路也会涉及。<br/>
+所以，一看就觉得很眼熟，很快就构造出来了。<br/><br/>
+而原题中全部都是“XXX,那么YYY的形式”，<br/>
+如果没有<font color="#ff0000">蕴含</font>这个概念，就会感觉在转化上困难。<br/>
+因为那几个选项在我们读来就像是一个句子。<br/>
+到程序里面就有点：<br/>
+IF &#8230; THEN &#8230;<br/>
+的这种感觉。<br/><br/>
+而知道了蕴含这个概念后，可以把他们整体作为一个式子来考虑。<br/><br/><font color="#ff0000">p蕴含q：p-&gt;q。<br/>
+对应的文字描述就是“如果p，那么q”</font><br/><br/><font color="#ff0000">蕴含关系的典型转换：<br/>
+p-&gt;q  ==&gt; (~p)|q</font><br/>
+也就是上面程序里面大量出现的结构。<br/><br/>
+比如来翻译这句话：<br/>
+如果D没参加比赛，那么B、C不会都参加比赛 <br/>
+==&gt;<br/>
+D没参加比赛-&gt;B、C不会都参加比赛<br/><br/>
+B、C不会都参加比赛<br/>
+==&gt;<br/>
+~(B&amp;C)<br/><br/>
+D没参加比赛<br/>
+==&gt;<br/>
+~D<br/><br/>
+那么整合起来，运用蕴含的转化式：<br/>
+D|~(B&amp;C)<br/><br/>
+也就是说“如果D没参加比赛，那么B、C不会都参加比赛&#8221;<br/>
+这句话和D|~(B&amp;C)是等价的。<br/><br/>
+第一次接触到“蕴含”的时候感觉很神奇的。。<br/>
+很方便就把“一句话”表达的意思，翻译成一个逻辑式子了。。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-27T22:39:00+08:00" pubdate data-updated="true">May 27<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/27/%E7%A8%8B%E5%BA%8F%E5%88%A4%E6%96%AD%E9%80%BB%E8%BE%91%E9%97%AE%E9%A2%98%EF%BC%8C%E8%95%B4%E5%90%AB%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E7%AD%89%E4%BB%B7%E8%BD%AC%E6%8D%A2%EF%BC%88MATLAB%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/27/%E7%A8%8B%E5%BA%8F%E5%88%A4%E6%96%AD%E9%80%BB%E8%BE%91%E9%97%AE%E9%A2%98%EF%BC%8C%E8%95%B4%E5%90%AB%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E7%AD%89%E4%BB%B7%E8%BD%AC%E6%8D%A2%EF%BC%88MATLAB%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/25/%E7%94%BB%E5%BF%83%EF%BC%88MATLAB%EF%BC%8Cfill%EF%BC%8C%E3%80%8A%E9%AD%94%E6%9C%AF%E5%B8%88%E3%80%8B%EF%BC%89/" title="Previous Post: 画心（MATLAB，fill，《魔术师》）">&laquo; 画心（MATLAB，fill，《魔术师》）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/30/Treap%EF%BC%88%E9%9A%8F%E6%9C%BA%E5%8C%96%E7%9A%84%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%EF%BC%89/" title="Next Post: Treap（随机化的二叉搜索树）">Treap（随机化的二叉搜索树） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

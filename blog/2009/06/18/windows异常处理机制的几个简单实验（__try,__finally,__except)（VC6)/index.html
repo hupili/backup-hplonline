@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>windows异常处理机制的几个简单实验（__try , __finally , __except)（VC6) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.6.18
+C++有标准的try,catch,throw，还没来得及深入体会。
+先试试M$的windows异常处理机制try , finally , __except。
+一。观察时序
+这个例子是从MSDN里面抄下来的，只改了一小点地方
+// Example of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/18/windows%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6%E7%9A%84%E5%87%A0%E4%B8%AA%E7%AE%80%E5%8D%95%E5%AE%9E%E9%AA%8C%EF%BC%88__try%2C__finally%2C__except%29%EF%BC%88VC6%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Windows异常处理机制的几个简单实验（__try , __finally , __except)（VC6)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-18T11:57:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.6.18<br/><br/>
+C++有标准的try,catch,throw，还没来得及深入体会。<br/>
+先试试M$的windows异常处理机制<strong>try , </strong>finally , __except。<br/><font color="#0000ff"><br/>
+一。观察时序</font><br/><br/>
+这个例子是从MSDN里面抄下来的，只改了一小点地方<br/><br/>
+// Example of try-except and try-finally statements<br/></p>
+
+<h1>include &#8220;stdio.h&#8221;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/></h1>
+
+<h1>include &lt;excpt.h&gt;<br/><br/></h1>
+
+<p>void main()<br/>
+{<br/>
+    int<em> p = 0x00000000;    // pointer to NULL<br/>
+    puts(&#8220;hello&#8221;);<br/>
+    <strong>try{<br/>
+       puts(&#8220;in try1&#8221;);<br/>
+       </strong>try{<br/>
+          puts(&#8220;in try2&#8221;);<br/>
+          </em>p = 13;     // causes an access violation exception;<br/>
+       }<strong>finally{<br/>
+          puts(&#8220;in finally&#8221;);<br/>
+       }<br/>
+    }</strong>except(puts(&#8220;in filter&#8221;), 1){<br/>
+       puts(&#8220;in except&#8221;);<br/>
+    }<br/>
+    puts(&#8220;world&#8221;);<br/>
+}<br/><br/><font color="#ff6600">输出：</font><br/><br/>
+hello<br/>
+in try1<br/>
+in try2<br/>
+in filter<br/>
+in finally<br/>
+in except<br/>
+world<br/><br/><font color="#ff6600">结论：</font><br/><br/>
+根据输出的字符串，各个语句块的执行顺序一目了然。<br/>
+要注意的就是finally是在对应的try块执行完之后（不管是正常还是异常结束）。<br/><br/>
+__except(XXX){<br/>
+       YYY<br/>
+    }<br/>
+其中XX部分M$叫他filter，在捕获到异常的时候执行。<br/>
+YYY部分叫except 。在异常位置对应的finally之后执行。<br/><br/>
+设置finally这一机制的目的在于，异常处理完之后，还有机会去释放一些资源等等。<br/><br/><font color="#0000ff">二。异常处理相关的结构</font><br/><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;EXCPT.H&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/></h1>
+
+<h1>include &lt;winnt.h&gt;<br/><br/></h1>
+
+<p>int myhandler(int code , PEXCEPTION_POINTERS p){<br/>
+     printf(&#8220;error but corrected %x\n&#8221; , code) ;<br/>
+     printf(&#8220;%x,%x\n&#8221; , p-&gt;ContextRecord , p-&gt;ExceptionRecord) ;<br/>
+     CONTEXT <em>c = p-&gt;ContextRecord  ;<br/>
+     printf(&#8220;%x,%x,%x,%x\n&#8221;,c-&gt;Eax , c-&gt;Ebx , c-&gt;Ecx , c-&gt;Edx ) ;<br/>
+     printf(&#8220;%x\n&#8221;,&amp;c);<br/>
+     return 1;<br/>
+}<br/><br/>
+int main(){<br/>
+     <strong>try{<br/>
+          </strong>asm{<br/>
+               mov eax , 1 ;<br/>
+               mov ebx , 2 ;<br/>
+               mov ecx , 3 ;<br/>
+               mov edx , 4 ;<br/>
+               mov [eax] , 1 ; cause exception <br/>
+          }<br/>
+     }<strong>except(myhandler(<em>exception_code() , (PEXCEPTION_POINTERS)</em>exception_info())){} ;<br/>
+     return 0 ;<br/>
+}<br/><br/><font color="#ff6600"></strong>except()</font><br/><br/>
+其中如果要执行复杂的操作，可以封装一个函数完成。<br/>
+这个函数应该返回如下值：<br/><strong>EXCEPTION_CONTINUE_EXECUTION (–1)</strong>  <br/>
+表示异常已经消除，从异常地址处<font color="#ff0000">继续执行</font><br/><strong>EXCEPTION_CONTINUE_SEARCH (0)</strong> <br/>
+表示无法处理这个异常，叫给后一级处理<br/><strong>EXCEPTION_EXECUTE_HANDLER (1)</strong> <br/>
+表示异常数理完，<font color="#ff0000">结束程序</font><br/><br/>
+在int myhandler(函数中，把 return 1;<br/>
+改为 <font color="#ff0000">return -1</font>，可以看到不断打印出信息，<br/>
+因为还没有消除这个异常，于是返回执行时马上又进入异常处理函数<br/>
+改为 <font color="#ff0000">return 0</font>，可以看到windows的报错框，然后程序结束了。<br/>
+因为表示没法处理这个异常，而之后我们又没有其他的处理函数了，<br/>
+于是交给了系统，系统一般都是弹个出错框，然后结束程序。<br/><br/><font color="#ff6600"><em>exception_code()，</em>exception_info()</font><br/><br/>
+前者返回错误代码，后者返回EXCEPTION_POINTERS结构的一个指针，<br/>
+只能在<font color="#ff0000">filter</font>的位置使用这个函数。<br/>
+定义如下：<br/>
+typedef struct _EXCEPTION_POINTERS {<br/>
+     PEXCEPTION_RECORD ExceptionRecord;<br/>
+     PCONTEXT ContextRecord;<br/>
+} EXCEPTION_POINTERS, </em>PEXCEPTION_POINTERS;<br/>
+这个结构里面包含两个指针。<br/>
+他们的定义都可以在 <font color="#ff0000">winnt.h</font>中看到，比较长，就不抄出来的了。<br/><br/>
+通过ExceptionRecord可以取得比如异常地址，异常代码，之类的信息。<br/>
+通过ContextRecord可以取得异常时的CPU现场。<br/>
+（示例中打印出了几个寄存器的值供观察）<br/><font color="#ff6600"><br/>
+ExceptionRecord，ContextRecord指向的地址</font><br/><br/>
+他们都是放在栈区的，<br/>
+根据打印出的地址和局部变量的地址比较可得，<br/>
+printf(&#8220;%x\n&#8221;,&amp;c);<br/><br/><font color="#0000ff">三。修正现场继续执行</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;EXCPT.H&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/></h1>
+
+<h1>include &lt;winnt.h&gt;<br/><br/></h1>
+
+<p>int myerror(int code , PEXCEPTION_POINTERS p){<br/>
+     printf(&#8220;error but corrected %x\n&#8221; , code) ;<br/>
+     CONTEXT *c = p-&gt;ContextRecord ;<br/>
+     c-&gt;Ebx = 1 ;<br/>
+     return -1;<br/>
+}<br/><br/>
+int main(){<br/>
+     <strong>try{<br/>
+          </strong>asm{<br/>
+               mov ebx , 0 ;<br/>
+               mov eax , 0 ;<br/>
+               cdq ;<br/>
+               div ebx ;<br/>
+          }<br/>
+     }<em><em>except(myerror(</em>exception_code() , (PEXCEPTION_POINTERS)</em>exception_info())){<br/>
+     <br/>
+     }<br/>
+     return 0 ;<br/>
+}<br/><br/>
+这里制造了一个除0的异常。<br/>
+在异常处理中，把EBX的值修改过后，返回-1，<br/>
+告知继续执行，可以看到程序正常结束。<br/><br/>
+如果把  c-&gt;Ebx = 1 ;注释掉，就像前面例子中一样，<br/>
+异常不断地被触发，导致不停地打印信息。。<br/><br/><font color="#0000ff">其他:</font><br/><br/>
+EXCPT.H这个头文件名让我觉得很梗塞。。。<br/>
+这是哪门子的缩写啊。。。那个E很有必要省略吗。。<br/><br/>
+windows异常处理机制的详细资料（看0day推荐的）：<br/><a href="http://www.microsoft.com/msj/0197/exception/exception.aspx" target="_blank"><font face="verdana, arial, helvetica" color="#000080" size="3">A Crash Course on the Depths of Win32™ Structured Exception Handling</font></a><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-18T11:57:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/18/windows%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6%E7%9A%84%E5%87%A0%E4%B8%AA%E7%AE%80%E5%8D%95%E5%AE%9E%E9%AA%8C%EF%BC%88__try%2C__finally%2C__except%29%EF%BC%88VC6%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/18/windows%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6%E7%9A%84%E5%87%A0%E4%B8%AA%E7%AE%80%E5%8D%95%E5%AE%9E%E9%AA%8C%EF%BC%88__try%2C__finally%2C__except%29%EF%BC%88VC6%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/17/%E8%B4%B9%E9%A9%AC%E7%82%B9%EF%BC%88%E5%88%9D%E8%AF%95%E5%87%A0%E4%BD%95%E7%94%BB%E6%9D%BF%EF%BC%89/" title="Previous Post: 费马点（初试几何画板）">&laquo; 费马点（初试几何画板）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/19/%E6%8E%A7%E5%88%B6%E5%8F%B0%E4%B8%8B%E6%94%B9%E5%8F%98%E6%96%87%E5%AD%97%E9%A2%9C%E8%89%B2/" title="Next Post: 控制台下改变文字颜色">控制台下改变文字颜色 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

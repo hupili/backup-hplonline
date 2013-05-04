@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>UDP,IP,RIP的鸡蛋问题 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.10.16 所谓鸡蛋问题，就是搞辩论的人常用的
+“鸡生蛋还是蛋生鸡” 一个辩论的人没搞过这个问题，
+就犹如在OJ上刷了几年题，
+但是A+B都空着一样。
+（我在POJ上的A+B是空的。。。猥琐一笑。。） 现在来谈谈这几个协议，
+以下各句描述应该都是成立的： 1. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/10/16/UDP%2CIP%2CRIP%E7%9A%84%E9%B8%A1%E8%9B%8B%E9%97%AE%E9%A2%98">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">UDP,IP,RIP的鸡蛋问题</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-16T11:18:00+08:00" pubdate data-updated="true">Oct 16<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.10.16</p>
+
+
+<p>所谓鸡蛋问题，就是搞辩论的人常用的<br/>
+“鸡生蛋还是蛋生鸡”</p>
+
+
+<p>一个辩论的人没搞过这个问题，<br/>
+就犹如在OJ上刷了几年题，<br/>
+但是<font color="#ff0000">A+B</font>都空着一样。<br/>
+（我在POJ上的A+B是空的。。。猥琐一笑。。）</p>
+
+
+<p>现在来谈谈这几个协议，<br/>
+以下各句描述应该都是成立的：</p>
+
+
+<p><font color="#ff9900">1.UDP是建立在IP之上的<br/>
+2.如果我们开始发UDP的包了，那下面的IP显然是通了<br/>
+3.IP要解决路由选择问题，也就是这时两点间的路由已经解决了<br/>
+4.IP解决路由要依靠各种路由选择协议，比如RIP<br/>
+5.RIP的信息是封装在UDP里面发送的</font><br/><font color="#0000ff">（然后现在从又1开始读）</font></p>
+
+
+<p>那么在一个仅用RIP作路由选择协议的网络里，<br/>
+。。。？</p>
+
+
+<p>由于这是一个环，所以看起来比鸡蛋问题要高级一点。<br/>
+第一个人提出鸡蛋问题的时候很经典，<br/>
+而后来者就大多沦于无聊的诡辩之中。</p>
+
+
+<p>破解上面这个环只需要明确一些东西就行了：</p>
+
+
+<p>1.直连的路由之间可以用各种方式去发现对方，<br/>
+  并不涉及路由选择协议。<br/>
+2.同一网络的两个路由端口之间属于直接交付<br/>
+3.RIP是在相邻路由之间交换信息，不涉及选路</p>
+
+
+<p>所以，回来看上面的5句话，<br/>
+它们属于那种half-truth。<br/>
+RIP建立在UDP上，UDP建立在IP上，<br/><font color="#ff0000">但RIP所发送的UDP包并不需要跨越网络</font>，<br/>
+所以不涉及选路（路由）。</p>
+
+
+<p>可见，这类鸡蛋问题都普遍存在漏洞。</p>
+
+
+<p>反过来看鸡蛋问题，<br/>
+也就是一个定义问题。<br/>
+鸡蛋：一种叫“鸡”的东西生的蛋<br/>
+鸡：从一种叫“鸡蛋”的东西孵出来的生物</p>
+
+
+<p>两种定义，随便选一个丢一个，问题直接就解决了。</p>
+
+
+<p>但是大部分人喜欢先作循环定义，<br/>
+然后诡辩之，<br/>
+属于舍本逐末之举。</p>
+
+
+<p>想起大一的数学老师，<br/>
+不断跟我们强调“定义”，<br/>
+从定义里面才能发现数学的味道。<br/>
+真是一个有思想的人啊。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-10-16T11:18:00+08:00" pubdate data-updated="true">Oct 16<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/10/16/UDP%2CIP%2CRIP%E7%9A%84%E9%B8%A1%E8%9B%8B%E9%97%AE%E9%A2%98/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/10/16/UDP%2CIP%2CRIP%E7%9A%84%E9%B8%A1%E8%9B%8B%E9%97%AE%E9%A2%98/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/10/06/%E7%82%B9%E5%88%B0%E7%82%B9%E9%93%BE%E8%B7%AF%E7%9A%84%E4%B8%89%E7%A7%8DIP%E5%88%86%E9%85%8D%E6%8A%80%E6%9C%AF/" title="Previous Post: 点到点链路的三种IP分配技术">&laquo; 点到点链路的三种IP分配技术</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/10/18/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%9D%BE%E5%BC%9B%28SubGradientMethod%29/" title="Next Post: 拉格朗日松弛(SubGradient Method)">拉格朗日松弛(SubGradient Method) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

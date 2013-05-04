@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>定时中断闪烁灯 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.2.27
+电路图依然简单，因为这个练习的目标是定时中断 代码：
+v_th EQU 0d8h
+v_tl EQU 0efh
+count EQU 100;100
+v_tmod EQU 1h
+org 00h
+ljmp main
+org 0bh
+ljmp timer0
+org &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/27/%E5%AE%9A%E6%97%B6%E4%B8%AD%E6%96%AD%E9%97%AA%E7%83%81%E7%81%AF">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">定时中断闪烁灯</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-27T22:49:00+08:00" pubdate data-updated="true">Feb 27<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><div forimg="1">(hplonline)2009.2.27<br/><br/>
+电路图依然简单，因为这个练习的目标是定时中断<br/><br/><br/><a href="http://hiphotos.baidu.com/hplonline/pic/item/40e5d3f94f81c679242df2d2.jpg" target="_blank">
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/40e5d3f94f81c679242df2d2.jpg" small="0" class="blogimg"/></div>
+<br/></a></div>
+
+
+<p><font color="#0000ff">代码：</font><br/><br/>
+v_th EQU 0d8h<br/>
+v_tl EQU 0efh<br/>
+count EQU 100;100<br/>
+v_tmod EQU 1h<br/><br/>
+org 00h<br/>
+ljmp main<br/>
+org 0bh<br/>
+ljmp timer0<br/><br/>
+org 30h<br/>
+main:<br/>
+     mov R0 , #0<br/>
+     mov P1 , #0<br/>
+     mov TH0 , #v_th<br/>
+     mov TL0 , #v_tl<br/>
+     mov TMOD , #v_tmod         <br/>
+     setb EA<br/>
+     setb ET0<br/>
+     setb TR0<br/><br/>
+sjmp $<br/><br/>
+timer0:<br/>
+push PSW<br/><br/>
+     mov TH0 , #v_th<br/>
+     mov TL0 , #v_tl<br/>
+     inc R0<br/>
+     cjne R0 , #count , next<br/>
+     mov R0 , #0<br/>
+     cpl P1.0<br/>
+     next:<br/>
+          <br/>
+pop PSW<br/>
+reti<br/><br/>
+end<br/><br/>
+程序结构比较清楚<br/><br/>
+v_th EQU 0d8h<br/>
+v_tl EQU 0efh<br/>
+这两个指定计时次数10000<br/>
+count EQU 100;100<br/>
+这个指定软计数次数100算下来也就是10<sup>6*1/(10<sup>6)</sup></sup> = 1秒一闪<br/>
+v_tmod EQU 1h<br/>
+这个指定的是工作模式，0号计时器用1号模式，16位计数<br/><br/><font color="#0000ff">总框架是这样的：</font><br/><br/>
+org 00h<br/>
+ljmp main<br/>
+;跳至主函数<br/>
+org 0bh<br/>
+ljmp timer0<br/>
+;跳至0号计时器的中断处理<br/>
+org 30h<br/>
+main:<br/>
+;这里是主函数内容<br/>
+sjmp $<br/><br/>
+timer0:<br/>
+push PSW<br/>
+;保护一些现场<br/>
+;&#8230;中断处理<br/>
+;恢复一些现场<br/>
+pop PSW<br/>
+reti<br/><br/>
+end<br/><br/>
+好 ，然后是主函数，先个P1赋值开灯，然后给R0赋初值，<br/>
+R0是后面软计数用到的计数器。<br/><br/>
+接下来设置工作模式，和T0的计时初值。<br/><br/>
+最后三个setb，依次是总中断开关，0号计时器允许开关，0号计时器计时开关<br/><br/>
+中断处理，每次增加R0，然后比较是否到了软计数次数，<br/>
+到了就令软计数器R0回0，然后翻转P1.0，实现灯的闪烁。。<br/><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-27T22:49:00+08:00" pubdate data-updated="true">Feb 27<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/27/%E5%AE%9A%E6%97%B6%E4%B8%AD%E6%96%AD%E9%97%AA%E7%83%81%E7%81%AF/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/27/%E5%AE%9A%E6%97%B6%E4%B8%AD%E6%96%AD%E9%97%AA%E7%83%81%E7%81%AF/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/02/26/%E7%AE%80%E5%8D%95%E7%9A%84%E9%80%9A%E7%94%A8%E8%8A%B1%E5%BC%8F%E6%B5%81%E6%B0%B4%E7%81%AF/" title="Previous Post: 简单的通用花式流水灯">&laquo; 简单的通用花式流水灯</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/02/28/%E4%B8%B2%E8%A1%8C%E6%8E%A7%E5%88%B6%E6%B5%81%E6%B0%B4%E7%81%AF/" title="Next Post: 串行控制流水灯">串行控制流水灯 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

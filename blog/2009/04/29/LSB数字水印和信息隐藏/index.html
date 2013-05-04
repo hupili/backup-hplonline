@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>LSB数字水印和信息隐藏 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="连着几天赶制实验室要的程序。没啥新东西，放个一个月前的LSB上来。
+(hplonline)2009.3.24程序，源码，以及某天的PPT就一起放上来了。
+仅仅针对24位的位图有用。
+有数字水印和信息隐藏两个模块。http://www.box.net/shared/i43gdhhnun &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/29/LSB%E6%95%B0%E5%AD%97%E6%B0%B4%E5%8D%B0%E5%92%8C%E4%BF%A1%E6%81%AF%E9%9A%90%E8%97%8F">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">LSB数字水印和信息隐藏</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-29T16:12:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>连着几天赶制实验室要的程序。没啥新东西，放个一个月前的LSB上来。<br/><br/>
+(hplonline)2009.3.24<br/><br/><font color="#ff6600">程序，源码，以及某天的PPT就一起放上来了。</font><br/><br/>
+仅仅针对24位的位图有用。<br/>
+有数字水印和信息隐藏两个模块。<br/><br/><a href="http://www.box.net/shared/i43gdhhnun" target="_blank">http://www.box.net/shared/i43gdhhnun</a><br/><br/>
+比较囧的是貌似没注释，可以对着后面的细节提示来看<br/><br/><font color="#0000ff">一。效果？？</font><br/><br/>
+这一幅是原图：<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c62071cbce129c3cbf09e606.jpg" small="0" class="blogimg"/><br/>
+这一幅是加了水印的图</div></p>
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/40e5d3f9077e0e7a242df206.jpg" small="0" class="blogimg"/><br/>
+模拟加水印的图被修改过</div>
+
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/12d151b511be7bed37d3ca06.jpg" small="0" class="blogimg"/><br/>
+根据水印提取的修改痕迹</div>
+
+
+<div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/2739df396a5454d03b87ce06.jpg" small="0" class="blogimg"/><br/><br/>
+关于上面看到的图片，只能是个大意演示。。<br/>
+因为图片上传后，百度会重新对图像进行压缩，所以看到的就不是以前的东西了。<br/><br/>
+下了程序后可以观察到这个效果，但是拷贝以上图片，存为BMP是没有意义的。<br/><br/><font color="#0000ff">二。LSB？？</font><br/><br/>
+Least Significant Bit 。<br/>
+ 因为8位来表示的颜色的低位的改变对人眼来说很不明显，<br/>
+于是可以在这些低位做点文章。<br/><br/>
+生成一些特征码放到这些位置上。<br/>
+收回图片的时候，按相同的规则检查特征码，不同的认为已经被修改。<br/>
+于是就做好<font color="#ff0000">数字水印</font>了。<br/><br/>
+把要隐藏的文件进行按位分割，依次放到（或加密后放到）这些低位。<br/>
+提取的时候，只是个逆过程。这样就做好<font color="#ff0000">信息隐藏</font>了。<br/><br/>
+简单吧。。所以说LSB是最容易实现的一种数字水印算法。<br/><br/>
+详细的内容在上面的包里有程序，附有当时一个戳瓢的PPT。<br/><br/><font color="#0000ff">三。细节提示</font></div>
+
+
+<p><font color="#ff6600">myBits类：<br/></font><br/>
+是为了更方便地实现位操作。<br/>
+可以插入一定的比特数，或者取出一定的比特数。<br/><br/>
+（这难道不是一个很简单的事吗？需要一个类？<br/>
+呵呵。。我最初想的一样。。但是写了一半写囧了。。<br/>
+于是老老实实把这个功能封装好，一上架就全通了。。）<br/><br/><font color="#ff6600">myBmpInfo类：</font><br/><br/>
+这个类处理有关位图信息。<br/>
+比如读取位图信息，把占有的位图信息写入另一个文件。<br/>
+其他一些诸如显示图像和信息的在后面就没有用到了，<br/>
+这些功能只是最初做这个类的时候的一个尝试。<br/><br/>
+（我猜有比较成熟的函数或者类来处理这些砸碎吧。。<br/>
+也没去查他们了，因为当时正好研究BMP的格式。。就很暴力地自己写了个用）<br/><br/><font color="#ff6600">myBmpCode类：</font><br/><br/>
+实现水印嵌入提取和信息隐藏提取的类。内含一个myBmpInfo。<br/><br/>
+除了这几个类就只是界面的一些问题了。。<br/><br/>
+这几个类拿到控制台下也可以用，<br/>
+像myBmpInfo里面的在CWnd中显示之类的函数去掉就可以了。<br/><br/>
+毕竟没时间把注释写得特详细，再说这东西比较简单，就这样差不多了吧。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-29T16:12:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/29/LSB%E6%95%B0%E5%AD%97%E6%B0%B4%E5%8D%B0%E5%92%8C%E4%BF%A1%E6%81%AF%E9%9A%90%E8%97%8F/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/29/LSB%E6%95%B0%E5%AD%97%E6%B0%B4%E5%8D%B0%E5%92%8C%E4%BF%A1%E6%81%AF%E9%9A%90%E8%97%8F/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/26/%E6%A0%87%E5%AE%9A%E7%BB%98%E5%9B%BE%E4%BD%8D%E7%BD%AE%E7%9A%84%E4%B8%80%E7%A7%8D%E8%AE%BE%E8%AE%A1%EF%BC%88VC6.MFC.CWnd.GetWindowPlacement%29/" title="Previous Post: 标定绘图位置的一种设计（VC6.MFC.CWnd.GetWindowPlacement)">&laquo; 标定绘图位置的一种设计（VC6.MFC.CWnd.GetWindowPlacement)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/02/%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97%E6%A8%A1%E6%8B%9F%E4%B8%AD%E9%9A%8F%E6%9C%BA%E6%95%B0%E6%8D%AE%E7%9A%84%E7%94%9F%E6%88%90%EF%BC%88%E5%88%86%E5%8C%BA%E5%86%8D%E9%9A%8F%E6%9C%BA%EF%BC%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC%EF%BC%8C%E4%B8%89%E9%98%B6%E6%A0%B7%E6%9D%A1%E6%8F%92%E5%80%BC%EF%BC%89%EF%BC%88MATLAB%EF%BC%89/" title="Next Post: 蒙特卡罗模拟中随机数据的生成（分区再随机，线性插值，三阶样条插值）（MATLAB）">蒙特卡罗模拟中随机数据的生成（分区再随机，线性插值，三阶样条插值）（MATLAB） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

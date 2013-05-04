@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>POJ1405 （Heritage） （递推+高精度） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.3.31递推：
+如果当前还可以分的数为1/a
+那么显然减掉1/(a+1)剩下的是最小的，a+1是比a大的第一个整数。
+剩下的是1/(a(a+1))
+这个式子仅和a相关，所以前一次剩下的为最小时（a最小），后一次使用此策略为最小。
+那么可以递推下去。
+2，3，7，43 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/31/POJ1405%EF%BC%88Heritage%EF%BC%89%EF%BC%88%E9%80%92%E6%8E%A8%2B%E9%AB%98%E7%B2%BE%E5%BA%A6%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">POJ1405 （Heritage） （递推+高精度）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-31T09:15:00+08:00" pubdate data-updated="true">Mar 31<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.3.31<br/><br/><font color="#0000ff">递推：</font><br/><br/>
+如果当前还可以分的数为1/a<br/><br/>
+那么显然减掉1/(a+1)剩下的是最小的，a+1是比a大的第一个整数。<br/><br/>
+剩下的是1/(a<em>(a+1))<br/><br/>
+这个式子仅和a相关，所以前一次剩下的为最小时（a最小），后一次使用此策略为最小。<br/><br/>
+那么可以递推下去。<br/><br/>
+2，3，7，43.。。<br/><br/><font color="#0000ff">公式：</font><br/><br/>
+ans[]为第i个分母，b[i]为辅助乘项<br/><br/>
+ans[1] = 2 ;<br/><br/>
+i &gt;= 2 <br/>
+b[i] = mul(ans[j]) ( 1 &lt;= j &lt; i ) <br/>
+ans[i] = b[i] + 1<br/><br/>
+这样推可以避免减法。（为什么要避免减法。。是为了将就高精度那边）<br/>
+计算b[i]的时候，也不用把前面的都累乘起来，想一下，就两个变量递推起走就行了。<font color="#0000ff"><br/><br/>
+代码：</font><br/><br/>
+CBigInt num;<br/>
+CBigInt pre ;<br/><br/>
+int main(){<br/>
+       int i , n ; <br/>
+       CBigInt one(1);<br/>
+       num.init(1);<br/>
+       pre.init(1);<br/>
+       scanf(&#8220;%d&#8221;,&amp;n);<br/>
+       for ( i = 1 ; i &lt;= n ; i ++ ){<br/>
+              num </em>= pre ;<br/>
+              pre = num ;<br/>
+              num += one ;<br/>
+              num.output() ;<br/>
+              putchar(&#8216;\n&#8217;);<br/>
+       }<br/>
+       return 0;<br/>
+}<br/><br/><a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/bebbf9de8308c65c95ee371d.html">CBigInt的实现参考上一篇。</a><br/><br/>
+之前RE了若干次，是因为把MAXL算小了。<br/><br/>
+这里大概有2W多位的样子。位数是成指数上升的。。<br/><br/>
+PS：以<a href="http://hi.baidu.com/hplonline/blog/item/bebbf9de9309d65c95ee371c.html" target="_blank">FFT优化的高精度</a> ， <a href="http://www.box.net/shared/plepep7zbi" target="_blank">1405C++AC完整下载</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-31T09:15:00+08:00" pubdate data-updated="true">Mar 31<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/31/POJ1405%EF%BC%88Heritage%EF%BC%89%EF%BC%88%E9%80%92%E6%8E%A8%2B%E9%AB%98%E7%B2%BE%E5%BA%A6%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/31/POJ1405%EF%BC%88Heritage%EF%BC%89%EF%BC%88%E9%80%92%E6%8E%A8%2B%E9%AB%98%E7%B2%BE%E5%BA%A6%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/31/%E9%AB%98%E7%B2%BE%E5%BA%A6%E7%B1%BB%EF%BC%88C%2B%2B%EF%BC%89CBigInt/" title="Previous Post: 高精度类（C++）CBigInt">&laquo; 高精度类（C++）CBigInt</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/06/%E5%90%91%E4%B8%8A%E5%8F%96%E6%95%B4%26%26%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/" title="Next Post: 向上取整&&内存对齐">向上取整&&内存对齐 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

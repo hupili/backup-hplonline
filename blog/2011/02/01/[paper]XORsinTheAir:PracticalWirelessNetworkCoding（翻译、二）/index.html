@@ -1,0 +1,644 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2011.1.31 3      
+COPE综述 术语表： 术语 定义 本地包 没有编码的包（来自上层交付、从邻居收到、从介质偷听到） 编码包、XOR包 将多个本地包XOR在一起形成 下一跳集 一个编码包中，所有本地包的下一跳节点组成的集合。 包编号 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">[Paper] XORs in the Air: Practical Wireless Network Coding（翻译、二）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-01T00:24:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2011.1.31</p>
+
+
+<h1><span><span>3<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">综述</span></h1>
+
+
+
+
+<p class="MsoNormal"><span style="font-family: 宋体;">术语表：</span></p>
+
+
+
+
+<table class="MsoTableGrid" style="border-collapse: collapse; border: medium none;" border="1" cellpadding="0" cellspacing="0"><tbody><tr><td style="width: 122.4pt; border: 1pt solid windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">术语</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">定义</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">本地包</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">没有编码的包（来自上层交付、从邻居收到、从介质偷听到）</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">编码包、</span><span>XOR</span><span style="font-family: 宋体;">包</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">将多个本地包</span><span>XOR</span><span style="font-family: 宋体;">在一起形成</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">下一跳集</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">一个编码包中，所有本地包的下一跳节点组成的集合。</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">包编号</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">一个包的</span><span>IP</span><span style="font-family: 宋体;">源地址和</span><span>IP</span><span style="font-family: 宋体;">序列号的</span><span>32</span><span style="font-family: 宋体;">位</span><span>hash</span><span style="font-family: 宋体;">值</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">输出队列</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">每个节点有一个</span><span>FIFO</span><span style="font-family: 宋体;">队列，用于保存所有待转发的包</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">存储池</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">存储在过去的</span><span>T</span><span style="font-family: 宋体;">分钟内，听到的所有包</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">编码增益</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">不编码所需的传输次数，比上编码后所需的传输次数</span></p>
+  </td>
+ </tr><tr><td style="width: 122.4pt; border-width: medium 1pt 1pt; border-style: none solid solid; border-color: -moz-use-text-color windowtext windowtext; padding: 0cm 5.4pt;" valign="top" width="163">
+  <p class="MsoNormal"><span style="font-family: 宋体;">编码</span><span>+MAC</span><span style="font-family: 宋体;">增益</span></p>
+  </td>
+  <td style="width: 303.7pt; border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: -moz-use-text-color windowtext windowtext -moz-use-text-color; padding: 0cm 5.4pt;" valign="top" width="405">
+  <p class="MsoNormal"><span style="font-family: 宋体;">当</span><span>COPE</span><span style="font-family: 宋体;">使用</span><span>802.11</span><span style="font-family: 宋体;">作为</span><span>MAC</span><span style="font-family: 宋体;">协议，并且所有节点都积压的时候，所得的收益</span></p>
+  </td>
+ </tr></tbody></table>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>COPE</span><span style="font-family: 宋体;">就是在</span><span>MAC</span><span style="font-family: 宋体;">和</span><span>IP</span><span style="font-family: 宋体;">间插入一个编码层，利用各种信息尽可能地在一次传输中混合多个包。主要技术有三：</span></p>
+
+
+
+
+<h2><span><span>3.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">机遇侦听（</span><span>opportunistic
+listening</span><span style="font-family: 黑体;">）。</span></h2>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span>COPE</span><span style="font-family: 宋体;">将所有节点的网卡设会混杂模式，存储在</span><span>T</span><span style="font-family: 宋体;">时间（默认</span><span>0.5s</span><span style="font-family: 宋体;">）内偷听到的所有包。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">所有节点会广播自己的接收报告（</span><span>reception reports</span><span style="font-family: 宋体;">），告诉邻居自己自己所存的包有哪些。接收报告一般是附属在数据包上的，如果没有数据发送，也会周期性地广播控制包。</span></p>
+
+
+
+
+<h2><span><span>3.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">机遇编码（</span><span>opportunistic
+coding</span><span style="font-family: 黑体;">）</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">关键问题是，把哪些包</span><span>XOR</span><span style="font-family: 宋体;">到一起可以达到最大的吞吐。一个节点在发送的时候，需要最大化一次传输中本地包的数量（从后面的工程上的种种近似可以看到，作者并没有达到这个准则），并且要保证下一跳集中的每个节点都能够解码。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">一个例子，（看图不说话）：</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">当前网络的状况：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/f6fb9aefa74c0ebecf1b3ea2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>B</span><span style="font-family: 宋体;">的输出队列中，每个包的下一跳：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/e234be8f55de3dbff11f36a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">可选的编码方案：（</span><span>1</span><span style="font-family: 宋体;">、无法解码，直接</span><span>pass</span><span style="font-family: 宋体;">；</span><span>2</span><span style="font-family: 宋体;">、均可解码，但不是最优；</span><span>3</span><span style="font-family: 宋体;">、最优的）</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/88cfb631bdea9df95fdf0ea2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">一个简单的法则：一个节点要将</span><span>p1,p2…pn</span><span style="font-family: 宋体;">，</span><span>n</span><span style="font-family: 宋体;">个本地混在起，传给</span><span>r1,r2…rn</span><span style="font-family: 宋体;">，</span><span>n</span><span style="font-family: 宋体;">个下一跳，当且仅当</span><span>ri</span><span style="font-family: 宋体;">有</span><span>n-1</span><span style="font-family: 宋体;">个</span><span>pj(j!=i)</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这个法则保证了，每个下一跳集中的节点都能解码。当一个节点有机会发送的时候，它选择满足上述法则的最大的</span><span>n</span><span style="font-family: 宋体;">，进而最大化编码的收益。（实际上，只有当上层协议认为下层是可靠的时候，并且流量对延迟不敏感的时候，这才有可能最大化。以</span><span>TCP</span><span style="font-family: 宋体;">为例，如果每次选出的</span><span>n</span><span style="font-family: 宋体;">个包，使得</span><span>n</span><span style="font-family: 宋体;">最大，但却不一定包含输出队列前面的包，这将导致</span><span>TCP</span><span style="font-family: 宋体;">的超时。或者上层协议并不关心包的交付，如</span><span>UDP</span><span style="font-family: 宋体;">）</span></p>
+
+
+
+
+<h2><span><span>3.3<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">获得邻居信息</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">如前所述，通过接收报告，可以通知邻居自己拥有的本地包信息。在严重拥塞的时候，接收报告也可能丢失；在流量很小的时候，接收报告的到来可能很迟，以至于附近的节点已经进行了次优的编码选择。所以一个节点不能仅依赖于接收报告，而要猜测邻居所拥有的包。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">有些无线路由协议会计算每个节点对之间的投递概率（</span><span>delivery
+probability</span><span style="font-family: 宋体;">），并用该值来决定好的传送路径。</span><span>ETX</span><span style="font-family: 宋体;">（</span><span>expected
+transmission count</span><span style="font-family: 宋体;">）周期性地计算投递概率，并把投递概率的倒数作为每条链路的权值，广播出去，用链路状态协议计算出最短路径。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">（投递概率的计算方法是，每个节点以</span><span>t</span><span style="font-family: 宋体;">为周期广播探针包，并维护一个计数器，统计过去</span><span>w</span><span style="font-family: 宋体;">时间内收到的探针包的数量，设当前时间为</span><span>T</span><span style="font-family: 宋体;">，</span><span>counter(T-w,T)/(w/t)</span><span style="font-family: 宋体;">即是投递概率</span><span>p</span><span style="font-family: 宋体;">。这意味着，某条链路上发送包成功的事件服从</span><span>B(n,p)</span><span style="font-family: 宋体;">，那么平均发送次数为</span><span>1/p</span><span style="font-family: 宋体;">，该值即为这条链路的</span><span>ETX</span><span style="font-family: 宋体;">。一个路径上，所有链路的</span><span>ETX</span><span style="font-family: 宋体;">之和，即是这个路径的</span><span>ETX</span><span style="font-family: 宋体;">）。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 21pt;"><span style="font-family: 宋体;">当</span><span>COPE</span><span style="font-family: 宋体;">缺乏绝对信息的时候（指收到邻居的接收报告），它使用上一跳和下一跳之间的投递概率来作为该邻居拥有这个包的概率。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">当</span><span>COPE</span><span style="font-family: 宋体;">猜测失败的时候，会导致一些下一跳无法解码。相应的包会被重传，并且可能和另外一组包编码到一起。</span></p>
+
+
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+
+
+<h1><span><span>4<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span>COPE</span><span style="font-family: 宋体;">带来的增益</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">吞吐量的增益来自编码机会，而编码机会又由流量模式决定。这节深入剖析预期的吞吐量增益，以及影响它的因素。</span></p>
+
+
+
+
+<h2><span><span>4.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">编码增益</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">定义：无编码时的传输次数，比上有编码时最少的传输次数。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">在</span><span>Alic-Bob</span><span style="font-family: 宋体;">的例子中，编码增益是</span><span>4/3</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>COPE</span><span style="font-family: 宋体;">的最大编码增益是多少？任意图下，普通网络编码对单播流量的增益上界目前还是未决问题，见</span><span>[36]</span><span style="font-family: 宋体;">、</span><span>[16]</span><span style="font-family: 宋体;">。尽管如此，可以分析一些简单的拓扑，来发掘影响</span><span>COPE</span><span style="font-family: 宋体;">编码增益的因素。基本假设：完全相同的节点；全向无线信号；在信号半径内可以完美侦听；在信号半径外则无法被听到；如果两个节点可以相互听到，路由协议会使用直接链路。此外，下面的分析假设了无限的流量，并且只考虑稳定状态。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">定理</span><span>4.1</span></b><b><span style="font-family: 宋体;">，在没有机遇侦听的情况下，最大的编码增益是</span><span>2</span></b><b><span style="font-family: 宋体;">，并且是可达的。</span><span/></b></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这个定理可以通过下图的构造来证明，详见附录</span><span>A</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/47a498583a831a8f9d8204a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">我们并不知道在有机遇侦听的情况下，最大的编码增益是怎样的，但我们知道</span><span>COPE</span><span style="font-family: 宋体;">至少是有收益的。如下图例：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/91e013d84fb4186432fa1ca2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这个是</span><span>Alic-Bob</span><span style="font-family: 宋体;">例子的一个扩展。两组流量在链路上是不相交的。编码增益很容易得到，</span><span>4/3</span><span style="font-family: 宋体;">。这个结论很重要，因为在实际的网络中，只能找到很少的一些流量，他们拥有相同的路径，但方向不同；而许多不链路不相交的流量，在一个中继节点相交确是很容易发生的情况，于是可以把这些包通过机遇侦听和猜测编码到一起。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">下图（</span><span>c</span><span style="font-family: 宋体;">）是上面（</span><span>b</span><span style="font-family: 宋体;">）的一个扩展，编码增益达到</span><span>8/5</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/ecf54b346c80991f241f14a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">实际中观测到的收益比理论的要小，原因有编码机会的缺失、包头开销（</span><span>COPE</span><span style="font-family: 宋体;">要在</span><span>IP</span><span style="font-family: 宋体;">前面加上许多自己的信息）、介质中的损失率。尽管如此，</span><span>COPE</span><span style="font-family: 宋体;">可以将传输的信息率增加到大于介质的比特率，这使得即使当介质被充分使用的时候，</span><span>COPE</span><span style="font-family: 宋体;">依然带来收益。这与其他提升无线网吞吐量的方式不同，比如</span><span>[6]</span><span style="font-family: 宋体;">的机遇路由（</span><span>opportunistic
+routing</span><span style="font-family: 宋体;">），当网络不完全的拥塞的时候，可以更好地利用介质，但不会增加网络容量。</span></p>
+
+
+
+
+<h2><span><span>4.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">编码</span><span>+MAC</span><span style="font-family: 黑体;">增益</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">实际实验中，会发现增益超过了理论上的编码增益。这是因为</span><span>COPE</span><span style="font-family: 宋体;">编码和</span><span>MAC</span><span style="font-family: 宋体;">之间的交互，产生了有益的副作用，所以叫做编码</span><span>+MAC</span><span style="font-family: 宋体;">增益。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">以</span><span>Alice-Bob</span><span style="font-family: 宋体;">的图为例。在没有编码的情况下，要使网络达到最大的吞吐，</span><span>Relay</span><span style="font-family: 宋体;">的发送速率（发送机会）需要是</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">两倍。但</span><span>802.11</span><span style="font-family: 宋体;">的</span><span>MAC</span><span style="font-family: 宋体;">协议为了保证公平性，三个节点的发送机会是相等的。这就使得在</span><span>Relay</span><span style="font-family: 宋体;">中，有一半的包无法发出去。在使用</span><span>COPE</span><span style="font-family: 宋体;">的情况下，</span><span>Relay</span><span style="font-family: 宋体;">可以同时发送来自</span><span>Alice</span><span style="font-family: 宋体;">和</span><span>Bob</span><span style="font-family: 宋体;">的包，相比没有</span><span>COPE</span><span style="font-family: 宋体;">的时候，吞吐量变成了</span><span>2</span><span style="font-family: 宋体;">倍。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">编码</span><span>+MAC</span><span style="font-family: 宋体;">增益假设所有节点都持续有数据发送，但受</span><span>MAC</span><span style="font-family: 宋体;">分配的带宽所限制。在存在单点瓶颈的时候，编码</span><span>+MAC</span><span style="font-family: 宋体;">增益可以由该节点带</span><span>COPE</span><span style="font-family: 宋体;">的排出率（</span><span>draining rate</span><span style="font-family: 宋体;">，指一个中继节点，把输出队列中的包发送出去的速率），比上不带</span><span>COPE</span><span style="font-family: 宋体;">的排出率来计算。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">“</span><span>X</span><span style="font-family: 宋体;">”拓扑中编码</span><span>+MAC</span><span style="font-family: 宋体;">增益是</span><span>2</span><span style="font-family: 宋体;">，“十字”拓扑中，编码</span><span>+MAC</span><span style="font-family: 宋体;">增益是</span><span>4</span><span style="font-family: 宋体;">。编码</span><span>+MAC</span><span style="font-family: 宋体;">增益的理论上界为：</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">定理</span><span>4.2</span></b><b><span style="font-family: 宋体;">，在没有机遇侦听的情况下，</span><span>COPE</span></b><b><span style="font-family: 宋体;">的编码</span><span>+MAC</span></b><b><span style="font-family: 宋体;">增益是</span><span>2</span></b><b><span style="font-family: 宋体;">，并且可达到。</span><span/></b></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">证明见附录</span><span>B</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">定理</span><span>4.3</span></b><b><span style="font-family: 宋体;">，在有机遇侦听的情况下，</span><span>COPE</span></b><b><span style="font-family: 宋体;">的编码</span><span>+MAC</span></b><b><span style="font-family: 宋体;">增益是无穷。</span><span/></b></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">可以通过构造的有无穷边的“轮”拓扑来证明，如下：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/8ed7f2dcd88b13f0cc1166a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">下表对</span><span>COPE</span><span style="font-family: 宋体;">的增益做一个总结：</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/d217f60381ce7fd9d53f7ca2.jpg" border="0"/></span></span></p>
+
+
+<h1><span><span>5<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span><span>    </span></span><span style="font-family: 宋体;">实现</span><span>COPE</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">因为要把</span><span>COPE</span><span style="font-family: 宋体;">集成到现有的协议栈中，下面主要是一些系统级的问题。</span></p>
+
+
+
+
+<h2><span><span>5.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">包编码算法</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">原则</span><span>1</span></b><b><span style="font-family: 宋体;">：不延迟本应该发送的包。</span></b><span style="font-family: 宋体;">当无线信道空闲的时候，取出输出队列中的第一个包，检查是否有其他可以</span><span>XOR</span><span style="font-family: 宋体;">在一起的包。如果没有编码机会，</span><span>COPE</span><span style="font-family: 宋体;">不会等待可能的匹配包，而是直接发送。（实际上这个原则和前面“最大化编码的本地包数量”是不兼容的，但这里的原则是更好的工程上的方案）</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">原则</span><span>2</span></b><b><span style="font-family: 宋体;">：尽量将长度相近的包</span><span>XOR</span></b><b><span style="font-family: 宋体;">在一起。</span></b><span style="font-family: 宋体;">因为把短包</span><span>XOR</span><span style="font-family: 宋体;">到长包中的时候，会额外补零，导致带宽利用率不高。经验研究表明，网络中的包长度成双模态分布，在</span><span>40</span><span style="font-family: 宋体;">和</span><span>1500</span><span style="font-family: 宋体;">有两个峰。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><b><span style="font-family: 宋体;">原则</span><span>3</span></b><b><span style="font-family: 宋体;">：</span><span>COPE</span></b><b><span style="font-family: 宋体;">不会把同样下一跳的包</span><span>XOR</span></b><b><span style="font-family: 宋体;">在一起</span></b><span style="font-family: 宋体;">。否则，下一跳无法解码。这样，</span><span>COPE</span><span style="font-family: 宋体;">只需要给每个邻居维护两个虚队列，分别对应大包和小包就行了（默认一</span><span>100bytes</span><span style="font-family: 宋体;">做阈值）。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">编码算法：先从输出队列中取出队头的包，判断是大包还是小包。在相同尺寸的虚队列中去搜索可以</span><span>XOR</span><span style="font-family: 宋体;">在一起的包。为防止乱序，</span><span>COPE</span><span style="font-family: 宋体;">只考察每个虚队列的队头。当一种尺寸的队列都搜索完的时候，才会搜索另一种尺寸的队列。在这些限制条件下，</span><span>COPE</span><span style="font-family: 宋体;">只用考察</span><span>2M</span><span style="font-family: 宋体;">个包头就行了（</span><span>M</span><span style="font-family: 宋体;">是邻居的数量）。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">另一个主要问题是乱序。</span><span>TCP</span><span style="font-family: 宋体;">会把乱序当作是网络拥塞的信号。</span><span>COPE</span><span style="font-family: 宋体;">按照输出队列的顺序发包，并且搜索虚队列的时候，只考察队首，这极大程度地规避了乱序的问题。尽管如此，由于</span><span>COPE</span><span style="font-family: 宋体;">分了大小包队列，所以乱序仍然可能发生。比如，当需要重传的时候，可能是由于组装</span><span>XOR</span><span style="font-family: 宋体;">包的时候进行了错误的猜测，导致某节点无法解码。</span><span>COPE</span><span style="font-family: 宋体;">有一个重排模块可以把</span><span>TCP</span><span style="font-family: 宋体;">分组排序后再递交上层。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">最后，要使得编码包所到达的节点有最大的解码可能性。</span><span>COPE</span><span style="font-family: 宋体;">必须要决定某个本地包是否可以被邻居解码。当该邻居是这个本地包的上一跳，或者收到了从该邻居发来的接收报告时，答案是肯定的。当上述条件不成立的时候，</span><span>COPE</span><span style="font-family: 宋体;">利用路由协议计算出的投递概率来估计某下一跳含有一个本地包的概率。</span><span>COPE</span><span style="font-family: 宋体;">确保下一跳集中每个节点都能解码的概率足够大。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">某下一跳能解码的概率是，它含有除它所需本地包外其他所有包的概率乘积：</span><span>PD=P1*P2…*P(n-1)</span><span style="font-family: 宋体;">。假设</span><span>COPE</span><span style="font-family: 宋体;">已经决定了编码</span><span>n-1</span><span style="font-family: 宋体;">个包，当决定第</span><span>n</span><span style="font-family: 宋体;">个包的时候，它考察</span><span>n</span><span style="font-family: 宋体;">个下一跳的</span><span>PD</span><span style="font-family: 宋体;">，是否都大于一个阈值</span><span>G</span><span style="font-family: 宋体;">（默认</span><span>0.8</span><span style="font-family: 宋体;">）。这样保证了所有下一跳节点都有至少</span><span>G</span><span style="font-family: 宋体;">的概率解码。最后，为了公平性，在虚队列间循环的时候使用随机顺序。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">每个节点的数据结构如下：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">输出队列。</span><span>FIFO</span><span style="font-family: 宋体;">的队列，包含了所有待转发的包。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">对每个邻居维护两个虚队列，对应大包和小包。虚队列中是一堆指针，指向输出队列的元素。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">包信息表。是一个以包编号为</span><span>key</span><span style="font-family: 宋体;">的</span><span>hash</span><span style="font-family: 宋体;">表，对输出队列中的每个包，它记录了该节点邻居拥有该包的可能性。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 20.75pt;"><span style="font-family: 宋体;">当</span><span>MAC</span><span style="font-family: 宋体;">层表示可以发包的时候，</span><span>COPE</span><span style="font-family: 宋体;">执行的算法如下：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 20.75pt; text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/c5ed3ffacf46d2d89f5146a2.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">（循环部分用红框标出，注意并非是按照顺序迭代，前面已经说过了，是根据</span><span>[1,M]</span><span style="font-family: 宋体;">的随机排列来迭代的）</span></p>
+
+
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<br/><p class="MsoNormal"><span> </span></p><br/>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-01T00:24:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/" title="Previous Post: [paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）">&laquo; [paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/" title="Next Post: 再谈stl的rotate">再谈stl的rotate &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

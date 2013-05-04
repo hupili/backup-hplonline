@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>【PacketTracer】单臂路由 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.3.24系列链接
+去年夏天用Boson把Stand Alone Lab敲完了。
+听说了单臂路由这个名字，也在网上搜了些东西，结果就是没整出来。
+上学期上LAN/MAN，从把原理想清楚了，
+感觉其实是个比较清晰的事情，
+最近用PT模拟比较多，再试一下。拓扑：配置过程： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%8D%95%E8%87%82%E8%B7%AF%E7%94%B1">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">【PacketTracer】单臂路由</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T11:40:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.3.24<br/><br/><a href="http://hi.baidu.com/sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer" target="_blank">系列链接</a><br/><br/>
+去年夏天用<a href="http://hi.baidu.com/hplonline/blog/item/8cfcf7fa610942d7b58f3128.html" target="_blank">Boson把Stand Alone Lab敲完</a>了。<br/><br/>
+听说了单臂路由这个名字，也在网上搜了些东西，结果就是没整出来。<br/><br/>
+上学期上LAN/MAN，从把原理想清楚了，<br/>
+感觉其实是个比较清晰的事情，<br/>
+最近用PT模拟比较多，再试一下。<br/><br/><font color="#0000ff">拓扑：</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/6d33871053912137203f2efc.jpg" small="0" class="blogimg"/></span><br/><br/><font color="#0000ff">配置过程：</font><br/><br/><br/><font color="#ff9900">1.模拟用户擅自修改的IP地址</font><br/><br/>
+本来应该是255.255.255.128的掩码，<br/>
+由于用户擅自修改IP地址，使得可以通信。<br/><br/>
+pc0:<br/>
+ipconfig 192.168.1.2 255.255.255.0 192.168.1.1<br/><br/>
+pc1:<br/>
+ipconfig 192.168.1.130 255.255.255.0 192.168.1.129<br/><br/><font color="#ff9900">2.配置VLAN，使用户隔离</font><br/><br/>
+将PC0放到vlan2内<br/><br/>
+vlan 2<br/>
+int f1/0<br/>
+sw acc vlan 2<br/><br/>
+PC1放到vlan3内<br/><br/><font color="#ff9900">3.交换机端trunk链路</font><br/><br/>
+链路模式<br/>
+sw mode tr<br/>
+允许中继的vlan<br/>
+sw tr allowed vlan 2,3<br/><br/><font color="#ff9900">4.路由配置</font><br/><br/>
+开启端口<br/>
+int f0/0<br/>
+no shut<br/>
+ex<br/><br/>
+子接口1：<br/>
+int f0/0.1<br/>
+enc dot 2<br/>
+ip add 192.168.1.1 255.255.255.128<br/><br/>
+子接口2：<br/>
+int f0/0.2<br/>
+enc dot 3<br/>
+ip add 192.168.1.129 255.255.255.128<br/><br/><font color="#ff0000">给子接口配置IP地址前必须封装802.1Q或者ISL等加标协议。</font><br/>
+分析一下，还是很容易理解。<br/>
+所有的子接口在物理上都是同一个实体，<br/>
+如果没有加标的话，该实体收到了帧，无法判断是给哪一个子接口。<br/><br/><font color="#ff9900">5.测试</font><br/><br/>
+PC0可以ping通路由的两个子接口，<br/>
+但是无法ping通PC1。<br/><br/>
+原因是用户擅自修改了IP地址的掩码，<br/><font color="#ff0000">PC判断目的在同一子网内，<br/>
+于是直接进行arp，</font>显然是无法得到回应的。<br/><br/><font color="#ff9900">6.用户更改回网管员分配的IP</font><br/><br/>
+PC0:<br/>
+ipconfig 192.168.1.2 255.255.255.128 192.168.1.1<br/><br/>
+PC1:<br/>
+ipconfig 192.168.1.130 255.255.255.128 192.168.1.129<br/><br/><font color="#ff9900">7.测试</font><br/><br/>
+PC0和PC1可以ping通<br/><br/><br/>
+====<br/><br/>
+整个过程简单得让我都不知道以前是为啥没配通了。<br/><br/><font color="#ff0000">PS:在PT5.2中用三层交换机配子接口，提示不支持。</font><br/><br/>
+不过用三层交换机实现的时候，似乎更简洁，<br/>
+因为可以给vlan 2-1005配ip地址，已经不需要子接口这个东西了。<br/><br/><a target="_blank" href="http://www.box.net/shared/9yx617d6ip">pkt下载</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T11:40:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%8D%95%E8%87%82%E8%B7%AF%E7%94%B1/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%8D%95%E8%87%82%E8%B7%AF%E7%94%B1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/03/20/%E3%80%90PacketTracer%E3%80%91IPsec%E5%AE%9E%E9%AA%8C%EF%BC%8C%E8%BF%9E%E6%8E%A5%E5%AD%90%E7%BD%91%E7%9A%84VPN/" title="Previous Post: 【PacketTracer】IPsec实验，连接子网的VPN">&laquo; 【PacketTracer】IPsec实验，连接子网的VPN</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%A4%9A%E5%9C%B0%E5%9D%80%E6%B1%A0dhcp/" title="Next Post: 【PacketTracer】多地址池dhcp">【PacketTracer】多地址池dhcp &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

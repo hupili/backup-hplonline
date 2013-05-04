@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>nerd的简易制谱格式（一）缘由及程序和示例下载 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.12.31下载链接，
+包含文件格式说明，
+MATLAB解析程序，
+一个音乐示例mymusic.m，
+另外附上一份音阶频率表。
+供他人有更好的思路时使用。为什么要做这个东西？
+和昨天打的那个谱实在是太有关系了。
+虽然用overture也能够做，总觉得比较麻烦。
+比如， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/12/31/nerd%E7%9A%84%E7%AE%80%E6%98%93%E5%88%B6%E8%B0%B1%E6%A0%BC%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%E7%BC%98%E7%94%B1%E5%8F%8A%E7%A8%8B%E5%BA%8F%E5%92%8C%E7%A4%BA%E4%BE%8B%E4%B8%8B%E8%BD%BD">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Nerd的简易制谱格式（一）缘由及程序和示例下载</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-31T14:42:00+08:00" pubdate data-updated="true">Dec 31<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.12.31<br/><br/><a href="http://www.box.net/shared/l6ofcpyhn6" target="_blank">下载链接</a>，<br/>
+包含文件格式说明，<br/>
+MATLAB解析程序，<br/>
+一个音乐示例mymusic.m，<br/>
+另外附上一份音阶频率表。<br/><br/>
+供他人有更好的思路时使用。<br/><br/><font color="#0000ff">为什么要做这个东西？</font><br/><br/>
+和<a href="http://hi.baidu.com/hplonline/blog/item/a8f8c2fc44c5f1f6fd037f64.html" target="_blank">昨天</a>打的那个谱实在是太有关系了。<br/>
+虽然用overture也能够做，总觉得比较麻烦。<br/>
+比如，画了个四分音符，马上画八分音符就得在工具栏去选一下。<br/>
+（貌似有快捷键，不过没去搜，搜了也记不住，<br/>
+毕竟不常用这个东西。。）<br/><br/>
+当时的那个谱，我看了前后点了大约40min才搞定。<br/>
+这对于一个程序员来说是不能忍受的。。<br/>
+（而且还只打了一部分）<br/><br/>
+另外一些记号，像冒号双竖线的重复等，<br/>
+反正短时间内也找不到怎么弄进去。<br/>
+前后有小节比较相似的时候，<br/>
+想复制一下，却没找到方法。。<br/><br/>
+也许弄一份也就忍了，<br/>
+但是接连收到好几份，<br/>
+只能想点办法节约点时间。。<br/><font color="#0000ff"><br/>
+为什么要用纯文本？</font><br/><br/>
+最近围观了鸟哥的著作，<br/>
+实际体验了下linux，<br/>
+发现纯文本是一种强大的格式。<br/>
+其易编辑，易携带，易扩展。<br/>
+唯一的一点缺陷就是占空间大、解析耗时。<br/>
+但在现在的硬件条件下，这点东西算啥啊。。<br/>
+就像我这个用MATLAB写的，一样马上跑出来。<br/><br/><font color="#0000ff">我要达到什么效果？</font><br/><br/>
+只要能听懂就行了。。<br/>
+我需要的是快速地知道这是什么东西，<br/>
+而不是欣赏这个东西。<br/>
+当我知道歌名之后，就能去搜原著而已。<br/><br/>
+所以在解析的时候，<br/>
+我全部使用的是单频的sin函数。。<br/><br/><font color="#0000ff">核心思想：</font><br/><br/>
+什么调式，拍子，音阶之类的都是狗屁，<br/>
+（虽然后面我也会沿用一些术语。。。）<br/>
+那些都是人发明出来欺负人的。<br/>
+我想之所以有不少同学认为难以学习音乐，<br/>
+就是被这样搞晕的。。<br/><br/>
+你想啊，一个初学者在五线谱上数#和b的个数，<br/>
+然后老师告诉他，记住，这是XX调。<br/>
+然后XX调的do、re……又是某某键。<br/>
+XX调的do又是从哪根线开始的。<br/><br/>
+等到该停顿的时候，<br/>
+还得分各种长相，<br/>
+才知道是几分休止符。<br/><br/>
+等一个人刚刚把基本节奏学会了，<br/>
+马上又有3连音，5连音之类的非主流架构。。<br/><br/>
+即便是如此复杂的体系，其表现力低得惊人。。<br/>
+比如：<br/>
+请帮我记录这样的一个音符，3.1415926拍，在mi和fa之间。<br/><br/>
+先说节奏问题，就从来没发明过足够表达的记法。<br/>
+再说音阶问题，mi和fa之间本来就是半阶，已经是最小的单位。。<br/><br/><font color="#0000ff">而我认为：</font><br/><br/>
+一个音只有三个元素：频率，长度，幅度<br/><br/>
+注意没有引入中学物理上说的所谓音色。<br/>
+因为音色强调的是主音附近的泛音问题，<br/>
+实质上是有杂糅的频率成分在里面。<br/><br/>
+而幅度的问题，则可以直接取为一个单位。<br/>
+因为我仅仅是对一首曲子的主干进行刻画，<br/>
+没必要忽大忽小的。<br/>
+即便是要这样，我扩展一下这个格式就行了。<br/><br/>
+这样下来，我只需要两个元素来刻画一个音：<br/>
+频率，长度。<br/><br/>
+比如，我可以这样写<br/><br/>
+D340,3.1415926<br/>
+就可以搞定我上面提出的那个尴尬问题了。<br/><br/>
+而为了使得录入简化，<br/>
+需要定义一些默认值。<br/>
+这些就留在后面的文件格式说明中集中来谈了。<br/><br/>
+最后的一首曲谱可能长成这样：<br/><br/><font color="#ff9900">% 欢乐颂,hplonline,2009/12/30<br/>
+T=0.6 % 设定元音符<br/><br/>
+3 3 4 5 5 4 3 2 1 1 2 3 3,1.5 2,0.5 2,2<br/>
+3 3 4 5 5 4 3 2 1 1 2 3 2,1.5 1,0.5 1,2<br/>
+2 2 3 1 2 3,0.5 4,0.5 3 1 <br/>
+2 3,0.5 4,0.5 3 2 1 2 L5<br/>
+3 3 4 5 5 4 3 2 1 1 2 3 2,1.5 1,0.5 1,4 <br/></font><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-12-31T14:42:00+08:00" pubdate data-updated="true">Dec 31<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/12/31/nerd%E7%9A%84%E7%AE%80%E6%98%93%E5%88%B6%E8%B0%B1%E6%A0%BC%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%E7%BC%98%E7%94%B1%E5%8F%8A%E7%A8%8B%E5%BA%8F%E5%92%8C%E7%A4%BA%E4%BE%8B%E4%B8%8B%E8%BD%BD/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/12/31/nerd%E7%9A%84%E7%AE%80%E6%98%93%E5%88%B6%E8%B0%B1%E6%A0%BC%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%E7%BC%98%E7%94%B1%E5%8F%8A%E7%A8%8B%E5%BA%8F%E5%92%8C%E7%A4%BA%E4%BE%8B%E4%B8%8B%E8%BD%BD/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/12/29/%E6%98%BE%E7%A4%BA%E6%96%87%E4%BB%B6%E5%B1%9E%E6%80%A7%E7%9A%84%E8%84%9A%E6%9C%AC/" title="Previous Post: 显示文件属性的脚本">&laquo; 显示文件属性的脚本</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/12/31/nerd%E7%9A%84%E7%AE%80%E6%98%93%E5%88%B6%E8%B0%B1%E6%A0%BC%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E/" title="Next Post: nerd的简易制谱格式（二）文件格式说明">nerd的简易制谱格式（二）文件格式说明 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>【PacketTracer】多地址池dhcp - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.3.24系列链接
+以前只试过单地址池，
+不清楚多地址池会是什么状况。
+这个小测试也算是最近一个大工程的building block。拓扑：操作步骤：1.接口基本配置
+将PC0和PC1划分到VLAN2和VLAN3中。
+交换机f0/3开启对2和3的trunk。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%A4%9A%E5%9C%B0%E5%9D%80%E6%B1%A0dhcp">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">【PacketTracer】多地址池dhcp</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T11:45:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.3.24<br/><br/><a href="http://hi.baidu.com/sys/search?type=1&amp;sort=1&amp;entry=1&amp;region=4&amp;hi=hplonline&amp;word=PacketTracer" target="_blank">系列链接</a><br/><br/>
+以前只试过单地址池，<br/>
+不清楚多地址池会是什么状况。<br/><br/>
+这个小测试也算是最近一个大工程的building block。<br/><br/><font color="#0000ff">拓扑：<br/></font><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/a8d2915013bacd54843524fc.jpg" small="0" class="blogimg"/></span><br/><br/><br/><font color="#0000ff">操作步骤：</font><br/><br/><font color="#ff9900">1.接口基本配置</font><br/><br/>
+将PC0和PC1划分到VLAN2和VLAN3中。<br/><br/>
+交换机f0/3开启对2和3的trunk。<br/><br/>
+路由配置子接口，对vlan2和vlan3，<br/>
+地址分别为192.168.1.1和192.168.2.1。<br/><br/>
+类似配置单臂路由。<br/><br/><font color="#ff9900">2.配置dhcp</font><br/><br/>
+ip dhcp pool pool1<br/>
+network 192.168.1.0 255.255.255.0<br/>
+default-router 192.168.1.1<br/><br/>
+ip dhcp pool pool2<br/>
+network 192.168.2.0 255.255.255.0<br/>
+default-router 192.168.2.1<br/><br/><font color="#ff9900">3.PC上申请地址</font><br/><br/>
+ipconfig /renew<br/><br/>
+=====<br/><br/><font color="#ff0000">目的只是验证一个路由是如何处理多地址池的情况。</font><br/><br/>
+结论是当某个接口（子接口）收到DHCP请求的时候，<br/>
+查找有无和该接口在同一子网的pool，有就分配。<br/><br/><a href="http://www.box.net/shared/t135a3rh8f" target="_blank">pkt下载</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-24T11:45:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%A4%9A%E5%9C%B0%E5%9D%80%E6%B1%A0dhcp/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%A4%9A%E5%9C%B0%E5%9D%80%E6%B1%A0dhcp/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E5%8D%95%E8%87%82%E8%B7%AF%E7%94%B1/" title="Previous Post: 【PacketTracer】单臂路由">&laquo; 【PacketTracer】单臂路由</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/03/24/%E3%80%90PacketTracer%E3%80%91%E4%B8%89%E5%B1%82%E4%BA%A4%E6%8D%A2dhcp%EF%BC%8Cvtp/" title="Next Post: 【PacketTracer】三层交换dhcp，vtp">【PacketTracer】三层交换dhcp，vtp &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

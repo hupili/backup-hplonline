@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>VB导入空格分割的数据到EXCEL - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.9成品下载起因：
+本来是在做数据分析的，在MATLAB里面整了个相关系数矩阵。
+就像这种形状：
+ca =
+    1.0000    0.9345    0.9655    0.9977   -0.8814    0.9839
+    0.9345    1. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/09/VB%E5%AF%BC%E5%85%A5%E7%A9%BA%E6%A0%BC%E5%88%86%E5%89%B2%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%B0EXCEL">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">VB导入空格分割的数据到EXCEL</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-09T22:08:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.9<br/><br/><a href="http://www.box.net/shared/cpfedv5zim" target="_blank">成品下载</a><br/><br/><font color="#0000ff">起因：</font><br/><br/>
+本来是在做数据分析的，在MATLAB里面整了个相关系数矩阵。<br/><br/>
+就像这种形状：<br/><br/>
+ca =<br/><br/>
+       1.0000       0.9345       0.9655       0.9977      -0.8814       0.9839<br/>
+       0.9345       1.0000       0.9940       0.9442      -0.9655       0.9761<br/>
+       0.9655       0.9940       1.0000       0.9718      -0.9562       0.9901<br/>
+       0.9977       0.9442       0.9718       1.0000      -0.9062       0.9887<br/>
+      -0.8814      -0.9655      -0.9562      -0.9062       1.0000      -0.9328<br/>
+       0.9839       0.9761       0.9901       0.9887      -0.9328       1.0000<br/><br/>
+结果直接复制粘贴到EXCEL里面就<font color="#ff0000">全部在一列</font>里面了。。很囧。<br/>
+前面几次的变通解决是先存个TXT，然后用EXCEL“数据”菜单下的“导入”功能。<br/><br/>
+这回貌似会比较频繁地出现这种操作。。所以想找个更易操作的方法。<br/>
+VB里面调用EXCEL还是比较方便。<br/>
+特别对我这种不求甚解的人来，很快可以上手开始用。<br/><br/><font color="#0000ff">效果：</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1f1e11d5614224e750da4b5e.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>row和col指定数据开始的单元格坐标。<br/>
+下面的多行文本框就就是要导入的数据，<br/>
+所谓空格可以是：空格，TAB，回车，换行<br/>
+并且遇到回车的时候可以从下一行开始写EXCEL。<br/>
+点convert可以开始转移数据。<br/><br/><font color="#0000ff">界面设置：</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/438cda16dd08523b962b435e.jpg" small="0" class="blogimg"/></div></p>
+
+<br/><font color="#0000ff">源码：</font><br/><br/>
+
+
+<p>感觉这点注释差不多了。主要工作还是在字符串的切割上。<br/>
+VB这玩意久了不用比较囧。<br/>
+就像提取字符串的j个字符要用：<br/>
+Mid(s, j, 1)<br/>
+写C写多了，总有种写s(j)的冲动，想当成数组来用。<br/><br/><font color="#ff0000">先在“工程-&gt;引用”里面添加<br/>
+Microsoft Excel 11.0 Object Library</font><br/>
+要不会出现对象未定义。<br/><br/>
+Option Explicit<br/><br/>
+Private Sub Command1_Click()<br/><br/>
+Dim excelApp As Excel.Application &#8216;定义EXCEL应用程序对象<br/>
+Dim s, t As String<br/>
+Dim curRow, curCol As Integer<br/>
+Dim i, j As Integer<br/><br/>
+Set excelApp = New Excel.Application &#8216;新建XCEL应用程序对象<br/>
+On Error Resume Next &#8216;错误陷阱<br/>
+excelApp.Visible = True &#8216;对象可见<br/><br/>
+excelApp.Workbooks.Add &#8216;添加工作表<br/><br/>
+curRow = Val(Text2.Text)<br/>
+curCol = Val(Text3.Text)<br/>
+s = Text1.Text<br/>
+Trim (s)<br/><br/>
+&#8216;去除字符前的空格，包括空格，制表符，回车换行<br/>
+For j = 1 To Len(s)<br/>
+        If Not (Asc(Mid(s, j, 1)) = 9 Or Asc(Mid(s, j, 1)) = 32 Or Asc(Mid(s, j, 1)) = 13 Or Asc(Mid(s, j, 1)) = 10) Then<br/>
+            Exit For<br/>
+        End If<br/>
+Next j<br/>
+s = Mid(s, j)<br/><br/>
+With excelApp.ActiveSheet<br/>
+        &#8216;处理整个字符串<br/>
+        For i = 1 To Len(s)<br/>
+            &#8216;搜寻下一个空格字符出现位置<br/>
+            For j = i To Len(s)<br/>
+                If Asc(Mid(s, j, 1)) = 9 Or Asc(Mid(s, j, 1)) = 32 Or Asc(Mid(s, j, 1)) = 13 Or Asc(Mid(s, j, 1)) = 10 Then<br/>
+                   Exit For<br/>
+                End If<br/>
+            Next j<br/>
+            &#8216;截取数据<br/>
+            t = Mid(s, i, j - i)<br/>
+            &#8216;写入EXCEL单元格<br/>
+            .Cells(curRow, curCol).Value = t<br/>
+            i = j<br/>
+            &#8216;滤过之后的空格<br/>
+            For j = i To Len(s)<br/>
+                &#8216;如果有换行，调整当前行和当前列<br/>
+                If Asc(Mid(s, j, 1)) = 13 Then<br/>
+                    curRow = curRow + 1<br/>
+                    curCol = Val(Text3.Text) - 1<br/>
+                End If<br/>
+                If Not (Asc(Mid(s, j, 1)) = 9 Or Asc(Mid(s, j, 1)) = 32 Or Asc(Mid(s, j, 1)) = 13 Or Asc(Mid(s, j, 1)) = 10) Then<br/>
+                   Exit For<br/>
+                End If<br/>
+            Next j<br/>
+            i = j - 1<br/>
+            &#8216;移动到下一列<br/>
+            curCol = curCol + 1<br/>
+        Next i<br/>
+End With<br/><br/>
+End Sub<br/><br/><font color="#0000ff">后记：</font><br/><br/>
+最近比较亢奋，搞东西搞得有点暴力。。。<br/>
+不过这东西貌似留着以后也可以用。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-09T22:08:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/09/VB%E5%AF%BC%E5%85%A5%E7%A9%BA%E6%A0%BC%E5%88%86%E5%89%B2%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%B0EXCEL/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/09/VB%E5%AF%BC%E5%85%A5%E7%A9%BA%E6%A0%BC%E5%88%86%E5%89%B2%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%B0EXCEL/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/09/TIC%E8%B5%84%E6%A0%BC%E8%B5%9B/" title="Previous Post: TIC资格赛">&laquo; TIC资格赛</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/10/%E8%AF%A1%E5%BC%82%E7%9A%84%E7%BC%96%E8%AF%91%E6%9C%9F%E6%B1%82%E5%80%BC/" title="Next Post: 诡异的编译期求值">诡异的编译期求值 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

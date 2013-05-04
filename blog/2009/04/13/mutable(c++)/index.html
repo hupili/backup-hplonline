@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>mutable(c++) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.4.13
+首先，要知道const对函数的修饰。
+当我们用const修饰一个成员函数的时候，
+表示该函数不会改变该类的状态。
+关于“状态”，我觉得可以理解为所有成员变量的值。
+比如我们设计一个获取数据的元素。
+int readdata()const { &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/13/mutable%28c%2B%2B%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Mutable(c++)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-13T19:32:00+08:00" pubdate data-updated="true">Apr 13<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.4.13<br/><br/>
+首先，要知道const对函数的修饰。<br/><br/>
+当我们<font color="#ff0000">用const修饰一个成员函数的时候，<br/>
+表示该函数不会改变该类的状态。</font><br/>
+关于“状态”，我觉得可以理解为所有成员变量的值。<br/><br/>
+比如我们设计一个获取数据的元素。<br/>
+int readdata()const {<br/>
+我们的期望是他不改变类中数据域的值，所以用const修饰。<br/><br/>
+假设我们现在要这样一个功能。<br/><font color="#ff6600">一方面，我们可以从readdata()得到数据。<br/>
+另一方面，我们要知道这个数据有没有被读取过。</font><br/><br/>
+那么写出如下代码：<br/><br/>
+class cls{<br/>
+private :<br/>
+      bool data_has_been_read ;<br/>
+      int data;<br/>
+      cls():data_has_been_read(false),data(0){};<br/>
+      int readdata()const {<br/>
+            data_has_been_read = true ;<br/>
+            return data ;<br/>
+      }<br/>
+};<br/><br/>
+显然，由于const对readdata的修饰，这段代码编译报错：<br/>
+l-value specifies const object<br/><br/>
+那么，我又偏偏想实现这个功能，<br/>
+同时我又想readdata具有不改变该类状态的语义（即不得去掉const）<br/>
+（这里我们关心的是data本身，只要data不改变，即认为类的状态没有改变，<br/>
+而不关心一个该data是否被读取过的标记）<br/><br/>
+所以C++给出了mutable 这样一个东西。<br/><br/>
+如下改动：<br/><br/>
+class cls{<br/>
+private :<br/>
+      <font color="#ff0000">mutable</font> bool data_has_been_read ;<br/>
+      int data;<br/>
+      cls():data_has_been_read(false),data(0){};<br/>
+      int readdata()const {<br/>
+            data_has_been_read = true ;<br/>
+            return data ;<br/>
+      }<br/>
+};<br/><br/>
+这时，这个类就通过编译了。<br/><br/>
+下面是lingoes上查下该单词的意思：<br/><br/><div style="margin: 0px 0px 5px; color: rgb(128, 128, 128); line-height: normal;"><span style="font-size: 10.5pt; color: rgb(0, 0, 0); line-height: normal;"><strong>mutable</strong></span>   <span style="font-size: 10.5pt; line-height: normal;">[<font color="#009900">mu·ta·ble || &#8216;mjuːtəbl</font>]</span></div></p>
+
+<div style="margin: 0px 0px 5px;">
+<div style="margin: 4px 0px;"><font color="#c00000">adj.</font>  易变的,  性情不定的</div>
+</div>
+
+
+<br/><div style="margin: 0px 0px 5px; color: rgb(128, 128, 128); line-height: normal;"><span style="font-size: 10.5pt; color: rgb(0, 0, 0); line-height: normal;"><strong>volatile</strong></span>   <span style="font-size: 10.5pt; line-height: normal;">[<font color="#009900">vol·a·tile || &#8216;vɑlətl /&#8217;vɒlətaɪl</font>]</span></div>
+
+
+<div style="margin: 0px 0px 5px;">
+<div style="margin: 4px 0px;"><font color="#c00000">adj.</font>  挥发性的, 不稳定的,  可变的</div>
+</div>
+
+
+<br/>
+
+
+<p>同时，上一篇用的<a href="http://hi.baidu.com/hplonline/blog/item/baf29d2bb27a5ff2e7cd400b.html" target="_blank">volatile</a>也给出来了。<br/><br/>
+感觉他们的意思也差不多，那么创始人是怎么选择单词的呢。。<br/>
+看来我们对C++的肤浅认识正如我们不理解英语一样。。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-13T19:32:00+08:00" pubdate data-updated="true">Apr 13<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/13/mutable%28c%2B%2B%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/13/mutable%28c%2B%2B%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/13/volatile%28c%2B%2B%29/" title="Previous Post: volatile(c++)">&laquo; volatile(c++)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/13/explicit%28c%2B%2B%29/" title="Next Post: explicit(c++)">explicit(c++) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

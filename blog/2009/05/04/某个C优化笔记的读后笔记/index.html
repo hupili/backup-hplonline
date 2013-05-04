@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>某个C优化笔记的读后笔记 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.4
+就是乱逛看到篇文章。原文地址：
+http://www.abarnett.demon.co.uk/tutorial.html
+可参考的译文：
+http://just-study.blogbus.com/logs/37238127.html
+http:// &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/04/%E6%9F%90%E4%B8%AAC%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0%E7%9A%84%E8%AF%BB%E5%90%8E%E7%AC%94%E8%AE%B0">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">某个C优化笔记的读后笔记</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-04T20:06:00+08:00" pubdate data-updated="true">May 4<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.4<br/><br/>
+就是乱逛看到篇文章。<br/><br/><font color="#0000ff">原文地址：</font><br/>
+http://www.abarnett.demon.co.uk/tutorial.html<br/><font color="#0000ff"><br/>
+可参考的译文：</font><br/>
+http://just-study.blogbus.com/logs/37238127.html<br/>
+http://just-study.blogbus.com/logs/37238535.html<br/><br/>
+因为那网页说的会一直update。<br/>
+所以，为了和我下面的评论配套，<br/>
+down了一份下来，跟我的这篇文章一起放在<a href="http://www.box.net/shared/kebyrbxnza" target="_blank">这里</a>。<br/><br/>
+======================下面是笔记，可能要打开原文对着看<br/><br/><font color="#0000ff">     * Array Indices</font><br/><br/>
+这个应该是很通用的一点，个人认为谈不上优化，<br/>
+只是算一种编程的手法，<br/>
+但是不解有很多在大学混了3年的学生<br/>
+依然舍不得用循环和数组去代替if或者switch<br/><br/><font color="#0000ff">     * Aliases</font><br/><br/>
+这个事情看编译器了，在VC里面会开完优化会吧<em>data的值放在寄存器内的。<br/>
+有时反而担心编译器优化过分了。<br/>
+详细可以参考前面讲的<a href="http://hi.baidu.com/hplonline/blog/item/baf29d2bb27a5ff2e7cd400b.html" target="_blank">volatile</a><br/><br/><font color="#0000ff">     * Registers<br/><br/><br/>
+     * Integers</font><br/><br/>
+貌似在现在CPU上，有无符号差异很不明显了。<br/>
+不过，在可能的时候，用整数代替浮点的建议是应该牢记的。<br/>
+速度是其次，关键是不失精度。<br/>
+但有时这样做可能会导致更多的开发代价。<br/><br/><font color="#0000ff">     * Loop Jamming</font><br/><br/>
+节约了循环变量自增的一段时间，不过感觉是小头。<br/>
+应该注意的是下面的note那句话。<br/>
+如果两个循环访问的内存空间相去很远，且都超过chache大小不少，<br/>
+放在一个循环内交替执行反而会造成chache频繁不命中。<br/><br/><font color="#0000ff">     * Dynamic Loop Unrolling - can make a big difference.</font><br/><br/>
+效果要明显应该是要在循环体很轻的时候吧。<br/>
+否则，循环变量的操作减少可能带来不了多少效果。<br/><br/>
+最后的建议貌似不好。。<br/>
+在51中，这种改法，可以用一条djnz来代替若干指令，<br/>
+减少了指令条数，自然减少时间。<br/>
+但在我们的PC上，CPU有很多优化，像流水操作这样，<br/>
+指令执行的速度不是独立的，应该算一段时间中各指令的平均速度。<br/>
+而<font color="#ff0000">CISC的指令集不利于CPU本身去发挥诸如乱序执行之类的特色</font>，<br/>
+所以，即使把自减用一个loop来代替了，也不见得更快。<br/><br/>
+     <font color="#0000ff"></em> Faster for() loops</font><br/><br/>
+for( i=10; i&#8211;; ) { &#8230; }<br/>
+for(i=10; i; i&#8211;){}<br/>
+这两个显然是有差别的啊。。。<br/>
+如果他们仅仅是控制循环次数。。那么确实一样。<br/>
+但是在循环体中引用的时候肯定数值不一样。<br/><br/><font color="#0000ff">     * Switch</font><br/><br/>
+这条的解释是错的。。<br/>
+当我们痛恨国内教材的时候，也要清醒地认识到，<br/>
+其实老外也会YY的。<br/>
+不过出于严谨的措辞：<br/>
+it may be faster to use a switch: <br/>
+这个“may”很关键<br/>
+(关于错误见<a href="http://hi.baidu.com/hplonline/blog/item/68db0055fd7f77ccb645ae3d.html" target="_blank">上一篇</a>）<br/><br/><font color="#0000ff">     * Pointers</font><br/><br/>
+这个没啥好说的，用指针来减少数据传送是显然的。<br/>
+C++里面的 &amp;<br/>
+VB里面的 byref<br/>
+PASCAL里面的 var<br/>
+基本上是个语言就会提供类似的机制。<br/><br/><font color="#0000ff">     * Early loop breaking</font><br/><br/>
+这个。。感觉既然写个程序就应该要这样才对。。<br/>
+包括更高层次的算法，也要注意这种剪枝类似的东西。<br/><br/><font color="#0000ff">     * Misc</font><br/><br/>
+这点下面太多了，摘点有共鸣的。<br/><br/>
+1.Declare anything within a file (external to functions) as static, unless it is intended to be global.<br/><br/>
+这个东西我其实也经常不注意，但确实很重要，<br/>
+给文件级的全局变量或函数加static修饰可以防止他们出现在导出表中。<br/>
+减少代码体积其实是次要的，更有意义的是，<br/>
+当别人使用你的成果（.obj)，而他自己又有同名的工程级全局变量或函数时，<br/>
+不至于因为ambiguous造成link error。<br/><br/>
+2.Use word-size variables if you can, as the machine can work with these better ( instead of char, short, double, bitfields etc. ).<br/><br/>
+这点确实。。记得高中整PASCAL的时候，<br/>
+老是斤斤计较地写integer而只在必要时用long。<br/>
+后来知道这点后很郁闷。。。<br/>
+因为其实可以完全不管直接用long，速度上更有优势，<br/>
+只在必要的时候（空间不够）用integer才是。。。<br/><br/>
+3.Don&#8217;t use recursion<br/><br/>
+个人觉得不能因噎讳食。<br/><br/>
+4.Single dimension arrays are faster than multi-dimensioned arrays.<br/><br/>
+这是因为高级语言中的寻址问题。<br/>
+很多时候，完全可以自己算出偏移量，来改善。<br/>
+有篇讲类似思想的。<br/><a href="http://hi.baidu.com/hplonline/blog/item/52fc6722a32d1cac4723e83e.html" target="_blank">高维迷宫</a><br/>
+借用类似思想来访问高维数组可以提高效率。<br/><br/>
+5.Compilers can often optimise a whole file - avoid splitting off closely related functions into separate files, the compiler will do better if can see both of them together (it might be able to inline the code, for example).<br/>
+这个确实，因为外部符号的访问要多一点步骤的。<br/>
+如果放在不同文件的话，即使不考虑内联的可能性，<br/>
+单说访问，也是要费点事的。<br/><br/>
+6.Floating point multiplication is often faster than division - use val * 0.5 instead of val / 2.0.<br/>
+这个有实验证明。<br/>
+准备过一下把实验整理出来。<br/><br/>
+7.Addition is quicker than multiplication - use val + val + val instead of val * 3<br/>
+古老的优化手段，但在现在不尽然，<br/>
+现在很多地方MUL的执行可以平均到2个周期了。<br/><br/>
+8.puts() is quicker than printf(), although less flexible.<br/>
+那是显然的。。putchar()还要快点。。<br/>
+同理getchar()还是很牛。。。<br/>
+耍<a href="http://hi.baidu.com/hplonline/blog/item/68db005503fdd1ccb645aeb3.html" target="_blank">外挂</a>的同学应该很有共鸣。。<br/><br/>
+9.Last but definitely not least ，<br/>
+标记这点的原因是认为这个句型不错。。。<br/><br/><font color="#0000ff">后记：</font><br/><br/>
+最后看完了看到这句：<br/><title>C Optimisation tutorial</title>
+ Last updated July 1998 <br/><br/>
+。。毕竟这么老的东西了，很多东西可以理解。。。<br/>
+都过了11年的时间了，足以让这个人成为大牛了。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-04T20:06:00+08:00" pubdate data-updated="true">May 4<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/04/%E6%9F%90%E4%B8%AAC%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0%E7%9A%84%E8%AF%BB%E5%90%8E%E7%AC%94%E8%AE%B0/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/04/%E6%9F%90%E4%B8%AAC%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0%E7%9A%84%E8%AF%BB%E5%90%8E%E7%AC%94%E8%AE%B0/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/04/%E4%B8%8D%E8%A6%81YY%EF%BC%9Aif%E5%92%8Cswitch%E7%9A%84%E9%82%A3%E4%B9%88%E4%BA%9B%E4%BA%8B%E6%83%85%EF%BC%88C%29/" title="Previous Post: 不要YY：if和switch的那么些事情（C)">&laquo; 不要YY：if和switch的那么些事情（C)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/05/%E6%AE%8B%E5%B7%AE%E7%BB%9D%E5%AF%B9%E5%92%8C%E6%9C%80%E5%B0%8F%E7%9A%84%E6%8B%9F%E5%90%88%E5%87%86%E5%88%99%EF%BC%88%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2%E6%B1%82%E5%8D%95%E5%B3%B0%E6%9E%81%E5%80%BC%EF%BC%89/" title="Next Post: 残差绝对和最小的拟合准则（黄金分割求单峰极值）">残差绝对和最小的拟合准则（黄金分割求单峰极值） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

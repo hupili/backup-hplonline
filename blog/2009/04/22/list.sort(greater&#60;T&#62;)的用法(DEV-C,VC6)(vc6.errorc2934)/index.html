@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>list.sort(greater&#60;T&#62;)的用法(DEV-C,VC6)(vc6.error c2934) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.4.22
+纠结了若干天的问题终于在无意中搞定了。
+在STL中，排序是个很重要的话题。1.algorithm 里的sort()只接收RandomAccessIterator
+用于像vector,dequeue的排序
+2.像set,map，这种关联式容器， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/22/list.sort%28greater%26%2360%3BT%26%2362%3B%29%E7%9A%84%E7%94%A8%E6%B3%95%28DEV-C%2CVC6%29%28vc6.errorc2934%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">list.sort(greater&#60;T&#62;)的用法(DEV-C,VC6)(vc6.error C2934)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-22T14:08:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.4.22<br/><br/>
+纠结了若干天的问题终于在无意中搞定了。<br/><br/>
+在STL中，排序是个很重要的话题。<br/><br/><font color="#ff6600">1.algorithm 里的sort()只接收RandomAccessIterator<br/>
+用于像vector,dequeue的排序<br/><br/>
+2.像set,map，这种关联式容器，本身就由RBTree维护了有序，只要遍历一遍就行了。<br/><br/>
+3.而list比较特殊一点，由于只有BidirectionalIterator。而又不本身有序。<br/>
+所以该容器自带了一个用来排序的函数。</font><br/><br/>
+现在有个问题，如果在list里面存的是char<em>的元素。<br/>
+那么排序的时候，就会按照指针的大小来排。<br/>
+而如果我们本来用char</em>来表达一个字符串的话，这样就不符合要求了。（见下例输出1）<br/><br/>
+而list.sort有一个带参数的用法。<br/>
+可以设计一个函数（如下的mycmp），传给list.sort。<br/><br/>
+这种用法我一直感觉很纠结，因为list.sort的参数是<br/>
+greater&lt;T&gt;<br/>
+也就是一个functor(函数对象，函子，仿函数），本质上是一个类。<br/>
+而把函数名（本质上是个指针）传进去做参数。。。居然也可以。。<br/><br/>
+从我们使用的语义上来说，似乎是可以的，因为functor传进去了之后，<br/>
+会调用该类的“（）”操作符，也就是我们会把他视作一个函数来使用。<br/>
+可是明明他们就是不同的东西。。。<br/><br/>
+这种用法在DEV-C下可以通过。（貌似VS也可以）<br/><br/><font color="#0000ff">在DEV-C下的例子</font>：<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;list&gt;<br/></h1>
+
+<h1>include &lt;string.h&gt;<br/></h1>
+
+<h1>include &lt;iterator&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+char <em>ss[] = { &#8220;bb&#8221; , &#8220;aa&#8221; , &#8220;cc&#8221; , &#8220;ee&#8221; , &#8220;dd&#8221; } ;<br/><br/>
+bool mycmp( char </em>&amp;s1 , char <em>&amp;s2){<br/>
+      return strcmp(s1 , s2) == -1 ;<br/>
+}<br/><br/>
+int main(){<br/>
+      list&lt;char</em>&gt; l(ss , ss + sizeof(ss) / sizeof(char<em>)) ;<br/>
+      ostream_iterator&lt;char</em>&gt; oit(cout , &#8221; &#8220;) ;//构造输出迭代器 <br/>
+      copy( l.begin() , l.end() , oit) ;cout&lt;&lt;endl;//输出原序列 <br/>
+      l.sort() ;//默认的排序，其实是按指针大小排序 <br/>
+      copy( l.begin() , l.end() , oit) ;cout&lt;&lt;endl;//输出1 <br/>
+      l.sort(<font color="#ff0000">mycmp</font>);//传入函数指针的排序 <br/>
+      copy( l.begin() , l.end() , oit) ;cout&lt;&lt;endl;//输出2 <br/>
+      system(&#8220;pause&#8221;);<br/>
+      return 0 ;<br/>
+}<br/><br/><font color="#0000ff">输出：</font><br/><br/>
+bb aa cc ee dd<br/>
+bb aa cc ee dd<br/>
+aa bb cc dd ee<br/><br/>
+可见不带参数的是按指针从小到大排序的。<br/><br/>
+而这段在<font color="#ff0000">VC6</font>里就会报错，即使把mycmp加上<font color="#ff0000">ptr_fun</font>的修饰也不行。<br/><br/>
+主要是list的sort参数实在太奇怪了。<br/>
+STL里面有很多函数提供两个版本，其中一个以默认方式进行比较，<br/>
+另一个版本可以允许传入一个functor，以该functor进行比较。<br/><br/><font color="#ff0000">而这个list.sort直接限定死了传进去的是greater&lt;T&gt;</font><br/><br/>
+比如，我们直接设计一个functor<br/><br/>
+struct c{<br/>
+      operator()(char <em>&amp;s1 , char </em>&amp;s2){<br/>
+            return strcmp(s1,s2) == -1 ;<br/>
+      }<br/>
+};<br/><br/>
+后面调用：l.sort(c());<br/><br/><font color="#0000ff">编译器会给出下面的信息：</font><br/><br/>
+cannot convert parameter 1 from &#8216;struct c&#8217; to &#8216;struct std::greater&lt;char <em>&gt;&#8217;<br/>
+          No constructor could take the source type, or constructor overload resolution was ambiguous<br/><br/>
+其实就是类型不匹配。。。-_-编译器只认greater这个functor。<br/><br/>
+虽然我们可以改变greater的实现，但是那样，把代码复制到其他地方，<br/>
+执行的结果肯定就不一样了。。。<br/><br/>
+就是这里纠结了很久。。后来终于不小心搞定了，用<font color="#ff0000">特化</font>！！<br/><br/>
+像下面这样：（代码直接从泛化的greater复制过来，做相应修改就可以了）<br/><font color="#ff6600"><br/>
+      struct greater&lt;char</em>&gt; : binary_function&lt;char<em>, char</em>, bool&gt; {<br/>
+      bool operator()(const char<em>&amp; _X, const char</em>&amp; <em>Y) const<br/>
+            {return (strcmp(</em>X,_Y) == -1); }<br/>
+      };</font><br/><br/>
+在DEV里面，全特化要求加入 template&lt;&gt;开头，VC里面可以不加。<br/><br/>
+那么后面直接这样调用就可以了：l.sort(greater&lt;char<em>&gt;()) ;<br/><br/>
+这时编译器选择的就不是前面泛化的greater了，就是我们量身定做的char</em> 的greater。<br/><br/>
+且慢，在VC6里面还要报错。<br/><br/><font color="#ff0000">error C2934: &#8216;greater&lt;char *&gt;&#8217; : template-class-id redefined as a nested &#8216;struct&#8217; of &#8216;&lt;Unknown&gt;&#8217;</font><br/><br/>
+又是这个东西。。让我一直没有搞定。。网上也没找到相应的解决方案。<br/><br/>
+今天突然发现了。。<font color="#ff0000">namespace</font>的问题。因为greater是定义在std里面的。。<br/>
+汗啊。。感觉这报错好没提示性。。于是一改果然可以了。<br/><br/><font color="#0000ff">下面这份代码和前面的差不多。在VC6下运行正常：</font><br/><br/>
+相信通过前面的解释能够很容易明白。<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;list&gt;<br/></h1>
+
+<h1>include &lt;string.h&gt;<br/></h1>
+
+<h1>include &lt;algorithm&gt;<br/></h1>
+
+<h1>include &lt;vector&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+char <em>ss[] = { &#8220;bb&#8221; , &#8220;aa&#8221; , &#8220;cc&#8221; , &#8220;ee&#8221; , &#8220;dd&#8221; } ; <br/><br/><font color="#ff0000">namespace std{</font><br/>
+      struct greater&lt;char</em>&gt; : binary_function&lt;char<em>, char</em>, bool&gt; {<br/>
+      bool operator()(const char<em>&amp; _X, const char</em>&amp; <em>Y) const<br/>
+            {return (strcmp(</em>X,_Y) == -1); }<br/>
+      };<br/><font color="#ff0000">}</font><br/><br/>
+int main(){<br/>
+      list&lt;char<em>&gt; l(ss , ss + sizeof(ss) / sizeof(char</em>)) ;<br/>
+      ostream_iterator&lt;char<em>&gt; oit(cout , &#8221; &#8220;) ;<br/>
+      copy( l.begin() , l.end() , oit) ;cout&lt;&lt;endl;<br/>
+      l.sort() ;<br/>
+      copy( l.begin() , l.end() , oit) ;cout&lt;&lt;endl;<br/>
+      l.sort(greater&lt;char</em>&gt;()) ;<br/>
+      copy( l.begin() , l.end() , oit) ;cout&lt;&lt;endl;<br/>
+      return 0 ;<br/>
+}</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-22T14:08:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/22/list.sort%28greater%26%2360%3BT%26%2362%3B%29%E7%9A%84%E7%94%A8%E6%B3%95%28DEV-C%2CVC6%29%28vc6.errorc2934%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/22/list.sort%28greater%26%2360%3BT%26%2362%3B%29%E7%9A%84%E7%94%A8%E6%B3%95%28DEV-C%2CVC6%29%28vc6.errorc2934%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/19/%E4%B9%8C%E9%BE%9F%E8%B7%AF%E7%BA%BF/" title="Previous Post: 乌龟路线">&laquo; 乌龟路线</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/24/%E5%B0%BD%E9%87%8F%E9%81%BF%E5%85%8Dstackoverflow%E7%9A%84quicksort%E7%9A%84%E4%B8%80%E7%A7%8D%E5%86%99%E6%B3%95/" title="Next Post: 尽量避免stack overflow的quick sort的一种写法">尽量避免stack overflow的quick sort的一种写法 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

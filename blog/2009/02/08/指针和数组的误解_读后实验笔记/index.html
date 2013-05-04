@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>指针和数组的误解_读后实验笔记 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.2.8
+原文：http://richardxx.yo2.cn/articles/%E5%85%B3%E4%BA%8Ec%E6%95%B0%E7%BB%84%E5%92%8C%E6%8C%87%E9%92%88%E7%
+9A%84%E4%B8%80%E7%82%B9% &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/08/%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E8%AF%AF%E8%A7%A3_%E8%AF%BB%E5%90%8E%E5%AE%9E%E9%AA%8C%E7%AC%94%E8%AE%B0">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">指针和数组的误解_读后实验笔记</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-08T15:30:00+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.2.8<br/><br/>
+原文：http://richardxx.yo2.cn/articles/%E5%85%B3%E4%BA%8Ec%E6%95%B0%E7%BB%84%E5%92%8C%E6%8C%87%E9%92%88%E7%<br/><br/>
+9A%84%E4%B8%80%E7%82%B9%E8%A7%81%E8%A7%A3.html<br/><br/>
+这是受启发后的练习笔记：<br/><br/>
+实验一：<br/><br/>
+a.c:<br/><br/>
+int a[] = { 1 , 2 , 3 };<br/><br/>
+b.c:<br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>extern int <em>a;<br/><br/>
+int main(){<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a);<br/>
+      printf(&#8220;%x\n&#8221;,a);<br/>
+      return 0 ;<br/>
+}<br/><br/>
+输出：<br/>
+424a30<br/>
+1<br/><br/>
+把extern int </em>a;<br/>
+改为extern int a[];<br/><br/>
+输出：<br/>
+424a30<br/>
+424a30<br/><br/>
+这个实验说明了数组和指针的语义不同。<br/>
+指针：该变量本身占据一个地址，且该地址存储的是一个地址值<br/>
+数组：数组名代表就是该数组的首地址值，即上面的a == &amp;a<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;<br/><br/>
+实验二：<br/>
+a.c:<br/><br/>
+int a[] = { 1 , 2 , 3 };<br/><br/>
+b.c:<br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>extern int <em>a;<br/><br/>
+int main(){<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a);<br/>
+      printf(&#8220;%x\n&#8221;,(&amp;a)[1]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[1]);<br/>
+//      printf(&#8220;%x\n&#8221;,a[1]);<br/>
+      return 0 ;<br/>
+}<br/><br/>
+输出<br/>
+424a30<br/>
+2<br/>
+5<br/><br/>
+首先说下最后注释掉的那句，因为语义问题，<br/>
+指针a中存的值为1，会把他当作地址来做[1]的运算，<br/>
+显然跑到程序领空外面了。<br/><br/>
+那么要正确引用a[]的1号元素，就用第二句了。<br/>
+先取a的地址，再做[1]的运算。<br/>
+&amp;的优先级比[]低，通过二三句对比就知道。<br/><font color="#ff0000">（此段其实是个巧合，因为指针和int都是4字节，详细见1楼-2009.3.13）</font><br/><br/>
+那么第三句明明先运行a[1]（优先级），却不像最后一句报错。<br/>
+主要是编译器优化的原因。<br/>
+a[1] &#8212;-&gt; </em>( a + 1 )<br/>
+&amp;a[1] &#8212;-&gt; &amp;*( a + 1 )<br/>
+连续的取值和取地址消掉了。<br/>
+至于5，那是因为a = 1,<br/>
+并且按照int型的长度做指针运算，所以 a + 1 ，翻译后其实是 1 + 4<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br/><br/>
+实验三：<br/>
+上到二维，先来个基础的<br/><br/>
+a.c:</p>
+
+<div>
+  <pre><code class='c'>int a[2][3]={ {1,2,3},{4,5,6} };&lt;br/&gt;&lt;br/&gt;
+int b[2][3]={ {1,2,3},{4,5,6} };&lt;br/&gt;&lt;br/&gt;</code></pre>
+</div>
+
+
+<p>b.c:</p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>//如果用 extern int <strong>a ， 则<br/>
+//链接出错：unresolved external symbol &#8220;int * * a&#8221; (?a@@3PAPAHA)<br/>
+//少了(<em>a)的括号也是同样的错误，<br/>
+//</em>a[3]代表的是三个元素的数组，每个元素都是指针<br/>
+extern int (*a)[3];<br/>
+//很多书把这两种写法等价，或用上面的写法解释二维数组<br/>
+//包括编译器和连接器本身，也认同上面的表示<br/>
+//否则会unresolved external symbol<br/>
+extern int b[][3];<br/><br/>
+int main(){<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a);<br/>
+      printf(&#8220;%x\n&#8221;,a);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[0][0]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[0]);<br/>
+      printf(&#8220;%x\n&#8221;,a[0]);<br/><br/>
+      puts(&#8220;&#8212;&#8212;-&#8220;);<br/><br/>
+      printf(&#8220;%x\n&#8221;,&amp;b);<br/>
+      printf(&#8220;%x\n&#8221;,b);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;b[0][0]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;b[0]);<br/>
+      printf(&#8220;%x\n&#8221;,b[0]);<br/>
+      return 0 ;<br/>
+}<br/><br/>
+输出：<br/>
+424a30<br/>
+1<br/>
+1<br/>
+1<br/>
+1<br/>
+&#8212;&#8212;-<br/>
+424a48<br/>
+424a48<br/>
+424a48<br/>
+424a48<br/>
+424a48<br/><br/>
+这个还是谈及的语义问题，正如市面上的各类书讲的一样，<br/>
+二维数组名==二位数组的地址==第0行数组名==第0行数组地址==第0行0列元素地址<br/>
+这里用行序来说<br/>
+而对指针，正如上面的a一样，<br/>
+根据前面的实验，很奇怪a[0]为啥没有执行出错？<br/>
+明明打印出来的值a==1那么解析1[0]显然有问题啊！<br/>
+这里是指向数组的指针，情况稍微不同，跟后面一个例子一起说。<br/><br/>
+&#8212;&#8212;&#8212;&#8212;-<br/><br/>
+实验四：<br/>
+把上一个稍改一下，对比下面几组<br/>
+      printf(&#8220;%x\n&#8221;,a);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[1]);<br/>
+      printf(&#8220;%x\n&#8221;,a[1]);<br/>
+      printf(&#8220;%x\n&#8221;,&amp;a[1][1]);<br/>
+输出：<br/>
+1<br/>
+d<br/>
+d<br/>
+11<br/>
+先来第一个，a在这里是指针，a的值就是另外一个文件中定义的第一个元素值 1 <br/>
+第二，三个，这样一下就看出端倪了吧，他们的值是一样的<br/>
+就是说指向数组的指针和一般的指针是不一样的！<br/>
+指向数组的指针在脱指针（[])后，代表的是一个数组，<br/>
+用x来记，那么x == &amp;x 对数组是总是成立的。编译器可没搞忘这一点！！<br/>
+所以a[1]感觉是解析了一个无效的地址，<br/>
+但这个表达式本身是看成一个数组的，关心的是他的地址，<br/>
+于是这句话没有问题。<br/>
+并且&amp;a[1]也可以得到该地址。<br/><br/>
+下面这几句话可以印证普通指针和指向数组指针的区别：<br/>
+      int </strong>c = (int <em><em>)a;<br/>
+      int (</em>d)[3] = (int (</em>)[3]) c;<br/>
+      //printf(&#8220;%x\n&#8221;,c[1]);<br/>
+      printf(&#8220;%x\n&#8221;,d[1]);<br/>
+c为普通指针，注释掉的一句会造成内存错误。<br/>
+而下面的一句看出d虽然中间经过了一次转换，依然保持着a的性质。<br/><br/>
+另外，关于&amp;a[1]有另外一种理解<br/>
+&amp;a[1] = &amp;*( a + 1 ) = a + sizeof( int [3] ) = 1 + 12 = 13<br/>
+在这以前，我也会这样理解，<br/>
+但这种理解无法解释a[1]的正常执行<br/>
+所以现在看来更好的理解是把<br/>
+a[1]看作一个数组，根据数组的语义来说&amp;a[1] == a[1]<br/><br/>
+&#8212;&#8212;&#8212;&#8212;&#8212;<br/><br/>
+后面跟几句废话：<br/><br/>
+最初学的时候，因为之前学的VB,PASCAL，到整C的时候，<br/>
+老是把数组和指针当成两种不同的东西；<br/><br/>
+学到一些时候了，自以为看到了数组的本质，<br/>
+认为就是一回事了。<br/>
+（在我看过的C的书里面，若干本都有这么一句：<br/>
+数组的本质就是指针，所以专业的人员更喜欢用指针代替数组来传参。<br/>
+我也目睹了大量非专业人员如此行为，包括我）；<br/><br/>
+直到现在，才发现数组和指针乃是有很微妙的差异的，<br/>
+只是平常没用到这些特性，于是总是得到正确的结果而已。<br/><br/><br/>
+宋代禅宗大师青原行思提出参禅的三重境界：参禅之初，看山是山，看水是水；禅有悟时，看山不是山，看水不是水；禅中彻悟，看山仍然山，看水仍然是水。 <br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-08T15:30:00+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/08/%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E8%AF%AF%E8%A7%A3_%E8%AF%BB%E5%90%8E%E5%AE%9E%E9%AA%8C%E7%AC%94%E8%AE%B0/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/08/%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E8%AF%AF%E8%A7%A3_%E8%AF%BB%E5%90%8E%E5%AE%9E%E9%AA%8C%E7%AC%94%E8%AE%B0/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/02/06/C%E5%BA%93%E5%87%BD%E6%95%B0memset%28%29%E7%9A%84%E6%BA%90%E7%A0%81/" title="Previous Post: C库函数memset()的源码">&laquo; C库函数memset()的源码</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/02/09/%E7%BC%96%E8%AF%91%E5%99%A8%E6%89%93%E8%A1%A8%EF%BC%88MASM%29/" title="Next Post: 编译器打表（MASM)">编译器打表（MASM) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>BFS+HASH判重的几点记录（POJ2946） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.2.7
+前天的昨天，有个小朋友问这个题。
+他的主要问题在于模仿一般的BFS寻路的那些题，
+开一个flag[][]去记录一个点访问过没有。
+而推倒箱子后，地图的结构就会变化，
+一个(i,j)完全可能去两次，但第二次flag[i][j]已经标记了，就出问题了。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/02/07/BFS%2BHASH%E5%88%A4%E9%87%8D%E7%9A%84%E5%87%A0%E7%82%B9%E8%AE%B0%E5%BD%95%EF%BC%88POJ2946%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">BFS+HASH判重的几点记录（POJ2946）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-02-07T23:28:00+08:00" pubdate data-updated="true">Feb 7<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.2.7<br/><br/>
+前天的昨天，有个小朋友问这个题。<br/>
+他的主要问题在于模仿一般的BFS寻路的那些题，<br/>
+开一个flag[][]去记录一个点访问过没有。<br/>
+而推倒箱子后，地图的结构就会变化，<br/>
+一个(i,j)完全可能去两次，但第二次flag[i][j]已经标记了，就出问题了。<br/><br/>
+为了解释BFS里面的节点不是图上的点，<br/>
+而是包含图上点的某种集合，<br/>
+只好写一个拿去看看。。<br/><br/>
+由于第一盘交的时候，实在是太慢，<br/>
+于是后面找了很久的原因，改了又交了好多盘，<br/>
+终于从约900ms弄到32ms。。<br/>
+记录一些细节问题。<br/><br/><font color="#0000ff">1.按照调试方式编写的段落记得还原</font><br/><br/>
+一种是freopen这样的问题，交到POJ上可能WA也可能TLE。<br/>
+这个问题比较常见了，也有各种解决方案，<br/>
+不过现在不常刷题了，也就没这样弄，想着不会怎么反复调试的。<br/><br/>
+我这里还囧了一次，就是hash函数的位置。<br/>
+为了分块调试，我的hash函数首先是全返回的0的。<br/>
+这样相当于就在0的位置拉一个链表，<br/>
+可以先排除hash算法本身的影响。<br/>
+结果写完了搞忘改这句就交上去了。<br/>
+神奇的是没有TLE，还卡着时间过了。<br/><br/>
+我动了下hash表的大小，时间也没变，<br/>
+还纳闷是为什么，后来才发现是这个return 0 的问题。<br/><br/><font color="#0000ff">2.hash表的大小问题</font><br/><br/>
+在修改了很多细节之后，时间都只是一点点改进，<br/>
+于是我把hash表调小了，一下就减少了约300ms。。<br/><br/>
+所以这个问题也应该注意。<br/>
+hash表太小当然容易冲突，链表一拉长，效率就降下来了。<br/>
+hash表太大，虽然冲突可能没啥了，<br/>
+但是光用memset初始化一下都得很久。<br/><br/><font color="#0000ff">3.hash函数的选取</font><br/><br/>
+这个点上的研究应该是无穷无尽的，<br/>
+不同的应用构造不同的hash函数，效果肯定不同。<br/>
+我也试过好几个，结果网上找到的这个效果很好：<br/><br/>
+int hash(char <em>s)<br/>
+{<br/>
+int count = sz ;<br/>
+unsigned int h=0;<br/>
+while ( &#8211;count &gt;= 0 )<br/>
+{<br/>
+h = h * 31 + </em>s++;<br/>
+}<br/>
+return h % MAXH;<br/>
+}<br/><br/><font color="#0000ff">4.节点的设置</font><br/><br/>
+最初的定义：<br/>
+typedef struct node_type{<br/>
+int i , j ;<br/>
+char grids[MAXN][MAXN] ;<br/>
+int step ;<br/>
+} NODE ;<br/><br/>
+最后的定义：<br/>
+typedef struct node_type{<br/>
+char i , j ;<br/>
+char grids[MAXN * MAXN] ;<br/>
+} NODE ;<br/><br/>
+首先，定义一个二维数组，然后grids[i][j]这样寻址，<br/>
+与定义一维数组grids[i * n + j]这样编出来的东西是类似的。<br/>
+（二维的话，因为数组尺寸是常量，<br/>
+所以可能直接用移位来优化，比如这里的数组是8<em>8的，<br/>
+grids[i][j] = (char</em>)grids + ( i &lt;&lt; 3 ) + j ）<br/><br/>
+单纯访问地图信息来说，两种定义都差不多，<br/>
+但一维的定义更能适应hash上面的hash函数。<br/>
+因为hash函数是很频繁调用的，<br/>
+所以这样搞可以使得关键地方的寻址变简洁：<br/>
+while ( &#8211;count &gt;= 0 )<br/>
+{<br/>
+h = h * 31 +<font color="#ff0000"> <em>s++;</font><br/>
+}<br/><br/>
+第二处是把step信息移除了，在外面开一个和队列平行的数组：<br/>
+NODE q[MAXQ] ;<br/>
+int step[MAXQ] ;<br/><br/>
+这样的效果在于<font color="#ff0000">NODE节点包含了确定一个局面所必须且只须的信息</font>。<br/>
+最明显的是比较两个节点是否相等的函数，可以直接缩成一句：<br/>
+return !memcmp(&amp;n1 , &amp;n2 , sz) ;<br/>
+直接库函数比较内存，就比最初定义先比较i，j，再二重循环比较地图好多了。<br/>
+对于节点比较这样频繁的操作，细算到这里也是值得的。<br/><br/>
+第三处是把i，j定义成char了。<br/>
+倒不是为了省空间，主要是统一整个节点的表达。<br/>
+i，j的范围本身就很小，用不着int，char就足够。<br/>
+然后布局也比较trick，先i，j再放地图。<br/>
+再加上地图已经一维化了，<br/>
+这样，整个结构中只有前面 n</em>n+2 个字节是有效的。<br/>
+于是不管hash还是赋值，都可以直接当成是 n<em>n+2 的字符串。<br/>
+这种处理可以使得操作的内存数量减少不少。<br/><br/><font color="#0000ff">5.hash表存储</font><br/><br/>
+我比较习惯的定义是：<br/>
+HNODE space[MAXQ] , </em>spacehead ;<br/>
+HNODE *table[MAXH] ;<br/><br/>
+space 为节点本身的空间，<br/>
+spacehead用来不重复地取得节点空间。<br/>
+每处理完一个case，spacehead=space即可复位，<br/>
+不用像动态分配那样去挨个元素释放。<br/><br/>
+table用来存储每个key对应的链表表头，<br/>
+使用链表头插法来维护。<br/><br/>
+最初比较喜欢这种指针定义的table，<br/>
+从直觉上来说，貌似比下标定义的要好：<br/>
+int table[MAXH];<br/>
+相应的hash节点的next域也从指针换成int的下标。<br/><br/>
+但实际上，两种定义翻译出来的东西都是类似的。<br/>
+比方说从next域取得了值放在eax。<br/>
+指针定义的下一步是<br/>
+mov xxx,[eax + field_offset] ;<br/>
+下标定义的是<br/>
+mov xxx,[eax * elem_size + array_offset + field_offset] ;<br/>
+array_offset + field_offset能用一个32位的常数偏移量表达。<br/>
+关键在于elem_size，如果是2、4、8的话，<br/>
+在IA-32指令里面，就可以用一句话表达这个意思，<br/>
+否则要多一句话算出eax * elem_size。<br/><br/><br/><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-02-07T23:28:00+08:00" pubdate data-updated="true">Feb 7<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/02/07/BFS%2BHASH%E5%88%A4%E9%87%8D%E7%9A%84%E5%87%A0%E7%82%B9%E8%AE%B0%E5%BD%95%EF%BC%88POJ2946%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/02/07/BFS%2BHASH%E5%88%A4%E9%87%8D%E7%9A%84%E5%87%A0%E7%82%B9%E8%AE%B0%E5%BD%95%EF%BC%88POJ2946%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/01/22/%E5%88%B7%E9%A2%98%E6%B5%8B%E8%AF%95%E7%9A%84%E5%8E%86%E5%8F%B2%EF%BC%88%E9%99%84%E4%B8%80%E4%B8%AAlinux%E5%88%B7%E9%A2%98%E7%94%A8%E8%84%9A%E6%9C%AC%EF%BC%89/" title="Previous Post: 刷题测试的历史（附一个linux刷题用脚本）">&laquo; 刷题测试的历史（附一个linux刷题用脚本）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/02/15/severaldemonstrationsofdimensionreduction/" title="Next Post: several demonstrations of dimension reduction">several demonstrations of dimension reduction &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

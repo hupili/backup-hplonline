@@ -1,0 +1,493 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>几种同步手段（互斥量，信号量，事件，临界区） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.7.10环境：
+VISTA+VC6
+双核
+这个环境对于下面的有些效果来说，十分关键。
+在我下面的练习中，如果是单核，那么两个线程无法真正的同时执行，
+而单个操作的耗时也并不长，可能看不到互斥访问中的一些问题。
+在VISTA之前的一些系统，时间片比较大，也不容易看到 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/07/10/%E5%87%A0%E7%A7%8D%E5%90%8C%E6%AD%A5%E6%89%8B%E6%AE%B5%EF%BC%88%E4%BA%92%E6%96%A5%E9%87%8F%EF%BC%8C%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%8C%E4%BA%8B%E4%BB%B6%EF%BC%8C%E4%B8%B4%E7%95%8C%E5%8C%BA%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">几种同步手段（互斥量，信号量，事件，临界区）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-10T19:19:00+08:00" pubdate data-updated="true">Jul 10<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.7.10<br/><br/><font color="#0000ff">环境：</font><br/><br/>
+VISTA+VC6<br/>
+双核<br/><br/>
+这个环境对于下面的有些效果来说，十分关键。<br/>
+在我下面的练习中，如果是单核，那么两个线程无法真正的同时执行，<br/>
+而单个操作的耗时也并不长，可能看不到互斥访问中的一些问题。<br/>
+在VISTA之前的一些系统，时间片比较大，也不容易看到。。<br/><font color="#0000ff"><br/>
+设计目标：</font><br/><br/>
+模拟一个售票系统，有两个线程可以出售，总共100张票。<br/>
+中间打印出出售的信息。<br/>
+这里的票是一个临界资源，<br/>
+同时，控制台也是个临界资源。（如果同时输出会造成屏幕的混乱）<br/><br/><font color="#0000ff">原始程序：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+int total=100;<br/><br/>
+DWORD WINAPI proc1(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/>
+          if ( total == 0 ) break ;<br/>
+          <font color="#ff0000">Sleep(rand()%30) ;</font><br/>
+          cout&lt;&lt;&#8221;thread1 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+DWORD WINAPI proc2(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/>
+          if ( total == 0 ) break ;<br/>
+          Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread2 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+int main(){<br/>
+     HANDLE thread1,thread2;<br/>
+     thread1=CreateThread(NULL,0,proc1,NULL,0,NULL);<br/>
+     thread2=CreateThread(NULL,0,proc2,NULL,0,NULL);<br/>
+     Sleep(4000);<br/>
+     CloseHandle(thread1);<br/>
+     CloseHandle(thread2);<br/>
+     return 0;<br/>
+}<br/><br/>
+程序的意思很直观，就是开了两个线程。<br/>
+在里面分别判断票数是否到0，<br/>
+如果不是的话，那么模拟售出了一张票，并且打印出售出的票号。<br/><br/>
+中间标红的随机延迟是一个关键点。<br/>
+把他去掉的话，一般就看不到效果了。<br/>
+因为电脑实在太快了，if的判断和下面的输出，<br/>
+几乎是在同一时间完成的。<br/>
+从时间片的意义上来说，大部分时候可以看做原子操作。<br/>
+于是减到0之后，线程正常结束就停下了。<br/>
+所以给个随机延迟，强迫if的判断和total&#8211;的分离，<br/>
+这样就可以看到由于没有做好同步造成的问题了。<br/><br/>
+这个程序的输出，有的地方会有字符交叉，很混乱。<br/>
+最明显的是，减到0之后，还会不断地向下面减。<br/><br/><font color="#0000ff">同步的框架：</font><br/><br/>
+下面几个方法，大同小异，<br/>
+基本上的过程就是：<br/><br/>
+1.定义相关的变量<br/>
+2.创建相关的变量<br/>
+3.进去临界区前等待相关的信号<br/>
+4.退出的时候<font color="#ff6600">清除</font>相关的信号<br/>
+（信号有的时候可以进入临界区，还是信号无的时候可以进入，<br/>
+在几个实现手段里面有不同的叙述，所以清除是个泛化的说法）<br/><br/><font color="#0000ff">互斥量：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+int total=100;<br/><font color="#ff0000">HANDLE mutex;</font><br/><br/>
+DWORD WINAPI proc1(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/><font color="#ff0000">         WaitForSingleObject(mutex,INFINITE);</font><br/>
+          if ( total == 0 ) break ;<br/>
+          Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread1 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/><font color="#ff0000">          ReleaseMutex(mutex);</font><br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+DWORD WINAPI proc2(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/>
+          WaitForSingleObject(mutex,INFINITE);<br/>
+          if ( total == 0 ) break ;<br/>
+          Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread2 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+          ReleaseMutex(mutex);<br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+int main(){<br/>
+     HANDLE thread1,thread2;<br/><font color="#ff0000">     mutex=CreateMutex(NULL,false,NULL);</font><br/>
+     thread1=CreateThread(NULL,0,proc1,NULL,0,NULL);<br/>
+     thread2=CreateThread(NULL,0,proc2,NULL,0,NULL);<br/>
+     Sleep(4000);<br/>
+     CloseHandle(thread1);<br/>
+     CloseHandle(thread2);<br/><font color="#ff0000">     CloseHandle(mutex);</font><br/>
+     return 0;<br/>
+}<br/><br/>
+这是最基本的，和框架非常吻合，<br/>
+知道标红的几个函数就按照这种方式写就行了。<br/><br/><font color="#0000ff">信号量：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+int total=100;<br/><font color="#ff0000"><br/>
+HANDLE semaphore ;</font><br/><br/>
+DWORD WINAPI proc1(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/>
+        <font color="#ff0000"> WaitForSingleObject(semaphore,INFINITE);</font><br/>
+          if ( total == 0 ) break ;<br/>
+          Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread1 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+        <font color="#ff0000"> ReleaseSemaphore(semaphore , 1 , NULL) ;</font><br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+DWORD WINAPI proc2(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (total&gt;0){<br/>
+          WaitForSingleObject(semaphore,INFINITE);<br/>
+          if ( total == 0 ) break ;<br/>
+          Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread2 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+          ReleaseSemaphore(semaphore , 1 , NULL) ;<br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+int main(){<br/>
+     HANDLE thread1,thread2;<br/>
+   <font color="#ff0000"> semaphore = CreateSemaphore(NULL , 1 , 1 , NULL) ;</font><br/><br/>
+     thread1=CreateThread(NULL,0,proc1,NULL,0,NULL);<br/>
+     thread2=CreateThread(NULL,0,proc2,NULL,0,NULL);<br/><br/>
+     Sleep(4000);<br/>
+     CloseHandle(thread1);<br/>
+     CloseHandle(thread2);<br/>
+     <font color="#ff0000">CloseHandle(semaphore) ;</font><br/><br/>
+     return 0;<br/>
+}<br/><br/>
+和互斥量不同的地方在于，信号量可以允许多个线程同时访问。<br/>
+比如writer/reader模型中，多个reader同时访问是允许的。<br/>
+在创建的时候，可以指定最大的数目和初始化时候的数目。<br/>
+如果指定为1，也就是这里用的情况，相当于就和前面的互斥量方式一样了。<br/><br/><font color="#0000ff">事件：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+int total=100;<br/><br/><font color="#ff0000">HANDLE event;</font><br/><br/>
+DWORD WINAPI proc1(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/>
+        <font color="#ff0000"> WaitForSingleObject(event,INFINITE);</font><br/>
+          if ( total == 0 ) break ;<br/>
+          Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread1 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+          <font color="#ff0000">SetEvent(event) ;</font><br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+DWORD WINAPI proc2(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (total&gt;0){<br/>
+          WaitForSingleObject(event,INFINITE);<br/>
+          if ( total == 0 ) break ;<br/>
+          Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread2 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+          SetEvent(event) ;<br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+int main(){<br/>
+     HANDLE thread1,thread2;<br/>
+   <font color="#ff0000"> event = CreateEvent(NULL , FALSE , TRUE , NULL) ;</font><br/>
+     thread1=CreateThread(NULL,0,proc1,NULL,0,NULL);<br/>
+     thread2=CreateThread(NULL,0,proc2,NULL,0,NULL);<br/>
+     Sleep(4000);<br/>
+     CloseHandle(thread1);<br/>
+     CloseHandle(thread2);<br/>
+   <font color="#ff0000"> CloseHandle(event);</font><br/>
+     return 0;<br/>
+}<br/><br/>
+CreateEvent的第二个参数是设置是否为手动事件。<br/>
+如果是手动的话，当用WaitForSingleObject等到事件的时候，<br/>
+系统并不清除掉该事件已发生的信号，<br/>
+于是要自己调用ResetEvent来清除。<br/>
+这两个函数之间的空隙将造成潜在的同步问题。<br/>
+于是设置生FALSE，表示自动事件。<br/>
+在等到该事件的时候，同时把该事件置为无效，防止其他地方进入临界段。<br/><br/><font color="#0000ff">临界区：</font><br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;windows.h&gt;<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+int total=100;<br/><br/><font color="#ff0000">CRITICAL_SECTION <em>cs;</font><br/><br/>
+DWORD WINAPI proc1(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/>
+       <font color="#ff0000">  EnterCriticalSection(&amp;</em>cs);</font><br/>
+          if ( total == 0 ) break ;<br/><font color="#ff0000">     //     Sleep(rand()%30) ;</font><br/>
+          cout&lt;&lt;&#8221;thread1 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+     <font color="#ff0000">     LeaveCriticalSection(&amp;<em>cs);</font><br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+DWORD WINAPI proc2(<br/>
+  LPVOID lpParameter    // thread data<br/>
+  ){<br/>
+     while (1){<br/>
+          EnterCriticalSection(&amp;</em>cs);<br/>
+          if ( total == 0 ) break ;<br/>
+     //     Sleep(rand()%30) ;<br/>
+          cout&lt;&lt;&#8221;thread2 sold:&#8221;&lt;&lt;total&#8211;&lt;&lt;endl;<br/>
+          LeaveCriticalSection(&amp;<em>cs);<br/>
+     }<br/>
+     return 0;<br/>
+};<br/><br/>
+int main(){<br/>
+     HANDLE thread1,thread2;<br/>
+  <font color="#ff0000">  InitializeCriticalSection(&amp;</em>cs);</font><br/>
+     thread1=CreateThread(NULL,0,proc1,NULL,0,NULL);<br/>
+     thread2=CreateThread(NULL,0,proc2,NULL,0,NULL);<br/>
+     Sleep(4000);<br/>
+     CloseHandle(thread1);<br/>
+     CloseHandle(thread2);<br/>
+     return 0;<br/>
+}<br/><br/>
+与前面的相比，这种方式在最后不用类似CloseHandle之类的操作。<br/><br/>
+还有注意到我把上面的Sleep注释掉了。<br/>
+因为<font color="#ff0000">使用临界区来同步，速度非常快，消耗资源比前几种都小</font><br/>
+加上随机延迟后，可能一个线程直接就把票给售完了。。<br/><br/>
+即使在现在这种写法下，可能运行好几次，<br/>
+能够找到一下若干thread1信息之内夹杂几个thread2的信息，或者反之。<br/><br/>
+但观察前三种，基本上的效果是一个线程输出一下，交织频繁。<br/><br/><font color="#0000ff">总结：</font><br/><br/>
+前三种方式，依赖一个句柄，<br/>
+他们都可以指定一个名字，成为全局的对象，<br/>
+可以完成进程间的同步。<br/>
+在不用的时候要，销毁相关的句柄。<br/>
+消耗资源比较大。<br/><br/>
+最后一种临界区，消耗资源非常少，速度快。<br/>
+但是只能解决线程间的同步。<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-10T19:19:00+08:00" pubdate data-updated="true">Jul 10<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/07/10/%E5%87%A0%E7%A7%8D%E5%90%8C%E6%AD%A5%E6%89%8B%E6%AE%B5%EF%BC%88%E4%BA%92%E6%96%A5%E9%87%8F%EF%BC%8C%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%8C%E4%BA%8B%E4%BB%B6%EF%BC%8C%E4%B8%B4%E7%95%8C%E5%8C%BA%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/07/10/%E5%87%A0%E7%A7%8D%E5%90%8C%E6%AD%A5%E6%89%8B%E6%AE%B5%EF%BC%88%E4%BA%92%E6%96%A5%E9%87%8F%EF%BC%8C%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%8C%E4%BA%8B%E4%BB%B6%EF%BC%8C%E4%B8%B4%E7%95%8C%E5%8C%BA%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/07/09/%E4%BD%BF%E7%94%A8unrarlib%E8%A7%A3%E5%8E%8Brar%E6%A1%A3%E6%A1%88--%E5%8C%85%E8%A3%85%E4%B8%80%E4%B8%AA%E2%80%9C%E8%A7%A3%E5%8E%8B%E5%88%B0XX%E6%96%87%E4%BB%B6%E5%A4%B9%E2%80%9D%E7%9A%84%E5%87%BD%E6%95%B0%EF%BC%88VC6%29/" title="Previous Post: 使用unrarlib解压rar档案--包装一个“解压到XX文件夹”的函数（VC6)">&laquo; 使用unrarlib解压rar档案--包装一个“解压到XX文件夹”的函数（VC6)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/07/11/%E5%B1%8F%E5%B9%95DC%EF%BC%8C%E5%86%85%E5%AD%98DC/" title="Next Post: 屏幕DC，内存DC">屏幕DC，内存DC &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

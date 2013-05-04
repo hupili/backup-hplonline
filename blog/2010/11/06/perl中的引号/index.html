@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>perl中的引号 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.11.6
+一。一段测试代码
+应该是涵盖了常见的知识点了。(1)单引号和双引号，在转义和变量内插方面不同
+(2)q，qq，qw，这几个元词在使用字符串和字符串数组的时候比较方便。
+(3)直接print数组和内插到双引号中数组的区别
+(4)多行文本块 !/usr/bin &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/11/06/perl%E4%B8%AD%E7%9A%84%E5%BC%95%E5%8F%B7">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Perl中的引号</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-06T14:26:00+08:00" pubdate data-updated="true">Nov 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.11.6<br/><font color="#0000ff"><br/>
+一。一段测试代码</font><br/><br/>
+应该是涵盖了常见的知识点了。<br/><font color="#ff0000">(1)单引号和双引号，在转义和变量内插方面不同<br/>
+(2)q，qq，qw，这几个元词在使用字符串和字符串数组的时候比较方便。<br/>
+(3)直接print数组和内插到双引号中数组的区别<br/>
+(4)多行文本块</font><br/><br/></p>
+
+<h1>!/usr/bin/perl -w <br/><br/></h1>
+
+<p>$me = &#8220;hpl&#8221; ;<br/></p>
+
+<h1>the basic difference between single and double quotes<br/></h1>
+
+<p>print &#8220;test\t$me&#8221; ; print &#8220;\n&#8221; ;<br/>
+print &#8216;test\t$me&#8217; ; print &#8220;\n&#8221; ;<br/></p>
+
+<h1>the nesting of quotes <br/></h1>
+
+<p>print &#8216;&#8220;test&#8221; $me&#8217; ; print &#8220;\n&#8221; ;<br/>
+print &#8220;&#8216;test&#8217; $me&#8221; ; print &#8220;\n&#8221; ;<br/></p>
+
+<h1>the following two lines don&#8217;t work<br/></h1>
+
+<h1>print &#8221;test&#8217; $me&#8217; ; print &#8220;\n&#8221; ;<br/></h1>
+
+<h1>print &#8220;&#8221;test&#8221; $me&#8221; ; print &#8220;\n&#8221; ;<br/></h1>
+
+<h1>test the meta word q and qq<br/></h1>
+
+<p>print q(&#8216;&#8220;test $me) ;  print &#8220;\n&#8221; ;<br/>
+print qq(&#8216;&#8220;test $me) ;  print &#8220;\n&#8221; ;<br/></p>
+
+<h1>the bracket should be escaped<br/></h1>
+
+<p>print qq(&#8216;(test $me) ;  print &#8220;\n&#8221; ;<br/></p>
+
+<h1>other escape char can be used<br/></h1>
+
+<p>print q[(&#8216;&#8220;test $me)] ;  print &#8220;\n\n&#8221; ;<br/><br/></p>
+
+<h1>test array<br/><br/></h1>
+
+<h1>the obsolete way you see in other languages<br/></h1>
+
+<h1>@arr = (&#8220;one&#8221;, &#8220;two&#8221;, &#8220;three&#8221;) ; <br/></h1>
+
+<p>@arr = qw(one two three) ;<br/>
+print @arr ; print &#8220;\n&#8221; ;<br/>
+print &#8220;@arr&#8221; ; print &#8220;\n\n&#8221; ;<br/><br/>
+$multi_line = &lt;&lt;&#8221;END&#8221; ;<br/>
+this is to show you the scheme of multiline strings,<br/>
+where &#8216;&lt;&lt;&#8221;END&#8221;&#8217; specifies the end of the string.<br/>
+you can change the end tag to any other strings you like.<br/>
+test $me .<br/>
+END<br/>
+print $multi_line ; print &#8220;\n&#8221; ;<br/><br/>
+$multi_line2 = &lt;&lt;&#8217;END&#8217; ;<br/>
+let&#8217;s try single-quote here.<br/>
+see what happens to $me?<br/>
+END<br/>
+print $multi_line2 ; print &#8220;\n&#8221; ;<br/><br/>
+结果就不贴了，一跑便知，当个速记。<br/><br/>
+参考资料：<a href="http://www.perlmonks.org/?node_id=401006" target="_blank">http://www.perlmonks.org/?node_id=401006</a><br/><br/><font color="#0000ff">二。用处</font><br/><br/>
+单双引号的区别是基本，<br/>
+能够互相嵌套，但不能同型号嵌套，<br/>
+这个需要区分一下，看字符串中的需求。<br/>
+变量内插上的特性也很有用，<br/>
+特别是双引号对数组，可以在中间加入空格。<br/><br/>
+一个把字符串按单词逆序的例子。（很多面试题喜欢考的哇）<br/>
+$str = &#8220;a1 b2 c3&#8221; ;<br/>
+@arr = reverse(split &#8221; &#8220;, $str) ; <br/>
+print &#8220;@arr\n&#8221; ;<br/>
+不过这里不是演示算法，就是解决打印数组加空格的问题。<br/><br/>
+多行文本块也比较有用，<br/>
+比如打印usage信息、打印其他语言的块。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-11-06T14:26:00+08:00" pubdate data-updated="true">Nov 6<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/11/06/perl%E4%B8%AD%E7%9A%84%E5%BC%95%E5%8F%B7/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/11/06/perl%E4%B8%AD%E7%9A%84%E5%BC%95%E5%8F%B7/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/10/17/%E4%B8%80%E5%A5%97win%E4%B8%8B%E7%9A%84perl%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%EF%BC%88cygwin%EF%BC%8Ce-texteditor%EF%BC%8C%E5%8F%82%E6%95%B0%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%89/" title="Previous Post: 一套win下的perl工作环境（cygwin，e-texteditor，参数解决方案）">&laquo; 一套win下的perl工作环境（cygwin，e-texteditor，参数解决方案）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/11/11/SYNCookies/" title="Next Post: SYN Cookies">SYN Cookies &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

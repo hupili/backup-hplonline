@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>802.1X的主动和被动模式 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.6.3
+今天接入网实验又弄了一次802.1X，
+比较了主动和被动的一点区别。
+从客户端的现象上来说，应该都是一样的；
+交换机和RADIUS服务器之间的交互没法抓包，故没研究；
+所以主要是从客户端抓包，看下区别。》》环境
+交换机：RG-S2026F
+PC：XP &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/06/03/802.1X%E7%9A%84%E4%B8%BB%E5%8A%A8%E5%92%8C%E8%A2%AB%E5%8A%A8%E6%A8%A1%E5%BC%8F">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">802.1X的主动和被动模式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-06-03T15:50:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.6.3<br/><br/>
+今天接入网实验又弄了一次802.1X，<br/>
+比较了主动和被动的一点区别。<br/><br/>
+从客户端的现象上来说，应该都是一样的；<br/>
+交换机和RADIUS服务器之间的交互没法抓包，故没研究；<br/>
+所以主要是从客户端抓包，看下区别。<br/><br/><font color="#0000ff">》》环境</font><br/><br/>
+交换机：RG-S2026F<br/>
+PC：XP<br/>
+认证方式：MD5质询<br/><br/><font color="#0000ff">》》认证模型简述：</font><br/><br/>
+客户&lt;&#8211;&gt;交换机&lt;&#8211;&gt;RADIUS服务器<br/><br/>
+802.1X是跑在客户和交换机这一段。<br/><br/>
+理论上，客户主动发起的认证过程为：<br/>
+&#8211;&gt;EAPOL-start<br/>
+&lt;&#8211;EAP-identity-request<br/>
+&#8211;&gt;EAP-identity-response<br/>
+&lt;&#8211;EAP-MD5-Challenge-request<br/>
+&#8211;&gt;EAP-MD5-Challenge-respone<br/>
+&lt;&#8211;EAP-Success<br/><br/>
+理论上，由认证PAE（交换机）发起的认证为：<br/>
+&lt;&#8211;EAP-identity-request<br/>
+&#8211;&gt;EAP-identity-response<br/>
+&lt;&#8211;EAP-MD5-Challenge-request<br/>
+&#8211;&gt;EAP-MD5-Challenge-respone<br/>
+&lt;&#8211;EAP-Success<br/><br/><font color="#0000ff">》》交换机被动模式的交互序列（默认配置）</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/ab4bc711d1b8552cb8127b3d.jpg" small="0" class="blogimg"/></span><br/><br/>
+和理论上的过程是一致的。<br/><br/><font color="#0000ff">》》交换机主动模式的交互序列</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c14806f47e9ed9d37709d73d.jpg" small="0" class="blogimg"/></span><br/><br/>
+因为有一些其他的干扰报文，只关注类型为EAP几个。<br/><br/>
+在交换机主动模式下，查找前后报文，看不到EAPOL-start。<br/>
+而这几个比较集中的报文中，初看起来，缺少了EAP-identity-request。<br/>
+如果再向前面找一下，<font color="#ff0000">有的时候</font>是可以发现一个EAP-identity-request的，<br/>
+如果有该报文，一般可能与集中的部分都隔得比较远。<br/><br/><font color="#0000ff">》》现象总结</font><br/><br/>
+从抓包的结果来看，EAPOL-start这个包是没有看到的。<br/>
+而不管在主动模式和被动模式下，抓下来的都是同样的5个报文。<br/>
+区别在于交换机主动模式下，EAP-identity-request会在认证报文集中位置的前面。<br/><br/><font color="#0000ff">》》分析</font><br/><br/>
+在被动模式下，当客户需要认证的时候，会触发交换机的认证。<br/>
+具体来说，就是在XP中输入用户名和密码，点确定，<br/>
+之后交换机用一个EAP-identity-request开启认证过程。<br/>
+这里肯定是有触发的机制的，既然不是EAPOL-start，<br/>
+肯定是有其他东西的，这个还得再细看。<br/><br/>
+在主动模式下，交换机检测到链路有效，则开始认证。<br/>
+为了触发XP中输入认证信息的气泡框，<br/>
+我们的操作是先禁用网卡，然后启用。<br/>
+而网卡要启用后，在Wireshark中才会看到 ，进而开始抓包。<br/>
+网卡一启用，交换机立即检测到，并且发送EAP-identity-request准备开始认证。<br/>
+这个时候，Wireshark上可能还没有开始抓包，<br/>
+于是出现了看不到EAP-identity-request的情况。<br/>
+有的时候，操作比较快，当然就看到了EAP-identity-request。<br/><br/>
+在用户输入账户信息之前，XP收到EAP-identity-request，<br/>
+于是状态发生转换，所以输入账户之后，<br/>
+可以直接从EAP-identity-response开始认证交互。<br/><br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-06-03T15:50:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/06/03/802.1X%E7%9A%84%E4%B8%BB%E5%8A%A8%E5%92%8C%E8%A2%AB%E5%8A%A8%E6%A8%A1%E5%BC%8F/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/06/03/802.1X%E7%9A%84%E4%B8%BB%E5%8A%A8%E5%92%8C%E8%A2%AB%E5%8A%A8%E6%A8%A1%E5%BC%8F/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/05/19/matlab%E9%A5%BC%E5%9B%BE%EF%BC%88pie%EF%BC%89%E8%87%AA%E5%8A%A8%E5%BF%BD%E7%95%A50%E5%80%BC%E7%9A%84%E9%97%AE%E9%A2%98/" title="Previous Post: matlab饼图（pie）自动忽略0值的问题">&laquo; matlab饼图（pie）自动忽略0值的问题</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/06/03/%E7%AE%80%E6%98%93%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A1%86%E6%9E%B6%EF%BC%88SOCKETselect%EF%BC%89/" title="Next Post: 简易字符串服务器框架（SOCKET select）">简易字符串服务器框架（SOCKET select） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

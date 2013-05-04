@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>把qq聊天记录转化成比较容易操作的格式 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.7.20起因：
+有个群的管理员提出要踢人的需求。
+那么踢谁留谁总得找点数据说话。
+把qq2009翻了一遍，找到的唯一可以看的信息是，
+某个人最后发言的时间。
+在普通活跃度的群当然，
+凭个最后发言时间，或者发言条数，
+都可以大致觉得这个人的参与程度。
+对于特别活跃的群 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/07/20/%E6%8A%8Aqq%E8%81%8A%E5%A4%A9%E8%AE%B0%E5%BD%95%E8%BD%AC%E5%8C%96%E6%88%90%E6%AF%94%E8%BE%83%E5%AE%B9%E6%98%93%E6%93%8D%E4%BD%9C%E7%9A%84%E6%A0%BC%E5%BC%8F">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">把qq聊天记录转化成比较容易操作的格式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-20T22:36:00+08:00" pubdate data-updated="true">Jul 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.7.20<br/><br/><font color="#0000ff">起因：</font><br/><br/>
+有个群的管理员提出要踢人的需求。<br/>
+那么踢谁留谁总得找点数据说话。<br/>
+把qq2009翻了一遍，找到的唯一可以看的信息是，<br/>
+某个人最后发言的时间。<br/><br/>
+在普通活跃度的群当然，<br/>
+凭个最后发言时间，或者发言条数，<br/>
+都可以大致觉得这个人的参与程度。<br/><br/>
+对于特别活跃的群，就不好说了。<br/>
+可能大家都经常发言。<br/>
+但是有的人往往是“啊”“哦”“嗯”，<br/>
+或者是些乱七八糟的表情。<br/>
+另外一些人可能很认真，<br/>
+说得虽少，但每次都很有信息量。<br/>
+这显然是要区别对待的。<br/><br/>
+至于怎么给出这个所谓“参与程度”的标准，<br/>
+那是后话了，<br/>
+现在首先要解决的就是先把聊天记录整理出来，<br/>
+便于实现任何需求的统计。<br/><br/><font color="#0000ff">分析：</font><br/><br/>
+qq2009目前支持导出为三种格式：<br/><br/>
+.bak，据说是加密的，除了导回之外，没办法提取里面的信息<br/>
+（当然，高手来破解除外，即使破解了还要去迁就他的数据编排方式，麻烦）<br/><br/>
+.mht，信息是完全保留了的，图片颜色具备<br/>
+但是操作起来又麻烦，熟悉mht的格式倒是不很难，<br/>
+况且有很多已经做好的库可以使用。<br/>
+问题在于整理里面的信息，毕竟含量实在是太丰富了。<br/><br/>
+.txt，很直观，编排大致上是有规律的，操作起来比较简单，<br/>
+可以依赖现有知识解决，不用去学新的东西。<br/><br/>
+所以这里就导出为.txt，然后对这个文件进行操作。<br/><br/><font color="#0000ff">格式上的问题：</font><br/><br/>
+导出一个群的记录，<br/>
+开头部分基本上是这样的：<br/><br/>
+消息记录<br/><br/>
+================================================================<br/>
+消息分组:群列表<br/>
+================================================================<br/>
+消息对象:Hello qsh！<br/>
+================================================================<br/><br/>
+毕竟跟我们后面的消息条目没啥关系，<br/><font color="#ff6600">于是直接手动删掉。</font><br/>
+（<font color="#ff0000">用后面给出的程序来提取的话，<br/>
+最好是从消息开始的地方，手动复制到结尾，<br/>
+重新存个文件。。。我也不知道为什么，<br/>
+在原导出的文件上删掉前面的内容，<br/>
+虽然视觉一样，读出的东西却有问题。。。。</font>）<br/><br/>
+再观察每条消息的格式。<br/><br/>
+发现聊天时的回车都被去掉了，自成一行。<br/>
+所以大致是下面的样子：<br/><font color="#ff6600"><br/>
+2009/1/20 21:00:38 [昵称[&lt;邮箱&gt;]][(qq号)]<br/>
+消息<br/><br/>
+2009/1/20 21:01:13 [昵称[&lt;邮箱&gt;]][(qq号)]<br/>
+消息<br/></font><br/>
+装怪就怪在。。有的地方只有qq号，有的地方只有昵称。<br/>
+当然有的地方两个都有，还有地方都没有。。。。<br/>
+而有昵称的地方，有的有绑定邮箱，有的没有。。。<br/><br/>
+当然，这些并不是一开始就观察完全的。。<br/>
+所以反复写了好久，RE过多次。<br/><br/>
+然后就是结构设计上的问题。<br/>
+由于昵称和qq号的不完备性，<br/>
+只有额外引入一个本记录中的ID号，作为主键<br/>
+用来标识一个用户。<br/><br/>
+通过这个ID，来关联一个用户类型的结构体，<br/>
+里面存放qq号，昵称，和以后可以添加的各种统计信息。<br/><br/>
+另外一个关联类型，就是消息结构。<br/>
+其中ID作为外键，另外记录时间和内容。<br/><br/>
+最初统计的时候，分别用map来关联昵称或qq号 对应的ID。<br/>
+由于之后要求按照ID对用户类型做操作，所以用vector来存放。<br/>
+至于消息类型，统计的时候显然是顺次操作，<br/>
+读入也是顺次的，于是就直接放list了。<br/><br/><font color="#0000ff">没意思的代码：</font><br/><br/>
+下面的代码只对发言条数做过统计，<br/>
+仅仅是用来验证读取模块是否正确。<br/>
+在这个基础上，可以方便地加入其他的统计，获取感兴趣的方面。<br/><br/>
+后来看到其他人用perl和python写的。。。。那真是一个短啊。。囧。。<br/>
+于是有时间还是得学一学了，要不显得太土鳖了。。<br/>
+不过定位不一样，仅仅做上面提到的按发言排序，就很简洁。<br/>
+要多加点其他的东西还是挺费力的。<br/><br/></p>
+
+<h1>pragma warning(disable:4786) <br/><br/></h1>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;stdio.h&gt;<br/></h1>
+
+<h1>include &lt;list&gt;<br/></h1>
+
+<h1>include &lt;map&gt;<br/></h1>
+
+<h1>include &lt;string&gt;<br/></h1>
+
+<h1>include &lt;vector&gt;<br/></h1>
+
+<h1>include &lt;algorithm&gt;<br/><br/></h1>
+
+<p>using namespace std ; <br/><br/>
+const int MAX_MSG_LENGTH = 10000 ;<br/><br/>
+typedef int ID ;<br/><br/>
+typedef struct time_type{<br/>
+     short year ;<br/>
+     char month ;<br/>
+     char day ;<br/>
+     char hour ;<br/>
+     char minute ;<br/>
+     char second ;<br/>
+}TIME ;<br/><br/>
+typedef struct message_type{<br/>
+     ID identifier ;<br/>
+     TIME time;<br/>
+     string content ;<br/>
+}MESSAGE ;<br/><br/>
+typedef struct user_type{<br/>
+     string name ;<br/>
+     string num ;<br/>
+     int cnt_msg ;<br/>
+}USER ;<br/><br/>
+class qqmsg{<br/>
+public:<br/>
+     map&lt;string , int&gt; map_name2id ;<br/>
+     map&lt;string , int&gt; map_num2id ;<br/>
+     list&lt;MESSAGE&gt; list_msg ;<br/>
+     vector&lt;USER&gt; vector_user ;<br/>
+     void init() ;<br/>
+     ID qqmsg::getid(char <em>str) ;<br/>
+     bool read(char </em>filename) ;<br/>
+     void statistics() ;<br/>
+     void output() ;<br/>
+} ;<br/><br/>
+void qqmsg::init(){<br/>
+     map_name2id.clear() ;<br/>
+     map_num2id.clear() ;<br/>
+     list_msg.clear() ;<br/>
+     vector_user.clear() ;<br/>
+}<br/><br/>
+//标准化名称：<br/>
+//name&lt;email@email.com&gt;<br/>
+//name<br/>
+//所以去掉含有&lt;&gt;的部分<br/>
+void std_name(char <em>s){<br/>
+     char </em>p = strstr(s , &#8220;&lt;&#8221;) ;<br/>
+     if ( p != NULL ) {<br/>
+          if ( strstr(p , &#8220;&gt;&#8221;)){<br/>
+               <em>p = &#8216;\0&#8217; ;<br/>
+          }<br/>
+     }<br/>
+}<br/><br/>
+ID qqmsg::getid(char </em>str){<br/>
+     char name[50] , blankspace , num[50] ;     <br/>
+     USER tmp ;<br/>
+     tmp.name = &#8220;&#8221; ;<br/>
+     tmp.num = &#8220;&#8221; ;<br/>
+     int ret = sscanf(str , &#8220;%<a href="%[^">^(\012</a>])&#8221; , &amp;name[-1] , num) ; //前面的一个空格读掉name[-1]<br/>
+     std_name(name) ;<br/>
+     if ( ret == 0 ) {<br/>
+          //发生错误,什么都没有？<br/>
+          return -1 ;<br/>
+     }<br/>
+     if ( ret == 2 ){<br/>
+          tmp.name = name ;<br/>
+          tmp.num = num ; <br/>
+          if ( name[0] == &#8216;\0&#8217; ) {<br/>
+               //只有qq号<br/>
+               if ( map_num2id.count(tmp.num) ){<br/>
+                    return map_num2id[tmp.num] ;     <br/>
+               }else{<br/>
+                    map_num2id[tmp.num] = vector_user.size() ;<br/>
+                    vector_user.push_back(tmp) ;<br/>
+                    return vector_user.size() ;<br/>
+               }<br/><br/>
+          }else{<br/>
+               //qq号和昵称都有<br/>
+               if ( map_num2id.count(tmp.num)){<br/>
+                    int i = map_num2id[tmp.num] ;<br/>
+                    map_name2id[tmp.name] = i ;<br/>
+                    vector_user[i].name = tmp.name ;<br/>
+                    return i ;<br/>
+               }<br/>
+               if ( map_name2id.count(tmp.name)){<br/>
+                    int i = map_name2id[tmp.name] ;<br/>
+                    map_num2id[tmp.num] = i ;<br/>
+                    vector_user[i].num = tmp.num ;<br/>
+                    return i ;<br/>
+               }<br/>
+               map_num2id[tmp.num] = vector_user.size() ;<br/>
+               map_name2id[tmp.name] = vector_user.size() ;<br/>
+               vector_user.push_back(tmp) ;<br/>
+               return vector_user.size() - 1 ;<br/>
+          }<br/>
+     }else{<br/>
+          //只有昵称<br/>
+          tmp.name = name ;<br/>
+          if ( map_name2id.count(tmp.name) ){<br/>
+               return map_name2id[tmp.name] ;     <br/>
+          }else{<br/>
+               map_name2id[tmp.name] = vector_user.size() ;<br/>
+               vector_user.push_back(tmp) ;<br/>
+               return vector_user.size() ;<br/>
+          }<br/>
+     }<br/>
+}<br/><br/>
+bool qqmsg::read(char <em>filename){<br/>
+     FILE </em>fp = fopen(filename , &#8220;r&#8221;) ;<br/>
+     if ( fp == NULL ) return false ;<br/>
+     <br/>
+     char <em>buffer = new char[MAX_MSG_LENGTH] ;<br/>
+     int n ;<br/><br/>
+     MESSAGE tmp ;<br/>
+     try{<br/>
+          while ( 1 ){<br/>
+               bool over = false ;<br/>
+               while ( 1 ){<br/>
+                    if ( !fgets(buffer , MAX_MSG_LENGTH , fp) ){<br/>
+                         //读到文件的尾部了<br/>
+                         over = true ;<br/>
+                         break ;<br/>
+                    }<br/>
+                    //尝试按照消息头来读取，如果不正常，则忽略掉后面的内容，<br/>
+                    //继续把下一行按照消息头来解析<br/>
+                    if ( buffer[0] != &#8216;\012&#8217; ) {<br/>
+                         int ret = sscanf(buffer , &#8220;%d/%d/%d %d:%d:%d%n&#8221; ,<br/>
+                              &amp;tmp.time.year , &amp;tmp.time.month , &amp;tmp.time.day ,<br/>
+                              &amp;tmp.time.hour , &amp;tmp.time.minute , &amp;tmp.time.second , &amp;n) ;          <br/>
+                         if ( ret == 6 ) break ;<br/>
+                    }               <br/>
+               }<br/>
+               if ( over ) break ;     <br/><br/>
+               tmp.identifier = getid(buffer + n) ;<br/><br/>
+               fgets(buffer , MAX_MSG_LENGTH , fp) ;<br/>
+               tmp.content = buffer ;<br/>
+               list_msg.push_back(tmp); <br/>
+          }<br/>
+     }catch(&#8230;){<br/>
+          puts(buffer) ;<br/>
+     }<br/><br/>
+     delete buffer ;<br/>
+     fclose(fp) ;<br/>
+     return true ;<br/>
+}<br/><br/>
+void qqmsg::statistics(){<br/>
+     vector&lt;USER&gt;::iterator vit ;<br/>
+     for ( vit = vector_user.begin() ; vit != vector_user.end() ; vit ++ ){<br/>
+          (</em>vit).cnt_msg = 0 ;<br/>
+     }     <br/><br/>
+     list&lt;MESSAGE&gt;::iterator lit ;<br/>
+     for ( lit = list_msg.begin() ; lit != list_msg.end() ; lit ++ ){<br/>
+          vector_user[(<em>lit).identifier].cnt_msg ++ ;<br/>
+     }<br/>
+}<br/><br/>
+bool operator&lt;(const USER &amp;u1 , const USER &amp;u2){<br/>
+     return u1.cnt_msg &gt; u2.cnt_msg ;<br/>
+}<br/><br/>
+void qqmsg::output(){<br/>
+     vector&lt;USER&gt;::iterator it ;<br/>
+     sort(vector_user.begin() , vector_user.end()) ;<br/>
+     for ( it = vector_user.begin() ; it != vector_user.end() ; it ++ ){<br/>
+          printf(&#8220;%40s %10s %d\n&#8221; , (</em>it).name.c_str() , (<em>it).num.c_str() , (</em>it).cnt_msg ) ;<br/>
+     }<br/>
+}<br/><br/>
+int main(){<br/>
+     qqmsg msg ;<br/>
+     msg.init() ;<br/>
+     msg.read(&#8220;3.txt&#8221;) ;<br/>
+     msg.statistics() ;<br/>
+     msg.output() ;<br/>
+     return 0 ;<br/>
+}</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-20T22:36:00+08:00" pubdate data-updated="true">Jul 20<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/07/20/%E6%8A%8Aqq%E8%81%8A%E5%A4%A9%E8%AE%B0%E5%BD%95%E8%BD%AC%E5%8C%96%E6%88%90%E6%AF%94%E8%BE%83%E5%AE%B9%E6%98%93%E6%93%8D%E4%BD%9C%E7%9A%84%E6%A0%BC%E5%BC%8F/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/07/20/%E6%8A%8Aqq%E8%81%8A%E5%A4%A9%E8%AE%B0%E5%BD%95%E8%BD%AC%E5%8C%96%E6%88%90%E6%AF%94%E8%BE%83%E5%AE%B9%E6%98%93%E6%93%8D%E4%BD%9C%E7%9A%84%E6%A0%BC%E5%BC%8F/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/07/19/scanf%E7%9A%84%E4%B8%89%E7%82%B9%E4%B8%8D%E5%B8%B8%E8%A7%81%E4%BD%86%E5%BE%88%E5%AE%9E%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%EF%BC%88%E5%BF%BD%E7%95%A5%E5%8F%98%E9%87%8F%EF%BC%8C%E6%89%AB%E6%8F%8F%E5%AD%97%E7%AC%A6%EF%BC%8C%E8%AF%BB%E5%85%A5%E5%AD%97%E7%AC%A6%E4%B8%AA%E6%95%B0%EF%BC%89/" title="Previous Post: scanf的三点不常见但很实用的方法（忽略变量，扫描字符，读入字符个数）">&laquo; scanf的三点不常见但很实用的方法（忽略变量，扫描字符，读入字符个数）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/07/21/%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6/" title="Next Post: 虚函数的底层机制">虚函数的底层机制 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

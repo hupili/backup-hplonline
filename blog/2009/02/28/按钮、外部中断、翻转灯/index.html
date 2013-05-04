@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>按钮、外部中断、翻转灯 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.2.28
+用四个按钮来控制，按一下，翻转相应的灯一。电路
+右边为了方便用了总线。
+相当于电源过电阻后接到P1的上面四个口。
+该四口分别过按钮到地。
+这样，常态下，该四口为高电平，按下后为低。
+该四口再“与”到一起，接到INT0上面。
+这样，按下按键后就有中断送入了。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/02/28/%E6%8C%89%E9%92%AE%E3%80%81%E5%A4%96%E9%83%A8%E4%B8%AD%E6%96%AD%E3%80%81%E7%BF%BB%E8%BD%AC%E7%81%AF">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">按钮、外部中断、翻转灯</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-28T18:12:00+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.2.28<br/><br/>
+用四个按钮来控制，按一下，翻转相应的灯<br/><br/><font color="#0000ff">一。电路</font><br/><br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/2bc327f538493605bd3109a6.jpg"/><br/>
+右边为了方便用了总线。<br/>
+相当于电源过电阻后接到P1的上面四个口。<br/>
+该四口分别过按钮到地。<br/>
+这样，常态下，该四口为高电平，按下后为低。<br/>
+该四口再“与”到一起，接到INT0上面。<br/>
+这样，按下按键后就有中断送入了。<br/><br/><font color="#0000ff">二。程序</font><br/><br/>
+org 00h<br/>
+ljmp func_main<br/>
+org 03h<br/>
+ljmp func_xint0<br/><br/>
+org 30h<br/>
+func_main:<br/><br/>
+        setb EA<br/>
+        setb EX0<br/><br/>
+sjmp $<br/><br/>
+func_xint0:<br/>
+push PSW<br/><br/>
+        jnb P1.7 , <em>l7<br/>
+        jnb P1.6 , </em>l6<br/>
+        jnb P1.5 , <em>l5<br/>
+        jnb P1.4 , </em>l4<br/><br/>
+        <em>l7:<br/>
+        cpl P0.7<br/>
+        sjmp </em>end<br/>
+        <em>l6:<br/>
+        cpl P0.6<br/>
+        sjmp </em>end<br/>
+        <em>l5:<br/>
+        cpl P0.5  <br/>
+        sjmp </em>end<br/>
+        <em>l4:<br/>
+        cpl P0.4<br/>
+        </em>end:<br/>
+        acall func_delay<br/>
+pop PSW<br/>
+reti<br/><br/>
+func_delay:<br/>
+        mov R5,#10<br/>
+        D3:<br/>
+        mov R7,#50<br/>
+        D1:<br/>
+        MOV R6,#200<br/>
+        D2:<br/>
+        djnz R6,D2<br/>
+        djnz R7,D1<br/>
+        djnz R5,D3<br/>
+ret<br/><br/>
+end<br/><br/>
+主函数开启中断后就进入死循环了，实际上可以做其他的事情。<br/><br/>
+中断处理中，分别判断是哪个键按下了，然后翻转对应的灯。<br/><br/>
+中断的最后延迟一段，防止按键抖动。。<br/><br/>
+话说。。当时把jnb打成jb了。。查了老半天。。</div></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-02-28T18:12:00+08:00" pubdate data-updated="true">Feb 28<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/02/28/%E6%8C%89%E9%92%AE%E3%80%81%E5%A4%96%E9%83%A8%E4%B8%AD%E6%96%AD%E3%80%81%E7%BF%BB%E8%BD%AC%E7%81%AF/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/02/28/%E6%8C%89%E9%92%AE%E3%80%81%E5%A4%96%E9%83%A8%E4%B8%AD%E6%96%AD%E3%80%81%E7%BF%BB%E8%BD%AC%E7%81%AF/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/02/28/%E4%B8%B2%E8%A1%8C%E6%8E%A7%E5%88%B6%E6%B5%81%E6%B0%B4%E7%81%AF/" title="Previous Post: 串行控制流水灯">&laquo; 串行控制流水灯</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/01/%E7%9F%A9%E9%98%B5%E9%94%AE%E7%9B%98%E5%92%8C%E6%95%B0%E7%A0%81%E7%AE%A1/" title="Next Post: 矩阵键盘和数码管">矩阵键盘和数码管 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

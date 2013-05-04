@@ -1,0 +1,1286 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="hplonline(2009.5.11)
+写过这么多程序了，貌似还没正式写过这个结构。
+毕竟以后可能会用到这些东西。
+老是小打小闹地遇到特殊问题时写一篇特殊的代码，
+编码效率上会很吃亏的，
+还是写得像模像样一点，
+标准就是自己在若干天后用起来比较方便就行了。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/page/17">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/11/%E8%B4%B4%E4%B8%80%E4%B8%AABST%EF%BC%88BinarySearchTree%EF%BC%89/">贴一个BST（BinarySearchTree）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-11T21:34:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>hplonline(2009.5.11)<br/><br/>
+写过这么多程序了，貌似还没<font color="#ff6600">正式</font>写过这个结构。<br/>
+毕竟以后可能会用到这些东西。<br/>
+老是小打小闹地遇到特殊问题时写一篇特殊的代码，<br/>
+编码效率上会很吃亏的，<br/>
+还是写得像模像样一点，<br/>
+标准就是自己在若干天后用起来比较方便就行了。<br/><br/>
+由于学习STL的最后一部分被RBTree卡到了。。<br/>
+得先学下这个结构。<br/>
+而他的近亲AVLTree也要学一下。<br/>
+当然AVL的老爹应该先搞定，于是从BST开始。<br/><br/>
+我这个版本就有两点稍微可以说的：<br/><br/><font color="#ff0000">1.除了Clear()外没有用递归。</font><br/>
+因为像Find，Insert之类的，当前指针p在树上跑的路线都是单边的。<br/>
+这样大可不必递归。<br/>
+但Clear() 由于要先清除左右子树，自己写栈来消除递归显然更臃肿，就算了。<br/><br/><font color="#ff0000">2.空间分配方面留了三个宏</font><br/></p>
+
+<h1>define _BST_initspace <br/></h1>
+
+<h1>define _BST_allocate() (BNode *)malloc(sizeof(BNode))<br/></h1>
+
+<h1>define _BST_deallocate(p) free(p) <br/><br/></h1>
+
+<p>长期做工程的同学可能不理解这个用意。<br/>
+但是长期刷题的同学应该知道这写猥琐的手脚。。。<br/><br/>
+比如，刷题的时候换成下面一组：<br/>
+//BNode space[1000] , *spacehead ;<br/>
+//#define <em>BST_initspace spacehead = space <br/>
+//#define </em>BST_allocate() spacehead++ ;<br/>
+//#define _BST_deallocate(p) <br/><br/>
+一般来说刷题可以先估计要用的内存大小，<br/>
+这样搞可以提高速度。<br/>
+而且把释放内存的宏定义为空。<br/>
+因为开在全局区的空间，随程序结束自动释放。<br/><br/>
+总得来说，这一手脚有的时候可以让TLE的变AC。<br/><br/>
+记得曾经有一道题：<br/>
+用new和delete<font color="#ff0000">超时</font>，<br/>
+搞了半天，决定不delete了，<font color="#ff0000">300ms</font>过了。<br/>
+把new换成malloc，<font color="#ff0000">200ms</font>过了。<br/>
+换成静态分配，<font color="#ff0000">100ms</font>过了。<br/><br/><font color="#0000ff">源码：</font>包含测试部分<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;stdlib.h&gt;<br/><br/></h1>
+
+<p>//元素类型<br/>
+typedef int ElemType ;<br/><br/>
+//树的节点<br/>
+struct BNode{<br/>
+     ElemType data ;<br/>
+     BNode <em>left , </em>right , <em>parent ;<br/>
+     BNode(){<br/>
+          left = NULL ;<br/>
+          right = NULL ; <br/>
+          parent = NULL ;<br/>
+     }<br/>
+     BNode(ElemType d){<br/>
+          data = d ;<br/>
+          left = NULL ;<br/>
+          right = NULL ; <br/>
+          parent = NULL ;<br/>
+     }<br/>
+     void init(ElemType d){<br/>
+          data = d ;<br/>
+          left = NULL ;<br/>
+          right = NULL ; <br/>
+          parent = NULL ;          <br/>
+     }<br/>
+};<br/>
+typedef BNode </em>PBNode ;<br/><br/>
+//空间分配宏，便于实现其他配置方式<br/></p>
+
+<h1>define _BST_initspace <br/></h1>
+
+<h1>define _BST_allocate() (BNode *)malloc(sizeof(BNode))<br/></h1>
+
+<h1>define _BST_deallocate(p) free(p) <br/></h1>
+
+<p>//BNode space[1000] , *spacehead ;<br/>
+//#define <em>BST_initspace spacehead = space <br/>
+//#define </em>BST_allocate() spacehead++ ;<br/>
+//#define <em>BST_deallocate(p) <br/><br/>
+//BST<br/>
+class BinarySearchTree{<br/>
+private:<br/>
+     PBNode root ;<br/>
+     void </em>delete_node(PBNode p) ;<br/>
+     PBNode <em>find_subs(PBNode pos) ;//寻找删除时用于替换的节点<br/>
+public:<br/>
+     BinarySearchTree() ;<br/>
+     PBNode Find(ElemType d) ;<br/>
+     PBNode FindMax() ;<br/>
+     PBNode FindMin() ;<br/>
+     ElemType&amp; Retrieve(PBNode p) ;<br/>
+     PBNode Insert(ElemType d) ;<br/>
+     void Delete(ElemType d) ;//按元素删除<br/>
+     void Erase(PBNode p) ;//按节点位置删除<br/>
+     void Clear() ;<br/>
+     static void Sort(ElemType a[] , int n , int d = 1) ;//利用BST进行排序，静态函数<br/>
+} ;<br/><br/>
+//d：1，从小到大，0，从大到小<br/>
+void BinarySearchTree::Sort(ElemType a[] , int n , int d){<br/>
+     BinarySearchTree tree ;<br/>
+     int i ;<br/>
+     for ( i = 0 ; i &lt;n ; i ++ ){<br/>
+          tree.Insert(a[i]) ;<br/>
+     }<br/>
+     for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+          PBNode p ;<br/>
+          if ( d ) {<br/>
+               p = tree.FindMin() ;<br/>
+          }else{<br/>
+               p = tree.FindMax() ;     <br/>
+          }<br/>
+          a[i] = tree.Retrieve(p) ;<br/>
+          tree.Erase(p) ;<br/>
+     }<br/>
+}<br/><br/>
+BinarySearchTree::BinarySearchTree(){<br/>
+     root = NULL ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::Find(ElemType d){<br/>
+     PBNode p = root ;<br/>
+     while ( p &amp;&amp; p-&gt;data != d ){<br/>
+          if ( d &lt; p-&gt;data ) p = p-&gt;left ;<br/>
+          else p = p-&gt;right ;<br/>
+     }     <br/>
+     return p ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::FindMax(){<br/>
+     if ( root == NULL ) return NULL ;<br/>
+     PBNode p = root ;<br/>
+     while ( p-&gt;right ){<br/>
+          p = p-&gt;right ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::FindMin(){<br/>
+     if ( root == NULL ) return NULL ;<br/>
+     PBNode p = root ;<br/>
+     while ( p-&gt;left ){<br/>
+          p = p-&gt;left ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+ElemType&amp; BinarySearchTree::Retrieve(PBNode p){<br/>
+     return p-&gt;data ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::Insert(ElemType d){<br/>
+     //根为空特殊处理<br/>
+     if ( root == NULL ) {<br/>
+          root = </em>BST_allocate() ;<br/>
+          root-&gt;init(d) ;          <br/>
+          return root ;<br/>
+     }<br/>
+     PBNode p = root ;<br/>
+     PBNode q = NULL ;<br/>
+     while ( p &amp;&amp; p-&gt;data != d ){<br/>
+          q = p ;<br/>
+          if ( d &lt; p-&gt;data ) p = p-&gt;left ;<br/>
+          else p = p-&gt;right ;<br/>
+     }<br/>
+     //该节点存在,直接返回<br/>
+     if ( p ) {<br/>
+          return p ;<br/>
+     }<br/>
+     //不存在,q为插入点<br/>
+     p = <em>BST_allocate() ;<br/>
+     p-&gt;init(d) ;<br/>
+     p-&gt;parent = q ;<br/>
+     if ( d &lt; q-&gt;data ){<br/>
+          q-&gt;left = p ;<br/>
+     }else{<br/>
+          q-&gt;right = p ;<br/>
+     }<br/>
+     return p ;<br/>
+}<br/><br/>
+PBNode BinarySearchTree::</em>find_subs(PBNode pos){<br/>
+     PBNode su ;<br/>
+     if ( pos-&gt;left == NULL || pos-&gt;right == NULL ) {<br/>
+          //有一个子树为空<br/>
+          if ( pos-&gt;left == NULL ){<br/>
+               su = pos-&gt;right ;<br/>
+          }else{<br/>
+               su = pos-&gt;left ;<br/>
+          }          <br/>
+     }else{<br/>
+          //两个均不为空，寻找前驱，即左子树的最右枝<br/>
+          su = pos-&gt;left ;<br/>
+          while ( su-&gt;right ) su = su-&gt;right ;<br/>
+     }<br/>
+     return su ;<br/>
+}<br/><br/>
+void BinarySearchTree::Erase(PBNode pos){<br/>
+     if ( pos == NULL ) return ;<br/>
+     PBNode su = <em>find_subs(pos) ;//替换节点<br/>
+     //根节点<br/>
+     if ( pos-&gt;parent == NULL ) {<br/>
+          if ( su ){<br/>
+               PBNode sup = su-&gt;parent ;<br/>
+               if ( su == sup-&gt;left ) {<br/>
+                    sup-&gt;left = NULL ;<br/>
+               }else{<br/>
+                    sup-&gt;right = NULL ;<br/>
+               }<br/>
+               su-&gt;parent = NULL ;<br/>
+          }<br/>
+          root = su ;<br/>
+          </em>BST_deallocate(pos) ;<br/>
+          return ;<br/>
+     }<br/><br/>
+     PBNode pa = pos-&gt;parent ;//父节点<br/>
+     //替换<br/>
+     if ( pos == pa-&gt;left ) {<br/>
+          pa-&gt;left = su ;<br/>
+     }else{<br/>
+          pa-&gt;right = su ;<br/>
+     }<br/>
+     if ( su ) {<br/>
+          PBNode sup = su-&gt;parent ;<br/>
+          if ( su == sup-&gt;left ) {<br/>
+               sup-&gt;left = NULL ;<br/>
+          }else{<br/>
+               sup-&gt;right = NULL ;<br/>
+          }<br/>
+          su-&gt;parent = pa ;<br/>
+     }<br/>
+     <em>BST_deallocate(pos) ;<br/>
+}<br/><br/>
+void BinarySearchTree::Delete(ElemType d){<br/>
+     Erase(Find(d)) ;<br/>
+}<br/><br/>
+void BinarySearchTree::</em>delete_node(PBNode p){<br/>
+     if ( p != NULL ){<br/>
+          <em>delete_node(p-&gt;left) ;<br/>
+          </em>delete_node(p-&gt;right) ;<br/>
+          <em>BST_deallocate(p) ;<br/>
+     }<br/>
+}<br/><br/>
+void BinarySearchTree::Clear(){<br/>
+     </em>delete_node(root) ;<br/>
+     root = NULL ;<br/>
+}<br/><br/><br/>
+//测试代码<br/>
+using namespace std;<br/><br/>
+int main(){<br/>
+     int a[] = {3,2,9,7,5,8,6} ;<br/>
+     int b[10] ;<br/>
+     int sz = sizeof(a) / sizeof(int)  ;<br/>
+     int i;<br/>
+     <br/>
+     for ( i = 0 ; i &lt; sz ; i ++ ) b[i] = a[i] ;<br/><br/>
+      _BST_initspace ;<br/><br/>
+     //排序测试<br/>
+     BinarySearchTree::Sort(a , sz , 1) ;<br/>
+     for ( i = 0 ; i &lt; sz ; i ++ )cout&lt;&lt;a[i]&lt;&lt;&#8217; &#8217; &lt;&lt;endl;<br/>
+     <br/>
+     BinarySearchTree tree ;<br/>
+     for ( i = 0 ; i &lt; sz ; i ++ ){<br/>
+          tree.Insert(a[i]) ;<br/>
+     }<br/><br/>
+     cout&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(4)&lt;&lt;endl;<br/><br/>
+     cout&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(9)&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(9)-&gt;data&lt;&lt;endl;<br/>
+     tree.Delete(9) ;<br/>
+     cout&lt;&lt;tree.Find(9)&lt;&lt;endl;<br/><br/>
+     cout&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Find(3)&lt;&lt;endl;<br/>
+     cout&lt;&lt;tree.Retrieve(tree.Find(3))&lt;&lt;endl;<br/>
+     tree.Clear() ;<br/>
+     cout&lt;&lt;tree.Find(3)&lt;&lt;endl;     <br/><br/>
+     return 0 ;<br/>
+}</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/10/%E8%AF%A1%E5%BC%82%E7%9A%84%E7%BC%96%E8%AF%91%E6%9C%9F%E6%B1%82%E5%80%BC/">诡异的编译期求值</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-10T16:41:00+08:00" pubdate data-updated="true">May 10<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.10<br/><br/>
+int main()<br/>
+{<br/>
+     int val ;<br/>
+     val = 2147483647 &gt; -2147483648;<br/>
+     cout&lt;&lt;val&lt;&lt;endl;<br/>
+     val = 2147483647 &gt; -2147483647 - 1 ;<br/>
+     cout&lt;&lt;val&lt;&lt;endl;<br/>
+     return 0;<br/>
+}<br/><br/>
+结果：<br/><br/>
+0<br/>
+1<br/><br/>
+就是这样。。。试了VC6,DEV结果都是。<br/><br/>
+而val的值是在编译期就算好了的。比如：<br/>
+00401798    mov      dword ptr [ebp-4], 0<br/><br/>
+怀疑编译器默认是用无符号比较的。<br/><br/>
+试一下转换：<br/><br/>
+val = 2147483647 &gt; <font color="#ff0000">(signed)</font>-2147483648;<br/><br/>
+出来的就是1了。。。<br/><br/>
+而对后面一个式子的正确结果的解释是，<br/>
+ -2147483647 - 1 <br/>
+作为一个符号数的表达式，按照符号数运算。<br/>
+同时做 &gt; 的时候也按照符号数比较，所以结果正确。<br/><br/>
+看来使用常量const是一个好习惯。<br/>
+可以尽量得到期望的值。<br/><br/>
+比如：<br/>
+const int a = 2147483647 ;<br/>
+const int b = -2147483648 ;<br/><br/>
+&#8230;<br/><br/>
+val = a &gt; b ; <br/><br/>
+这样通过const给相关的数据确定了是否带符号。<br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/09/VB%E5%AF%BC%E5%85%A5%E7%A9%BA%E6%A0%BC%E5%88%86%E5%89%B2%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%B0EXCEL/">VB导入空格分割的数据到EXCEL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-09T22:08:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.9<br/><br/><a href="http://www.box.net/shared/cpfedv5zim" target="_blank">成品下载</a><br/><br/><font color="#0000ff">起因：</font><br/><br/>
+本来是在做数据分析的，在MATLAB里面整了个相关系数矩阵。<br/><br/>
+就像这种形状：<br/><br/>
+ca =<br/><br/>
+       1.0000       0.9345       0.9655       0.9977      -0.8814       0.9839<br/>
+       0.9345       1.0000       0.9940       0.9442      -0.9655       0.9761<br/>
+       0.9655       0.9940       1.0000       0.9718      -0.9562       0.9901<br/>
+       0.9977       0.9442       0.9718       1.0000      -0.9062       0.9887<br/>
+      -0.8814      -0.9655      -0.9562      -0.9062       1.0000      -0.9328<br/>
+       0.9839       0.9761       0.9901       0.9887      -0.9328       1.0000<br/><br/>
+结果直接复制粘贴到EXCEL里面就<font color="#ff0000">全部在一列</font>里面了。。很囧。<br/>
+前面几次的变通解决是先存个TXT，然后用EXCEL“数据”菜单下的“导入”功能。<br/><br/>
+这回貌似会比较频繁地出现这种操作。。所以想找个更易操作的方法。<br/>
+VB里面调用EXCEL还是比较方便。<br/>
+特别对我这种不求甚解的人来，很快可以上手开始用。<br/><br/><font color="#0000ff">效果：</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1f1e11d5614224e750da4b5e.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>row和col指定数据开始的单元格坐标。<br/>
+下面的多行文本框就就是要导入的数据，<br/>
+所谓空格可以是：空格，TAB，回车，换行<br/>
+并且遇到回车的时候可以从下一行开始写EXCEL。<br/>
+点convert可以开始转移数据。<br/><br/><font color="#0000ff">界面设置：</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/438cda16dd08523b962b435e.jpg" small="0" class="blogimg"/></div></p>
+
+<br/><font color="#0000ff">源码：</font><br/><br/>
+
+
+<p>感觉这点注释差不多了。主要工作还是在字符串的切割上。<br/>
+VB这玩意久了不用比较囧。<br/>
+就像提取字符串的j个字符要用：<br/>
+Mid(s, j, 1)<br/>
+写C写多了，总有种写s(j)的冲动，想当成数组来用。<br/><br/><font color="#ff0000">先在“工程-&gt;引用”里面添加<br/>
+Microsoft Excel 11.0 Object Library</font><br/>
+要不会出现对象未定义。<br/><br/>
+Option Explicit<br/><br/>
+Private Sub Command1_Click()<br/><br/>
+Dim excelApp As Excel.Application &#8216;定义EXCEL应用程序对象<br/>
+Dim s, t As String<br/>
+Dim curRow, curCol As Integer<br/>
+Dim i, j As Integer<br/><br/>
+Set excelApp = New Excel.Application &#8216;新建XCEL应用程序对象<br/>
+On Error Resume Next &#8216;错误陷阱<br/>
+excelApp.Visible = True &#8216;对象可见<br/><br/>
+excelApp.Workbooks.Add &#8216;添加工作表<br/><br/>
+curRow = Val(Text2.Text)<br/>
+curCol = Val(Text3.Text)<br/>
+s = Text1.Text<br/>
+Trim (s)<br/><br/>
+&#8216;去除字符前的空格，包括空格，制表符，回车换行<br/>
+For j = 1 To Len(s)<br/>
+        If Not (Asc(Mid(s, j, 1)) = 9 Or Asc(Mid(s, j, 1)) = 32 Or Asc(Mid(s, j, 1)) = 13 Or Asc(Mid(s, j, 1)) = 10) Then<br/>
+            Exit For<br/>
+        End If<br/>
+Next j<br/>
+s = Mid(s, j)<br/><br/>
+With excelApp.ActiveSheet<br/>
+        &#8216;处理整个字符串<br/>
+        For i = 1 To Len(s)<br/>
+            &#8216;搜寻下一个空格字符出现位置<br/>
+            For j = i To Len(s)<br/>
+                If Asc(Mid(s, j, 1)) = 9 Or Asc(Mid(s, j, 1)) = 32 Or Asc(Mid(s, j, 1)) = 13 Or Asc(Mid(s, j, 1)) = 10 Then<br/>
+                   Exit For<br/>
+                End If<br/>
+            Next j<br/>
+            &#8216;截取数据<br/>
+            t = Mid(s, i, j - i)<br/>
+            &#8216;写入EXCEL单元格<br/>
+            .Cells(curRow, curCol).Value = t<br/>
+            i = j<br/>
+            &#8216;滤过之后的空格<br/>
+            For j = i To Len(s)<br/>
+                &#8216;如果有换行，调整当前行和当前列<br/>
+                If Asc(Mid(s, j, 1)) = 13 Then<br/>
+                    curRow = curRow + 1<br/>
+                    curCol = Val(Text3.Text) - 1<br/>
+                End If<br/>
+                If Not (Asc(Mid(s, j, 1)) = 9 Or Asc(Mid(s, j, 1)) = 32 Or Asc(Mid(s, j, 1)) = 13 Or Asc(Mid(s, j, 1)) = 10) Then<br/>
+                   Exit For<br/>
+                End If<br/>
+            Next j<br/>
+            i = j - 1<br/>
+            &#8216;移动到下一列<br/>
+            curCol = curCol + 1<br/>
+        Next i<br/>
+End With<br/><br/>
+End Sub<br/><br/><font color="#0000ff">后记：</font><br/><br/>
+最近比较亢奋，搞东西搞得有点暴力。。。<br/>
+不过这东西貌似留着以后也可以用。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/09/TIC%E8%B5%84%E6%A0%BC%E8%B5%9B/">TIC资格赛</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-09T19:09:00+08:00" pubdate data-updated="true">May 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.9<br/><br/>
+就是几道题。。<br/>
+比赛地址：http://xiaoyou.qq.com/tic/index.php?mod=tic<br/>
+为了防止以后大家考古的时候，TX已经从地球消失了，<br/>
+把题弄了一份放在<a href="http://www.box.net/shared/x6izbjathb" target="_blank">这里</a>。可供未来的人类观看。<br/><br/><font color="#0000ff">University：</font><br/><br/>
+最水的一道，就是求和就行了。<br/>
+不过TX这回有好几个服务器，每个上面的题号不一样。<br/>
+当时我还在读我这边的A题，是Doudou。<br/>
+就听到我后面的人开始敲代码了，还是在网页上直接敲过的。。<br/>
+场面相当惊悚啊。。。<br/>
+后来发现题号不一致。。<br/><font color="#0000ff"><br/>
+Doudou：</font><br/><br/>
+初看也以为跟POJ3636差不多，<br/>
+不过背景倒真差不多。。<br/>
+于是很囧地把原来的代码拷过来，发现不过样例。。<br/>
+再仔细读题，其实意思不一样。。。<br/><br/>
+最后来搞呢，其实就是个DP。<br/>
+比如，对企鹅按照攻击从小到大排序。<br/>
+之后得到一个高度的序列。在这个序列上做DP。<br/><br/>
+就类似什么导弹防御之类的经典问题了。<br/><br/>
+。。我是暴力的n<sup>2。背后的大牛非要调到nlogn的才交。。ORZ<br/><br/>&lt;font</sup> color=&#8221;#0000ff&#8221;>Ball：</font><br/><br/>
+怎么说还是有点囧。<br/>
+按照题目的意思列出关系式。<br/>
+是个t的二次方程。<br/>
+然后用MATLAB直接解出来。<br/><br/>
+速度为0的时候特殊处理，<br/>
+判别式小于0就是无解，<br/>
+剩下的情况就算出t，进而算出位置。<br/><br/><font color="#0000ff">Papercut：</font><br/><br/>
+这道题的样例比较大。。所以过了样例就没啥问题。<br/>
+问题就在于搞了半天才把样例过掉。<br/>
+最后还是用的硕暴力的DP。<br/><br/>
+状态都有5个维度，依次是：用多少次分割，左上角的坐标，右下角的坐标。<br/><br/>
+转移也有两个维度，分别是：从哪里开始把这个矩形分断，每段分别给予多少次分割。<br/><br/>
+预处理更暴力，是八重循环，算出每个矩形的F值。<br/>
+四重用于枚举矩形，四重用于计算。。。<br/><br/>
+怎么看都觉得很暴力。。居然可以过。。<br/><br/><font color="#0000ff">String：</font><br/><br/>
+一开始看没人过，也不敢去搞。。<br/>
+后来听说有人用RK，过了。。<br/>
+太高级了，虽然听说很久了，还没写过。。什么时候得试试。<br/><br/>
+反正搞到这里都已经只剩半小时不到了。<br/>
+还是决定去水一把。<br/>
+C库里面的strstr据说是用KMP写成的，想必应该还行，就用他去水。<br/><br/>
+水之前，先意识到，如果一个更长的子串能出现m次，<br/>
+那么比他更短的子串一定能出现那么多次，<br/>
+又是求最多的次数，所以只考虑长度为T的子串。<br/><br/>
+就依次枚举子串。。然后用strstr来看出现多少次。<br/><br/>
+后来背后的大牛提醒我可以只枚举到一半，强大啊，就是下面改点。<br/>
+i &lt; (l - k + 1) / 2<br/><br/>
+试了下，速度提高了40ms的样子。<br/><br/><font color="#0000ff">上午练习赛的两题：</font><br/><br/>
+1.贪心<br/>
+顶点按照度数排序，<br/>
+最大度数为d，<br/>
+最大度数的点跟他后面的d个点都连一边。<br/>
+重复这个过程到某次的d为0就好。<br/><br/>
+2.二分<br/>
+二分可以达到的长度，检查是否能分好就行。<br/><br/>
+还行，说明我是有资格的。。<img src="http://img.baidu.com/hi/jx/j_0028.gif"/>。<br/>
+不过晋级像我这么暴力就不行了。。。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/08/VB%E7%94%A8DDE%E8%AF%BB%E5%8F%96EXCEL%E9%87%8C%E9%9D%A2%E7%9A%84%E6%95%B0%E6%8D%AE/">VB用DDE读取EXCEL里面的数据</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-08T15:51:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.8<br/><br/>
+话说DDE也是N早前的事情了。<br/>
+都很久没看人提起过。。。<br/>
+Dynamic Data Exchange。<br/><br/>
+不过M$的的一套东西相互间做点猫腻的事情很方便。<br/><br/>
+就好比用VB读取EXCEL里面的数据一样。<br/><br/>
+打开EXCEL，在SHEET1中随便写点东西。<br/>
+（<font color="#ff0000">不要把EXCEL关了，DDE是用于运行着的进程交换数据的</font>）<br/><br/>
+然后通过下面的代码在VB里面把单元格A1打印出来。<br/><br/>
+Private Sub Command1_Click()<br/>
+Dim s As String<br/>
+Text1.LinkMode = 0<br/>
+Text1.LinkTopic = &#8220;Excel|Sheet1&#8221;<br/>
+Text1.LinkItem = &#8220;R1C1&#8221;<br/>
+Text1.LinkMode = 1<br/>
+s = Text1.Text<br/>
+Print s<br/>
+End Sub<br/><br/>
+代码很容易类比。。相信不需要多余的解释。<br/><br/>
+LinkTopic指定运行的进程名，管道符&#8221;|&#8221;后面是form名<br/>
+LinkItem指定的是form上控件的名字。<br/>
+这里是根据EXCEL的命名规则。R行C列。<br/>
+LinkMode，1是自动连接，<br/>
+还有几个连接方式，可以随便找个控件，在属性窗口那里下拉了看。<br/><br/>
+============<br/>
+突然看到论坛上有人问久违的VB。。冲动了一下。。<br/>
+继续搜集数据+上课去。。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/07/%E5%AE%8F%E5%B5%8C%E5%A5%97%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%8F%E4%B9%89/">宏嵌套的一点意义</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-07T15:44:00+08:00" pubdate data-updated="true">May 7<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.7<br/><br/>
+还好今天下午把最优化的课逃了，没有错过一个精彩的讨论。。<br/>
+又土鳖地学了一招。<br/><br/>
+经常在一些很大的项目中看到这种东西：<br/><font color="#ff0000">#define _macro(x) ????<br/></p>
+
+<h1>define macro(x) _macro(x)<br/></font><br/></h1>
+
+<p>包括微软做的MFC里面也有很多这种形状的代码。<br/>
+反正是奇怪了很久，<br/>
+你想啊，第二行就是再转为另外一个宏展开而已。。<br/>
+那么这样做两层有啥意义吗。。。<br/><br/><font color="#0000ff">示范</font>:<br/>
+（改编自zhd32大牛群聊代码）<br/><br/></p>
+
+<h1>define A abc<br/></h1>
+
+<h1>define B def<br/></h1>
+
+<h1>define _SYM2STR(arg) #arg<br/></h1>
+
+<h1>define SYM2STR(arg) _SYM2STR(arg)<br/><br/></h1>
+
+<p>int main()<br/>
+{<br/>
+     puts(<em>SYM2STR(A B));<br/>
+     puts(SYM2STR(A B));<br/>
+     return 0 ;<br/>
+}<br/><br/><font color="#0000ff">输出：</font><br/><br/>
+A B<br/>
+abc def<br/><br/>
+这就是差别了！<br/><br/>
+先来看这句：<br/><font color="#ff6600">#define </em>SYM2STR(arg) #arg</font><br/><br/>
+这个宏是把一个符号转化成字符串。<br/>
+比如 <em>SYM2STR(X) 展开后就成了 &#8220;X&#8221;。<br/>
+这属于#搞的鬼。<br/>
+另外还搜集了几个，为了不影响阅读流程，放在最后。<br/><br/>
+而从上面的结果，可以发现，<br/>
+</em>SYM2STR(A B)的展开是字符串&#8221;A B&#8221;，说明<font color="#ff6600">A B</font>被当作一个整体了作为arg，<br/>
+他并没有进一步展开。<br/>
+而SYM2STR(A B)首先要展开成<br/><font color="#ff6600"><em>SYM2STR(A B)</font><br/>
+这时，A,B继续被展开成abc和def。成为：<br/><font color="#ff6600"></em>SYM2STR(abc def)</font><br/>
+于是再通过#化为字符串就成了：<br/><font color="#ff6600">&#8220;abc def&#8221;<br/></font>了。<br/><br/>
+所以，这样的宏嵌套很有意义。<br/><font color="#ff0000">可以在交给最底层的宏去完成实际功能前，<br/>
+由一个套在上层的宏帮助把参数中的宏展开。</font><br/><br/><font color="#0000ff">补#define 的几个特殊定义：</font><br/><br/></p>
+
+<h1>define A(x) T_##x<br/></h1>
+
+<h1>define B(x) #@x<br/></h1>
+
+<h1>define C(x) #x<br/></h1>
+
+<p>我们假设：x=1，则有：<br/>
+A(1)&#8212;&#8212;〉T_1<br/>
+B(1)&#8212;&#8212;〉&#8217;1&#8217;<br/>
+C(1)&#8212;&#8212;〉&#8221;1&#8221;<br/>
+（这里参考了 hustli的文章）<br/><br/>
+我都不知道在哪里逛到的，原样拷贝。。<br/><br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/06/%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97%E9%80%9A%E9%A1%B9%E4%B8%89%E7%A7%8D%E8%A7%A3%E6%B3%95%EF%BC%88%E6%99%AE%E9%80%9A%E6%95%B0%E5%88%97%E8%A7%A3%E6%B3%95%EF%BC%8C%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%EF%BC%8C%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F%EF%BC%89/">斐波那契数列通项三种解法（普通数列解法，线性代数，信号与系统）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-06T20:31:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.6<br/><br/>
+因为公式很不好弄到网页上来。。所以完整的ＤＯＣ在<a target="_blank" href="http://www.box.net/shared/t6rji37qb4">这里</a>下载。<br/>
+下不了的同学可以直接找我要。<br/><br/>
+先给一个我觉得比较好看的结果：<br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c5ed3ffae46aabaa9f5146d0.jpg" small="0" class="blogimg"/></div></p>
+
+<br/><br/>
+
+
+<p>这里只给出三种求得的结果。有点差异，其实是一样的。<br/>
+按照相应的MATLAB程序给出。产生前10项做测试。<br/><br/><font color="#0000ff">１。</font>          <span style="font-size: 10.5pt;"><font color="#0000ff">高中数列方法</font><br/></span></p>
+
+<p class="MsoNormal"><span>for n=1:10</span></p>
+
+
+<p class="MsoNormal"><span>p = (1-sqrt(5))/2 ;</span></p>
+
+
+<p class="MsoNormal"><span>q = (1+sqrt(5))/2 ;</span></p>
+
+
+<p class="MsoNormal"><span>x = q^(n-2)*(1-p)*(1-(p/q)^(n-1))/(1-p/q)+p^(n-1)</span></p>
+
+
+<p class="MsoNormal"><span>end</span></p>
+
+
+<p><span style="font-size: 10.5pt;"><br/></span>          <font color="#0000ff"><span style="font-size: 10.5pt;">２。线性代数</span></font><br/><p class="MsoNormal"><span>for n=1:10</span></p></p>
+
+<p class="MsoNormal"><span>x=-(16/5)*sqrt(5)*(-(1/2+(1/2)*sqrt(5))^n+(1/2-(1/2)*sqrt(5))^n)/((1+sqrt(5))^2*(-1+sqrt(5))^2)</span></p>
+
+
+<p class="MsoNormal"><span>end</span></p>
+
+
+<br/><font color="#0000ff"><span style="font-size: 10.5pt;">３。信号与系统</span></font><br/><p align="left" class="MsoNormal" style="text-align: left;"><span style="font-size: 12pt;">for n=1:10</span></p>
+
+
+<p align="left" class="MsoNormal" style="text-align: left;"><span style="font-size: 12pt;">q1 = (1-sqrt(5))/2 ;</span></p>
+
+
+<p align="left" class="MsoNormal" style="text-align: left;"><span style="font-size: 12pt;">q2 = (1+sqrt(5))/2 ;</span></p>
+
+
+<p align="left" class="MsoNormal" style="text-align: left;"><span style="font-size: 12pt;">c1 = -sqrt(5)/5 ;</span></p>
+
+
+<p align="left" class="MsoNormal" style="text-align: left;"><span style="font-size: 12pt;">c2 = sqrt(5)/5 ;</span></p>
+
+
+<p align="left" class="MsoNormal" style="text-align: left;"><span style="font-size: 12pt;">x = c1 * q1^n + c2 * q2^n </span></p>
+
+
+<p align="left" class="MsoNormal" style="text-align: left;"><span style="font-size: 12pt;">end</span></p>
+
+
+<br/><font color="#0000ff"><span style="font-size: 10.5pt;">４。小结</span></font><br/><br/><p class="MsoNormal"><span>这几个推导不一定是化到最简的式子，反正能转化成实际的编程语言使用就是了。</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>第</span><span>1</span><span>个推导所用基础知识最少，</span></p>
+
+
+<p class="MsoNormal"><span>但是是建立在能猜到数列最后造型的基础上得来的。</span></p>
+
+
+<p class="MsoNormal"><span>不属于比较通用的方法。</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>第</span><span>2</span><span>个用到的线性代数的知识也不深，</span></p>
+
+
+<p class="MsoNormal"><span>容易理解，推导严密。</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>从严密性来说，总觉得第</span><span>3</span><span>个欠妥。。</span></p>
+
+
+<p class="MsoNormal"><span>毕竟学信号的时候，搞得似是而非的。</span></p>
+
+
+<p class="MsoNormal"><span>但是从结果的表达来看，第</span><span>3</span><span>个最美观。</span></p>
+
+
+<p class="MsoNormal"><span> </span></p>
+
+
+<p class="MsoNormal"><span>从运算上来说，这三个给出的通项都得使用浮点运算。</span></p>
+
+
+<p class="MsoNormal"><span>要得到准确的结果，可以套用</span><span>2</span><span>中的矩阵乘法的思想。</span></p>
+
+
+<p class="MsoNormal"><span>使用快速矩阵求幂，效率也很高。</span></p>
+
+
+<br/><font color="#0000ff">后记：</font><br/><br/>
+
+
+<p>虽然到了大学很失望，感觉课上尽是一堆杂碎。<br/>
+真正有用的东西倒是自己在课外学的。。<br/><br/>
+有时却还有点作用。。否则，就不知道后面两个证法了。。<br/><br/>
+可又说回来，<br/>
+苟能制侵凌，岂在多杀伤，<br/>
+既然高中就解决的事情，还在大学劳神一把干嘛呢？</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/05/%E8%81%9A%E9%9B%86%E6%A3%8B%E7%9B%98%E4%B8%8A%E7%9A%84n%E4%B8%AA%E7%82%B9%EF%BC%88%E8%B7%9D%E7%A6%BB%E5%92%8C%E5%BC%8F%E8%A7%A3%E7%AD%94%EF%BC%8C%E4%B8%AD%E4%BD%8D%E6%95%B0%E8%A7%A3%E7%AD%94%EF%BC%89/">聚集棋盘上的n个点（距离和式解答，中位数解答）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-05T19:08:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.5<br/><br/><font color="#0000ff">问题：</font><br/><br/>
+在一个棋盘上有n个点。现在要把他们放在一起。<br/>
+注意每个棋子只能垂直或者水平运动。<br/>
+要求选一个聚集点，使得所有棋子移动的曼哈顿距离最小。<br/><br/><font color="#0000ff">答案：<br/></font><br/>
+既然是曼哈顿距离。那么聚集点的总横坐标的选取是独立的。<br/>
+（不管x坐标如何，只要y坐标定了，那么在y方向上的移动的距离和就是定的）<br/><br/>
+对于x坐标的选取，可以归纳为下式：<br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0e3b9de4ebd157bcdbf1a29.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>bi是每个点的横坐标。这是一个典型的<font color="#ff0000">距离和式</font>。<br/>
+问题即是要求f(x)极小化。<br/><br/><font color="#ff0000">该极值点即是b序列的中位数。</font><br/><br/>
+关于中位数的求解，这里有份详细的资料：<br/><a target="_blank" href="http://ndevilla.free.fr/median">http://ndevilla.free.fr/median<br/></a>推荐学习里面的wirth版本。<br/>
+因为<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/3c1feafe72de21395d60088a.html">前面</a>介绍过了，这里就不说了。<br/><br/><font color="#0000ff">证明：</font><br/><br/><font color="#ff6600">1.距离和式</font><br/><br/>
+因为上篇解决了<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/0ba65b0f469149226159f33f.html">加权距离和式</a>的问题。<br/>
+很自然的可以用到这个地方来。<br/><br/>
+比如下式：<br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/dd5566815817dbfbbd3e1e4f.jpg"/></div></p>
+
+<br/>
+
+
+<p>另所有的ai=1。就得到了该问题的式子：<br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/c0e3b9de4ebd157bcdbf1a29.jpg"/></div>
+上篇定义的这个式子<br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/96aee1f862bb922cdbf9fd61.jpg"/><br/>
+也可以简化为g(j) = j - ( n - j ) = 2 * j - n <br/>
+要寻找的：g(j)&lt;=0&amp;&amp;g(j+1)&gt;=0<br/>
+很显然，<br/>
+n为奇数时，j = (n+1) / 2 - 1<br/>
+n为偶数时，j = n / 2 - 1</div></p>
+
+<br/>
+
+
+<p>对应的极值点b(j+1)其实就是b序列的中位数。<br/><br/><font color="#ff6600">2.更口水的证明中位数</font><br/><br/>
+解决加权距离和式这个更广泛的问题是今天的事，<br/>
+而接触这个聚集棋盘点问题是早些时候的事了。。<br/>
+那么当时肯定有当时的想法。。于是就有了这个更口水话的证明。<br/><br/>
+这个证明的出发点是考察x到所有bi的距离和。<br/><br/>
+假设下面讨论的时候bi已经从1到n增序排列。<br/><br/><font color="#0000ff">事实1：</font><br/><font color="#ff0000">当x在两个点b1,b2之间移动的时候，到这两点的距离和不变。</font><br/><br/><font color="#0000ff">事实2：</font><br/><font color="#ff0000">当x在[b1,bn]之外的时候，越远离距离和越大。</font><br/><br/>
+基于事实2，下面寻找x点仅在[b1,bn]之内<br/><br/>
+1.有1个点的时候：<br/>
+x=b1时f(x)=0最小<br/><br/>
+2.两个点的时候：<br/>
+在这两点之间任意移动x，距离不变，x可任取b1,b2<br/><br/>
+3.三个点的时候：<br/>
+到b1,b3的距离和是定值，那么要极小化到b2的距离即可，转化为1<br/><br/>
+4.四个点的时候：<br/><br/>
+在[b1,b2]区间内移动，到b1,b2的距离和定了，<br/>
+要最小化到到b3,b4的距离和，选择最靠近b3,b4的点b2。<br/><br/>
+在[b3,b4]区间内移动，到b3,b4的距离和定了，<br/>
+要最小化到到b1,b2的距离和，选择最靠近b1,b2的点b3。<br/><br/>
+这样可能作为x点的集合为{b2,b3,(b2,b3)}。<br/>
+即[b2,b3]，这个问题就转化成2了。<br/><br/>
+所以，选取的是b序列的中位数。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/05/%E5%8A%A0%E6%9D%83%E8%B7%9D%E7%A6%BB%E5%92%8C%E5%BC%8F%E7%9A%84%E5%8D%95%E5%B3%B0%E8%AF%81%E6%98%8E%E5%8F%8A%E6%9E%81%E5%80%BC%E6%B1%82%E6%B3%95/">加权距离和式的单峰证明及极值求法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-05T18:37:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(<a href="http://hi.baidu.com/withyhs" target="_blank">yhsa678</a>&amp;hplonline)2009.5.5<br/><br/>
+开始在提到《<a href="http://hi.baidu.com/hplonline/blog/item/0035a3ecf6dbfe2f63d09fdf.html" target="_blank">残差绝对和最小的拟合准则</a>》时，<br/>
+碰到了这样一个式子：<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/dd5566815817dbfbbd3e1e4f.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>想求他的极值，除了提到过的用<font color="#ff0000">黄金三分法</font>求外，<br/>
+希望寻求一种更高效的，更精确的解答方式。<br/><br/>
+事实证明我比较愚钝，楞是没有想到。。<br/>
+在请教了<a href="http://hi.baidu.com/withyhs" target="_blank">yhsa678</a>后茅塞顿开，<br/>
+发现我之前一直被“距离”的概念束缚了，怎么也没走出那个圈子。<br/>
+之所以会得到这样一个概念，因为之前接触过类似的简化版问题。<br/>
+可见经验的积累往往给人的创造力造成损害。。。<br/><br/>
+而在证明该式的单峰性的同时，即可给出极值的求法。。<br/>
+（如此顺手牵羊的事情我都没做到，悲哀啊。。）<br/><br/><font color="#0000ff">加权距离和式：</font><br/>
+这个名字并非无厘头的。<br/>
+我们令所有ai=1。<br/><br/>
+得到的f(x)即为x到各个bi的距离的和。可以认为是一个距离和式。<br/>
+（我所谓的简化版就是这个）<br/><br/>
+那么在这些距离前面乘上系数ai。可认为是对到每点的距离加权。<br/><br/>
+这个定义在解决此篇的函数问题中并无大用，仅仅是为后续文章的叙述方便。<br/><font color="#0000ff"><br/>
+单峰：</font><br/><br/>
+下凹的单峰：<br/><font size="4">f&#8217;(x)&lt;=0</font>对所有x&lt;x0成立，<br/><font size="4">f&#8217;(x)&gt;=0对</font>所有x&gt;x0成立，<br/><br/>
+x0就是要求的极值点。<br/><br/>
+上凸的类似。<br/><br/><font color="#0000ff">单峰证明：</font><br/><br/>
+注意到绝对值函数的性质。<br/>
+|x-bi|<br/>
+在尖点bi处是不可导的，但尖点左侧导数为负，右侧为正。<br/><br/>
+这样，选择最小bi左侧的一点l,最大bi右侧的一点r<br/>
+那么f&#8217;(l)&lt;0,f&#8217;(r)&gt;0<br/><br/>
+并且，当x从l变化到r的时候，每经过一个尖点，f&#8217;(x)的值只能增加。<br/>
+于是<font color="#ff0000">一定存在某点x0，他左边f&#8217;(x)&lt;0,右边f&#8217;(x)&gt;0</font><br/><br/>
+呵呵，口水话证明。。。<br/><br/><font color="#0000ff">极值求法：</font><br/><br/>
+从上面的证明直接得出，那个x0就是要求的极值点。<br/><br/>
+这样，可以先把n个点按bi排序，然后线性扫描一次，<br/>
+做个定义：<br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/96aee1f862bb922cdbf9fd61.jpg" small="0" class="blogimg"/></div>
+j从0开始取n<br/><br/><div forimg="1"> </div>
+于是找到某个g(j)&lt;=0&amp;&amp;g(j+1)&gt;=0<br/><br/>
+则b(j+1)就是要求的极值点。<br/><br/><font color="#0000ff">效率比较：</font><br/><br/>
+1.加权距离和式：O(排序)+O(n)<br/><br/>
+2.黄金三分：O(ln(dl/l)/ln(0.618))<br/>
+l是三分区间的长度<br/>
+dl是允许的误差容限（即最后给出的极值点落在的区间的长度）<br/><br/>
+1法在时间上是比较确定的，而且能求出精确解<br/>
+2法在误差容限较大的时候可以较快出解</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/05/05/%E6%AE%8B%E5%B7%AE%E7%BB%9D%E5%AF%B9%E5%92%8C%E6%9C%80%E5%B0%8F%E7%9A%84%E6%8B%9F%E5%90%88%E5%87%86%E5%88%99%EF%BC%88%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2%E6%B1%82%E5%8D%95%E5%B3%B0%E6%9E%81%E5%80%BC%EF%BC%89/">残差绝对和最小的拟合准则（黄金分割求单峰极值）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-05T13:48:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.5.5<br/><br/>
+设有数据点xi,yi,i=1..n<br/>
+待拟合函数y=f(x)<br/><br/><font color="#0000ff">拟合：</font><br/>
+确定f(x)中所有参数的过程<br/><br/><font color="#0000ff">残差：</font><br/>
+数据点偏离拟合曲线的度量，即为ri = yi - f(xi)<br/>
+共有n个。<br/><br/><font color="#0000ff">残差绝对和最小准则：</font><br/><div forimg="1"><img height="37" width="148" border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/91e013d860e4711632fa1c8c.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>当然还有其他拟合准则，像<font color="#ff0000">chebyshev准则</font>，<font color="#ff0000">最小二乘准则</font>。<br/><br/>
+最初看到这个准则的时候，没有多想，感觉确实很麻烦。<br/>
+正像书上说的。。绝对值是让人很恼火的事情。<br/>
+也正因为如此，人类喜欢最小二乘准则，<br/>
+平方在化数据为正的意义上和绝对值有异曲同工之妙。<br/><br/>
+今天看了黄金分割求单峰极值，发现书上用这个东西来解决该准则的一个例子。<br/>
+至于黄金分割求单峰极值，可以参考：<a href="http://hi.baidu.com/withyhs/blog/item/773d0d6f97f1dad280cb4a43.html" target="_blank">《单峰的黄金分割法》</a><br/><br/>
+多想了一下，这个解法其实要求很严格的：<br/><font color="#ff0000">1.在指定区间上，函数单峰<br/>
+2.函数必须在已知区间上有最大值（或最小值）</font><br/><br/>
+第2点很好办到，可以把初始区间弄得足够大。<br/>
+而第1点，就只有在某些特殊情况下可以讨论。<br/>
+拿书上这个例子：<br/><br/>
+y = c * x<sup>2<br/></sup>
+数据点：<br/>
+x 1 2 3<br/>
+y 2 5 8<br/>
+待定c<br/><br/>
+根据如上准则，写出要极小化的函数为：<br/>
+f(c) = |2-c| + |5-4c| + |8-9c|<br/><br/>
+用MATLAB画图出来，很有单峰的味道：<br/><div forimg="1"><img height="349" width="468" border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/e936db0048b00c32738b657b.jpg"/><br/>
+于是书上就用了黄金分割法来求这个极值。</div>
+不过书上没有证明函数<br/>
+f(c) = |2-c| + |5-4c| + |8-9c|<br/>
+的单峰性，总觉得很梗。<br/><br/>
+于是发出来给达人看看，求解。<br/>
+把这个式子抽象一下，是这样的：<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/dd5566815817dbfbbd3e1e4f.jpg" small="0" class="blogimg"/></div></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/backup-hplonline/blog/page/18/">&larr; Older</a>
+    
+    <a href="/backup-hplonline/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/backup-hplonline/blog/page/16/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

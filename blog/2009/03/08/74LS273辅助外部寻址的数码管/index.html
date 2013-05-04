@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>74LS273辅助外部寻址的数码管 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="（hplonline）2009.3.8
+一。目标
+1.练习74LS273
+2.体验一种一般学习型最小系统里面不用的控制方式二。优势
+像普通的学习型最小系统里面 ，普遍采用的控制数码管的方式是：用一组IO口（7个或8个）控制数码管的段
+用另外一组（8个，如果译码则只要3个）控制数码管的位 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/08/74LS273%E8%BE%85%E5%8A%A9%E5%A4%96%E9%83%A8%E5%AF%BB%E5%9D%80%E7%9A%84%E6%95%B0%E7%A0%81%E7%AE%A1">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">74LS273辅助外部寻址的数码管</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-08T14:06:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><font color="#0000ff"><font color="#000000">（hplonline）2009.3.8</font><br/><br/>
+一。目标</font><br/>
+1.练习74LS273<br/>
+2.<font color="#ff0000">体验</font>一种一般学习型最小系统里面不用的控制方式<br/><br/><font color="#0000ff">二。优势</font><br/><br/>
+像普通的学习型最小系统里面 ，普遍采用的控制数码管的方式是：<br/><br/><font color="#000000">用一组IO口（7个或8个）控制数码管的段<br/>
+用另外一组（8个，如果译码则只要3个）控制数码管的位<br/>
+显示的方式就是刷新。</font><br/><br/>
+这种方式的缺点，很明显：<br/><br/><font color="#000000">1.因为是靠视觉暂留来保持显示的，导致SCM要不断刷新<br/>
+2.在较大的程序里面，管间切换时间不均匀会导致亮度不一<br/>
+3.耗费大量SCM的计算资源<br/>
+4.如果采用时钟中断，可以改善以上问题，但实际效果不理想<br/>
+（因为SCM工作频率不高，无法与现在的PC机CPU相比）</font><br/><br/>
+而马上出来的外部寻址法，将解决这些问题，嗯，卖个关子，最后来讲，先上电路了<br/><br/><font color="#0000ff">三。电路</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1dd98d44dda51e6d500ffe0c.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>这里就用两个数码管来演示了。多个的完全类推。<br/>
+因为这次大量使用了标签，所以截得大一点，可以看得清楚。<br/><br/>
+关于标签&#8230;我又想骂有些人写书不写清楚了&#8230;<br/>
+最早见到的时候,是教用总线&#8230;大致是让我们先画个总线,<br/>
+然后把支线连好,在支线上标号..云云..<br/><br/>
+这就导致我一直以为标号是用在总线上面。。。<br/>
+今天才发现总线就是一个可有可无的东西。。。<br/>
+标同样号的线直接就是连在一起的。。<br/>
+那干嘛要用总线呢？。。也许看起来NB一点吧。。<br/>
+其实不涉及布线，标下号就可以了。。<br/><br/>
+个人感觉：<br/><font color="#ff0000">标号出来的图确实清晰。。<br/>
+但是标号的效率不高，能够直连的就直连，可以节省些时间。。</font><br/><br/>
+连接思路为：<br/><font color="#ff0000">把273的CLK接到地址线(P2 or P0)与WR_BAR信号相或。<br/>
+把273的D端接到数据线(P0)。<br/>
+即可利用访问外部RAM同样的方式去寻址控制的8个灯。</font><br/><br/><font color="#0000ff">四。程序</font><br/><br/>
+org 00h<br/>
+ljmp func_main<br/><br/>
+org 30h<br/>
+func_main:<br/>
+       mov DPTR , #7fffh<br/>
+       mov A , #0fh<br/>
+       movx @DPTR , A <br/>
+       mov DPTR , #0bfffh<br/>
+       mov A , #0f0h<br/>
+       movx @DPTR , A <br/>
+sjmp $<br/><br/>
+end <br/><br/>
+这个，可谓很简单了，就是访问外部RAM的指令MOVX而已。<br/><font color="#ff0000">所以为啥要用汇编呢？因为汇编里面有（MOV,MOVC,MOVX，让人随时知道自己在干什么事）</font><br/><br/>
+这里，第二个数码管的地址是7fffh，第一个的地址是0bfffh。<br/><br/>
+这个地址的算法从电路图上来：<br/>
+a2标注的是P2.7(A15)，这个端口和WR_BAR端口取或，<br/>
+则在两个端口均为0的情况下，输出0。<br/>
+而74LS273的CLK为0的时候，将成功写入。<br/>
+WR_BAR 将随着  movx @DPTR , A 的执行自动变低。<br/>
+也就是这时候，只要a2为低，则片选成功，可以写入。<br/>
+执行完后，WR_BAR为高，则74LS273锁存。<br/><br/>
+那么让a2为低，就很简单了，其实不仅用7fffh可以，用7f00h之类的都可以。<br/><font color="#ff0000">只要知道原理是让a2为低就可以了。</font><br/><br/>
+不过这里是因为电路简单，当外接比较多的东西时，就不太好了。<br/>
+所以用7fffh比较标准一点，把其他片选都截止。<br/><br/>
+同理，a1也算出来就是0bfffh<br/><br/><font color="#0000ff">五。再谈优势</font><br/><br/><font color="#ff0000">1.直接使用外部寻址指令MOVX，代码简洁。<br/>
+2.不用刷新，赋值后直接锁存。<br/>
+3.演示使用了两个，当然可以接多个。<br/>
+4.显示亮度稳定。<br/>
+5.解放了SCM的计算资源。</font><br/><br/>
+缺点：<br/><font color="#ff0000">占用了外部RAM的地址空间</font>，但在没有外部RAM的情况下无所谓。<br/><br/>
+这种实现解决了一般实现的一些问题。<br/>
+不过使用的输出口数量并无优势。<br/><br/>
+我这里的实现，用的地址空间是不连续的，相当浪费。<br/>
+具体做的时候，还可以对<font color="#ff0000">地址译码</font>，节约地址资源。<br/><br/>
+要最大限度地节约输出口，那么可以使用<font color="#ff0000">串行</font>实现。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-08T14:06:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/08/74LS273%E8%BE%85%E5%8A%A9%E5%A4%96%E9%83%A8%E5%AF%BB%E5%9D%80%E7%9A%84%E6%95%B0%E7%A0%81%E7%AE%A1/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/08/74LS273%E8%BE%85%E5%8A%A9%E5%A4%96%E9%83%A8%E5%AF%BB%E5%9D%80%E7%9A%84%E6%95%B0%E7%A0%81%E7%AE%A1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/07/%E5%B8%AE%E4%BA%BA%E6%94%B9%E4%BB%A3%E7%A0%81%EF%BC%88%E5%88%A4%E6%96%AD%E5%B7%A5%E4%BD%9C%E7%B0%BF%E6%89%93%E5%BC%80%E5%90%A6%EF%BC%89%EF%BC%88VBA%29/" title="Previous Post: 帮人改代码（判断工作簿打开否）（VBA)">&laquo; 帮人改代码（判断工作簿打开否）（VBA)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/08/8255A%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E5%BA%94%E7%94%A8/" title="Next Post: 8255A的输入输出应用">8255A的输入输出应用 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

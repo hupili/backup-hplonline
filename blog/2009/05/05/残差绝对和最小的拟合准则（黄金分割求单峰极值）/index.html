@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>残差绝对和最小的拟合准则（黄金分割求单峰极值） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.5
+设有数据点xi,yi,i=1..n
+待拟合函数y=f(x)拟合：
+确定f(x)中所有参数的过程残差：
+数据点偏离拟合曲线的度量，即为ri = yi - f(xi)
+共有n个。残差绝对和最小准则： 当然还有其他拟合准则，像chebyshev准则，最小二乘准则 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/05/%E6%AE%8B%E5%B7%AE%E7%BB%9D%E5%AF%B9%E5%92%8C%E6%9C%80%E5%B0%8F%E7%9A%84%E6%8B%9F%E5%90%88%E5%87%86%E5%88%99%EF%BC%88%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2%E6%B1%82%E5%8D%95%E5%B3%B0%E6%9E%81%E5%80%BC%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">残差绝对和最小的拟合准则（黄金分割求单峰极值）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-05T13:48:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.5<br/><br/>
+设有数据点xi,yi,i=1..n<br/>
+待拟合函数y=f(x)<br/><br/><font color="#0000ff">拟合：</font><br/>
+确定f(x)中所有参数的过程<br/><br/><font color="#0000ff">残差：</font><br/>
+数据点偏离拟合曲线的度量，即为ri = yi - f(xi)<br/>
+共有n个。<br/><br/><font color="#0000ff">残差绝对和最小准则：</font><br/><div forimg="1"><img height="37" width="148" border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/91e013d860e4711632fa1c8c.jpg" small="0" class="blogimg"/></div></p>
+
+<br/>
+
+
+<p>当然还有其他拟合准则，像<font color="#ff0000">chebyshev准则</font>，<font color="#ff0000">最小二乘准则</font>。<br/><br/>
+最初看到这个准则的时候，没有多想，感觉确实很麻烦。<br/>
+正像书上说的。。绝对值是让人很恼火的事情。<br/>
+也正因为如此，人类喜欢最小二乘准则，<br/>
+平方在化数据为正的意义上和绝对值有异曲同工之妙。<br/><br/>
+今天看了黄金分割求单峰极值，发现书上用这个东西来解决该准则的一个例子。<br/>
+至于黄金分割求单峰极值，可以参考：<a href="http://hi.baidu.com/withyhs/blog/item/773d0d6f97f1dad280cb4a43.html" target="_blank">《单峰的黄金分割法》</a><br/><br/>
+多想了一下，这个解法其实要求很严格的：<br/><font color="#ff0000">1.在指定区间上，函数单峰<br/>
+2.函数必须在已知区间上有最大值（或最小值）</font><br/><br/>
+第2点很好办到，可以把初始区间弄得足够大。<br/>
+而第1点，就只有在某些特殊情况下可以讨论。<br/>
+拿书上这个例子：<br/><br/>
+y = c * x<sup>2<br/></sup>
+数据点：<br/>
+x 1 2 3<br/>
+y 2 5 8<br/>
+待定c<br/><br/>
+根据如上准则，写出要极小化的函数为：<br/>
+f(c) = |2-c| + |5-4c| + |8-9c|<br/><br/>
+用MATLAB画图出来，很有单峰的味道：<br/><div forimg="1"><img height="349" width="468" border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/e936db0048b00c32738b657b.jpg"/><br/>
+于是书上就用了黄金分割法来求这个极值。</div>
+不过书上没有证明函数<br/>
+f(c) = |2-c| + |5-4c| + |8-9c|<br/>
+的单峰性，总觉得很梗。<br/><br/>
+于是发出来给达人看看，求解。<br/>
+把这个式子抽象一下，是这样的：<br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/dd5566815817dbfbbd3e1e4f.jpg" small="0" class="blogimg"/></div></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-05T13:48:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/05/%E6%AE%8B%E5%B7%AE%E7%BB%9D%E5%AF%B9%E5%92%8C%E6%9C%80%E5%B0%8F%E7%9A%84%E6%8B%9F%E5%90%88%E5%87%86%E5%88%99%EF%BC%88%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2%E6%B1%82%E5%8D%95%E5%B3%B0%E6%9E%81%E5%80%BC%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/05/%E6%AE%8B%E5%B7%AE%E7%BB%9D%E5%AF%B9%E5%92%8C%E6%9C%80%E5%B0%8F%E7%9A%84%E6%8B%9F%E5%90%88%E5%87%86%E5%88%99%EF%BC%88%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2%E6%B1%82%E5%8D%95%E5%B3%B0%E6%9E%81%E5%80%BC%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/04/%E6%9F%90%E4%B8%AAC%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0%E7%9A%84%E8%AF%BB%E5%90%8E%E7%AC%94%E8%AE%B0/" title="Previous Post: 某个C优化笔记的读后笔记">&laquo; 某个C优化笔记的读后笔记</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/05/%E5%8A%A0%E6%9D%83%E8%B7%9D%E7%A6%BB%E5%92%8C%E5%BC%8F%E7%9A%84%E5%8D%95%E5%B3%B0%E8%AF%81%E6%98%8E%E5%8F%8A%E6%9E%81%E5%80%BC%E6%B1%82%E6%B3%95/" title="Next Post: 加权距离和式的单峰证明及极值求法">加权距离和式的单峰证明及极值求法 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

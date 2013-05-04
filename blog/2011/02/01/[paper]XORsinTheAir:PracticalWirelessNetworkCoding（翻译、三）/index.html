@@ -1,0 +1,421 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2011.2.1 5.2            
+包解码算法        解码算法比较简单。每个节点都维护有一个存储池，拥有所侦听到的包的拷贝，并且以包编号为key组织成一个hash表。收到编码包的时候，只需要在存储池中搜索n-1个已经侦听到的包，即可完成解码。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">[Paper] XORs in the Air: Practical Wireless Network Coding（翻译、三）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-01T00:24:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2011.2.1</p>
+
+
+<h2><span><span>5.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">包解码算法</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">解码算法比较简单。每个节点都维护有一个存储池，拥有所侦听到的包的拷贝，并且以包编号为</span><span>key</span><span style="font-family: 宋体;">组织成一个</span><span>hash</span><span style="font-family: 宋体;">表。收到编码包的时候，只需要在存储池中搜索</span><span>n-1</span><span style="font-family: 宋体;">个已经侦听到的包，即可完成解码。存储池会周期地（几秒）做垃圾回收。</span></p>
+
+
+
+
+<h2><span><span>5.3<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">伪广播</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">有两种工作模式：单播和广播。</span><span>COPE</span><span style="font-family: 宋体;">需要将包广播到附近的节点，所以很自然地想到使用广播模式。但广播模式有两个问题：低可靠；缺乏回退机制。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">工作在单播模式时，会立即</span><span>ack</span><span style="font-family: 宋体;">一个已经收到的包。</span><span>802.11</span><span style="font-family: 宋体;">通过</span><span>MAC</span><span style="font-family: 宋体;">层的重传机制保证可靠性。没有收到</span><span>ack</span><span style="font-family: 宋体;">会被当作拥塞的信号，发送方会使用指数的随机回退，这样使得多个节点可以共享介质。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">的广播模式，接收方是有多个，所以无法确定谁应该</span><span>ack</span><span style="font-family: 宋体;">。没有</span><span>ack</span><span style="font-family: 宋体;">，故无法重传和保证可靠性。同时，也无法侦测到冲突。如果有大量积压的节点，共享广播信道，它们会持续地用最高速率发送分组，导致非常高的冲突率。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">伪广播的实质是在</span><span>802.11</span><span style="font-family: 宋体;">单播包上捎带一个</span><span>XOR</span><span style="font-family: 宋体;">头，里面指明了该编码包的所有下一跳节点，而该单播包的</span><span>MAC</span><span style="font-family: 宋体;">目的地设为下一跳集中的一个即可。由于所有节点都是混杂模式，他们可以听到</span><span>MAC</span><span style="font-family: 宋体;">地址不属于自己的包。当收到包的时候，该节点检查</span><span>XOR</span><span style="font-family: 宋体;">头，如果自己在下一跳集中，则处理该包；否则将该包放入存储池中，当作机遇侦听得到的包。由于所有的包都是单播，可以利用</span><span>802.11</span><span style="font-family: 宋体;">的冲突检测和回退机制。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">伪广播比广播更可靠。因为一个单播包被重传的时候，增大了周围节点偷听到它的概率。</span></p>
+
+
+
+
+<h2><span><span>5.4<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">每跳</span><span>ack</span><span style="font-family: 黑体;">和重传</span></h2>
+
+
+
+
+<h3><span><span>5.4.1<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">原因？</span></h3>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">编码包要求下一跳集中的节点都发送</span><span>ack</span><span style="font-family: 宋体;">，有两个原因：发送放只能得到一个</span><span>MAC</span><span style="font-family: 宋体;">层的</span><span>ack</span><span style="font-family: 宋体;">，就是实际上设置为</span><span>MAC</span><span style="font-family: 宋体;">目的地址的那个节点，其他节点可能没有收到编码包；即使各节点收到编码包，可能由于发送节点的错误猜测，导致无法解码。</span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">标准解法是进行局部的</span><span>ack</span><span style="font-family: 宋体;">和重传。如果某编码包中的本地包没有收到</span><span>ack</span><span style="font-family: 宋体;">，</span><span>COPE</span><span style="font-family: 宋体;">会在超时后进行重传，很可能和其他的本地包一起编码。</span></p>
+
+
+
+
+<h3><span><span>5.4.2<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">异步</span><span>ack</span><span style="font-family: 宋体;">和重传</span></h3>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span>802.11</span><span style="font-family: 宋体;">在</span><span>MAC</span><span style="font-family: 宋体;">层实现了同步的</span><span>ack</span><span style="font-family: 宋体;">。如果对于每个</span><span>COPE</span><span style="font-family: 宋体;">编码的本地包，都进行同步的</span><span>ack</span><span style="font-family: 宋体;">的话，效率会非常低（需要额外的介质争用）。主要思想还是做捎带。接收节点可以将</span><span>ack</span><span style="font-family: 宋体;">累积起来，然后捎带在自己后续发出的编码包中。如果没有数据发送，那么节点会在控制包中周期地送出</span><span>ack</span><span style="font-family: 宋体;">。</span></p>
+
+
+
+
+<h2><span><span>5.5<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">防止</span><span>TCP</span><span style="font-family: 黑体;">乱序</span></h2>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">由于异步</span><span>ack</span><span style="font-family: 宋体;">，还有之前叙述的重传等原因，乱序是无法完全规避的。</span><span>COPE</span><span style="font-family: 宋体;">做了一个排序模块。但自己是收到包的目的，并且上层协议是</span><span>TCP</span><span style="font-family: 宋体;">的时候，会将包排序了再上交。这个需要利用到</span><span>TCP</span><span style="font-family: 宋体;">的序列号。如果收到的包并不会导致一个空洞，则直接交给上层，否则，进行积累，直到空洞被补上或者超时。</span></p>
+
+
+<h1><span><span>6<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">实现细节</span></h1>
+
+
+
+
+<h2><span><span>6.1<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">包格式</span></h2>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/e3f5b409e7e85f756a60fba3.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">图已经很详细了，主要就是三个部分：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">该编码包中，各本地包的信息，（包编号，下一跳）。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">接收报告，（源</span><span>IP</span><span style="font-family: 宋体;">，上一个</span><span>IP</span><span style="font-family: 宋体;">序列号，位图）</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span>Ack</span><span style="font-family: 宋体;">捎带。包含一个局部的</span><span>SEQ</span><span style="font-family: 宋体;">，用于局部</span><span>ack</span><span style="font-family: 宋体;">和重传。每个</span><span>ack</span><span style="font-family: 宋体;">条目包含，（邻居标识，上一个局部</span><span>ack</span><span style="font-family: 宋体;">编号，位图）</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">比较有意思的是，</span><span>COPE</span><span style="font-family: 宋体;">如何在一个条目中，实现多个序列号（</span><span>IP</span><span style="font-family: 宋体;">序列号或者</span><span>ack</span><span style="font-family: 宋体;">号）。</span><span>COPE</span><span style="font-family: 宋体;">使用（上一编号，位图）的表达方式。由于存储池中包的序列号和</span><span>ack</span><span style="font-family: 宋体;">的序列号都有数据局部性，所以使用上一编号</span><span>+</span><span style="font-family: 宋体;">位图可以压缩信息。以</span><span>ack</span><span style="font-family: 宋体;">的一个条目为例：</span><span>{A,50,01111111}</span><span style="font-family: 宋体;">，这个</span><span>ack</span><span style="font-family: 宋体;">表示该节点从</span><span>A</span><span style="font-family: 宋体;">收到了</span><span>50</span><span style="font-family: 宋体;">号，以及</span><span>43-49</span><span style="font-family: 宋体;">号，但</span><span>42</span><span style="font-family: 宋体;">号还是缺失的。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span><span>       </span></span><span style="font-family: 宋体;">虽然</span><span>COPE</span><span style="font-family: 宋体;">有累积</span><span>ack</span><span style="font-family: 宋体;">的机制，但并不保证链路级的可靠性。每个节点都只重传少数几次（默认为</span><span>2</span><span style="font-family: 宋体;">），然后放弃。</span></p>
+
+
+
+
+<h2><span><span>6.2<span style="font: 7pt &quot;Times New Roman&quot;;">            
+</span></span></span><span style="font-family: 黑体;">控制流程</span></h2>
+
+
+
+
+<p class="MsoNormal" style="text-align: center;" align="center"><span><span><img class="blogimg" src="http://hiphotos.baidu.com/hplonline/pic/item/2790d0b41f6687228ad4b2a3.jpg" border="0"/></span><br/><br/></span></p>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">如图，看就明白。</span></p>
+
+
+
+
+<h1><span><span>7<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">实验结论</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">（很多数据和图，太啰嗦，需要的时候查阅原文即可）</span></p>
+
+
+
+
+<h1><span><span>8<span style="font: 7pt &quot;Times New Roman&quot;;">      
+</span></span></span><span style="font-family: 宋体;">讨论和总结</span></h1>
+
+
+
+
+<p class="MsoNormal"><span><span>       </span></span><span style="font-family: 宋体;">这篇文章的</span><span>COPE</span><span style="font-family: 宋体;">主要是用于固定的无线</span><span>mesh</span><span style="font-family: 宋体;">网，所有节点并不是资源有限的。更普遍地，</span><span>COPE</span><span style="font-family: 宋体;">可以用于满足下列条件的无线多跳网：</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">内存。</span><span>COPE</span><span style="font-family: 宋体;">需要当前正在网络中传输的包，已经到达目的的包没有必要存储。存储容量的计算方法是：带宽</span><span>*</span><span style="font-family: 宋体;">延迟。比如</span><span>11Mb/s</span><span style="font-family: 宋体;">的环境下，当往返时间</span><span>50ms</span><span style="font-family: 宋体;">时（</span><span>RTT</span><span style="font-family: 宋体;">，</span><span>Round-Trip Time</span><span style="font-family: 宋体;">），大约需要</span><span>70kB</span><span style="font-family: 宋体;">的存储空间。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">全向天线。这是为了机遇侦听的顺利进行。</span></p>
+
+
+
+
+<p class="MsoNormal" style="margin-left: 41.75pt; text-indent: -21pt;"><span style="font-family: Wingdings;"><span>l<span style="font: 7pt &quot;Times New Roman&quot;;">        
+</span></span></span><span style="font-family: 宋体;">功率需求。当前的</span><span>COPE</span><span style="font-family: 宋体;">实现，并不优化节点的功率使用，并且假设节点的能量是无限制的。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span>COPE</span><span style="font-family: 宋体;">不仅使用与</span><span>Wifi</span><span style="font-family: 宋体;">的网络，还可以和其他</span><span>MAC</span><span style="font-family: 宋体;">协议一起使用，如</span><span>WiMax</span><span style="font-family: 宋体;">和</span><span>TDMA</span><span style="font-family: 宋体;">。将</span><span>COPE</span><span style="font-family: 宋体;">改造适应传感器网络也是可行的，不过有一些小问题。首先，在任意时间，传感器网络中只有一个子集的传感器处于唤醒状态。传感器网络可能更倾向于节能，而不是吞吐量提高。</span><span>COPE</span><span style="font-family: 宋体;">还可以用于蜂窝中继技术，在基站和移动设备中间建立中继站，形成多跳蜂窝中继网。实际上，爱立信已经动手了</span><span>~</span><span style="font-family: 宋体;">不过他们的中继站只会把双工流量混在一起，和</span><span>Alice-Bob</span><span style="font-family: 宋体;">那个例子一样。</span></p>
+
+
+
+
+<p class="MsoNormal" style="text-indent: 20.75pt;"><span style="font-family: 宋体;">学术界有若干方法增加无线网的吞吐，包括更精确的拥塞控制、更好的路由、有效的</span><span>MAC</span><span style="font-family: 宋体;">协议。</span><span>COPE</span><span style="font-family: 宋体;">是非常重要的一步，可以帮助我们认识到无线网的承载能力；即，如何最大化单次传输中的信息量。编码机制，通常用在应用层和物理层。</span><span>COPE</span><span style="font-family: 宋体;">和其他一些项目，</span><span>[7][21]</span><span style="font-family: 宋体;">，将编码引入网络中，并且可以和转发、路由、可靠交付等集成在一起。</span></p>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-01T00:24:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/" title="Previous Post: [paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）">&laquo; [paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/" title="Next Post: [paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

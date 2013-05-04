@@ -1,0 +1,1107 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline) 2009.3.20
+今天遇到了这样的错误：error C2079: &#8216;xxx&#8217; uses undefined class &#8216;yyy&#8217;
+不得不承认自己有土鳖的基因。本来是很普通的一件事情。
+自己居然不知道。。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/page/22">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/20/%E8%B6%85%E5%89%8D%E5%BC%95%E7%94%A8%E5%8F%8A%E9%87%8D%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%88C%2B%2B%EF%BC%89%28errorC2079%29%28VC6%29/">超前引用及重要注意事项（C++）(error C2079)(VC6)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-20T20:16:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline) 2009.3.20<br/><br/>
+今天遇到了这样的错误：<font color="#ff0000">error C2079: &#8216;xxx&#8217; uses undefined class &#8216;yyy&#8217;</font><br/><br/>
+不得不承认自己有土鳖的基因。本来是很普通的一件事情。<br/>
+自己居然不知道。。直到今天为了做作业才发现。唉。直入正题。<br/><br/>
+比如说，我们先定义一个b类再定义一个a类，a的一个成员就是b，如下：<br/><font color="#ff6600"><br/>
+class b{<br/>
+int i;<br/>
+};<br/><br/>
+class a {<br/>
+b val ;<br/>
+};</font><br/><br/>
+这显然是可以的。<br/><br/>
+如果这个时候，要把b的定义放到后面去，大家都知道在前面先声明b，那么：<br/><br/><font color="#ff6600">class b;<br/><br/>
+class a {<br/>
+b val ;<br/>
+};<br/><br/>
+class b{<br/>
+int i;<br/>
+};</font><br/><br/>
+这段对不对呢？如果不编译，直观感觉，我以前总以为是可以的。。<br/><br/>
+但其实是通过不了编译的。那么再改，把val换成对b的指针，这样：<br/><br/><font color="#ff6600">class b;<br/><br/>
+class a {<br/>
+b<font color="#ff0000"> <em></font>val ;<br/>
+};<br/><br/>
+class b{<br/>
+int i;<br/>
+};</font><br/><br/>
+然后就可以了。<br/><br/>
+那么，直接给出一条重要的结论：<br/><font color="#ff0000">超前引用不可使用类名来定义变量和函数的变量参数，只可用来定义引用或者指针。</font><br/><br/>
+要解释其实是很简单的，因为编译器在处理类的时候，要为他的成员分配空间。<br/><br/>
+如果我们用指针，那么直接分配4个字节就可以了，就像：<br/><font color="#ff6600"><br/>
+class b;<br/>
+class a;<br/><br/>
+class a {<br/>
+b </em>val ;<br/>
+};<br/><br/>
+class b{<br/>
+a *val ;<br/>
+};</font><br/><br/>
+但是，如果成员变量是类呢？？<br/><br/><font color="#ff6600">class b;<br/>
+class a;<br/><br/>
+class a {<br/>
+b val ;<br/>
+};<br/><br/>
+class b{<br/>
+a val ;<br/>
+};</font><br/><br/>
+这种情况下，就好比把两面镜子对着放置一样。。<br/><br/>
+当处理到a的val的时候，发现是个b，那么给b留出空间，<br/>
+为了知道给b留出多少空间，再看b，发现b的val是a，<br/>
+那么又需要再知道该给a多少空间。。。<br/><br/>
+这个道理其实是很显然的。<br/><br/>
+所以，VC编译的时候说<font color="#ff0000">&#8216;xxx&#8217; uses undefined class &#8216;yyy&#8217; 。 </font><br/><br/><font color="#ff0000">也许你觉得这些是很显然的事情，自己写的时候不会犯这种傻。<br/>
+那么要小心的就是STL了。比如说你list &lt;myClass&gt;。<br/><br/>
+而这个时候myClass是处于已定义状态，则没有问题。<br/>
+如果这个时候myClass是处于声明状态，则会有很大的问题。<br/><br/>
+而VC6对STL报错的囧况，想必用过的人都知道。<br/>
+往往都是一大堆，要从中提取有用的信息很不容易。</font><br/><br/>
+唉。。也许是我入门看的资料太瓜了。。虽然超前声明这个概念到处都提，<br/>
+却没怎么见有人专门指出这点。。看来有时间还是要从头学学国外名著了。。。<br/><br/>
+今天发现这个问题，也是因为我们助教给的一堆接口及实现。<br/><br/>
+我现在真的是严重怀疑他究竟有没有编译通过。。。改了我半天。。<br/><br/>
+就算他通过了，也是俨然一不标准的用法。明显是留有逻辑黑洞的隐患的。<br/><br/><font color="#ff0000">众所周知，VS可以编译好些VC不能编译的东西。。<br/>
+原因是放宽了对标准的审核</font><br/><br/><font color="#ff0000">又众所周知，DEV可以编译好些VC不能编译的东西。。<br/>
+原因是VC对C++的有些标准实现上有问题</font><br/>
+（比如using namespace std下的cout重载）<br/><br/>
+以前我对老师总是留一份怀疑的态度，而现在感觉要保持严重怀疑的态度。。。<br/><br/>
+这个戳瓢事浪费了我半个小时，自然也就不吝啬多花这半个小时来记之。<br/></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/17/CEdit%E7%9A%84%E5%A4%9A%E8%A1%8C%E6%98%BE%E7%A4%BA%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88VC6%29/">CEdit 的多行显示遇到的问题（VC6)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-17T19:26:00+08:00" pubdate data-updated="true">Mar 17<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.17<br/><br/>
+问题虽小，久不用之，自然会搞忘。<br/>
+调了不久，怕会再犯，当然要记下。<br/>
+那么小结一下各种情况，以后留个参考。<br/><br/>
+1.勾选multiline属性，这个是显然要的。<br/>
+2.勾选want return。如果没有的话，手动按回车键没有效果。<br/>
+3.Auto HScroll 如果选上了，那么不会自动换行<br/>
+4.<font color="#ff0000">换行应该是\r\n</font>。这个非常重要。因为在C控制台程序里面，我们习惯了一个\n<br/>
+而\r是CR，回车的意思（光标到行首）<br/>
+\n是LF，换行的意思（就是换新的行）<br/>
+而在windows窗口程序一类的里面，一般要求\r\n即CRLF来表示换行。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/17/KEILC%E7%BC%96%E8%AF%91%E7%9A%84TRICK%E6%8E%A2%E7%A9%B65%EF%BC%88%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%8416%E4%BD%8D%E8%BF%90%E7%AE%97%E5%99%A8%EF%BC%89/">KEIL C 编译的TRICK探究5（被忽略的16位运算器）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-17T14:50:00+08:00" pubdate data-updated="true">Mar 17<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.17<br/><br/>
+这里其实要谈到的是KEIL没有用到的一个技巧。<br/>
+不过既然已经有了这个系列了，就还是放在这个系列里面。<br/><br/>
+我们先来看下这句话KEIL是怎么做的。<br/>
+这里实现一个延迟。<br/><br/>
+       int i;<br/>
+       i = 0x0fff ; <br/>
+======= 翻译如下<br/><br/>
+       12:            int i; <br/>
+       13:            i = 0x0fff ;  <br/>
+C:0x0800       7FFF        MOV         R7,#0xFF<br/>
+C:0x0802       7E0F        MOV         R6,#0x0F<br/><br/>
+       14:            while (i &#8211; ); <br/>
+       15:      <br/>
+C:0x0804       EF          MOV         A,R7<br/>
+C:0x0805       1F          DEC         R7<br/>
+C:0x0806       AC06        MOV         R4,0x06<br/>
+C:0x0808       7001        JNZ         C:080B<br/>
+C:0x080A       1E          DEC         R6<br/>
+C:0x080B       4C          ORL         A,R4<br/>
+C:0x080C       70F6        JNZ         C:0804<br/><br/>
+======<br/><br/>
+其实很明显的，<font color="#ff0000">KEIL用了两个8位的寄存器来做16位的运算</font>。<br/><br/>
+至于这个方法，在前面的探究中已经有过介绍了。<br/><br/>
+不过这是不是最简省的方法呢。以前我也没想过，<br/>
+直到今天，看了PROTEUS的TUTORIAL里面的一个实例，<br/>
+才发现了一个很不错的方案。<br/><br/>
+如果对51汇编很熟悉的话，一定知道51里面的大部分指令都是8位的。<br/>
+就我所知的，16位的有两个:<br/><font color="#ff6600">mov DPTR , ??<br/></font>这是一个系列，另外一个就是<br/><font color="#ff6600">inc DPTR</font><br/>
+(<font color="#ff0000">很奇怪，为什么没有dec DPTR？？不过这里才显示出了工程师们的技巧</font>）<br/><br/><font color="#ff0000">因为DPTR是很重要的寻址核心寄存器。<br/>
+所以工程师发明了一个inc DPTR，这样方便我们连续的读取内存这类操作。</font><br/><br/>
+而我今天看到的这段代码就是这样的。<br/><br/>
+;Wait for number of milliseconds in DPTR<br/>
+wtms:      xrl DPL,#0FFh                     ;Can&#8217;t do DEC DPTR, so do the loop by forming 2&#8217;s complement<br/>
+       xrl DPH,#0FFh                     ;and incrementing instead.<br/>
+       inc DPTR<br/>
+wtms1:       mov TL0,#09Ch                     ;100 ticks before overflow = 1ms at 1.2MHz Clock<br/>
+       mov TH0,#0FFh       <br/>
+       mov TMOD,#1                     ;Timer 0 mode 1<br/>
+       setb TCON.4                     ;Timer 0 runs<br/>
+wtms2:       jnb TCON.5,wtms2       <br/>
+       clr TCON.4                     ;Timer 0 stops<br/>
+       clr TCON.5<br/>
+       inc DPTR<br/>
+       mov A,DPL<br/>
+       orl A,DPH<br/>
+       jnz wtms1<br/>
+       ret<br/><br/>
+其实解释得很详细了。再叙述一下。大致是：<br/><br/>
+这个模块实现的是把要延迟的时间（16位）放在DPTR中。然后延迟这么多时间。<br/><br/>
+一进去模块，首先把DPTR的高地位分别取反，再加一。<br/>
+这个就是<font color="#ff0000">对DPTR求补</font>（2&#8217;s complement）。<br/><br/>
+之后就用<font color="#ff0000">inc DPTR的操作来代替dec DPTR的操作了</font>。<br/>
+嗯，这里用到了补码的简单性质。<br/><br/>
+可见人的思维还是在编译器之上的，呵呵，所以，如果让我们再来写<br/><font color="#ff6600">       int i;<br/>
+       i = 0x0fff ; <br/>
+       while (i &#8211; ); <br/>
+就可以这样了：<br/>
+;       int i;<br/>
+mov DPL , #0ffh<br/>
+;       i = 0x0fff ;<br/>
+mov DPH , #0fh<br/>
+xrl DPL , #0ffh<br/>
+xrl DPH , #0ffh<br/>
+;       while (i &#8211; ); <br/>
+<em>lp:<br/>
+inc DPTR<br/>
+mov A , DPL<br/>
+orl A , DPH<br/>
+jnz </em>lp </font><br/><br/><font color="#ff0000">顺便一提的是cpl A可以，但是没有cpl DPH之类的，所以只能用异或，<br/>
+与全一异或就相当于取反了。</font><br/><br/>
+然后我这里取了反，没有加1，而放在_lp下面，<br/>
+是为了更简洁一点。因为while( i &#8211; )是先判断i的。<br/><br/>
+可见DPTR是一个不错的，但是常被忽略的16位累加器。<br/>
+不过上面提到的这种思路，要看具体的应用环境了。<br/><font color="#ff0000">如果循环变量仅仅是控制次数的话才可以。否则可能有其他意外作用。</font></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/16/KEILC%E7%BC%96%E8%AF%91%E7%9A%84TRICK%E6%8E%A2%E7%A9%B64%EF%BC%88%E7%BB%9D%E5%AF%B9%E8%AE%BF%E9%97%AE%EF%BC%89/">KEIL C 编译的TRICK探究4（绝对访问）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-16T21:32:00+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>因为隔了有这么远了，所以给个第3回的传送门。<br/><a href="http://hi.baidu.com/hplonline/blog/item/cb5e40edd67c8cdcb21cb166.html" target="_blank">hi.baidu.com/hplonline/blog/item/cb5e40edd67c8cdcb21cb166.html</a><br/>
+前三篇都是连在一起的，比较好找。<br/><br/>
+==================================================================<br/><br/>
+(hplonline)2009.3.16<br/><br/>
+从汇编上手的人，可能对KEIL C的一些东西感到疑惑。<br/>
+因为我们汇编里面用<font color="#ff0000">MOV,MOVC,MOVX</font>来区分访问的内存区域。<br/>
+而C里面隐藏很多内存相关的细节。<br/>
+虽然有指针这个东西，但是如果我定义一个char *p，那么他究竟指向哪呢？<br/>
+内部RAM，ROM，外部RAM？这一下就没了个统一的标准。<br/><br/>
+那么要叙述这个事情，就直接用前面8255A的练习图了。<br/><a href="http://hi.baidu.com/hplonline/blog/item/cc2e5bda324f2cd3b7fd4812.html" target="_blank">hi.baidu.com/hplonline/blog/item/cc2e5bda324f2cd3b7fd4812.html</a><br/><br/>
+这回用C程序：<br/><br/></p>
+
+<h1>include &lt;reg51.h&gt;<br/></h1>
+
+<h1>include &lt;absacc.h&gt;<br/><br/></h1>
+
+<h1>define PORTA 0x73fc<br/></h1>
+
+<h1>define PORTB 0x77fd<br/></h1>
+
+<h1>define PORTC 0x7bfe<br/></h1>
+
+<h1>define CONTROL 0x7fff<br/></h1>
+
+<h1>define MOD_AoutBin 0x82<br/><br/></h1>
+
+<p>void main(){<br/>
+       unsigned char tmp ;<br/><br/>
+       XBYTE[CONTROL] = MOD_AoutBin ;       <br/>
+       while (1){<br/>
+              tmp = XBYTE[PORTB] ;<br/>
+              XBYTE[PORTA] = tmp ;<br/>
+       };<br/>
+}<br/><br/>
+看起来可谓简单。不过这里不讲8255A的东西。要看的就是这个XBYTE<br/><br/>
+这个东西在<font color="#ff0000">#include &lt;absacc.h&gt;</font>里面有。<br/><font color="#0000ff">absolute access（绝对访问）</font><br/><br/>
+其中的定义：<br/><font color="#ff0000">#define XBYTE ((unsigned char volatile xdata <em>) 0)</font><br/><br/>
+这个宏返回的相当于就是一指针，而类似于<br/><font color="#ff0000">XBYTE[XXX] = YYY </font><br/>
+的用法。则是都很熟悉的脱指针引用了。<br/><br/>
+unsigned char volatile 这个应该是很常见的。<br/>
+前面是无符号字符型，<br/><font color="#ff0000">volatile是多变的意思，用这个修饰变量以避免编译器优化。</font><br/>
+具体的网上的介绍颇多。<br/><br/>
+那么关键的地方其实就是xdata </em>，他表达的是这个指向的变量放在xdata区域。<br/><br/>
+比如写一句下面的话<br/>
+       unsigned char xdata  p ;<br/>
+       p = 1 ;<br/>
+编译过后<br/>
+C:0x0803       7401        MOV         A,#0x01<br/>
+C:0x0805       F0          MOVX        @DPTR,A<br/>
+看到了吧，这里就是很熟悉的汇编访问外部RAM的方法了。<br/><br/>
+那么如果直接一个xdata p = 1，是什么情况呢？<br/>
+C:0x0800       900000      MOV         DPTR,#C_STARTUP(0x0000)<br/>
+C:0x0803       E4          CLR         A<br/>
+C:0x0804       F0          MOVX        @DPTR,A<br/>
+C:0x0805       A3          INC         DPTR<br/>
+C:0x0806       04          INC         A<br/>
+C:0x0807       F0          MOVX        @DPTR,A<br/>
+可见这里是一个short int的操作，分了两次赋值。<br/>
+说明默认的变量类型是short int。<br/><br/>
+嗯，差不多就这样吧。<br/><br/>
+同时还有data , pdata , code 等 ，所有含义摘抄如下：<br/><br/><font color="#ff6600">data       可以直接存取的片内数据存储区（128字节）<br/>
+bdata       可以位寻址（Bit Addressable）的片内存储区，允许位与字节混合访问（16字节）<br/>
+idata       以 Mov @Rn 存取的片内数据存储区（256字节）<br/>
+pdata       以 MOVX @Rn 存取的外部数据存储区，分页寻址，（256字节）<br/>
+xdata       以 MOVX @DPTR 存取的外部数据存储区（64KB）<br/>
+code       以 MOVC @A+DPTR 读取的程序内存，程序代码存储区（64KB）</font></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/16/555%2B4017%E6%B5%81%E6%B0%B4%E7%81%AF/">555+4017流水灯</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-16T17:16:00+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.16<br/><br/>
+我想说这个又没啥技术含量了。。就像是圆了儿时的一个梦。。。<br/>
+关于这个故事，我就后面来讲吧。。想那时是多么的戳瓢啊。。。<br/><br/>
+做这个只要知道两回事：<br/><font color="#ff6600">1.555用来定时，用它产生某种方波，相当于有的时钟信号<br/>
+2.4017是个十进制计数器，按照时钟信号从10个口依次输出</font><br/><font color="#ff0000">（当然，知道更多的事情是有好处的）</font><br/><br/>
+那么，用555来产生占空比50%的，周期1S的始终信号的原理图就这样了：<br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/963c2d7f3691592929388aae.jpg"/></div>
+至于怎么得到的，我是用别人写好的软件来算的。。。。<br/>
+说实话很好用。。不过没有名字。汗。<br/><font color="#ff0000">（可以给我留言发过去给你）</font><br/><br/>
+整个图用PROTEUS画出来就是：<br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/b8068013df993cf1f6039eae.jpg"/></div>
+嗯，4017这边是我喜欢的部分。。所以可以详细说下。<br/><br/><font color="#ff6600">CLK时钟信号。<br/>
+E，低为计数使能。<br/>
+MR，高为复位。<br/>
+Q0-Q9是十进制输出。<br/>
+CO,carry-out是进位输出。</font><br/>
+（在我这里仿真的时候一直为1，跟手册上的时序描述很有出入。。求解）<br/><br/>
+于是这样一个流水灯就做好了。。<br/>
+之所以想起这一茬事情，是因为昨天做的那个逻辑流水灯。<br/>
+不得不承认。。我觉得昨天那个东西，比今天这个有创意多了。<br/>
+因为今天这个东西网上到处都有，而且我们学校的ED入门第一课绝对是这个。<br/>
+不过<font color="#ff0000">这个电路的实现比较成熟，用来做刷新比昨天的那种更好。</font><br/><br/>
+那么，其实我前面说的故事就是这个第一课了。。。<br/><br/>
+=====================?<br/><br/>
+当时是大一进校不久，说白了啥都不懂，有个讲电子设计的讲座，于是去听了。<br/>
+第一课我都说了，就是用555和4017做个流水灯。。<br/>
+听完了，其实还是啥都不知道，但同样遇到了两个跟我一样的大一小毛孩。。<br/>
+于是就这样组了一个队，参加那个XX热身赛。<br/><br/>
+当时是让我们自己去查找详细的资料，然后写一份报告，就可以进他们实验室了。<br/>
+然后他们实验室提供这些材料，也有人指导让我们做。。。<br/><br/>
+结果，折腾了一个星期，楞是没有整出个啥东西来。。到网上，到处都找不到资料。汗啊。。<br/>
+现在让我来想也真是没想通这点。。现在看着到处都是的东西，当时怎么就找不到呢。。<br/><br/>
+于是。。三个雄心勃勃的娃就这样交了份白卷。。。没有报告当然也没法进去做。。。<br/>
+如此丢脸的一件事情，对我幼小的心灵，那是相当的摧残啊。。<br/><br/>
+如今。。单片机也玩了有些时日了。。。终于实现了当年这个戳瓢的梦想，非常感动。。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/15/74LS164%E5%AE%9E%E7%8E%B0%E9%97%AD%E7%8E%AF%E9%80%BB%E8%BE%91%E6%8E%A2%E9%92%88%E6%B5%81%E6%B0%B4%E7%81%AF/">74LS164实现闭环逻辑探针流水灯</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-15T17:06:00+08:00" pubdate data-updated="true">Mar 15<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.15<br/><br/>
+用到的东西很简单，只是没怎么看人做过。所以这样搞一回。<br/>
+当然这样玩不仅仅是有趣，可以延伸到其他地方的应用，我后面会说。<br/><br/><font color="#0000ff">一。电路</font><br/><br/><div forimg="1"><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1e590524c6118a12c99559a5.jpg" small="0" class="blogimg"/></div>
+有些元件可能平常用得很少。<br/>
+1.在debugging tools里面的logicprobe，就是最右边的“灯”<br/>
+2.CAPACITOR，这个东西是可以动态显示电压状态的，就是左下角的那个电容。<br/><font color="#ff0000">（放上去了记得调工作电压，否则可能没有效果）</font><br/><br/><font color="#0000ff">二。分析</font><br/><br/>
+呵呵，这次没有程序，只有一个电路就可以了。<br/><br/>
+先说74LS164的移位特性，前面也用到过若干回了，可以参考。<br/><br/><font color="#ff6600">移位寄存控制数码管</font><br/>
+http://hi.baidu.com/hplonline/blog/item/e7ce61602ec7914ceaf8f882.html<br/><br/><font color="#ff6600">串行控制流水灯</font><br/>
+http://hi.baidu.com/hplonline/blog/item/967eaec2c20ad0130ff47762.html<br/><br/>
+然后我相信这图往这里一放就很了然了。<br/>
+把最后一个输出口接到164的输入上面，那么，<br/>
+164输出口的状态就会不断地循环了。（所以说流水灯嘛）<br/>
+然后我们在164的C1位置加上一个clock信号就OK了，我这里选的1S。<br/><br/>
+那么，用递推过程打个比方，<font color="#ff0000">我们现在已经解决了递推关系式了。<br/>
+可是一个递推过程要成立，还差一个东西，就是初值。</font><br/><br/>
+所以要想办法，在某个时候输入一个1进去，这样它才能顺着174流动。<br/><br/>
+出于实验目的的简洁解决方案就是，让174的&amp;口经过开关与电源相连。<br/>
+这样你就可以适时得开启和闭合开关，以达到各种状态。<br/><br/>
+不过为了有实用价值，我这里要让电路接通后自动完成这一些。<br/><br/>
+根据需求，在一开始的时候输出1，之后成为高阻态（类似于开关断开，而不是输出0）<br/><br/>
+74LS373可以满足这个要求<br/>
+（也许还有其他更好的方案，但是我初学，知道的东西很少，姑且这样了）<br/><br/>
+我们把LE,D0接到电源，就是1了。<br/><br/>
+然后用RC电路来控制OE_bar的状态。<br/>
+OE = 0 的时候正常输出1，OE = 1 的时候成高组态。<br/><br/>
+改变RC的值可以获得不同的时间特性 ，这个不是这里的重点了。<br/><br/><font color="#0000ff">三。应用</font><br/><br/>
+我都说了。。这么玩绝对不是为了好看或者有趣。<br/><br/><font color="#ff0000">这个演示实现了一种无需CPU干预的刷新机制。<br/>
+后面将沿用这种机制去解决更复杂的问题。</font></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/15/ADC0808%28proteus%29/">ADC0808(proteus)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-15T15:08:00+08:00" pubdate data-updated="true">Mar 15<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.15<br/><br/>
+练习一下ADC0808而已<br/><br/><font color="#0000ff">一。电路</font><br/><br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1ece48a75f119ab4d0435849.jpg"/></div>
+下面简单归纳一下：<br/><br/>
+IN0-IN7，8个电压输入口<br/><br/>
+CBA 构成的二进制数为 IN0-IN7的选择<br/>
+当ALE为1时，可进行选址，0时锁址<br/><br/><font color="#ff0000">VREF为参考电压，一定要接上否则无法进行AD</font><br/><br/><font color="#ff0000">OUTn表示的是2<sup>(-n)位上为0还是1</font><br/></sup>
+那么当OUTn全为1的时候，表示的输入电压为参考电压的255/256<br/>
+（这点是很多书上没有提到的，他们直接把OUTn当成一个二进制数的整数部分来使用，<br/>
+而OUT1当作最高位，OUT7为最低位，给人造成一定迷惑，但是手册上提到了这个。<br/>
+之所以结果正确，是因为对这个左移8位就行了，但理解上是有区别的)<br/><br/>
+OE，1的时候为可输出状态，0的时候为高阻态<br/><br/>
+EOC, end of conversion<br/>
+0表示正在转换，1表示转换结束<br/><br/>
+START，设置为1将清空所有内部寄存器，<br/>
+再置为0则开始新的转换，<font color="#ff0000">转换过程中应始终保持为0</font><br/><br/><font color="#0000ff">二。程序</font><br/><br/></p>
+
+<h1>include &lt;reg51.h&gt;<br/><br/></h1>
+
+<p>sbit OE = P3 ^ 7 ;<br/>
+sbit ALE = P3 ^ 6 ;<br/>
+sbit ST = P3 ^ 5 ;<br/>
+sbit EOC = P3 ^ 4 ;<br/><br/>
+void main(){<br/>
+      ALE = 1 ;<br/>
+      ALE = 0 ;<br/>
+      while(1){<br/>
+            ST = 1 ;            <br/>
+            ST = 0 ;<br/>
+            while ( ! EOC ) ;<br/>
+            OE = 1 ;<br/>
+            P2 = P1 ;<br/>
+            OE = 0 ;      <br/>
+      }<br/>
+}<br/><br/>
+我这里，通过电路上ABC接地直接选址IN0了。程序开始只需要对ALE进行开启和关闭就行。<br/>
+转换过程为，先对ST置1，清空寄存器，然后回0，开始转换，等待转换结束信号（EOC)<br/>
+OE,置1，开启输出数据，进行相应操作，OE回0，输出端变为高阻态。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/14/whu1412%EF%BC%88MolecularWeightCalculator%EF%BC%89%E9%80%92%E5%BD%92%E4%B8%8B%E9%99%8D%EF%BC%9F/">whu1412（Molecular Weight Calculator）递归下降？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-14T19:14:00+08:00" pubdate data-updated="true">Mar 14<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.14<br/><br/>
+原题地址：<br/>
+http://acm.whu.edu.cn/oak/problem/problem.jsp?problem_id=1412<br/><br/>
+就是让求分子式的质量（是这么说吗。。丢了化学快两年了。。）<br/>
+题意简单吧。。据说要用到递归下降+高精度。<br/><br/>
+递归下降，暂时不清楚。。按照自己的想法写了个。<br/>
+一个处理就是，所有数据乘100，即可整数运算。<br/>
+然后就是扫描字符串的工作了，<font color="#ff6600">遇到左括号&#8221;(&#8220;的时候递归<br/>
+遇到右括号&#8221;)&#8221;的时候回溯</font>。。。<br/><br/>
+我这边写逻辑部分，留了个BIGINT给队友实现去。（不会JAVA就是惨啊。。）<br/>
+下面这样就可以过样例了。<br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>const int MAXN = 210 ;<br/><br/>
+typedef int BIGINT ;<br/><br/>
+typedef struct molecule_type{<br/>
+       char name[3] ;<br/>
+       int weight;<br/>
+       BIGINT num ;<br/>
+}MOLECULE;<br/><br/>
+typedef struct formula_type{<br/>
+       int num[MAXN];<br/>
+}FORMULA;<br/><br/>
+MOLECULE molecule[MAXN];<br/>
+int n,m ;<br/><br/>
+bool isBig(char ch){<br/>
+       return ch &gt;= &#8216;A&#8217; &amp;&amp; ch &lt;= &#8216;Z&#8217; ;<br/>
+}<br/><br/>
+bool isSmall(char ch){<br/>
+       return ch &gt;= &#8216;a&#8217; &amp;&amp; ch &lt;= &#8216;z&#8217; ;<br/>
+}<br/><br/>
+bool isNum(char ch){<br/>
+       return ch &gt;= &#8216;0&#8217; &amp;&amp; ch &lt;= &#8216;9&#8217; ;<br/>
+}<br/><br/>
+int getId(char ch){<br/>
+       int i ;<br/>
+       for ( i = 0 ; i &lt; n ; i ++ ) <br/>
+              if (molecule[i].name[0] == ch &amp;&amp; molecule[i].name[1] == 0 )break;<br/>
+       return i;<br/>
+}<br/><br/>
+int getId(char ch1 , char ch2){<br/>
+       int i ;<br/>
+       for ( i = 0 ; i &lt; n ; i ++ ) <br/>
+              if (molecule[i].name[0] == ch1 &amp;&amp; molecule[i].name[1] == ch2 )break;<br/>
+       return i;<br/>
+}<br/><br/>
+char <em>pos;<br/><br/>
+FORMULA recursion(){<br/>
+       FORMULA ftmp , tt ;<br/>
+       int id ;<br/>
+       memset(ftmp.num,0,sizeof(ftmp.num));<br/>
+       while (</em>pos&amp;&amp;<em>pos!=&#8217;)&#8217;){<br/>
+              if ( </em>pos == &#8216;(&#8217; ){<br/>
+                     pos ++ ;<br/>
+                     tt = recursion();<br/>
+                     for ( id = 0 ; id &lt; n ; id ++ )ftmp.num[id] += tt.num[id] ;<br/>
+                     continue ;<br/>
+              }<br/>
+              if (isBig(<em>pos)&amp;&amp;isSmall(pos[1])){<br/>
+                     id = getId(</em>pos,pos[1]) ;<br/>
+                     pos += 2 ;<br/>
+              }else{<br/>
+                     id = getId(<em>pos);<br/>
+                     pos ++ ;<br/>
+              }<br/>
+              if ( isNum(</em>pos)){<br/>
+                     ftmp.num[id] += <em>pos - &#8216;0&#8217; ;<br/>
+                     pos ++ ;<br/>
+              }else{<br/>
+                     ftmp.num[id] ++ ;<br/>
+              }<br/>
+       }<br/>
+       if ( </em>pos == &#8216;)&#8217; ){<br/>
+              pos ++ ;<br/>
+              if (isNum(<em>pos)){<br/>
+                     for ( id = 0 ; id &lt; n ; id ++ )ftmp.num[id] = ftmp.num[id] * (</em>pos - &#8216;0&#8217;);<br/>
+                     pos ++ ;<br/>
+              }<br/>
+       }<br/>
+       return ftmp; <br/>
+}<br/><br/>
+BIGINT cal(char <em>s){<br/>
+       int i;<br/>
+       BIGINT ans = 0 ;<br/>
+       pos = s ;<br/>
+       FORMULA f = recursion();<br/>
+       for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+              molecule[i].num = f.num[i] ;<br/>
+              ans = ans + f.num[i] * molecule[i].weight ;<br/>
+       }<br/>
+       return ans ;<br/>
+}<br/><br/>
+int main(){<br/>
+       int T ;<br/>
+       int i ;<br/>
+       int tmp1,tmp2 ;<br/>
+       char s[600];<br/>
+       scanf(&#8220;%d&#8221;,&amp;T);<br/>
+       while (T &#8211; ){<br/>
+              scanf(&#8220;%d&#8221;,&amp;n);<br/>
+              for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+                     scanf(&#8220;%s %d.%d&#8221;,molecule[i].name,&amp;tmp1,&amp;tmp2);<br/>
+                     molecule[i].weight = tmp1 * 100 + tmp2 ;<br/>
+              }<br/>
+//              for ( i = 0 ; i &lt; n ; i ++ )printf(&#8220;%s %d\n&#8221;,molecule[i].name,molecule[i].weight);<br/>
+              scanf(&#8220;%d&#8221;,&amp;m);gets(s);<br/>
+              while(m &#8211; ){<br/>
+                     gets(s);<br/>
+                     BIGINT ans = cal(s);<br/>
+                     printf(&#8220;%d.%d &#8220;,ans/100,ans%100 );<br/>
+                     for ( i = 0 ; i &lt; n ; i ++ )if ( molecule[i].num != 0 ){<br/>
+                            printf(&#8220;%s[%d] &#8220;,molecule[i].name,molecule[i].num);<br/>
+                     }<br/>
+                     putchar(&#8216;\n&#8217;);<br/>
+              }<br/>
+       }<br/>
+       return 0 ;<br/>
+}<br/><br/>
+之后就是很怨念的整合。。<br/><br/>
+因为这里做逻辑的时候用的int 来，随便怎么递归都没问题。<br/>
+一换成高精度类。。一上就<font color="#ff0000">stack overflow</font>。。惨啊。。<br/><br/>
+于是把所有高精度有关的都放到全局空间中去。。<br/><br/>
+交一下。。MLE。。<br/><br/>
+因为高精度按照每节一个十进制位来存的，空间利用不充分。。<br/><br/>
+最后是用的MOD 100000 过的。。<br/>
+应该说很险。。因为<font color="#ff0000">400</em>100*100000超过signed int 的值</font>了。<br/>
+不过当时很忙，没空改成unsigned的就硬上了。<br/><br/>
+唉。。最后1个半小时就在整合中度过。。。<br/>
+居然在17：02的时候交上去了一个。。而且还过了。。<br/><br/>
+上面的int写法能够表达思路了。。<br/>
+整好的就不拿出来了，太丑陋了。。<br/><br/><font color="#ff6600">既然大牛提到了递归下降，那么啥时候也要去学下编译原理了，呵呵。<br/>
+话说网上有很多的分子式计算工具，不过ACM的题就是数据搞得很大。。<br/></font></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/13/LCD_AMPIRE12864%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%EF%BC%88PROTEUS%EF%BC%89/">LCD_AMPIRE12864的简单使用（PROTEUS）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-13T20:10:00+08:00" pubdate data-updated="true">Mar 13<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.13<br/><br/><font color="#0000ff">一。原因</font><br/><br/>
+练习LCD，选的是PROTEUS里面的AMPIRE12864。<br/>
+并没有实现什么复杂的功能，因为我只想<font color="#ff0000">给出几个常用接口</font>而已。<br/><font color="#ff0000">一旦知道了怎样在屏幕的指定位置画上一个点，<br/>
+那么在屏幕上画任何的图形都只是简单的算法而已。</font><br/>
+而网上搜了很久，居然没有找到AMPIRE12864的手册，郁闷。<br/>
+搜出几个页面，上面也是条留言：<br/><font color="#ff6600">谁有AMPIRE12864的资料啊，能发我一份吗，我的邮箱：XXXXX。。。</font><br/><br/>
+而乱逛中看到了一份成品，显示了若干文字，<br/>
+因为找不到对应的手册，深究起来就有些吃力了。<br/>
+于是拿想通了，花点时间，把基本功能<font color="#ff0000">黑箱</font>出来，<br/>
+至少也给后来者留点简洁的上手资料。<br/><font color="#ff0000">（后面的内容属于分析结果，也许叙述上并不标准，这点各位斟酌采纳）</font><br/><br/><font color="#0000ff">二。电路</font><br/><br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/4411b8fbaf2157034e4aea27.jpg"/></div></p>
+
+<br/>
+
+
+<p>先说AMPIRE12864的组成：<br/>
+可以看成是两个64<em>64的屏幕，<br/>
+通过CS1,CS2两个片选信号来控制，这两个都是低有效（元件面板上没反映出来这一点）<br/><br/>
+RST是低有效，所以直接连到电源了（开始因为没连这个整了半天没反映。。。）<br/>
+实际应用的时候应该还是要像单片机那样做个复位电路。<br/><br/>
+DBx，是并行的指令/数据输入/输出端。<br/><br/>
+E是使能信号。控制时，应先置1，然后设置DB，最后E回0，结束一轮的信息交换。<br/><br/>
+RW，低为写入，高为读出。<br/><br/>
+RS ， 低为指令，高为数据。<br/><br/>
+然后要说的就是坐标的问题：<br/><font color="#ff0000">对于每一片（左边和右边），分成8行</em>64列，这是光标（想成一根8位的竖线）的放置单位。<br/>
+而每一行的高度为8位，从上到下对应的是DB的低位到高位</font><br/><br/><font color="#ff0000">每写一个数据，光标自动向后移动，到行末的时候返回下一行行首</font><br/>
+（就跟平时用的控制台类似）<br/><br/>
+有了这些之后，如果能拿到相应的手册，知道指令是怎么回事，就可以实现想要的功能了。<br/><br/><font color="#0000ff">三。程序</font><br/><br/>
+//并行控制的AMPIRE12864<br/></p>
+
+<h1>include &lt;reg51.h&gt;<br/><br/></h1>
+
+<p>sbit CS1 = P3 ^ 4 ;       //片选1<br/>
+sbit CS2 = P3 ^ 3 ;       //片选2<br/>
+sbit RW = P3 ^ 1 ;       //读写，高为读，低为写<br/>
+sbit RS = P3 ^ 2 ;       //代码/数据，低为代码，高为数据<br/>
+sbit E = P3 ^ 0 ;       //使能信号<br/>
+sfr DB = 0xA0 ; //P2地址，数据端口<br/><br/>
+typedef unsigned char uchar ;<br/><br/>
+void busy_wait();<br/>
+void select(uchar i);<br/>
+void send(uchar type , uchar content);<br/></p>
+
+<h1>define send_cmd(x) send(0,(x))<br/></h1>
+
+<h1>define send_data(x) send(1,(x))<br/></h1>
+
+<p>void init();<br/>
+void setpos(uchar row , uchar col);<br/><br/>
+void main(){<br/>
+       uchar i;<br/>
+       <br/>
+       select(2);<br/>
+       init();<br/>
+       //设置显示位置<br/>
+        setpos(2,30);<br/>
+       //连续输出32个字节<br/>
+       for ( i = 0 ; i &lt; 32 ; i ++ )send_data(0x0f);<br/>
+       setpos(3,30);<br/>
+       for ( i = 0 ; i &lt; 32 ; i ++ )send_data(0xf0);              <br/>
+       while(1);<br/>
+}<br/><br/>
+//片选，0为第一片，1为第2片<br/>
+void select(uchar i){<br/>
+       switch(i){<br/>
+       case 0 : CS1 = 0 ; CS2 = 1 ;break;<br/>
+       case 1 : CS1 = 1 ; CS2 = 0 ;break;<br/>
+       case 2 : ;<br/>
+       default: CS1 = 0 ; CS2 = 0 ;<br/>
+       }<br/>
+}<br/><br/>
+//忙等待，直到LCD处理完为止<br/>
+//每个命令前都应当调用<br/>
+//以保证不会紊乱<br/>
+void busy_wait(){<br/>
+       uchar tmp;<br/>
+       for (tmp = 0 ; tmp &lt; 200 ; tmp ++ );<br/><font color="#ff0000">//(2009.5.21补充，return前面是延迟，后面是读忙标志。<br/>
+//正常的话，两种方式都可以达到效果的。<br/>
+//只要在写命令前保证前面的命令已经执行完就行了。<br/>
+//由于仿真的故障，这里就用了延迟。<br/>
+//欢迎在硬件上做出来的同学更正下面的读忙标志代码段。</font><br/>
+       return ;<br/>
+       RS = 0 ;<br/>
+       RW = 1 ;<br/>
+       do{<br/>
+              //因为读状态完成时间为0us，<br/>
+              //所以可以连续不断地读<br/>
+              DB = 0x00 ;<br/>
+              E = 1 ;<br/>
+              //最高位为BF,1为空闲，0为忙<br/><font color="#ff0000">//(2009.4.16补充，此处貌似跟手册不一致，以及proteus有点问题，回头来看 ）</font><br/>
+              tmp = DB &amp; 0x80 ;<br/>
+              E = 0 ;<br/>
+       }while ( !tmp ) ;       <br/>
+}<br/><br/>
+void init(){<br/>
+       send_cmd(0x3f);       //扩充指令集动作       <br/>
+}<br/><br/>
+//发送消息：<br/>
+//type = 0 , 为命令消息<br/>
+//type = 1 ，为数据消息<br/>
+void send(uchar type , uchar content){<br/>
+       switch(type){<br/>
+       case 0:RS = 0 ;break;<br/>
+       case 1:RS = 1 ;break;<br/>
+       default:return ;<br/>
+       }<br/>
+       busy_wait();<br/>
+       RW = 0 ;<br/>
+       E = 1 ;<br/>
+       DB = content ;<br/>
+       E = 0 ;<br/>
+}<br/><br/>
+//设置显示位置<br/>
+//row:0..7<br/>
+//col:0..63<br/>
+void setpos(uchar row , uchar col){<br/>
+       if ( row &lt; 0 || row &gt;= 8 || col &lt; 0 || col &gt;= 64 ) return ;<br/>
+       send_cmd(0xb8+row);<br/>
+       send_cmd(0x40+col);       <br/>
+}<br/><br/>
+程序结合前面的说明应该能看懂了。。。<br/>
+我也只能黑箱到这个程度了。<br/>
+虽然一般LCD的指令，远远不只这些，但是我想基本功能已经够了。<br/>
+就像前面说的，<font color="#ff0000">有了上面的这些函数之后，<br/>
+就能在指定的地方画出一个点，</font><br/>
+而要画任何形状的东西都很容易了。<br/>
+把程序拿去，改改main函数里面的几条语句，<br/>
+试试画点别的进去，就可以理解前面描述的坐标系统了。<br/><br/><font color="#0000ff">四。体会</font><br/><br/>
+很多人到网上，一来就要别人做个功能强大的东西。<br/>
+真不知道拿去干什么的。。或许想简单点交个作业还是啥的吧。。<br/><br/>
+同时，网上很多资料。。有结果没过程，看起来很吃力。<br/><br/>
+我喜欢的是一些<font color="#ff0000">简洁</font>的东西。<br/>
+比如，你告诉我了怎样点亮和灭掉一个LED，<br/>
+然后给我拿一排出来，要玩任何花样都可以；<br/>
+你告诉我了怎样发一个音频，<br/>
+我一定可以弄首歌出来。<br/><br/>
+我觉得这些才是初学者应该得到的。<br/><br/>
+而我看到的很多东西，一上来就把LED跑得天花乱坠的，<br/>
+要不直接来首强大的歌，主要是又没注释，也没原理说明。。。<br/><br/>
+这些东西，也许只有拿给喜欢捡懒的人用吧。。。拿到老师那里交差应该没问题。<br/>
+对于想了解里面真正的内涵的人，乃是莫大的打击。。<br/><br/>
+PS：谁有这东西的详细手册，发我一份吧<sup>_<sup>。。搜半天不到。。</sup></sup></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/backup-hplonline/blog/2009/03/10/vb%E7%9A%84str%E7%9A%84%E4%B8%80%E4%B8%AA%E7%BB%86%E8%8A%82/">Vb的str的一个细节</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-10T22:35:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(hplonline)2009.3.10<br/><br/>
+在知道上看到有人问：<br/><br/>
+vb中len(str（val(&#8220;123.4&#8221;）））的值多少？请说清楚点<br/><br/>
+而马上就有人想当然地跟帖。。。无语。。。<br/><br/>
+直观感觉以为是5，其实是6。。<br/><br/><span><cn>因为str执行完后前面还有一个空格 <br/><br/>
+是“ 123.4” <br/><br/><font color="#ff0000">MSDN</font>上面解释清楚了: <br/><br/><em>返回代表一数值的 Variant (String)。 <br/><br/>
+语法 <br/><br/>
+Str(number) <br/><br/>
+必要的 number 参数为一 Long，其中可包含任何有效的数值表达式。 <br/><br/>
+说明 <br/><br/>
+当一数字转成字符串时，总会在前头保留一空位来表示正负。如果 number 为正，返回的字符串包含一前导空格暗示有一正号。 <br/><br/>
+使用 Format 函数可将数值转成必要的格式，如日期、时间、货币或其他用户自定义格式。与 Str 不同的是，Format 函数不包含前导空格来放置 number 的正负号。 <br/><br/>
+注意   Str 函数只视句点 (.) 为有效的小数点。如果使用不同的小数点（例如，国际性的应用程序），可使用 CStr 将数字转成字符串。</em>       </cn></span></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/backup-hplonline/blog/page/23/">&larr; Older</a>
+    
+    <a href="/backup-hplonline/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/backup-hplonline/blog/page/21/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

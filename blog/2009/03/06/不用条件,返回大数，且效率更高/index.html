@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>不用条件,返回大数，且效率更高 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.3.6都是老话题了,不过这次讨论一点其他方面的东西,即效率更高一。代码如下:int max (int a,int b){return ( ~( a - b &gt;&gt; 31 ) &amp; a - b ) + b ;}二。原理就很简单了.a- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/03/06/%E4%B8%8D%E7%94%A8%E6%9D%A1%E4%BB%B6%2C%E8%BF%94%E5%9B%9E%E5%A4%A7%E6%95%B0%EF%BC%8C%E4%B8%94%E6%95%88%E7%8E%87%E6%9B%B4%E9%AB%98">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">不用条件,返回大数，且效率更高</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-06T21:30:00+08:00" pubdate data-updated="true">Mar 6<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><pre class="prettyprint"><span class="kwd">(hplonline)2009.3.6<br/><br/>都是老话题了,不过这次讨论一点其他方面的东西,即效率更高<br/><br/><font color="#0000ff">一。代码如下:</font><br/><br/><font color="#ff6600">int</font></span><font color="#ff6600"><span class="pln"> max </span><span class="pun">(</span><span class="kwd">int</span><span class="pln"> a</span><span class="pun">,</span><span class="kwd">int</span><span class="pln"> b</span><span class="pun">){</span><span class="pln"><br/></span><span class="kwd">return</span><span class="pln"> </span><span class="pun">(</span><span class="pln"> </span><span class="pun">~(</span><span class="pln"> a </span><span class="pun">-</span><span class="pln"> b </span><span class="pun">&gt;&gt;</span><span class="pln"> </span><span class="lit">31</span><span class="pln"> </span><span class="pun">)</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln"> a </span><span class="pun">-</span><span class="pln"> b </span><span class="pun">)</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> b </span><span class="pun">;</span><span class="pln"><br/></span><span class="pun">}</span></font><span class="pln"><br/><br/><font color="#0000ff">二。原理就很简单了.</font><br/>a-b可以得到一个符号<br/>右移31位，这里是带符号右移，所以结果是<br/>a&gt;b:0;a&lt;b:-1<br/>取反：<br/>a&gt;b:-1;a&lt;b:0<br/>再和a-b与上<br/>a&gt;b:a-b;a&lt;b:0<br/>最后加个b<br/>a&gt;b:a;a&lt;b:b<br/><br/><font color="#ff6600">这里有点问题:就是溢出。</font><br/>比方说,a为负，b为正，两个数的绝对值都超大<br/>减出来可能变成个正数了！<br/><br/>不过，除了极端数据外，应用前景还是有那么点点<br/><br/><font color="#0000ff">三。然后我们来看效率：</font><br/><br/>下面直接引freebsd(jingmi)兄的了：<br/><br/></span><font color="#ff00ff">囧rz，今天不宜灌水，刚刚在另外一个地方讨论也犯了个大错……<br/><br/>实测了一下，这么玩的确是要快点，看数据吧：<br/><br/><span class="kwd">int</span><br/></font></pre>
+
+
+<p><font color="#ff00ff"><span class="pln">main</span><span class="pun">(</span><span class="kwd">void</span><span class="pun">)</span><span class="pln"><br/></span><span class="pun">{</span><span class="pln"><br/></span><span class="kwd">int</span><span class="pln"> a </span><span class="pun">=</span><span class="pln"> </span><span class="lit">3</span><span class="pun">;</span><span class="pln"><br/></span><span class="kwd">int</span><span class="pln"> b </span><span class="pun">=</span><span class="pln"> </span><span class="lit">2</span><span class="pun">;</span><span class="pln"><br/></span><span class="kwd">int</span><span class="pln"> ret</span><span class="pun">;</span><span class="pln"><br/><br/></span><span class="kwd">for</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">int</span><span class="pln"> i</span><span class="pun">=</span><span class="lit">0</span><span class="pun">;</span><span class="pln"> i</span><span class="pun">&lt;</span><span class="lit">1000000000</span><span class="pun">;</span><span class="pln"> i</span><span class="pun">++)</span><span class="pln"><br/></span><span class="pun">{</span><span class="pln"><br/></span><span class="com">#ifdef FUN</span><span class="pln"><br/>
+ret </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="pln"> </span><span class="pun">~(</span><span class="pln"> a </span><span class="pun">-</span><span class="pln"> b </span><span class="pun">&gt;&gt;</span><span class="pln"> </span><span class="lit">31</span><span class="pln"> </span><span class="pun">)</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln"> a </span><span class="pun">-</span><span class="pln"> b </span><span class="pun">)</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> b</span><span class="pun">;</span><span class="pln"><br/></span><span class="com">#else</span><span class="pln"><br/>
+ret </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="pln">a</span><span class="pun">&gt;</span><span class="pln">b</span><span class="pun">)?</span><span class="pln">a </span><span class="pun">:</span><span class="pln"> b</span><span class="pun">;</span><span class="pln"><br/></span><span class="com">#endif</span><span class="pln"><br/></span><span class="pun">}</span><span class="pln"><br/><br/></span><span class="kwd">return</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln"><br/></span><span class="pun">}</span><span class="pln"><br/></span><br/><br/>
+这里把函数直接放进去了，避免函数调用开销。<br/><br/>
+没有 define FUN 的情况下：<br/>
+cc -Wall -Wextra -std=c99 test.c -o comp<br/>
+jingmi@主机名打码~$time ./comp<br/>
+4.311u 0.000s 0:04.31 100.0%    0+0k 0+0io 0pf+0w<br/><br/>
+define FUN 的情况下：<br/>
+cc -Wall -Wextra -std=c99 -DFUN test.c -o sarl<br/>
+jingmi@主机名打码~$time ./sarl<br/>
+3.021u 0.000s 0:03.02 100.0%    0+0k 0+0io 0pf+0w<br/><br/>
+故意没有开优化，10亿次运算差了1.3秒，还是比较明显。<br/><br/>
+但使用 pl 的算法需要注意的就是要 inline，而这个可能和编译器的优化有很大关系，另外生成的代码也比较复杂。<br/><br/>
+另外在 c 中，这样写运算符优先级可能有点小问题。</font></p>
+
+<pre class="prettyprint">为什么呢？下面直接引我粗糙的分析了：<br/><br/>几年前的一篇论文里面，<br/><br/>作者在他机器上测得的跳转类指令大概平均耗<font color="#ff0000">40个周期</font><br/><br/>而数据移动，移位，位运算类指令平均<font color="#ff0000">1个周期。</font><br/><br/>如果在这样的一台机器上。<br/><br/>那么用8条如下指令代替条件跳转是有效果的。。</pre>
+
+
+<p><font color="#ff00ff"><span class="lit">00401578</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  </span><span class="lit">8B45</span><span class="pln"> </span><span class="lit">08</span><span class="pln">       mov     eax</span><span class="pun">,</span><span class="pln"> dword ptr </span><span class="pun">[</span><span class="pln">ebp</span><span class="pun">+</span><span class="lit">8</span><span class="pun">]</span><span class="pln"><br/></span><span class="lit">0040157B</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  </span><span class="lit">2B45</span><span class="pln"> </span><span class="lit">0C</span><span class="pln">       </span><span class="kwd">sub</span><span class="pln">     eax</span><span class="pun">,</span><span class="pln"> dword ptr </span><span class="pun">[</span><span class="pln">ebp</span><span class="pun">+</span><span class="pln">C</span><span class="pun">]</span><span class="pln"><br/>
+eax </span><span class="pun">=</span><span class="pln"> a </span><span class="pun">-</span><span class="pln"> b<br/></span><span class="lit">0040157E</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  C1F8 </span><span class="lit">1F</span><span class="pln">       sar     eax</span><span class="pun">,</span><span class="pln"> </span><span class="lit">1F</span><span class="pln"><br/>
+eax </span><span class="pun">=</span><span class="pln"> </span><span class="pun">-</span><span class="lit">1</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> </span><span class="lit">0</span><span class="pln"><br/></span><span class="lit">00401581</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  F7D0          </span><span class="kwd">not</span><span class="pln">     eax<br/>
+eax </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> </span><span class="pun">-</span><span class="lit">1</span><span class="pln"><br/></span><span class="lit">00401583</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  </span><span class="lit">8B4D</span><span class="pln"> </span><span class="lit">08</span><span class="pln">       mov     ecx</span><span class="pun">,</span><span class="pln"> dword ptr </span><span class="pun">[</span><span class="pln">ebp</span><span class="pun">+</span><span class="lit">8</span><span class="pun">]</span><span class="pln"><br/></span><span class="lit">00401586</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  </span><span class="lit">2B4D</span><span class="pln"> </span><span class="lit">0C</span><span class="pln">       </span><span class="kwd">sub</span><span class="pln">     ecx</span><span class="pun">,</span><span class="pln"> dword ptr </span><span class="pun">[</span><span class="pln">ebp</span><span class="pun">+</span><span class="pln">C</span><span class="pun">]</span><span class="pln"><br/>
+ecx </span><span class="pun">=</span><span class="pln"> a </span><span class="pun">-</span><span class="pln"> b<br/></span><span class="lit">00401589</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  </span><span class="lit">23C1</span><span class="pln">          </span><span class="kwd">and</span><span class="pln">     eax</span><span class="pun">,</span><span class="pln"> ecx<br/>
+eax </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> ecx<br/></span><span class="lit">0040158B</span><span class="pln">  </span><span class="pun">|.</span><span class="pln">  </span><span class="lit">0345</span><span class="pln"> </span><span class="lit">0C</span><span class="pln">       add     eax</span><span class="pun">,</span><span class="pln"> dword ptr </span><span class="pun">[</span><span class="pln">ebp</span><span class="pun">+</span><span class="pln">C</span><span class="pun">]</span><span class="pln"><br/>
+eax </span><span class="pun">=</span><span class="pln"> b </span><span class="kwd">or</span></font><span class="pln"><font color="#ff00ff"> a</font><br/></span><br/><br/>
+不过都说了哈，是几年前的数据。我自己机器上没有实测。<img src="http://bbs.stuhome.net/images/post/smile/yang/16.gif"/><br/><br/>
+啥时候有空测一下。。<img src="http://bbs.stuhome.net/images/post/smile/yang/18.gif"/><br/><br/>
+现在的硬件都优化得很好了，像乘法都平均到2周期了。。</p>
+
+<pre class="prettyprint"><br/><br/>好了我ctrl+c,ctrl+v完了。</pre>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-06T21:30:00+08:00" pubdate data-updated="true">Mar 6<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/03/06/%E4%B8%8D%E7%94%A8%E6%9D%A1%E4%BB%B6%2C%E8%BF%94%E5%9B%9E%E5%A4%A7%E6%95%B0%EF%BC%8C%E4%B8%94%E6%95%88%E7%8E%87%E6%9B%B4%E9%AB%98/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/03/06/%E4%B8%8D%E7%94%A8%E6%9D%A1%E4%BB%B6%2C%E8%BF%94%E5%9B%9E%E5%A4%A7%E6%95%B0%EF%BC%8C%E4%B8%94%E6%95%88%E7%8E%87%E6%9B%B4%E9%AB%98/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/03/02/KEILC%E7%BC%96%E8%AF%91%E7%9A%84TRICK%E6%8E%A2%E7%A9%B63%EF%BC%88%E5%87%BD%E6%95%B0%E4%B8%AD%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%9D%E5%A7%8B%E6%95%B0%E6%8D%AE%EF%BC%89/" title="Previous Post: KEIL C 编译的TRICK探究3（函数中局部变量的初始数据）">&laquo; KEIL C 编译的TRICK探究3（函数中局部变量的初始数据）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/03/07/%E5%B8%AE%E4%BA%BA%E6%94%B9%E4%BB%A3%E7%A0%81%EF%BC%88%E5%88%A4%E6%96%AD%E5%B7%A5%E4%BD%9C%E7%B0%BF%E6%89%93%E5%BC%80%E5%90%A6%EF%BC%89%EF%BC%88VBA%29/" title="Next Post: 帮人改代码（判断工作簿打开否）（VBA)">帮人改代码（判断工作簿打开否）（VBA) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

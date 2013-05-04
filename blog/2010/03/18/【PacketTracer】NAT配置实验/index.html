@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>【PacketTracer】NAT配置实验 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.3.18
+用PT来配了下NAT。
+关键的几个问题为：1.测试NAT起作用
+网络连好之后，选一台路由开放virtual terminal，
+其他主机telnet进来，可以用show users查看用户地址。
+根据用户地址就知道是NAT之前还是之后的了。2. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/03/18/%E3%80%90PacketTracer%E3%80%91NAT%E9%85%8D%E7%BD%AE%E5%AE%9E%E9%AA%8C">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">【PacketTracer】NAT配置实验</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-18T22:15:00+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.3.18<br/><br/>
+用PT来配了下NAT。<br/>
+关键的几个问题为：<br/><br/><font color="#0000ff">1.测试NAT起作用</font><br/><br/>
+网络连好之后，选一台路由开放virtual terminal，<br/>
+其他主机telnet进来，可以用show users查看用户地址。<br/><br/>
+根据用户地址就知道是NAT之前还是之后的了。<br/><br/><font color="#0000ff">2.模拟Internet环境</font><br/><br/>
+这里的模拟要达到的效果是，<br/>
+路由器对“Internet”方向的端口可以正常收发包，<br/>
+但带有路由器对“内网”方向地址的包无法通过。<br/><br/>
+可以配置ACL来模拟。<br/><br/><font color="#0000ff">拓扑</font><br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/97f23c7a981df1d82f73b3ad.jpg" small="0" class="blogimg"/></span><br/>
+子网0：功能性子网，放台服务器和开了VT的路由，PC是用来测试保证本地正常访问的。<br/>
+子网1：假设的Internet环境<br/>
+子网2：用来实验静态NAT的子网<br/>
+子网3：用来实验动态NAT的子网<br/><font color="#0000ff"><br/>
+实验配置过程</font><br/><br/><br/><font color="#ff9900">1.各设备连接好，按设计分配IP</font><br/><br/><font color="#ff9900">2.启动路由协议</font><br/><br/>
+route rip<br/>
+net xxxxx<br/>
+net xxxxx<br/><br/><font color="#ff9900">3.测试连通</font><br/><br/>
+各设备之间都能ping通。<br/>
+由于PT模拟的问题，<br/>
+一般每截链路的第一个包会失败。<br/><br/><font color="#ff9900">4.配置R0的virtual terminal</font><br/><br/>
+line vty 0 15<br/>
+password 123<br/>
+login<br/><br/><font color="#ff9900">5.测试vt的正常</font><br/><br/>
+各设备<br/>
+telnet 192.168.0.4 <br/><br/>
+R0<br/>
+show users<br/>
+可以看到登陆的用户地址。<br/><br/><font color="#ff9900">6.用ACL来把子网1模拟成internet环境</font><br/><br/>
+R1：<br/>
+access-list 1 permit 192.168.1.0 0.0.0.255 <br/>
+access-list 1 deny any<br/><br/>
+int f0/1<br/>
+ip acc 1 in<br/><br/>
+只允许来自子网1的IP包通过。<br/><br/><font color="#ff9900">7.从子网2和子网3的主机测试连通性。</font><br/><br/>
+对于子网0不可达<br/><font color="#ff9900"><br/>
+8.静态NAT配置</font><br/><br/>
+配置映射表<br/>
+ip nat inside source static 192.168.2.2 192.168.1.102<br/><br/>
+配置内外接口<br/>
+int f0/0<br/>
+ip nat out<br/>
+exit<br/>
+int f1/0<br/>
+ip nat in <br/>
+exit<br/><br/><font color="#ff9900">9.测试静态NAT</font><br/><br/>
+PC1能够连上R0，<br/>
+在R0上show users可以看到<br/>
+192.168.1.102连接<br/>
+（地址已被转换）<br/><font color="#ff9900"><br/>
+10.动态NAT配置（multi-to-1 NAT)</font><br/><br/>
+access-list 1 permit 192.168.3.0 0.0.0.255 <br/>
+ip nat inside source list 1 interface fastEthernet 0/0 overload<br/><br/>
+int f0/0<br/>
+ip nat out<br/>
+exit<br/>
+int f1/0<br/>
+ip nat in<br/>
+exit<br/><br/><font color="#ff9900">11.动态NAT测试</font><br/><br/>
+用PC2和PC3同时连R0，成功。<br/><br/>
+从R0上show users，可以看到两个192.168.1.3（R3地址）<br/><br/><font color="#0000ff">成品下载：</font><br/><br/><a href="http://www.box.net/shared/8eseq8rrej" target="_blank">这里</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-18T22:15:00+08:00" pubdate data-updated="true">Mar 18<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/03/18/%E3%80%90PacketTracer%E3%80%91NAT%E9%85%8D%E7%BD%AE%E5%AE%9E%E9%AA%8C/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/03/18/%E3%80%90PacketTracer%E3%80%91NAT%E9%85%8D%E7%BD%AE%E5%AE%9E%E9%AA%8C/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/03/13/AnInteresting%26%2334%3BHelloWorld%26%2334%3BinC%2B%2B/" title="Previous Post: An Interesting &#34;Hello World&#34; in C++">&laquo; An Interesting &#34;Hello World&#34; in C++</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/03/20/%E7%BA%A4%E7%A8%8B%28fiber%29%EF%BC%88%E5%8D%8F%E7%A8%8B%28coroutine%29%EF%BC%89%E6%8F%8F%E8%BF%B0%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" title="Next Post: 纤程(fiber)（协程(coroutine)）描述的生产者-消费者模型">纤程(fiber)（协程(coroutine)）描述的生产者-消费者模型 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

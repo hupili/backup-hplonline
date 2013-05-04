@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>为什么要求printf的参数大于等于两个？？ - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.9.24
+之前用某代码检测工具的时候，被扣分了。
+查看错误log发现是printf的参数只有一个。
+其实我只是简单地用printf打印一些信息到console，
+中间也不涉及格式化其他变量，
+故一直没有想明白这样做的意义何在。
+大致就像这样吧：printf(&# &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/09/24/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%B1%82printf%E7%9A%84%E5%8F%82%E6%95%B0%E5%A4%A7%E4%BA%8E%E7%AD%89%E4%BA%8E%E4%B8%A4%E4%B8%AA%EF%BC%9F%EF%BC%9F">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">为什么要求printf的参数大于等于两个？？</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-24T22:13:00+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.9.24<br/><br/>
+之前用某代码检测工具的时候，被扣分了。<br/>
+查看错误log发现是printf的参数只有一个。<br/><br/>
+其实我只是简单地用printf打印一些信息到console，<br/>
+中间也不涉及格式化其他变量，<br/>
+故一直没有想明白这样做的意义何在。<br/>
+大致就像这样吧：printf(&#8220;something&#8221;) ;<br/><br/>
+printf确实有些危险的地方，<br/>
+比如格式字符和后面的压栈的变量不匹配。<br/>
+这样，在有指针操作的时候可能出问题，比如%s，<br/>
+如果后面没有对应有效的指针，就可能打出一些古怪的东西。<br/><br/>
+今天跟jingmi吃饭，说到了这个问题，原来主要是考虑到“%”的转义问题。<br/><br/>
+比如传给printf的可能并非一个字符常量，而是一个变量。<br/>
+直接 printf(s); 最大的问题就是s[]里面可能有“%”。<br/>
+而s处于格式化字符串的位置，所以解析上会有问题。<br/>
+而客户代码在调用的时候，没有理由用两个%去先做一次替换，<br/>
+总不能假定我传过去的东西总是放在格式字符串的位置吧。<br/>
+所以该代码检测工具也是有理的，提醒大家注意一下仅打印纯字符信息的情况。<br/>
+最好是稍作修改：printf(&#8220;%s&#8221;,s); 这样会规避掉许多问题。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-24T22:13:00+08:00" pubdate data-updated="true">Sep 24<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/09/24/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%B1%82printf%E7%9A%84%E5%8F%82%E6%95%B0%E5%A4%A7%E4%BA%8E%E7%AD%89%E4%BA%8E%E4%B8%A4%E4%B8%AA%EF%BC%9F%EF%BC%9F/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/09/24/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%B1%82printf%E7%9A%84%E5%8F%82%E6%95%B0%E5%A4%A7%E4%BA%8E%E7%AD%89%E4%BA%8E%E4%B8%A4%E4%B8%AA%EF%BC%9F%EF%BC%9F/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/09/20/pthread%E5%AF%B9%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%AE%BF%E9%97%AE%E5%85%A8%E5%B1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%9A%84%E6%94%AF%E6%8C%81/" title="Previous Post: pthread对多线程访问全局数据结构的支持">&laquo; pthread对多线程访问全局数据结构的支持</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/10/17/%E4%B8%80%E5%A5%97win%E4%B8%8B%E7%9A%84perl%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%EF%BC%88cygwin%EF%BC%8Ce-texteditor%EF%BC%8C%E5%8F%82%E6%95%B0%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%89/" title="Next Post: 一套win下的perl工作环境（cygwin，e-texteditor，参数解决方案）">一套win下的perl工作环境（cygwin，e-texteditor，参数解决方案） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

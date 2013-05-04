@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>最小生成树（KRUSCAL,PRIM思想及SOLLIN实现) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.4.16
+很早听说过SOLLIN这个算法，虽然说起来有那么点意思，
+但是总觉得实现上常数会很大，也就一直没动。
+另外在OI界和ACM界，MST的应用很广泛的，但很很少看到人用这个算法。
+最近的图论课要做PROJECT，老师上课也提到了这个算法。
+于是搞了个出来， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/04/16/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88KRUSCAL%2CPRIM%E6%80%9D%E6%83%B3%E5%8F%8ASOLLIN%E5%AE%9E%E7%8E%B0%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">最小生成树（KRUSCAL,PRIM思想及SOLLIN实现)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-16T20:46:00+08:00" pubdate data-updated="true">Apr 16<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.4.16<br/><br/>
+很早听说过SOLLIN这个算法，虽然说起来有那么点意思，<br/>
+但是总觉得实现上常数会很大，也就一直没动。<br/><br/>
+另外在OI界和ACM界，MST的应用很广泛的，但很很少看到人用这个算法。<br/><br/>
+最近的图论课要做PROJECT，老师上课也提到了这个算法。<br/>
+于是搞了个出来，总得来说，这个实现只是描述了算法的意思，<br/>
+其常数非常非常大，而且相关的数据都用STL来组织，偷点懒。<br/><br/>
+KRUSCAL和PRIM相信网上到处都是，就只提思想了。<br/>
+SOLLIN因为第一次写，给一个CP的实现（没有交过题，不确定正确性和效率）<br/><br/><font color="#0000ff">一。最小生成树的条件</font><br/><br/>
+树上边：在最小生成树上的边<br/><br/>
+非树上边：不在最小生成树上的边<br/><br/>
+树上路径：最小生成树上两点间的唯一路径<br/><br/><font color="#ff0000">路径最优：任一非树上边的权重都大于它所对应的树上路径上的每条边的权重。<br/>
+（否则用该边形成的生成树权重更小）</font><br/><br/>
+割边：任意树上边把树分为两部分，连接该两部分的边为割边<br/><br/><font color="#ff0000">割最优：任一树上边的权重都小于它所对应的割集中每条边的权重。<br/>
+（否则用比该边小的割边来连接成的生成树更小）</font><br/><div class="O"></p>
+
+<div style="text-align: center;"> </div>
+
+
+<p></div></p>
+
+<br/><font color="#0000ff">二。KRUSCAL</font><br/><br/><font color="#ff6600">KRUSCAL：根据路径最优构造。</font><br/><br/><font color="#0000ff">算法1</font>：（直观）<br/>
+
+
+<p>先随便构造一个树，依次检查非树上边，<br/>
+如果发现破坏路径最优条件，即用该边替换一个比他大的树上边。<br/><br/>
+这个算法，可以描述，但是写出来很慢。要改进<br/><br/><font color="#0000ff">算法2</font>：（换个角度，即KRUSCAL）<br/>
+把所有边从小到大排序，依次加入边集。<br/>
+如果某边加入后成环了（非树），则PASS掉。<br/><br/>
+这样在加边的时候，因为从小到大，自然保证了路径最优。<br/><font color="#0000ff"><br/>
+三。PRIM</font><br/><br/><font color="#ff6600">PRIM：根据割最优</font><br/><br/><font color="#0000ff">算法3</font>：（就是PRIM）<br/><br/>
+假设现在已经有了一棵包含某些点的树了，<br/>
+要把它和剩下的点连起来，从该树有许多割边指出，<br/>
+那么根据割最优条件，选取最小的一个，一定在树上，<br/>
+同时该树上的点增加一个。<br/><br/>
+初始的时候随便选一个点就可以了。<br/><br/><font color="#0000ff">四。SOLLIN</font><br/><br/><font color="#0000ff">算法4：其实还是根据割最优</font><br/><br/>
+该算法的核心在于。不是像PRIM选择一颗树，逐步扩大。<br/>
+他一开始把所有的点做成独立的树，形成一个森林。<br/>
+根据割最优条件，从这些树指出的割边一定是在MST上的。<br/>
+于是把这些边都加入MST的边集，同时合并相连的树。<br/>
+重复到只有一棵树为止。<br/><br/>
+思想上感觉很有前途。实现的时候要考虑不少东西。<br/>
+比如怎样表示树？怎样表示森林？<br/>
+每次搜索出来的最小割边集有重复的，怎样避免多次加入？<br/>
+。。。<br/><br/><font color="#ff6600">当然，我捡懒不想了，用了很庞大的一堆STL的组件来做。<br/>
+下面这个代码显然没有实用价值，他只能表达一种意思。</font><br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/></h1>
+
+<h1>include &lt;set&gt;<br/></h1>
+
+<h1>include &lt;vector&gt;<br/></h1>
+
+<h1>include &lt;list&gt;<br/></h1>
+
+<h1>include &lt;algorithm&gt;<br/></h1>
+
+<h1>include &lt;fstream&gt;<br/><br/></h1>
+
+<h1>pragma warning(disable: 4786)<br/><br/></h1>
+
+<p>using namespace std;<br/><br/>
+const int MAX = 10000000 ;<br/><br/>
+typedef set&lt;int&gt; TREE ;<br/>
+typedef set&lt;TREE&gt; FOREST ;<br/>
+typedef list&lt;int&gt; ADJEDGE ;//邻接边，记录的是vedges中该边的下标<br/>
+typedef vector&lt;ADJEDGE&gt; ADJLIST ;//邻接表<br/><br/>
+typedef struct _edge_type{<br/>
+      int a ;<br/>
+      int b ;<br/>
+      int w ;<br/>
+}EDGE ;<br/><br/>
+int n , m ;<br/>
+vector&lt;EDGE&gt; vedges ;<br/><br/>
+/<em><br/>
+边的比较，未用到<br/>
+struct cmp_edge{<br/>
+      bool operator()(const int &amp;ie1 , const int &amp;ie2)const {<br/>
+            return vedges[ie1].w &lt; vedges[ie2].w ;<br/>
+      };<br/>
+};<br/>
+</em>/<br/><br/>
+FOREST::iterator find_tree( FOREST &amp;f , int v){<br/>
+      FOREST::iterator ifr ;<br/>
+      for ( ifr = f.begin() ; ifr != f.end() ; ifr ++ ){<br/>
+            if ( (<em>ifr).count(v) ) return ifr ;<br/>
+      }<br/>
+//      cout&lt;&lt;&#8221;eee&#8221;&lt;&lt;endl;<br/>
+}<br/><br/>
+void output(FOREST &amp;f){<br/>
+      FOREST::iterator it ;<br/>
+      int i = 0 ;<br/>
+      for ( it = f.begin() ; it != f.end() ; it ++ ){<br/>
+            cout&lt;&lt;&#8221;tree &#8220;&lt;&lt;++i&lt;&lt;endl;<br/>
+            TREE::iterator ii ;<br/>
+            TREE &amp;ct = (</em>it) ;<br/>
+            for ( ii = ct.begin() ; ii != ct.end() ; ii ++ ){<br/>
+                  cout&lt;&lt;(<em>ii)&lt;&lt;&#8217; &#8217; ;<br/>
+            }<br/>
+            cout&lt;&lt;endl;<br/>
+      }<br/>
+}<br/><br/>
+int main(){<br/>
+      int i;<br/>
+      FOREST forest ;<br/>
+      ADJLIST adjlist ;<br/>
+      set&lt;int&gt; mst_edges ;<br/><br/>
+      ifstream fin(&#8220;test.txt&#8221;);<br/><br/>
+      fin&gt;&gt;n&gt;&gt;m ;<br/>
+      <br/>
+      adjlist.clear() ;<br/>
+      for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+            adjlist.push_back(ADJEDGE());<br/>
+      }<br/><br/>
+      vedges.clear() ;<br/>
+      for ( i = 0 ; i &lt; m ; i ++ ){<br/>
+            EDGE t;<br/>
+            fin&gt;&gt;t.a&gt;&gt;t.b&gt;&gt;t.w ;<br/>
+            vedges.push_back(t) ;<br/>
+            adjlist[t.a].push_back(i);<br/>
+            adjlist[t.b].push_back(i);<br/>
+      }<br/>
+      <br/>
+      for ( i = 0 ; i &lt; n ; i ++ ){<br/>
+            TREE t ;<br/>
+            t.clear() ;<br/>
+            t.insert(i);<br/>
+            forest.insert(t);<br/>
+      }<br/><br/>
+      mst_edges.clear() ;<br/>
+      while ( forest.size() != 1 ){<br/>
+            set&lt;int&gt; minedges ;<br/>
+            FOREST::iterator iforest ;<br/>
+            minedges.clear();<br/>
+            for ( iforest = forest.begin() ; iforest != forest.end() ; iforest ++ ){<br/>
+                  TREE &amp;curtree = </em>iforest ;<br/>
+                  TREE::iterator itree ;<br/>
+                  int min_weight = MAX ;<br/>
+                  int min_edge ;<br/>
+                  //找到该树最小割边<br/>
+                  for ( itree = curtree.begin() ; itree != curtree.end() ; itree ++ ){<br/>
+                        ADJEDGE &amp;curedge = adjlist[<em>itree] ;<br/>
+                        ADJEDGE::iterator iedge ;<br/>
+                        for ( iedge = curedge.begin() ; iedge != curedge.end() ; iedge ++ ){<br/>
+                              if ( curtree.count(vedges[(</em>iedge)].a) <br/>
+                                    &amp;&amp; curtree.count(vedges[(<em>iedge)].b) ){<br/>
+                                    continue ;//该边在同一树内      <br/>
+                              }<br/>
+                              if ( vedges[</em>iedge].w &lt; min_weight ){<br/>
+                                    min_weight = vedges[<em>iedge].w ;<br/>
+                                    min_edge = </em>iedge ;<br/>
+                              }<br/>
+                        }<br/>
+                  }<br/>
+                  minedges.insert(min_edge);<br/>
+            }<br/><br/>
+            set&lt;int&gt;::iterator iminedge ;<br/>
+            for ( iminedge = minedges.begin() ; iminedge != minedges.end() ; iminedge ++ ){<br/>
+            //      output(forest) ;<br/>
+                  int a = vedges[<em>iminedge].a ;<br/>
+                  int b = vedges[</em>iminedge].b ;<br/>
+                  FOREST::iterator ita = find_tree( forest , a ) ;<br/>
+                  FOREST::iterator itb = find_tree( forest , b ) ;<br/>
+                  if ( ita == itb ) continue ;<br/>
+                  mst_edges.insert(<em>iminedge) ;<br/>
+            //      set_union((</em>ita).begin() , (<em>ita).end() , (</em>itb).begin() , (<em>itb).end() , (</em>ita).end() ) ;<br/>
+                  TREE::iterator itr ;<br/>
+                  for ( itr = (<em>itb).begin() ; itr != (</em>itb).end() ; itr ++ ){<br/>
+                        (<em>ita).insert(</em>itr) ;<br/>
+                  }<br/>
+            //      cout&lt;&lt;(<em>ita).size()&lt;&lt;endl;<br/>
+                  forest.erase(itb);<br/>
+            }<br/>
+      }<br/>
+      <br/>
+      set&lt;int&gt;::iterator it ;<br/>
+      int mst_weight = 0 ;<br/>
+      cout&lt;&lt;&#8221;the edges:&#8221;&lt;&lt;endl;<br/>
+      for ( it = mst_edges.begin() ; it != mst_edges.end() ; it ++ ){<br/>
+            cout&lt;&lt;vedges[</em>it].a&lt;&lt;&#8217; &#8216;&lt;&lt;vedges[<em>it].b&lt;&lt;&#8217; &#8216;&lt;&lt;vedges[</em>it].w&lt;&lt;endl;<br/>
+            mst_weight += vedges[*it].w ;<br/>
+      }<br/>
+      cout&lt;&lt;&#8221;mst weight:&#8221;&lt;&lt;mst_weight&lt;&lt;endl;<br/>
+      return 0 ;<br/>
+}<br/><br/><font color="#0000ff">用到的test.txt文件内容如下组织：</font><br/><br/>
+5 7<br/>
+0 1 35<br/>
+0 2 40<br/>
+1 2 25<br/>
+1 3 10<br/>
+2 3 20<br/>
+3 4 30<br/>
+2 4 15 <br/><br/>
+格式：<br/>
+顶点数 边数<br/>
+｛点a 点b 权重｝（边数行）<br/>
+顶点从0开始编号<br/><br/><font color="#ff0000">PS：我没有充分检查，谁发现BUG了麻烦说一声</font></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-16T20:46:00+08:00" pubdate data-updated="true">Apr 16<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/04/16/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88KRUSCAL%2CPRIM%E6%80%9D%E6%83%B3%E5%8F%8ASOLLIN%E5%AE%9E%E7%8E%B0%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/04/16/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88KRUSCAL%2CPRIM%E6%80%9D%E6%83%B3%E5%8F%8ASOLLIN%E5%AE%9E%E7%8E%B0%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/04/14/STL%E7%9A%84%E5%A0%86%EF%BC%88%E5%A0%86%E5%87%BD%E6%95%B0%E5%8F%8A%E6%B3%9B%E5%9E%8B%E5%A0%86%E5%AE%9E%E7%8E%B0%EF%BC%89/" title="Previous Post: STL的堆（堆函数及泛型堆实现）">&laquo; STL的堆（堆函数及泛型堆实现）</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/04/18/%E5%88%9B%E5%BB%BA%E8%BF%9B%E7%A8%8B%E5%B9%B6%E7%AD%89%E5%BE%85%E7%BB%93%E6%9D%9F/" title="Next Post: 创建进程并等待结束">创建进程并等待结束 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

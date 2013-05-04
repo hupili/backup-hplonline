@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>generating RFC content with the help of VIM&#39;s plugins(taglist.vim+txt.vim) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2010.1.10
+(..I found my installed ubuntu an English version without Chinese IMEs &#8230;
+I&#8217;ll try to solve it later . Now , it&#8217 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2010/01/10/generatingRFCcontentwiththehelpofVIM%26%2339%3Bsplugins%28taglist.vim%2Btxt.vim%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Generating RFC Content With the Help of VIM&#39;s plugins(taglist.vim+txt.vim)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-10T14:05:00+08:00" pubdate data-updated="true">Jan 10<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2010.1.10<br/><br/>
+(..I found my installed ubuntu an English version without Chinese IMEs &#8230;<br/>
+I&#8217;ll try to solve it later . Now , it&#8217;s OK to just work without Chinese words ,<br/>
+for most of the  materials we get from internet are in English ..<br/>
+this is the FIRST blog under Linux .)<br/><br/>
+A few months ago , when I started to read RFCs , I found it&#8217;s disturbing <br/>
+switching from chapter to chapter . But we can do nothing , since all the <br/>
+documents are in plain text &#8230; One thing I tried hard to do is CTRL+F from <br/>
+here to there . Another is writting a toy program ( <a href="http://hi.baidu.com/hplonline/blog/item/b7f4a2d39e567e3e960a1659.html" target="_blank">see here</a> ..) to generate <br/>
+contents for these documents .<br/><br/>
+Yesterday , I came across the idea PLUGINs . So I surfed pages of www.vim.org<br/>
+to hunt for some interesting ones . The one named txt.vim flashed in front <br/>
+of my eyes . It look like this when installed properly . take <a href="http://www.ietf.org/rfc/rfc3000.txt" target="_blank">RFC3000</a> for example :<br/><br/><span><img border="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1d1e3bad1dd9fa384a36d636.jpg" small="0" class="blogimg"/></span><br/><br/>
+you can now jump to a topic by just moving the cursor to the headlines and <br/>
+pressing RETURN . What&#8217;s more , I defined some function keys F5-F8 to <br/>
+operate the taglist&#8217;s bar easily (see notes below) . <br/><br/>
+It seems one can define syntax rules for further use of this plugin <br/>
+with a variety of txt formats .<br/><br/><font color="#0000ff">my NOTES today :</font><br/><br/>
+&gt;&gt;help analyze plain text <br/><br/>
+download:<br/><br/><a href="http://www.vim.org/scripts/script.php?script_id=2899" target="_blank">http://www.vim.org/scripts/script.php?script_id=2899</a><br/><br/>
+the &#8216;txt.txt&#8217; in the zip archive shows <br/>
+exactly how to install the plugin in chapter 3.<br/><br/>
+it needs to install taglis first ..<br/>
+so I turned to taglist<br/><br/>
+download:<br/><br/><a href="http://www.vim.org/scripts/script.php?script_id=273" target="_blank">http://www.vim.org/scripts/script.php?script_id=273</a><br/><br/>
+however , when vim is launched , I get this message ..<br/><br/><font color="#ff0000">Taglist: Exuberant ctags (http://ctags.sf.net) not found in PATH. Plugin is not loaded.</font><br/><br/>
+so I install the ctags :<br/><br/><font color="#ff9900">sudo apt-get install exuberant-ctags</font><br/><br/>
+&gt;&gt;about plugins<br/><br/>
+vim plugins are all in ~/.vim/plugin . <br/>
+the subdirectory is not that important .<br/>
+vim will search the whole plugin directory for that . <br/><br/>
+but to FILETYPE plugins , vim should associate the <br/>
+filetype with the plugin&#8217;s name . so , the three <br/>
+available ways look like this:<br/><font color="#ff9900">    ftplugin/&lt;filetype&gt;.vim<br/>
+ftplugin/&lt;filetype&gt;_&lt;name&gt;.vim<br/>
+ftplugin/&lt;filetype&gt;/&lt;name&gt;.vim</font><br/><br/>
+&gt;&gt;about removing plugins<br/><br/>
+simply to remove the related files from doc/ or plugin/ , <br/>
+like <em>.vim in plugin/ , </em>.txt in doc/<br/><br/>
+&gt;&gt;taglis operation:(from mannual , listed here for quick reference)<br/><br/>
+&lt;CR&gt;          Jump to the location where the tag under cursor is<br/>
+defined.<br/>
+o             Jump to the location where the tag under cursor is<br/>
+defined in a new window.<br/>
+P             Jump to the tag in the previous (Ctrl-W_p) window.<br/>
+p             Display the tag definition in the file window and<br/>
+keep the cursor in the taglist window itself.<br/>
+t             Jump to the tag in a new tab. If the file is already<br/>
+opened in a tab, move to that tab.<br/>
+Ctrl-t        Jump to the tag in a new tab.<br/>
+&lt;Space&gt;       Display the prototype of the tag under the cursor.<br/>
+For file names, display the full path to the file,<br/>
+file type and the number of tags. For tag types, display the<br/>
+tag type and the number of tags.<br/>
+u             Update the tags listed in the taglist window<br/>
+s             Change the sort order of the tags (by name or by order)<br/>
+d             Remove the tags for the file under the cursor<br/>
+x             Zoom-in or Zoom-out the taglist window<br/>
++             Open a fold<br/>
+-             Close a fold<br/>
+*             Open all folds<br/>
+=             Close all folds<br/>
+[[            Jump to the beginning of the previous file<br/>
+&lt;Backspace&gt;   Jump to the beginning of the previous file<br/>
+]]            Jump to the beginning of the next file<br/>
+&lt;Tab&gt;         Jump to the beginning of the next file<br/>
+q             Close the taglist window<br/>
+&lt;F1&gt;          Display help<br/><br/>
+&gt;&gt;setup accelerated keys <br/>
+add these lines in the file $HOME/.vimrc<br/><br/><font color="#ff9900">nmap &lt;F8&gt; &lt;ESC&gt;:TlistOpen&lt;RETURN&gt;<br/>
+nmap &lt;F7&gt; &lt;ESC&gt;:TlistClose&lt;RETURN&gt;<br/>
+nmap &lt;F6&gt; &lt;ESC&gt;:Tlist&lt;RETURN&gt;<br/>
+nmap &lt;F5&gt; &lt;ESC&gt;:TlistUpdate&lt;RETURN&gt;</font><br/><br/>
+I even add another function key :<br/><font color="#ff9900">nmap &lt;F2&gt; &lt;ESC&gt;:w&lt;RETURN&gt;</font><br/>
+in my memory of high school  times..<br/>
+it&#8217;s the key I used most frequently . ( free PASCAL&#8217;s convetion)<br/>
+like CTRL+S in word ,  F2 is very important for saving our works . <br/>
+And as coder , when I get stuck in thoughts , it&#8217;s the only &#8216;safe&#8217; key<br/>
+to press as I wish . This may be a bad habit like children biting their <br/>
+pencils when thinking  . However , it&#8217;s hard to get rid of it .<br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-10T14:05:00+08:00" pubdate data-updated="true">Jan 10<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2010/01/10/generatingRFCcontentwiththehelpofVIM%26%2339%3Bsplugins%28taglist.vim%2Btxt.vim%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2010/01/10/generatingRFCcontentwiththehelpofVIM%26%2339%3Bsplugins%28taglist.vim%2Btxt.vim%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2010/01/09/%E4%B8%80%E5%A5%97%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%EF%BC%88ubuntu%2Cvi%2Cbash%2Cgcc%2Cgdb%2Coctave%29/" title="Previous Post: 一套工作环境（ubuntu,vi,bash,gcc,gdb,octave)">&laquo; 一套工作环境（ubuntu,vi,bash,gcc,gdb,octave)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2010/01/14/%E4%BF%A1%E9%81%93%E5%9D%87%E8%A1%A1%E7%9A%84%E4%B8%80%E4%B8%AAMATLAB%E4%BB%BF%E7%9C%9F%E5%AE%9E%E9%AA%8C/" title="Next Post: 信道均衡的一个MATLAB仿真实验">信道均衡的一个MATLAB仿真实验 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

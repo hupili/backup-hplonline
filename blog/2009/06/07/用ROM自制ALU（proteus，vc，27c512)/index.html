@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>用ROM自制ALU（proteus，vc，27c512) - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.6.7
+完整作品下载：rom_caculator
+前些时候，学习数电，听说了74X181这个东西，
+感觉功能还挺多的，结果在proteus里面仿真的时候，
+只有一个空壳在那里，没有相关的模型，无法使用。（我是7.12版）
+这周数电结课，听到了一句近乎哲学的话（ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/06/07/%E7%94%A8ROM%E8%87%AA%E5%88%B6ALU%EF%BC%88proteus%EF%BC%8Cvc%EF%BC%8C27c512%29">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">用ROM自制ALU（proteus，vc，27c512)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-07T12:56:00+08:00" pubdate data-updated="true">Jun 7<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.6.7<br/><br/>
+完整作品下载：<a href="http://www.box.net/shared/1ogxc1lnyx" target="_blank">rom_caculator</a><br/><br/>
+前些时候，学习数电，听说了74X181这个东西，<br/>
+感觉功能还挺多的，结果在proteus里面仿真的时候，<br/>
+只有一个空壳在那里，没有相关的模型，无法使用。（我是7.12版）<br/><br/>
+这周数电结课，听到了一句近乎哲学的话（至少是相对这个学科而言），<br/>
+一语惊醒梦中人啊：<br/><br/><font color="#ff0000">rom的本质就是一个n输入m输出组合逻辑电路。</font><br/>
+（地址线有n位，数据线有m位）<br/>
+在课上苦苦耗了一学期，听到的最有用的一句莫过于此<img src="http://img.baidu.com/hi/jx/j_0015.gif"/>。<br/>
+我很喜欢这种，说出来地球人都知道，但是不说，大部分地球人都不知道的东西。。。<br/><br/>
+那么接上面，比如这里选用的27c512就可以看作16输入，8输出的组合逻辑电路了。<br/><br/><font color="#0000ff">电路：</font><br/><br/><div forimg="1"><img border="0" class="blogimg" small="0" src="http://hiphotos.baidu.com/hplonline/pic/item/1f1e11d5e16ba4e150da4b70.jpg"/></div></p>
+
+<br/>
+
+
+<p>a和b是4bit的数据输入，上面为低位，直接接到了0&#8211;7的地址线上。<br/>
+下面是运算符选择。四种运算符，用编码器编码后送到8，9两位。<br/><br/>
+右边的D[0..7]就是数据输出，也是上面为低位。<br/><br/>
+上图演示的就是a/b的结果（即：7/2=3）<br/><br/><font color="#0000ff">程序：</font><br/><br/>
+程序就很简单了，随便拿个在pc上写c的工具就可以了。<br/><br/></p>
+
+<h1>include &lt;stdio.h&gt;<br/><br/></h1>
+
+<p>int main(){<br/>
+      FILE *fp = fopen(&#8220;data_rom.bin&#8221; , &#8220;wb&#8221;) ;<br/>
+      unsigned int i , j ;<br/>
+      unsigned char ch ;<br/><br/>
+      for ( i = 0 ; i &lt; 16 ; i ++ ) {<br/>
+            for ( j = 0 ; j &lt; 16 ; j ++ ){<br/>
+                  ch = i + j ;<br/>
+                  fwrite(&amp;ch , 1 , 1 , fp) ;<br/>
+            }<br/>
+      }<br/><br/>
+      for ( i = 0 ; i &lt; 16 ; i ++ ) {<br/>
+            for ( j = 0 ; j &lt; 16 ; j ++ ){<br/>
+                  ch = (unsigned char)(j - i) ;<br/>
+                  fwrite(&amp;ch , 1 , 1 , fp) ;<br/>
+            }<br/>
+      }<br/><br/>
+      for ( i = 0 ; i &lt; 16 ; i ++ ) {<br/>
+            for ( j = 0 ; j &lt; 16 ; j ++ ){<br/>
+                  ch = i * j ;<br/>
+                  fwrite(&amp;ch , 1 , 1 , fp) ;<br/>
+            }<br/>
+      }      <br/><br/>
+      for ( i = 0 ; i &lt; 16 ; i ++ ) {<br/>
+            for ( j = 0 ; j &lt; 16 ; j ++ ){<br/>
+                  if ( i == 0 ) ch = 0xff ;<br/>
+                  else ch = j / i ;<br/>
+                  fwrite(&amp;ch , 1 , 1 , fp) ;<br/>
+            }<br/>
+      }<br/><br/>
+      fclose(fp) ;<br/>
+      return 0 ;<br/>
+}<br/><br/><font color="#0000ff">加载：</font><br/><br/>
+在proteus里面，为27c512指定数据文件，就选择上面生成的data_rom.bin。<br/>
+然后就可以使用了。<br/><br/><font color="#0000ff">总结：</font><br/><br/>
+一旦得知到rom的本质之后，可以用其来实现的逻辑即可获得大幅增长。<br/><br/>
+一般的数电，微机原理之类的课程都会提到相应的<font color="#ff0000">字扩展，位扩展</font>的事情。<br/>
+这样，就可以得到<font color="#ff0000">任意想要的输入个数和输出个数</font>。<br/><br/>
+剩下的事情就是生成相应的数据，下载到rom里面这么简单。<br/><br/>
+个把月前，当初次听说181，但又没找到相应的模型的时候，<br/>
+真的是很纠结，当时想了两种：<br/><font color="#ff6600">1。用其他MSI来搭建。。。其复杂程度无法想象，作罢。<br/>
+2。自己做个元件。。在网上找了很久的资料。。没找着有用的，也罢。。</font><br/><br/>
+而现在，任何的组合逻辑都可以用一个小小的rom来实现，<br/>
+可谓强大啊。。虽然上面只给了几个简单的四则运算。<br/>
+但是，各位看官必然想到，用他来开方，求幂，控制数码管显示，等等，<br/>
+都完全不在话下。。<br/><br/>
+用C语言写段程序，生成相应的数据显然比用若干器件来搭建一个庞大的电路简单。<br/><font color="#ff0000">另外，对应于任何输入，获得稳定输出的时间都是一样的。</font><br/>
+（这点是其他器件搭建出来的不容易做到的，<br/>
+因为不同的输入途经的线路会不同，<br/>
+比较典型的就是像ripple adder这种，<br/>
+最小和最大延迟之间成倍数关系）<br/>
+再换句话说，这种搞法有点<font color="#ff0000">打表</font>的味道。<img src="http://img.baidu.com/hi/jx/j_0015.gif"/><br/>
+可见一个通用的思想，可以用在不同的地方。<br/>
+（可参考：<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/8fbb05b30fb894a0d8335ae9.html">编译器打表（MASM)</a>）<br/><br/>
+rom。。。很邪恶，很暴力的通用解决方案。<img src="http://img.baidu.com/hi/jx/j_0003.gif"/></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-06-07T12:56:00+08:00" pubdate data-updated="true">Jun 7<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/06/07/%E7%94%A8ROM%E8%87%AA%E5%88%B6ALU%EF%BC%88proteus%EF%BC%8Cvc%EF%BC%8C27c512%29/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/06/07/%E7%94%A8ROM%E8%87%AA%E5%88%B6ALU%EF%BC%88proteus%EF%BC%8Cvc%EF%BC%8C27c512%29/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/06/06/%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E5%A0%86%28fibonacciheap%29%28poj2253%29%28hdu1512%29/" title="Previous Post: 斐波那契堆(fibonacci heap)(poj2253)(hdu1512)">&laquo; 斐波那契堆(fibonacci heap)(poj2253)(hdu1512)</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/06/14/Nelder-Mead%E5%8D%95%E7%BA%AF%E5%BD%A2%E6%B3%95%E6%B1%82%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E6%9E%81%E5%80%BC%EF%BC%88MATLAB%EF%BC%89/" title="Next Post: Nelder-Mead单纯形法求多元函数极值（MATLAB）">Nelder-Mead单纯形法求多元函数极值（MATLAB） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

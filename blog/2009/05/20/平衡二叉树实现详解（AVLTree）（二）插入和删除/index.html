@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>平衡二叉树实现详解（AVLTree）（二）插入和删除 - hplonline</title>
+  <meta name="author" content="hplonline">
+
+  
+  <meta name="description" content="(hplonline)2009.5.20
+完整的实现，可以参考前面，旋转和平衡在上一篇。
+由于AVL首先也就是一个BST，所以：
+查找，找最大，找最小，找前驱，找后继，遍历，清空
+这些算法都是和BST一样，故不用说了。插入：
+该函数接收插入的元素，并返回插入后的节点的地址。PANode &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://hupili.github.io/backup-hplonline/blog/2009/05/20/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%BA%8C%EF%BC%89%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4">
+  <link href="/backup-hplonline/favicon.png" rel="icon">
+  <link href="/backup-hplonline/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/backup-hplonline/atom.xml" rel="alternate" title="hplonline" type="application/atom+xml">
+  <script src="/backup-hplonline/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/backup-hplonline/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/backup-hplonline/">hplonline</a></h1>
+  
+    <h2>backup from 2006 to 2012 (original hi.baidu.com/hplonline/)</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/backup-hplonline/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:hupili.github.io/backup-hplonline" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/backup-hplonline/">Blog</a></li>
+  <li><a href="/backup-hplonline/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">平衡二叉树实现详解（AVLTree）（二）插入和删除</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-20T13:11:00+08:00" pubdate data-updated="true">May 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(hplonline)2009.5.20<br/><br/>
+完整的实现，可以<a target="_blank" href="http://hi.baidu.com/hplonline/blog/item/4a5fc3ea9cb588dbd439c90a.html">参考</a>前面，旋转和平衡在上一篇。<br/><br/>
+由于AVL首先也就是一个BST，所以：<br/>
+查找，找最大，找最小，找前驱，找后继，遍历，清空<br/>
+这些算法都是和BST一样，故不用说了。<br/><br/><font color="#0000ff">插入：<br/></font><br/>
+该函数接收插入的元素，并返回插入后的节点的地址。<br/><font color="#ff6600">PANode AVLTree::Insert(ElemType d){         </font><br/><br/>
+首先要判断是否为空树：<br/><font color="#ff6600">         if ( !root ) {<br/>
+                  root = <em>AVL_allocate() ; <br/>
+                  root-&gt;init(d) ;<br/>
+                  return root ;<br/>
+         }</font><br/><br/>
+其实写到这里的时候，对我最初的设计还是感觉有点囧。<br/>
+如果一来就设一个<font color="#ff0000">根节点</font>的话，显然可以少写很多判根的地方。<br/>
+但是这也有个问题，要选一个一定不会在应用中出现的值来作为根。<br/>
+刷题的话到没问题，选一个题目外的就行了，在工程中，这个值就不好说了。。<br/><br/>
+调用私有函数，获取d插入的位置。<br/><font color="#ff6600">         PANode parent = </em>find_parent(d) ;</font><br/>
+<em>find_parent在存在d的时候，返回d的父亲，<br/>
+不存在d的时候，返回如果有d，应该作为d父亲的节点。<br/><br/>
+判断该节点d存在否。<br/><font color="#ff6600">         PANode child = </em>find_node(parent , d) ;<br/>
+         if ( child ){//已经存在该节点<br/>
+                  return child ;<br/>
+         }<br/></font> <br/>
+不存在的话，才进行真正的插入：<br/><font color="#ff6600">         PANode p = <em>AVL_allocate() ;<br/>
+         p-&gt;init(d) ;<br/>
+         p-&gt;parent = parent ;<br/>
+         if ( d &lt; parent-&gt;data ) parent-&gt;left = p ;<br/>
+         else parent-&gt;right = p ;</font><br/>
+这里新建了节点，并把他挂在parent上。<br/><font color="#ff0000"></em>AVL_allocate()</font>是一个宏，为实现多种空间配置设置。<br/>
+在这里即是直接malloc(sizeof(ANode))<br/><br/>
+令：<br/><font color="#ff6600">child = p ;</font><br/><br/>
+接着，由于parent的孩子child增高了（在插入过程中，等于说是从没有变到有）<br/>
+于是我们要逐步向根调整平衡因子，遇到不平衡的时候，做平衡操作。<br/>
+下面也是只拿左半截做分析。<br/><br/><font color="#ff6600">while ( parent != NULL ){&#8230;.</font><br/>
+这个循环有不变式：<br/>
+1.还没处理到根，因为根的parent为NULL<br/>
+2.child是parent的子节点，且该子节点有所增高<br/>
+（个人感觉用不变式的观点设计循环很方便，<br/>
+考虑对应的操作的时候，建立在这些不变式上思考，<br/>
+并且让这些操作也同时保证不变式的成立）<br/><br/>
+如果child是在parent的左枝上。<br/><font color="#ff6600">if ( child == parent-&gt;left ){</font><br/><br/>
+这时要对parent之前的平衡性做讨论：<br/><font color="#ff6600">switch( parent-&gt;balance )</font><br/><br/><font color="#0000ff">如果之前为0</font>，那么child增高了之后，将导致左树变高，b(parent) = 1。<br/>
+这时，parent也同时增高，于是继续向根走。<br/><font color="#ff6600">                           case 0:<br/>
+                                    parent-&gt;balance = 1 ;<br/>
+                                    child = parent ;<br/>
+                                    parent = parent-&gt;parent ;<br/>
+                                    break;</font><br/><br/><font color="#0000ff">如果之前为1</font>，child增高了之后，将导致平衡因子变为2，要调整。<br/>
+调整后的parent将和child增高前的parent一样高，于是这里可以返回了。<br/>
+   <font color="#ff6600">                     case 1:<br/>
+                                    parent-&gt;balance = 2 ;<br/>
+                                    _balance_left(parent) ;<br/>
+                                    return p ;<br/>
+                                    break;</font><br/><br/>
+为什么一样呢，看下面就知道了：<br/><div forimg="1"><img height="415" border="0" width="314" src="http://hiphotos.baidu.com/hplonline/pic/item/18c9d7544edce87cd00906c4.jpg" small="0" class="blogimg"/><br/>
+ABCD都是空树，本来cur是空的。这个时候parent的高度为1</div></p>
+
+<div forimg="1"><img height="266" border="0" width="362" src="http://hiphotos.baidu.com/hplonline/pic/item/7a8a063338d591dc1b4cffc4.jpg" small="0" class="blogimg"/><br/>
+插入cur后，平衡破坏，但经过旋转，child（也就是现在的父节点）的高度也为1。<br/>
+既然调整到这里已经平衡了，自然就不用再继续调整了。<br/><br/><font color="#0000ff">如果之前为-1.</font><br/>
+由于现在左枝增高，正好parent的两端平衡了，且parent不增高，自然也就直接返回了。<br/><font color="#ff6600">                           case -1:<br/>
+                                    parent-&gt;balance = 0 ;<br/>
+                                    return p ;<br/>
+                                    break;</font></div>
+
+
+<br/><font color="#0000ff">删除：</font><br/><br/>
+
+
+<p>给了两个版本，delete用于对元素的删除，erase用于对指向节点的删除。<br/>
+所以delete只是一个简单封装：<br/><br/><font color="#ff6600">void AVLTree::Delete(ElemType d){<br/>
+         PANode p = Find(d) ;<br/>
+         if ( p ) {<br/>
+                  Erase(p) ;<br/>
+         }<br/>
+}</font><br/><br/>
+先找到对应元素的位置，再erase之。<br/><br/>
+删除某个节点的过程大致是：<br/><font color="#ff0000">如果该节点不是叶子，那么就用他的前驱或后继替换他，去删除替换的节点。<br/>
+（这里和BST也是一个道理的）<br/>
+当然被删除的节点如果还不是叶子，那么继续重复。<br/>
+删完这个替换节点后，从该节点开始，向根调整平衡因子。</font><br/><br/>
+在寻找替换节点的时候，还有一点。<br/>
+如果正在考察的节点左树高，那么自然我们去左树上寻找替换点。<br/>
+也就是调用<em>prev_node。这样有个好处 ，<br/>
+就是如果左树由于删除被降低了，那么要调整的地方可能要少些。<br/>
+对右边同理：<br/><br/><font color="#ff6600">PANode AVLTree::</em>find_subs(PANode pos){<br/>
+         PANode su = pos;<br/>
+         while ( (su-&gt;left != NULL) || (su-&gt;right != NULL) ) {<br/>
+                  if ( su-&gt;balance == 1 ) {<br/>
+                           su = <em>prev_node(pos) ;<br/>
+                  }else{<br/>
+                           su = </em>next_node(pos) ;<br/>
+                  }<br/>
+                  pos-&gt;data = su-&gt;data ;<br/>
+                  pos = su ;<br/>
+         }<br/>
+         return su ;<br/>
+}</font><br/><br/>
+有了这个过程后，就可以开始erase了。<br/><font color="#ff6600">         PANode su = <em>find_subs(pos) ;//替换节点<br/>
+         PANode child = su ;<br/>
+         PANode parent = child-&gt;parent ;<br/>
+         bool over = false ;</font><br/>
+找到替换节点，并做好准备去向根调整。<br/><br/>
+over是用来判断是否调整完毕的。<br/>
+前面的插入，调整完毕时，直接return出去了，<br/>
+但这里是删除，完毕的时候还要把节点的空间收回。<br/><br/>
+调整循环：<br/><font color="#ff6600">while ( parent &amp;&amp; !over ) {</font><br/>
+不变式：<br/>
+1.没有处理到根，还没有处理完<br/>
+2.child是parent的一个子树，且该子树降低了。<br/><br/>
+依然只看左边，对parent之前的平衡性做讨论：<br/><font color="#ff6600">                  if ( child == parent-&gt;left ){//左枝<br/>
+                           switch (parent-&gt;balance){</font><br/><br/>
+如果parent之前就是平衡的，那么child的降低，会使parent右边高。<br/>
+但这不会导致parent的高度搞边，故可以结束调整过程<br/><font color="#ff6600">                           case 0:<br/>
+                                    parent-&gt;balance = -1 ;<br/>
+                                    over = true ;<br/>
+                                    break;</font><br/><br/>
+如果parent本来是左边高的，那么child的降低导致parent平衡了。<br/>
+但这时，parent降低了，于是要继续往根部调整。<br/>
+  <font color="#ff6600">                      case 1:<br/>
+                                    parent-&gt;balance = 0 ;<br/>
+                                    child = parent ;<br/>
+                                    parent = parent-&gt;parent ;<br/>
+                                    break;</font><br/><br/>
+如果本来是右边高的。这个情况是最复杂的了。<br/>
+首先，因为左边的降低，那么平衡被破坏，要调用 </em>balance_right，以达平衡。<br/><br/>
+这个时候再判断，如果调整前，parent的右枝是平衡的，那么就可以结束这个过程了。<br/>
+否则还要继续向根走。。<br/>
+  <font color="#ff6600">                      case -1:<br/>
+                                    parent-&gt;balance = -2 ;<br/>
+                                    tmp = parent-&gt;right-&gt;balance ;<br/>
+                                    child = _balance_right(parent) ;<br/>
+                                    parent = child-&gt;parent ;<br/>
+                                    if ( tmp == 0 ) over = true ;<br/>
+                                    break;</font><br/>
+至于为什么调整前parent的右枝是平衡的就可以停止了呢?<br/>
+这个就只好拜托各位看前一篇里面的几幅图了，<br/>
+虽然是画的左边，右边也一样。仅有在这个时候，parent的高度才不会降低。<br/>
+（很麻烦的一个事情，自己把所有情况画出来就看到了）<br/><br/><font color="#0000ff">后记：</font><br/><br/>
+仔细再看，发现代码里面有不少冗余。<br/>
+不过这样一五一十地写出来比较把稳一点。<br/>
+也更容易看懂一点。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">hplonline</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-20T13:11:00+08:00" pubdate data-updated="true">May 20<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/backup-hplonline/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hupili.github.io/backup-hplonline/blog/2009/05/20/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%BA%8C%EF%BC%89%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4/" data-via="" data-counturl="http://hupili.github.io/backup-hplonline/blog/2009/05/20/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%BA%8C%EF%BC%89%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/backup-hplonline/blog/2009/05/19/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E5%AE%9E%E7%8E%B0%E8%AF%A6%E8%A7%A3%EF%BC%88AVLTree%EF%BC%89%EF%BC%88%E4%B8%80%EF%BC%89%E6%97%8B%E8%BD%AC%E5%92%8C%E5%B9%B3%E8%A1%A1/" title="Previous Post: 平衡二叉树实现详解（AVLTree）（一）旋转和平衡">&laquo; 平衡二叉树实现详解（AVLTree）（一）旋转和平衡</a>
+      
+      
+        <a class="basic-alignment right" href="/backup-hplonline/blog/2009/05/22/win32%E7%A8%8B%E5%BA%8F%E5%90%AF%E7%94%A8%E6%8E%A7%E5%88%B6%E5%8F%B0%EF%BC%88%E6%8E%A7%E5%88%B6%E5%8F%B0%E6%96%87%E4%BB%B6%E5%90%8D%EF%BC%9Aconout%24%2Cconin%24%2Cconerr%24%29/" title="Next Post: win32程序启用控制台（控制台文件名：conout$,conin$,conerr$)">win32程序启用控制台（控制台文件名：conout$,conin$,conerr$) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2013/05/04/test/">Test</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/04/09/%E5%86%8D%E8%B0%88stl%E7%9A%84rotate/">再谈stl的rotate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%BA%8C%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%89%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/backup-hplonline/blog/2011/02/01/%5Bpaper%5DXORsinTheAir%3APracticalWirelessNetworkCoding%EF%BC%88%E7%BF%BB%E8%AF%91%E3%80%81%E4%B8%80%EF%BC%89/">[paper] XORs in The Air: Practical Wireless Network Coding（翻译、一）</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - hplonline -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
